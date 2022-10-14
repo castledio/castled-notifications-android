@@ -7,5 +7,9 @@ public class TokenUploadServerTask extends CastledServerTask {
         this.fcmToken = token;
     }
 
+    public String getFcmToken() {
+        return fcmToken;
+    }
+
     String fcmToken;
 }

@@ -11,7 +11,7 @@ import io.castled.notifications.store.InstancePrefStore;
 import io.castled.notifications.tasks.ServerTaskHandler;
 import io.castled.notifications.tasks.ServerTaskListener;
 import io.castled.notifications.tasks.ServerTaskQueue;
-import io.castled.notifications.tasks.models.TokenRefreshServerTask;
+import io.castled.notifications.tasks.models.TokenUploadServerTask;
 import io.castled.notifications.tasks.models.UserIdSetTask;
 
 public class CastledNotificationInstance {
@@ -57,8 +57,8 @@ public class CastledNotificationInstance {
     }
 
     private void handleTokenFetch(String token) {
-        TokenRefreshServerTask tokenRefreshServerTask = new TokenRefreshServerTask(token);
-        serverTaskQueue.add(tokenRefreshServerTask);
+        TokenUploadServerTask tokenUploadServerTask = new TokenUploadServerTask(token);
+        serverTaskQueue.add(tokenUploadServerTask);
     }
 
 }
