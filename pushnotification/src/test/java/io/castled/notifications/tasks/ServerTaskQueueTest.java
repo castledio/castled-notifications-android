@@ -1,27 +1,19 @@
 package io.castled.notifications.tasks;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-
-import java.io.File;
 
 import io.castled.notifications.tasks.models.TokenUploadServerTask;
 
 public class ServerTaskQueueTest {
 
-    private File qFile;
-
-    @Before
-    public void setUp() {
-        qFile = new File("testq.dat");
-    }
+    private static final String dirName = "testdir";
+    private static final String fileName = "test.dat";
 
     @Test
     public void testQueueOps() {
-        ServerTaskQueue serverTaskQueue = new ServerTaskQueue(qFile);
+        ServerTaskQueue serverTaskQueue = new ServerTaskQueue(dirName, fileName);
 
         // Add
         for (int i = 1; i <= 10000; ++i) {
@@ -38,11 +30,6 @@ public class ServerTaskQueueTest {
 
         // Confirm empty
         assertNull(serverTaskQueue.peek());
-    }
-
-    @After
-    public void tearDown() {
-        qFile.delete();
     }
 
 }

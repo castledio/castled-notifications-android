@@ -23,9 +23,11 @@ public class ServerTaskQueue implements TaskQueue<CastledServerTask> {
     private TaskQueueListener<CastledServerTask> queueListener;
 
     @Inject
-    public ServerTaskQueue(File file) {
+    public ServerTaskQueue(String dirName, String fileName) {
         logger = CastledLogger.getInstance();
         try {
+            createDirIfNotExists(dirName);
+            File file = new File(dirName, fileName);
             QueueFile queueFile = new QueueFile.Builder(file).build();
             PolymorphicJsonAdapterFactory<CastledServerTask> polymorphicJsonAdapterFactory = PolymorphicJsonAdapterFactory
                     .of(CastledServerTask.class, "taskType")
@@ -78,6 +80,13 @@ public class ServerTaskQueue implements TaskQueue<CastledServerTask> {
             }
         } catch (IOException e) {
             logger.error("Removing task failed!", e);
+        }
+    }
+
+    private void createDirIfNotExists(String dirName) {
+        File dir = new File(dirName);
+        if (!dir.exists()) {
+            dir.mkdir();
         }
     }
 }

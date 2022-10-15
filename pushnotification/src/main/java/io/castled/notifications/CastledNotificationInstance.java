@@ -4,10 +4,8 @@ import android.content.Context;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.io.File;
-
 import io.castled.notifications.logger.CastledLogger;
-import io.castled.notifications.store.InstancePrefStore;
+import io.castled.notifications.store.CastledInstancePrefStore;
 import io.castled.notifications.tasks.ServerTaskHandler;
 import io.castled.notifications.tasks.ServerTaskListener;
 import io.castled.notifications.tasks.ServerTaskQueue;
@@ -16,10 +14,12 @@ import io.castled.notifications.tasks.models.UserIdSetTask;
 
 public class CastledNotificationInstance {
 
+    private static final String CASTLED_SERVER_TASK_DIR = "castled-notifications";
+    private static final String CASTLED_PUSH_TASK_FILE = "push";
+
     private final CastledLogger logger;
     private final String instanceId;
     private final ServerTaskQueue serverTaskQueue;
-    private final InstancePrefStore instancePrefStore;
 
     public String getInstanceId() {
         return instanceId;
@@ -28,17 +28,15 @@ public class CastledNotificationInstance {
     CastledNotificationInstance(Context context, String instanceId) {
         this.logger = CastledLogger.getInstance();
         this.instanceId = instanceId;
-        this.instancePrefStore = new InstancePrefStore(context, instanceId);
-        File file = new File("./castled-notifications/push");
+        CastledInstancePrefStore.init(context, instanceId);
 
-        this.serverTaskQueue = new ServerTaskQueue(file);
+        this.serverTaskQueue = new ServerTaskQueue(CASTLED_SERVER_TASK_DIR, CASTLED_PUSH_TASK_FILE);
         ServerTaskHandler serverTaskHandler = ServerTaskHandler.getInstance(serverTaskQueue);
         ServerTaskListener listener = new ServerTaskListener(serverTaskHandler);
         this.serverTaskQueue.register(listener);
     }
 
     public void start() {
-
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
                 logger.warning("Fetching FCM registration token failed!");
