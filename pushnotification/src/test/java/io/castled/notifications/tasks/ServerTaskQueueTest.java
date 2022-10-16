@@ -1,8 +1,11 @@
 package io.castled.notifications.tasks;
 
+import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+
+import java.io.File;
 
 import io.castled.notifications.tasks.models.TokenUploadServerTask;
 
@@ -30,6 +33,14 @@ public class ServerTaskQueueTest {
 
         // Confirm empty
         assertNull(serverTaskQueue.peek());
+    }
+
+    @After
+    public void tearDown() {
+        File f = new File(dirName, fileName);
+        f.delete();
+        File d = new File(dirName);
+        d.delete();
     }
 
 }
