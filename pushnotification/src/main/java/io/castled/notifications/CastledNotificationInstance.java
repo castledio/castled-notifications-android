@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.io.File;
+
 import io.castled.notifications.logger.CastledLogger;
 import io.castled.notifications.store.CastledInstancePrefStore;
 import io.castled.notifications.tasks.ServerTaskHandler;
@@ -30,7 +32,10 @@ public class CastledNotificationInstance {
         this.instanceId = instanceId;
         CastledInstancePrefStore.init(context, instanceId);
 
-        this.serverTaskQueue = new ServerTaskQueue(CASTLED_SERVER_TASK_DIR, CASTLED_PUSH_TASK_FILE);
+        File taskDir = new File(context.getFilesDir(), CASTLED_SERVER_TASK_DIR);
+        taskDir.mkdirs();
+        this.serverTaskQueue = new ServerTaskQueue(new File(taskDir, CASTLED_PUSH_TASK_FILE));
+
         ServerTaskHandler serverTaskHandler = ServerTaskHandler.getInstance(serverTaskQueue);
         ServerTaskListener listener = new ServerTaskListener(serverTaskHandler);
         this.serverTaskQueue.register(listener);

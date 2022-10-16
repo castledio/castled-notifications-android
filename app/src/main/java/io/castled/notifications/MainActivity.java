@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        CastledNotifications.start(getApplicationContext(), "us.aaab-12344");
     }
 
     @Override

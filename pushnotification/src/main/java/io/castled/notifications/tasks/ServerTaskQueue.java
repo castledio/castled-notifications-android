@@ -23,12 +23,10 @@ public class ServerTaskQueue implements TaskQueue<CastledServerTask> {
     private TaskQueueListener<CastledServerTask> queueListener;
 
     @Inject
-    public ServerTaskQueue(String dirName, String fileName) {
+    public ServerTaskQueue(File taskFile) {
         logger = CastledLogger.getInstance();
         try {
-            createDirIfNotExists(dirName);
-            File file = new File(dirName, fileName);
-            QueueFile queueFile = new QueueFile.Builder(file).build();
+            QueueFile queueFile = new QueueFile.Builder(taskFile).build();
             PolymorphicJsonAdapterFactory<CastledServerTask> polymorphicJsonAdapterFactory = PolymorphicJsonAdapterFactory
                     .of(CastledServerTask.class, "taskType")
                     .withSubtype(TokenUploadServerTask.class, CastledServerTaskType.TOKEN_REGISTER.toString())

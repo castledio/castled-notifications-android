@@ -1,6 +1,7 @@
 package io.castled.notifications.tasks;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -14,9 +15,14 @@ public class ServerTaskQueueTest {
     private static final String dirName = "testdir";
     private static final String fileName = "test.dat";
 
+    @Before
+    public void setUp() {
+        new File(dirName).mkdirs();
+    }
+
     @Test
     public void testQueueOps() {
-        ServerTaskQueue serverTaskQueue = new ServerTaskQueue(dirName, fileName);
+        ServerTaskQueue serverTaskQueue = new ServerTaskQueue(new File(dirName, fileName));
 
         // Add
         for (int i = 1; i <= 10000; ++i) {

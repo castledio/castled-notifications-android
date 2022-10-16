@@ -36,6 +36,7 @@ public class ServerTaskHandler extends Handler {
 
     public static ServerTaskHandler getInstance(ServerTaskQueue taskQueue) {
         HandlerThread handlerThread = new HandlerThread("CastledServerTaskHandlerThread");
+        handlerThread.start();
         return new ServerTaskHandler(handlerThread.getLooper(), taskQueue);
     }
 
