@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CastledRetrofitClient {
 
-    private static final String BASE_URL = "https://%s.castled.io/backend/v1/push";
+    private static final String BASE_URL = "https://%s.castled.io/backend/v1/push/";
 
     private static final Map<String, String> clusterMap = new HashMap<String, String>();
     static {

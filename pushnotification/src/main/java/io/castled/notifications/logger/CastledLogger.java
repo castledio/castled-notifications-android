@@ -8,7 +8,7 @@ import io.castled.notifications.Logger;
 
 public class CastledLogger implements Logger {
 
-    public static final String TAG = "castled";
+    public static final String TAG = "CastledNotification";
     private static final CastledLogger logger = new CastledLogger();
 
     @Override

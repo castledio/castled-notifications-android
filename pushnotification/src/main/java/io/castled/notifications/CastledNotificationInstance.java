@@ -48,8 +48,6 @@ public class CastledNotificationInstance {
                 return;
             }
             // Get new FCM registration token
-            String token = task.getResult();
-            logger.debug(token);
             handleTokenFetch(task.getResult());
         });
     }
