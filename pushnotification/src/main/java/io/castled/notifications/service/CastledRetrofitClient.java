@@ -14,6 +14,7 @@ public class CastledRetrofitClient {
     static {
         clusterMap.put("us", "app");
         clusterMap.put("ap", "in");
+        clusterMap.put("test", "test");
     };
 
     private static Retrofit retrofit;
@@ -29,7 +30,8 @@ public class CastledRetrofitClient {
     }
 
     private static String getCluster(String instanceId) {
-        return clusterMap.get(instanceId.substring(0, 2));
+        String[] parts = instanceId.split("-");
+        return clusterMap.get(parts[0]);
     }
 
 }

@@ -69,56 +69,62 @@ public class ServerTaskHandler extends Handler {
 
     private void processTokenRegister(CastledServerTask serverTask) {
         logger.debug("processing token register task");
-        String instanceId = prefStore.getInstanceId();
-        TokenUploadServerTask tokenUploadServerTask = (TokenUploadServerTask) serverTask;
-        CastledNotificationApi castledNotificationApi = CastledNotificationService.getCastledNotificationApi(instanceId);
-        FcmDeviceRegisterRequest registerRequest = new FcmDeviceRegisterRequest(tokenUploadServerTask.getFcmToken());
+        synchronized (prefStore) {
+            String instanceId = prefStore.getInstanceId();
+            TokenUploadServerTask tokenUploadServerTask = (TokenUploadServerTask) serverTask;
+            CastledNotificationApi castledNotificationApi = CastledNotificationService.getCastledNotificationApi(instanceId);
+            FcmDeviceRegisterRequest registerRequest = new FcmDeviceRegisterRequest(tokenUploadServerTask.getFcmToken());
 
-        String currentFcmToken = prefStore.get(PrefStoreKeys.PREF_KEY_FCM_TOKEN);
-        if (currentFcmToken != null &&  currentFcmToken.equals(registerRequest.getFcmToken())) {
-            logger.debug("Token unchanged, skipping token register!");
-            return;
-        }
-
-        DeviceRegisterResponse deviceRegisterResponse;
-        Response<DeviceRegisterResponse> response;
-        try {
-            response = castledNotificationApi.registerToken(instanceId, registerRequest).execute();
-            if (!response.isSuccessful()) {
-                handleErrorResponse(response);
-            } else {
-                deviceRegisterResponse = response.body();
-                prefStore.put(PrefStoreKeys.PREF_KEY_ANON_ID, deviceRegisterResponse.getAnonId());
-                prefStore.put(PrefStoreKeys.PREF_KEY_FCM_TOKEN, registerRequest.getFcmToken());
+            String currentFcmToken = prefStore.get(PrefStoreKeys.PREF_KEY_FCM_TOKEN);
+            if (currentFcmToken != null && currentFcmToken.equals(registerRequest.getFcmToken())) {
+                logger.debug(String.format("Token: %s unchanged, skipping token register!", currentFcmToken));
+                return;
             }
-        } catch (IOException e) {
-            throw new CastledApiException("Please check your network connection!");
+
+            DeviceRegisterResponse deviceRegisterResponse;
+            Response<DeviceRegisterResponse> response;
+            try {
+                response = castledNotificationApi.registerToken(instanceId, registerRequest).execute();
+                if (!response.isSuccessful()) {
+                    handleErrorResponse(response);
+                } else {
+                    deviceRegisterResponse = response.body();
+                    prefStore.put(PrefStoreKeys.PREF_KEY_ANON_ID, deviceRegisterResponse.getAnonId());
+                    prefStore.put(PrefStoreKeys.PREF_KEY_FCM_TOKEN, registerRequest.getFcmToken());
+                }
+            } catch (IOException e) {
+                throw new CastledApiException("Please check your network connection!");
+            }
         }
     }
 
     private void processUserIdTask(CastledServerTask serverTask) {
         logger.debug("processing user id task");
-        String instanceId = prefStore.getInstanceId();
-        String anonId = prefStore.get(PrefStoreKeys.PREF_KEY_ANON_ID);
+        synchronized (prefStore) {
+            String instanceId = prefStore.getInstanceId();
+            String anonId = prefStore.get(PrefStoreKeys.PREF_KEY_ANON_ID);
 
-        UserIdSetTask userIdSetTask = (UserIdSetTask) serverTask;
+            UserIdSetTask userIdSetTask = (UserIdSetTask) serverTask;
 
-        String currentUserId = prefStore.get(PrefStoreKeys.PREF_KEY_USER_ID);
-        if (currentUserId != null && currentUserId.equals(userIdSetTask.getUserId())) {
-            logger.debug("UserId already set!");
-            return;
-        }
+            String currentUserId = prefStore.get(PrefStoreKeys.PREF_KEY_USER_ID);
 
-        CastledNotificationApi castledNotificationApi = CastledNotificationService.getCastledNotificationApi(instanceId);
-        UserUpdateRequest userUpdateRequest = new UserUpdateRequest(userIdSetTask.getUserId(), anonId);
-        try {
-            Response<Void> response = castledNotificationApi.setUserId(instanceId, userUpdateRequest).execute();
-            if (!response.isSuccessful()) {
-                handleErrorResponse(response);
+            if (currentUserId == null) {
+                logger.debug("Anon id not set!");
+            } else if (currentUserId.equals(userIdSetTask.getUserId())) {
+                logger.debug("UserId already set!");
+            } else {
+                CastledNotificationApi castledNotificationApi = CastledNotificationService.getCastledNotificationApi(instanceId);
+                UserUpdateRequest userUpdateRequest = new UserUpdateRequest(userIdSetTask.getUserId(), anonId);
+                try {
+                    Response<Void> response = castledNotificationApi.setUserId(instanceId, userUpdateRequest).execute();
+                    if (!response.isSuccessful()) {
+                        handleErrorResponse(response);
+                    }
+                    prefStore.put(PrefStoreKeys.PREF_KEY_USER_ID, userIdSetTask.getUserId());
+                } catch (IOException e) {
+                    throw new CastledApiException(e.getMessage());
+                }
             }
-            prefStore.put(PrefStoreKeys.PREF_KEY_USER_ID, userIdSetTask.getUserId());
-        } catch (IOException e) {
-            throw new CastledApiException(e.getMessage());
         }
     }
 

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Castled push configuration -->
+
+    <drawable name="io_castled_push_notification_small_icon">@drawable/ic_stat_onesignal_default</drawable>
+    <drawable name="io_castled_push_notification_large_icon"></drawable>
+
+</resources>

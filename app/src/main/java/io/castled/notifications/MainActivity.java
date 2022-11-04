@@ -44,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        CastledNotifications.start(getApplicationContext(), "us.aaab-12344");
+        CastledNotifications.start(getApplicationContext(), "test-80");
+        CastledNotifications.setUserId("frank@castled.io");
     }
 
     @Override
