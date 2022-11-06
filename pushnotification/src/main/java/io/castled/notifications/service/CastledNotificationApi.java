@@ -10,7 +10,7 @@ import retrofit2.http.Path;
 
 public interface CastledNotificationApi {
 
-    @POST("fcm/{instance}/register")
+    @POST("{instance}/fcm/register")
     Call<DeviceRegisterResponse> registerToken(@Path("instance") String instance,
                                                @Body FcmDeviceRegisterRequest fcmDeviceRegisterRequest);
 
