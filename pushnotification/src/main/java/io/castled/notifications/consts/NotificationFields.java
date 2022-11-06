@@ -19,7 +19,6 @@ public class NotificationFields {
 
     public static final String SMALL_ICON = "small_icon";
     public static final String LARGE_ICON = "large_icon";
-    public static final String IMAGE_URL = "image_url";
 
     public static final String TTL = "ttl";
 }
