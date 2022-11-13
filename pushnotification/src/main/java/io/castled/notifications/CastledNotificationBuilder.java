@@ -120,7 +120,7 @@ public class CastledNotificationBuilder {
         String channelName = payload.get(NotificationFields.CHANNEL_NAME);
         String channelDesc = payload.get(NotificationFields.CHANNEL_DESCRIPTION);
 
-        if (CastledUtils.isEmpty(channelId)) {
+        if (CastledUtils.isEmpty(channelId) || CastledUtils.isEmpty(channelName)) {
             channelId = context.getString(R.string.io_castled_push_default_channel_id);
             channelName = channelId;
             channelDesc = context.getString(R.string.io_castled_push_default_channel_desc);
