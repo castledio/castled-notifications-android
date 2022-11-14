@@ -27,6 +27,7 @@ public class CastledNotificationBuilder {
     }
 
     public Notification buildNotification(Map<String, String> payload) {
+
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, getChannelId(payload));
 
         //.setSmallIcon(R.drawable.new_mail)

@@ -46,4 +46,7 @@ public class CastledInstancePrefStore {
         sharedPreferences.edit().putString(key, val).apply();
     }
 
+    public void remove(String key) {
+        sharedPreferences.edit().remove(key).apply();
+    }
 }

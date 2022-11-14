@@ -2,8 +2,6 @@ package io.castled.notifications;
 
 import android.content.Context;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-
 import java.io.File;
 
 import io.castled.notifications.logger.CastledLogger;
@@ -28,8 +26,10 @@ public class CastledNotificationInstance {
     }
 
     CastledNotificationInstance(Context context, String instanceId) {
+
         this.logger = CastledLogger.getInstance();
         this.instanceId = instanceId;
+
         CastledInstancePrefStore.init(context, instanceId);
 
         File taskDir = new File(context.getFilesDir(), CASTLED_SERVER_TASK_DIR);
@@ -41,25 +41,28 @@ public class CastledNotificationInstance {
         this.serverTaskQueue.register(listener);
     }
 
-    public void start() {
+    /*public void start() {
+
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+
             if (!task.isSuccessful()) {
+
                 logger.warning("Fetching FCM registration token failed!");
                 return;
             }
+
             // Get new FCM registration token
             handleTokenFetch(task.getResult());
         });
-    }
+    }*/
 
     public void setUserId(String userId) {
         UserIdSetTask task = new UserIdSetTask(userId);
         serverTaskQueue.add(task);
     }
 
-    private void handleTokenFetch(String token) {
+    public void handleTokenFetch(String token) {
         TokenUploadServerTask tokenUploadServerTask = new TokenUploadServerTask(token);
         serverTaskQueue.add(tokenUploadServerTask);
     }
-
 }
