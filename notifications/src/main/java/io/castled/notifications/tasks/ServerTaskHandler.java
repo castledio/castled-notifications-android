@@ -91,6 +91,7 @@ public class ServerTaskHandler extends Handler {
                     deviceRegisterResponse = response.body();
                     prefStore.put(PrefStoreKeys.PREF_KEY_ANON_ID, deviceRegisterResponse.getAnonId());
                     prefStore.put(PrefStoreKeys.PREF_KEY_FCM_TOKEN, registerRequest.getFcmToken());
+                    logger.debug("token registered");
                 }
             } catch (IOException e) {
                 throw new CastledApiException("Please check your network connection!");
@@ -108,9 +109,9 @@ public class ServerTaskHandler extends Handler {
 
             String currentUserId = prefStore.get(PrefStoreKeys.PREF_KEY_USER_ID);
 
-            if (currentUserId == null) {
+            if (anonId == null) {
                 logger.debug("Anon id not set!");
-            } else if (currentUserId.equals(userIdSetTask.getUserId())) {
+            } else if (currentUserId != null && currentUserId.equals(userIdSetTask.getUserId())) {
                 logger.debug("UserId already set!");
             } else {
                 CastledNotificationApi castledNotificationApi = CastledNotificationService.getCastledNotificationApi(instanceId);
@@ -121,6 +122,7 @@ public class ServerTaskHandler extends Handler {
                         handleErrorResponse(response);
                     }
                     prefStore.put(PrefStoreKeys.PREF_KEY_USER_ID, userIdSetTask.getUserId());
+                    logger.debug("UserId set!");
                 } catch (IOException e) {
                     throw new CastledApiException(e.getMessage());
                 }

@@ -53,9 +53,12 @@ public class CastledNotificationBuilder {
 
         setTimeout(notificationBuilder, payload);
 
-        Intent intent = new Intent(Intent.ACTION_MAIN).setPackage(context.getPackageName());
+        Intent intent1 = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        // Intent intent = new Intent(Intent.ACTION_MAIN).setPackage(context.getPackageName());
         PendingIntent notifyPendingIntent = PendingIntent.getActivity(
-                context, 0, intent,
+                context, 0, intent1,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 

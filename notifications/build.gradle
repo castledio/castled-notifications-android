@@ -3,6 +3,9 @@ plugins {
 }
 
 android {
+
+    namespace = 'io.castled.notifications'
+
     compileSdk 32
 
     defaultConfig {
@@ -25,6 +28,12 @@ android {
     }
 }
 
+ext {
+    PUBLISH_GROUP_ID = 'io.castled'
+    PUBLISH_VERSION = '0.1.0'
+    PUBLISH_ARTIFACT_ID = 'notifications'
+}
+
 dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.5.0'
@@ -42,3 +51,5 @@ dependencies {
 
     compileOnly "com.google.firebase:firebase-messaging:23.0.8"
 }
+
+apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"
