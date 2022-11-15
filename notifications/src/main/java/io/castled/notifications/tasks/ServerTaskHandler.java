@@ -5,7 +5,6 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
@@ -15,10 +14,8 @@ import io.castled.notifications.exceptions.CastledApiException;
 import io.castled.notifications.logger.CastledLogger;
 import io.castled.notifications.service.CastledNotificationApi;
 import io.castled.notifications.service.CastledNotificationService;
-import io.castled.notifications.service.models.DeviceRegisterResponse;
 import io.castled.notifications.service.models.ErrorResponse;
 import io.castled.notifications.service.models.FcmDeviceRegisterRequest;
-import io.castled.notifications.service.models.UserUpdateRequest;
 import io.castled.notifications.store.CastledInstancePrefStore;
 import io.castled.notifications.store.consts.PrefStoreKeys;
 import io.castled.notifications.tasks.models.CastledServerTask;
@@ -75,10 +72,11 @@ public class ServerTaskHandler extends Handler {
         synchronized (prefStore) {
 
             String instanceId = prefStore.getInstanceId();
+            String userId = getUserIdIfAvailable();
 
             TokenUploadServerTask tokenUploadServerTask = (TokenUploadServerTask) serverTask;
             CastledNotificationApi castledNotificationApi = CastledNotificationService.getCastledNotificationApi(instanceId);
-            FcmDeviceRegisterRequest registerRequest = new FcmDeviceRegisterRequest(tokenUploadServerTask.getFcmToken());
+            FcmDeviceRegisterRequest registerRequest = new FcmDeviceRegisterRequest(tokenUploadServerTask.getFcmToken(), userId);
 
             prefStore.put(PrefStoreKeys.PREF_KEY_FCM_TOKEN_UNREGISTERED, tokenUploadServerTask.getFcmToken());
 
@@ -89,29 +87,15 @@ public class ServerTaskHandler extends Handler {
                 return;
             }
 
-            DeviceRegisterResponse deviceRegisterResponse;
-            Response<DeviceRegisterResponse> response;
-
             try {
 
-                response = castledNotificationApi.registerToken(instanceId, registerRequest).execute();
+                Response<Void> response = castledNotificationApi.registerToken(instanceId, registerRequest).execute();
 
-                if (!response.isSuccessful()) {
-                    handleErrorResponse(response);
+                if(response.isSuccessful() || response.code() == 204) {
+                    onTokenRegistered(registerRequest.getFcmToken(), userId);
                 }
                 else {
-
-                    deviceRegisterResponse = response.body();
-                    prefStore.put(PrefStoreKeys.PREF_KEY_ANON_ID, deviceRegisterResponse.getAnonId());
-                    prefStore.put(PrefStoreKeys.PREF_KEY_FCM_TOKEN, registerRequest.getFcmToken());
-                    prefStore.remove(PrefStoreKeys.PREF_KEY_FCM_TOKEN_UNREGISTERED);
-                    logger.debug("token registered");
-
-                    String unregisteredUserId = prefStore.get(PrefStoreKeys.PREF_KEY_USER_ID_UNREGISTERED);
-                    if(unregisteredUserId != null) {
-                        UserIdSetTask task = new UserIdSetTask(unregisteredUserId);
-                        taskQueue.add(task);
-                    }
+                    handleErrorResponse(response);
                 }
             }
             catch (IOException e) {
@@ -126,74 +110,51 @@ public class ServerTaskHandler extends Handler {
 
         synchronized (prefStore) {
 
-            String instanceId = prefStore.getInstanceId();
-            String anonId = prefStore.get(PrefStoreKeys.PREF_KEY_ANON_ID);
-
             UserIdSetTask userIdSetTask = (UserIdSetTask) serverTask;
 
-            prefStore.put(PrefStoreKeys.PREF_KEY_USER_ID_UNREGISTERED, userIdSetTask.getUserId());
-            String currentUserId = prefStore.get(PrefStoreKeys.PREF_KEY_USER_ID);
-            String unregisteredToken = prefStore.get(PrefStoreKeys.PREF_KEY_FCM_TOKEN_UNREGISTERED);
+            String userId = userIdSetTask.getUserId();
+            String token = getTokenIfAvailable();
 
-            if(unregisteredToken != null) {
+            prefStore.put(PrefStoreKeys.PREF_KEY_USER_ID_UNREGISTERED, userId);
+            String registeredUserId = prefStore.get(PrefStoreKeys.PREF_KEY_USER_ID);
 
-                logger.debug("Token not updated to server, skipping Id registration!");
-            }
-            else if (anonId == null) {
+            if(userId != null) {
 
-                logger.debug("Anon id not set!");
-                checkIfTokenIsGenerated();
-            }
-            else if (currentUserId != null && currentUserId.equals(userIdSetTask.getUserId())) {
+                if (registeredUserId != null && registeredUserId.equals(userId)) {
 
-                logger.debug("UserId already set!");
-                prefStore.remove(PrefStoreKeys.PREF_KEY_USER_ID_UNREGISTERED);
-            }
-            else {
-
-                CastledNotificationApi castledNotificationApi = CastledNotificationService.getCastledNotificationApi(instanceId);
-                UserUpdateRequest userUpdateRequest = new UserUpdateRequest(userIdSetTask.getUserId(), anonId);
-
-                try {
-
-                    Response<Void> response = castledNotificationApi.setUserId(instanceId, userUpdateRequest).execute();
-                    if (!response.isSuccessful()) {
-                        handleErrorResponse(response);
-                    }
-
-                    prefStore.put(PrefStoreKeys.PREF_KEY_USER_ID, userIdSetTask.getUserId());
+                    logger.debug("UserId already set!");
                     prefStore.remove(PrefStoreKeys.PREF_KEY_USER_ID_UNREGISTERED);
-                    logger.debug("UserId set!");
                 }
-                catch (IOException e) {
+                else if(token != null) {
 
-                    throw new CastledApiException(e.getMessage());
+                    TokenUploadServerTask tokenUploadServerTask = new TokenUploadServerTask(token);
+                    taskQueue.add(tokenUploadServerTask);
+                }
+                else {
+
+                    logger.debug("No token available, skipping user id registration!");
                 }
             }
         }
     }
 
-    private void checkIfTokenIsGenerated() {
+    private void onTokenRegistered(String token, String userId) {
 
-        try {
+        prefStore.put(PrefStoreKeys.PREF_KEY_FCM_TOKEN, token);
+        prefStore.remove(PrefStoreKeys.PREF_KEY_FCM_TOKEN_UNREGISTERED);
 
-            logger.debug("Check if token is generated...");
+        logger.debug("token registered");
 
-            FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-
-                if (!task.isSuccessful()) {
-                    logger.warning("No token generated yet!");
-                    return;
-                }
-
-                TokenUploadServerTask tokenUploadServerTask = new TokenUploadServerTask(task.getResult());
-                taskQueue.add(tokenUploadServerTask);
-            });
+        if(userId != null) {
+            onUserIdRegistered(userId);
         }
-        catch (Exception e) {
+    }
 
-             e.printStackTrace();
-        }
+    private void onUserIdRegistered(String userId) {
+
+        prefStore.put(PrefStoreKeys.PREF_KEY_USER_ID, userId);
+        prefStore.remove(PrefStoreKeys.PREF_KEY_USER_ID_UNREGISTERED);
+        logger.debug("UserId set!");
     }
 
     private void handleErrorResponse(Response response) {
@@ -212,5 +173,21 @@ public class ServerTaskHandler extends Handler {
         } catch (IOException e) {
             return new ErrorResponse(0, "Unknown error invoking Castled api!");
         }
+    }
+
+    private String getUserIdIfAvailable() {
+        String userId = prefStore.get(PrefStoreKeys.PREF_KEY_USER_ID_UNREGISTERED);
+        if(userId == null) {
+            userId = prefStore.get(PrefStoreKeys.PREF_KEY_USER_ID);
+        }
+        return userId;
+    }
+
+    private String getTokenIfAvailable() {
+        String token = prefStore.get(PrefStoreKeys.PREF_KEY_FCM_TOKEN_UNREGISTERED);
+        if(token == null) {
+            token = prefStore.get(PrefStoreKeys.PREF_KEY_FCM_TOKEN);
+        }
+        return token;
     }
 }
