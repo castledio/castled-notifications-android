@@ -6,13 +6,13 @@ plugins {
 
 android {
 
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
 
         applicationId "io.castled.notifications"
         minSdk 23
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
         multiDexEnabled true

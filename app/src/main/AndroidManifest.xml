@@ -24,10 +24,32 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
+
+        <activity
+            android:name=".DeepLinkingActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Castlednotificationsandroid.NoActionBar">
+
+            <intent-filter>
+
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="app" android:host="open.my.app" />
+
+            </intent-filter>
+
+        </activity>
+
+        <activity
+            android:name=".NavigationActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Castlednotificationsandroid.NoActionBar"/>
 
     </application>
 

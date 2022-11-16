@@ -20,5 +20,7 @@ public class NotificationFields {
     public static final String SMALL_ICON = "small_icon";
     public static final String LARGE_ICON = "large_icon";
 
+    public static final String ACTION_BUTTONS = "action_buttons";
+
     public static final String TTL = "ttl";
 }

@@ -7,16 +7,25 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
+import io.castled.notifications.consts.ActionButton;
+import io.castled.notifications.consts.ClickAction;
 import io.castled.notifications.consts.NotificationFields;
 import io.castled.notifications.logger.CastledLogger;
 import io.castled.notifications.utils.CastledUtils;
+import io.castled.notifications.utils.Utils;
 
 public class CastledNotificationBuilder {
 
@@ -41,6 +50,9 @@ public class CastledNotificationBuilder {
 
         // Large icon
         setLargeIcon(notificationBuilder, payload);
+
+        // Action buttons
+        addActionButtons(notificationBuilder, payload);
 
         // Image
         setImage(notificationBuilder, payload);
@@ -97,12 +109,14 @@ public class CastledNotificationBuilder {
         notificationBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
     }
 
+    // TODO: @Arun Jose
     private void setSmallIcon(NotificationCompat.Builder notificationBuilder, Map<String, String> payload) {
         Resources resources = context.getResources();
         String smallIcon = payload.get(NotificationFields.SMALL_ICON);
         if (!CastledUtils.isEmpty(smallIcon)) {
-            final int resourceId = resources.getIdentifier(smallIcon, "drawable", context.getPackageName());
-            notificationBuilder.setSmallIcon(resourceId);
+            //final int resourceId = resources.getIdentifier(smallIcon, "drawable", context.getPackageName());
+            //notificationBuilder.setSmallIcon(resourceId);
+            notificationBuilder.setSmallIcon(R.mipmap.small_icon); // Testing, Jose
         } else {
             notificationBuilder.setSmallIcon(R.drawable.io_castled_push_notification_small_icon);
         }
@@ -116,6 +130,53 @@ public class CastledNotificationBuilder {
         } else if (R.drawable.io_castled_push_notification_large_icon != 0) {
             Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.io_castled_push_notification_large_icon);
             notificationBuilder.setLargeIcon(image);
+        }
+    }
+
+    private void addActionButtons(NotificationCompat.Builder notificationBuilder, Map<String, String> payload) {
+
+        String actionButtonData = payload.get(NotificationFields.ACTION_BUTTONS);
+
+        if(actionButtonData != null && !actionButtonData.trim().isEmpty()) {
+
+            List<ActionButton> actionButtonList = new Gson().fromJson(actionButtonData,
+                    new TypeToken<List<ActionButton>>() {}.getType());
+
+            boolean isOS11 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
+
+            for (ActionButton button: actionButtonList) {
+
+                try {
+
+                    Intent intent = null;
+
+                    if(button.clickAction.equals(ClickAction.DEEP_LINKING.name())) {
+
+                        intent = new Intent();
+                        intent.setAction(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse(Utils.addQueryParams(button.url, button.keyVals)));
+                    }
+                    else if(button.clickAction.equals(ClickAction.NAVIGATE_TO_SCREEN.name())) {
+
+                        intent = new Intent(context, Class.forName(button.url)); // Class name should be fully qualified name
+                        intent.putExtras(Utils.mapToBundle(button.keyVals));
+                    }
+
+                    if(intent != null) {
+
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
+                                isOS11 ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT);
+
+                        NotificationCompat.Action action = new NotificationCompat.Action(0, button.label, pendingIntent);
+                        notificationBuilder.addAction(action);
+                    }
+                }
+                catch (Exception e) {
+
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

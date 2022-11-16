@@ -17,7 +17,6 @@ import io.castled.notifications.utils.NotificationId;
 
 public class CastledNotificationManager {
 
-
     public static boolean isCastledNotification(RemoteMessage remoteMessage) {
         Map<String, String> data = remoteMessage.getData();
         if (data.containsKey(NotificationFields.CASTLED_KEY)) {

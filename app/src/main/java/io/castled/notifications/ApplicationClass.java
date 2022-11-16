@@ -12,7 +12,7 @@ public class ApplicationClass extends MultiDexApplication {
 
         super.onCreate();
 
-        CastledNotifications.initialize(this, "test-101");
+        CastledNotifications.initialize(this, "test-1");
         CastledNotifications.setUserId("arun-android@castled.io");
     }
 
