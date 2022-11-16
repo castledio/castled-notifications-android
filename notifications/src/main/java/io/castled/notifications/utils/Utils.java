@@ -2,6 +2,7 @@ package io.castled.notifications.utils;
 
 import android.os.Bundle;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -27,14 +28,18 @@ public final class Utils {
             }
 
             for (LinkedHashMap.Entry<String, String> entry : qP.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                if(isFirstItem) {
-                    constructedUrl.append("?").append(key).append("=").append(value);
-                    isFirstItem = false;
+                try {
+                    String key = URLEncoder.encode(entry.getKey(), "UTF-8");
+                    String value = URLEncoder.encode(entry.getValue(), "UTF-8");
+                    if (isFirstItem) {
+                        constructedUrl.append("?").append(key).append("=").append(value);
+                        isFirstItem = false;
+                    } else {
+                        constructedUrl.append("&").append(key).append("=").append(value);
+                    }
                 }
-                else {
-                    constructedUrl.append("&").append(key).append("=").append(value);
+                catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }

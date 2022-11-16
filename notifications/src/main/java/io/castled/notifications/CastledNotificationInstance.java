@@ -41,21 +41,6 @@ public class CastledNotificationInstance {
         this.serverTaskQueue.register(listener);
     }
 
-    /*public void start() {
-
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-
-            if (!task.isSuccessful()) {
-
-                logger.warning("Fetching FCM registration token failed!");
-                return;
-            }
-
-            // Get new FCM registration token
-            handleTokenFetch(task.getResult());
-        });
-    }*/
-
     public void setUserId(String userId) {
         UserIdSetTask task = new UserIdSetTask(userId);
         serverTaskQueue.add(task);

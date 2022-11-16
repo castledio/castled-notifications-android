@@ -17,6 +17,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +52,9 @@ public class CastledNotificationBuilder {
         // Large icon
         setLargeIcon(notificationBuilder, payload);
 
+        // Notification click action
+        addNotificationAction(notificationBuilder, payload);
+
         // Action buttons
         addActionButtons(notificationBuilder, payload);
 
@@ -66,16 +70,6 @@ public class CastledNotificationBuilder {
 
         setTimeout(notificationBuilder, payload);
 
-        Intent intent1 = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
-        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        // Intent intent = new Intent(Intent.ACTION_MAIN).setPackage(context.getPackageName());
-        PendingIntent notifyPendingIntent = PendingIntent.getActivity(
-                context, 0, intent1,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-        );
-
-        notificationBuilder.setContentIntent(notifyPendingIntent);
         notificationBuilder.setAutoCancel(true);
         return notificationBuilder.build();
     }
@@ -133,6 +127,53 @@ public class CastledNotificationBuilder {
         }
     }
 
+    private void addNotificationAction(NotificationCompat.Builder notificationBuilder, Map<String, String> payload) {
+
+        String clickAction = payload.get(NotificationFields.CLICK_ACTION);
+        String keyValues = payload.get(NotificationFields.KEY_VALUES);
+        String clickActionUrl = payload.get(NotificationFields.CLICK_ACTION_URL);
+
+        if(clickAction != null && !clickAction.equals(ClickAction.NONE.name()) && clickActionUrl != null) {
+
+            try {
+
+                HashMap<String, String> keyValuesMap = null;
+                if(keyValues != null)
+                    keyValuesMap = new Gson().fromJson(keyValues, new TypeToken<HashMap<String, String>>(){}.getType());
+
+                Intent intent = null;
+
+                if(clickAction.equals(ClickAction.DEEP_LINKING.name())) {
+
+                    intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(keyValuesMap != null ? Utils.addQueryParams(clickActionUrl, keyValuesMap) : clickActionUrl));
+                }
+                else if(clickAction.equals(ClickAction.NAVIGATE_TO_SCREEN.name())) {
+
+                    intent = new Intent(context, Class.forName(clickActionUrl)); // Class name should be fully qualified name
+                    if(keyValuesMap != null)
+                        intent.putExtras(Utils.mapToBundle(keyValuesMap));
+                }
+
+                if(intent == null) {
+                    intent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+                }
+
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                boolean isOS11 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
+                PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
+                        isOS11 ? PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT);
+
+                notificationBuilder.setContentIntent(pendingIntent);
+            }
+            catch (Exception e) {
+
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void addActionButtons(NotificationCompat.Builder notificationBuilder, Map<String, String> payload) {
 
         String actionButtonData = payload.get(NotificationFields.ACTION_BUTTONS);
@@ -161,16 +202,21 @@ public class CastledNotificationBuilder {
                         intent = new Intent(context, Class.forName(button.url)); // Class name should be fully qualified name
                         intent.putExtras(Utils.mapToBundle(button.keyVals));
                     }
+                    else if(button.clickAction.equals(ClickAction.NAVIGATE_TO_SCREEN.name())) {
 
-                    if(intent != null) {
-
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
-                                isOS11 ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT);
-
-                        NotificationCompat.Action action = new NotificationCompat.Action(0, button.label, pendingIntent);
-                        notificationBuilder.addAction(action);
+                        intent = new Intent(context, Class.forName(button.url)); // Class name should be fully qualified name
+                        intent.putExtras(Utils.mapToBundle(button.keyVals));
                     }
+
+                    PendingIntent pendingIntent = null; //To cover the click action none -- intent and PI will be null, just the text
+                    if(intent != null) {
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        pendingIntent = PendingIntent.getActivity(context, 0, intent,
+                                isOS11 ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT);
+                    }
+
+                    NotificationCompat.Action action = new NotificationCompat.Action(0, button.label, pendingIntent);
+                    notificationBuilder.addAction(action);
                 }
                 catch (Exception e) {
 

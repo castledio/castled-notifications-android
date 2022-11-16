@@ -12,6 +12,8 @@ public class NotificationFields {
     public static final String TAG = "tag";
     public static final String PRIORITY = "priority";
     public static final String CLICK_ACTION = "click_action";
+    public static final String CLICK_ACTION_URL = "click_action_url";
+    public static final String KEY_VALUES = "key_vals";
 
     public static final String CHANNEL_ID = "channel_id";
     public static final String CHANNEL_NAME = "channel_name";

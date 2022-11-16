@@ -127,8 +127,7 @@ public class ServerTaskHandler extends Handler {
                 }
                 else if(token != null) {
 
-                    TokenUploadServerTask tokenUploadServerTask = new TokenUploadServerTask(token);
-                    taskQueue.add(tokenUploadServerTask);
+                    processTokenRegister(new TokenUploadServerTask(token));
                 }
                 else {
 
