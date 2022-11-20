@@ -3,6 +3,7 @@ package io.castled.notifications.consts;
 public class NotificationFields {
 
     public static final String CASTLED_KEY = "cast13d";
+    public static final String ID = "notification_id";
     public static final String TITLE = "title";
     public static final String BODY = "body";
     public static final String SUMMARY = "summary";

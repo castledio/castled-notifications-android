@@ -31,7 +31,7 @@ public class CastledNotificationManager {
         CastledNotificationBuilder notificationBuilder = new CastledNotificationBuilder(context);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         // notificationId is a unique int for each notification that you must define
-        notificationManager.notify(NotificationId.getID(), notificationBuilder.buildNotification(remoteMessage.getData()));
+        notificationManager.notify(NotificationId.getID(remoteMessage.getData()), notificationBuilder.buildNotification(remoteMessage.getData()));
     }
 
     public static String getOrCreateNotificationChannel(Context context, String channelId, String channelName, String channelDesc) {
