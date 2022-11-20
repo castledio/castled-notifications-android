@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import io.castled.notifications.logger.CastledLogger;
 import io.castled.notifications.tasks.models.CastledServerTask;
 import io.castled.notifications.tasks.models.CastledServerTaskType;
+import io.castled.notifications.tasks.models.NotificationEventServerTask;
 import io.castled.notifications.tasks.models.TokenUploadServerTask;
 import io.castled.notifications.tasks.models.UserIdSetTask;
 
@@ -30,7 +31,8 @@ public class ServerTaskQueue implements TaskQueue<CastledServerTask> {
             PolymorphicJsonAdapterFactory<CastledServerTask> polymorphicJsonAdapterFactory = PolymorphicJsonAdapterFactory
                     .of(CastledServerTask.class, "taskType")
                     .withSubtype(TokenUploadServerTask.class, CastledServerTaskType.TOKEN_REGISTER.toString())
-                    .withSubtype(UserIdSetTask.class, CastledServerTaskType.USERID_SET.toString());
+                    .withSubtype(UserIdSetTask.class, CastledServerTaskType.USERID_SET.toString())
+                    .withSubtype(NotificationEventServerTask.class, CastledServerTaskType.NOTIFICATION_EVENT.toString());
             Moshi moshi = new Moshi.Builder().add(polymorphicJsonAdapterFactory).build();
             MoshiConverter<CastledServerTask> moshiConverter = new MoshiConverter<>(moshi, CastledServerTask.class);
             this.queue = ObjectQueue.create(queueFile, moshiConverter);

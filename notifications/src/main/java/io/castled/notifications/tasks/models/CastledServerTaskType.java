@@ -2,5 +2,6 @@ package io.castled.notifications.tasks.models;
 
 public enum CastledServerTaskType {
     TOKEN_REGISTER,
-    USERID_SET
+    USERID_SET,
+    NOTIFICATION_EVENT
 }

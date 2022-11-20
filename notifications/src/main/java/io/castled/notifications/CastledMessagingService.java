@@ -11,21 +11,22 @@ public class CastledMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onNewToken(@NonNull String token) {
+
         super.onNewToken(token);
+
         CastledLogger.getInstance().info("fcm token:" + token);
+        CastledNotifications.getInstance().handleTokenFetch(token);
     }
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
-        // TODO(developer): Handle FCM messages here.
-        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         CastledLogger.getInstance().info("In onMessageReceived");
         CastledLogger.getInstance().debug("From: " + remoteMessage.getFrom());
+
         // Check if message contains a data payload.
         if (CastledNotificationManager.isCastledNotification(remoteMessage)) {
             CastledNotificationManager.handleNotification(this, remoteMessage);
         }
     }
-
 }

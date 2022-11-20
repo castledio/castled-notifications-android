@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import io.castled.notifications.exceptions.CastledRuntimeException;
+import io.castled.notifications.store.consts.PrefStoreKeys;
 
 public class CastledInstancePrefStore {
 
@@ -30,12 +31,28 @@ public class CastledInstancePrefStore {
         return instancePrefStore;
     }
 
+    private String getPrefStoreId(String instanceId) {
+        return String.format("%s.%s", CASTLED_APP_NAME, instanceId);
+    }
+
     public String getInstanceId() {
         return instanceId;
     }
 
-    private String getPrefStoreId(String instanceId) {
-        return String.format("%s.%s", CASTLED_APP_NAME, instanceId);
+    public String getTokenIfAvailable() {
+        String token = get(PrefStoreKeys.PREF_KEY_FCM_TOKEN_UNREGISTERED);
+        if(token == null) {
+            token = get(PrefStoreKeys.PREF_KEY_FCM_TOKEN);
+        }
+        return token;
+    }
+
+    public String getUserIdIfAvailable() {
+        String userId = get(PrefStoreKeys.PREF_KEY_USER_ID_UNREGISTERED);
+        if(userId == null) {
+            userId = get(PrefStoreKeys.PREF_KEY_USER_ID);
+        }
+        return userId;
     }
 
     public String get(String key) {
@@ -46,4 +63,7 @@ public class CastledInstancePrefStore {
         sharedPreferences.edit().putString(key, val).apply();
     }
 
+    public void remove(String key) {
+        sharedPreferences.edit().remove(key).apply();
+    }
 }
