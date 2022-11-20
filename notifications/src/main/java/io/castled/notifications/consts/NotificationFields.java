@@ -3,7 +3,13 @@ package io.castled.notifications.consts;
 public class NotificationFields {
 
     public static final String CASTLED_KEY = "cast13d";
+
     public static final String ID = "notification_id";
+    public static final String SOURCE_UUID = "sourceUUID";
+    public static final String SOURCE_TYPE = "sourceType";
+
+    public static final String STEP_ID = "stepId";
+
     public static final String TITLE = "title";
     public static final String BODY = "body";
     public static final String SUMMARY = "summary";

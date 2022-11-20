@@ -1,5 +1,6 @@
 package io.castled.notifications;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -13,7 +14,7 @@ import java.util.Map;
 
 import io.castled.notifications.consts.NotificationFields;
 import io.castled.notifications.logger.CastledLogger;
-import io.castled.notifications.utils.NotificationId;
+import io.castled.notifications.service.models.NotificationEvent;
 
 public class CastledNotificationManager {
 
@@ -27,11 +28,23 @@ public class CastledNotificationManager {
     }
 
     public static void handleNotification(Context context, RemoteMessage remoteMessage) {
+
         CastledLogger.getInstance().info("handling castled notification...");
+
+        CastledNotificationEventBuilder eventBuilder = new CastledNotificationEventBuilder(context);
+        NotificationEvent event = eventBuilder.buildEvent(remoteMessage.getData());
+
         CastledNotificationBuilder notificationBuilder = new CastledNotificationBuilder(context);
+        Notification notification =  notificationBuilder.buildNotification(remoteMessage.getData(), event.clickEvent());
+
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        // notificationId is a unique int for each notification that you must define
-        notificationManager.notify(NotificationId.getID(remoteMessage.getData()), notificationBuilder.buildNotification(remoteMessage.getData()));
+        notificationManager.notify(Integer.parseInt(event.notificationId), notification);
+
+        reportNotificationEvent(event);
+    }
+
+    public static void reportNotificationEvent(NotificationEvent event) {
+        CastledNotifications.getInstance().reportNotificationEvent(event);
     }
 
     public static String getOrCreateNotificationChannel(Context context, String channelId, String channelName, String channelDesc) {

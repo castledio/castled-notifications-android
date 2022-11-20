@@ -5,10 +5,12 @@ import android.content.Context;
 import java.io.File;
 
 import io.castled.notifications.logger.CastledLogger;
+import io.castled.notifications.service.models.NotificationEvent;
 import io.castled.notifications.store.CastledInstancePrefStore;
 import io.castled.notifications.tasks.ServerTaskHandler;
 import io.castled.notifications.tasks.ServerTaskListener;
 import io.castled.notifications.tasks.ServerTaskQueue;
+import io.castled.notifications.tasks.models.NotificationEventServerTask;
 import io.castled.notifications.tasks.models.TokenUploadServerTask;
 import io.castled.notifications.tasks.models.UserIdSetTask;
 
@@ -49,5 +51,10 @@ public class CastledNotificationInstance {
     public void handleTokenFetch(String token) {
         TokenUploadServerTask tokenUploadServerTask = new TokenUploadServerTask(token);
         serverTaskQueue.add(tokenUploadServerTask);
+    }
+
+    public void reportNotificationEvent(NotificationEvent event) {
+        NotificationEventServerTask eventServerTask = new NotificationEventServerTask(event);
+        serverTaskQueue.add(eventServerTask);
     }
 }
