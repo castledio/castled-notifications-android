@@ -147,7 +147,7 @@ public class ServerTaskHandler extends Handler {
 
         synchronized (prefStore) {
 
-            String instanceId = "test-99"; //prefStore.getInstanceId();
+            String instanceId = prefStore.getInstanceId();
             NotificationEventServerTask eventServerTask = (NotificationEventServerTask) serverTask;
             CastledNotificationApi castledNotificationApi = CastledNotificationService.getCastledNotificationApi(instanceId);
 
@@ -163,7 +163,7 @@ public class ServerTaskHandler extends Handler {
                 }
                 else {
 
-                    //handleErrorResponse(response);
+                    handleErrorResponse(response);
                 }
             }
             catch (IOException e) {

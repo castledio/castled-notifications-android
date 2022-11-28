@@ -13,7 +13,7 @@ public class NotificationEvent implements Serializable, Cloneable {
     public String sourceUUID;
     public String sourceType;
 
-    public String stepId;
+    public String stepId = "0";
     public String userId;
 
     public String actionLabel;
