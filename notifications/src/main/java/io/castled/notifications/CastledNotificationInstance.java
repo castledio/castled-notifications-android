@@ -2,6 +2,10 @@ package io.castled.notifications;
 
 import android.content.Context;
 
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
+import androidx.lifecycle.ProcessLifecycleOwner;
+
 import java.io.File;
 
 import io.castled.notifications.logger.CastledLogger;
@@ -23,6 +27,8 @@ public class CastledNotificationInstance {
     private final String instanceId;
     private final ServerTaskQueue serverTaskQueue;
 
+    private boolean isAppInForeground = true;
+
     public String getInstanceId() {
         return instanceId;
     }
@@ -41,6 +47,24 @@ public class CastledNotificationInstance {
         ServerTaskHandler serverTaskHandler = ServerTaskHandler.getInstance(serverTaskQueue);
         ServerTaskListener listener = new ServerTaskListener(serverTaskHandler);
         this.serverTaskQueue.register(listener);
+
+        ProcessLifecycleOwner.get().getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
+
+            if (event == Lifecycle.Event.ON_START) {
+
+                logger.debug("onAppDidEnterForeground");
+                isAppInForeground = true;
+            }
+            else if (event == Lifecycle.Event.ON_STOP) {
+
+                logger.debug("onAppDidEnterBackground");
+                isAppInForeground = false;
+            }
+        });
+    }
+
+    boolean isAppInForeground() {
+        return isAppInForeground;
     }
 
     public void setUserId(String userId) {
@@ -53,7 +77,7 @@ public class CastledNotificationInstance {
         serverTaskQueue.add(tokenUploadServerTask);
     }
 
-    public void reportNotificationEvent(NotificationEvent event) {
+    void reportNotificationEvent(NotificationEvent event) {
         NotificationEventServerTask eventServerTask = new NotificationEventServerTask(event);
         serverTaskQueue.add(eventServerTask);
     }

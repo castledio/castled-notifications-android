@@ -41,18 +41,24 @@ ext {
 
 dependencies {
 
+    //Test Dependencies
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
+
+    //Default Android Dependencies
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.7.0'
+    implementation 'androidx.lifecycle:lifecycle-process:2.5.1'
+
+    //Network Layer
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.tape2:tape:2.0.0-beta1'
     implementation 'com.squareup.moshi:moshi:1.14.0'
     implementation 'com.squareup.moshi:moshi-adapters:1.14.0'
 
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
-
+    //Firebase Dependencies
     compileOnly "com.google.firebase:firebase-messaging:23.1.0"
 }
 

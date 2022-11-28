@@ -46,32 +46,57 @@ public class ServerTaskHandler extends Handler {
 
     @Override
     public void handleMessage(Message msg) {
-        CastledServerTask serverTask = taskQueue.peek();
-        if (serverTask != null) {
-            processTask(serverTask);
-            taskQueue.remove();
+
+        int action = msg.what;
+        CastledServerTask serverTask;
+
+        switch (action) {
+
+            case ServerTaskListener.QUEUE_ADD:
+            case ServerTaskListener.QUEUE_FLUSH:
+
+                serverTask = (CastledServerTask) msg.obj;
+                if (serverTask != null && processTask(serverTask)) {
+                    taskQueue.remove();
+                    taskQueue.flush();
+                }
+
+            case ServerTaskListener.QUEUE_REMOVE:
+
+                serverTask = (CastledServerTask) msg.obj;
+                logger.debug("Task (" + serverTask.getTaskType().name() + ") successfully removed!");
+
+            case ServerTaskListener.QUEUE_EMPTY:
+                //In the event of logout
         }
     }
 
-    private void processTask(CastledServerTask serverTask) {
+    private boolean processTask(CastledServerTask serverTask) {
+
+        boolean isProcessed = false;
+
         switch (serverTask.getTaskType()) {
             case TOKEN_REGISTER:
-                processTokenRegister(serverTask);
+                isProcessed = processTokenRegister(serverTask);
                 break;
             case USERID_SET:
-                processUserIdTask(serverTask);
+                isProcessed = processUserIdTask(serverTask);
                 break;
             case NOTIFICATION_EVENT:
-                processNotificationEvent(serverTask);
+                isProcessed = processNotificationEvent(serverTask);
                 break;
             default:
                 logger.error(String.format("Unhandled task type: %s", serverTask.getTaskType()));
         }
+
+        return isProcessed;
     }
 
-    private void processTokenRegister(CastledServerTask serverTask) {
+    private boolean processTokenRegister(CastledServerTask serverTask) {
 
         logger.debug("processing token register task");
+
+        boolean isApiSuccess = false;
 
         synchronized (prefStore) {
 
@@ -85,32 +110,46 @@ public class ServerTaskHandler extends Handler {
             prefStore.put(PrefStoreKeys.PREF_KEY_FCM_TOKEN_UNREGISTERED, tokenUploadServerTask.getFcmToken());
 
             String currentFcmToken = prefStore.get(PrefStoreKeys.PREF_KEY_FCM_TOKEN);
+
             if (currentFcmToken != null && currentFcmToken.equals(registerRequest.getFcmToken())) {
+
                 logger.debug(String.format("Token: %s unchanged, skipping token register!", currentFcmToken));
                 prefStore.remove(PrefStoreKeys.PREF_KEY_FCM_TOKEN_UNREGISTERED);
-                return;
+                isApiSuccess = true;
             }
+            else {
 
-            try {
+                CastledApiException exception = null;
 
-                Response<Void> response = castledNotificationApi.registerToken(instanceId, registerRequest).execute();
+                try {
 
-                if(response.isSuccessful()) {
-                    onTokenRegistered(registerRequest.getFcmToken(), userId);
+                    Response<Void> response = castledNotificationApi.registerToken(instanceId, registerRequest).execute();
+                    if(response.isSuccessful()) {
+                        isApiSuccess = true;
+                        onTokenRegistered(registerRequest.getFcmToken(), userId);
+                    }
+                    else {
+
+                        exception = handleErrorResponse(response);
+                    }
                 }
-                else {
-                    handleErrorResponse(response);
+                catch (Exception e) {
+                    exception = new CastledApiException("Please check your network connection!");
                 }
-            }
-            catch (IOException e) {
-                throw new CastledApiException("Please check your network connection!");
+
+                if(exception != null && exception.getMessage() != null)
+                    logger.error(exception.getMessage());
             }
         }
+
+        return isApiSuccess;
     }
 
-    private void processUserIdTask(CastledServerTask serverTask) {
+    private boolean processUserIdTask(CastledServerTask serverTask) {
 
         logger.debug("processing user id task");
+
+        boolean isApiSuccess = false;
 
         synchronized (prefStore) {
 
@@ -128,22 +167,28 @@ public class ServerTaskHandler extends Handler {
 
                     logger.debug("UserId already set!");
                     prefStore.remove(PrefStoreKeys.PREF_KEY_USER_ID_UNREGISTERED);
+                    isApiSuccess = true;
                 }
                 else if(token != null) {
 
-                    processTokenRegister(new TokenUploadServerTask(token));
+                    isApiSuccess = processTokenRegister(new TokenUploadServerTask(token));
                 }
                 else {
 
                     logger.debug("No token available, skipping user id registration!");
+                    isApiSuccess = true;
                 }
             }
         }
+
+        return isApiSuccess;
     }
 
-    private void processNotificationEvent(CastledServerTask serverTask) {
+    private boolean processNotificationEvent(CastledServerTask serverTask) {
 
         logger.debug("processing notification event report task");
+
+        boolean isApiSuccess = false;
 
         synchronized (prefStore) {
 
@@ -153,22 +198,31 @@ public class ServerTaskHandler extends Handler {
 
             logger.debug("Reporting event: " + eventServerTask.getEvent().eventType + ", action type - "+ eventServerTask.getEvent().actionType);
 
+            CastledApiException exception = null;
+
             try {
 
                 Response<Void> response = castledNotificationApi.reportEvent(instanceId, eventServerTask.getEvent()).execute();
 
                 if(response.isSuccessful()) {
+
+                    isApiSuccess = true;
                     logger.debug("notification event reported");
                 }
                 else {
 
-                    //handleErrorResponse(response);
+                    exception = handleErrorResponse(response);
                 }
             }
-            catch (IOException e) {
-                throw new CastledApiException("Please check your network connection!");
+            catch (Exception e) {
+                exception = new CastledApiException("Please check your network connection!");
             }
+
+            if(exception != null && exception.getMessage() != null)
+                logger.error(exception.getMessage());
         }
+
+        return isApiSuccess;
     }
 
     private void onTokenRegistered(String token, String userId) {
@@ -190,13 +244,13 @@ public class ServerTaskHandler extends Handler {
         logger.debug("UserId set!");
     }
 
-    private void handleErrorResponse(Response response) {
-        if (response.errorBody() != null) {
+    private CastledApiException handleErrorResponse(Response response) {
+        if (response != null && response.errorBody() != null) {
             ErrorResponse errorResponse = getErrorResponse(response.errorBody());
             logger.error(errorResponse.getMessage());
-            throw new CastledApiException(errorResponse.getMessage());
+            return new CastledApiException(errorResponse.getMessage());
         }
-        throw new CastledApiException("Unknown error invoking Castled api!");
+        return new CastledApiException("Unknown error invoking Castled api!");
     }
 
     private ErrorResponse getErrorResponse(ResponseBody responseBody) {

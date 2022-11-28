@@ -12,6 +12,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 
+import io.castled.notifications.consts.NotificationEventType;
 import io.castled.notifications.consts.NotificationFields;
 import io.castled.notifications.logger.CastledLogger;
 import io.castled.notifications.service.models.NotificationEvent;
@@ -34,11 +35,18 @@ public class CastledNotificationManager {
         CastledNotificationEventBuilder eventBuilder = new CastledNotificationEventBuilder(context);
         NotificationEvent event = eventBuilder.buildEvent(remoteMessage.getData());
 
-        CastledNotificationBuilder notificationBuilder = new CastledNotificationBuilder(context);
-        Notification notification =  notificationBuilder.buildNotification(remoteMessage.getData(), event.clickEvent());
+        if(CastledNotifications.getInstance().isAppInForeground()) { //Ignore the notification, mark event as foreground and report!
 
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.notify(Integer.parseInt(event.notificationId), notification);
+            event.setEventType(NotificationEventType.FOREGROUND);
+        }
+        else {
+
+            CastledNotificationBuilder notificationBuilder = new CastledNotificationBuilder(context);
+            Notification notification = notificationBuilder.buildNotification(remoteMessage.getData(), event.clickEvent());
+
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+            notificationManager.notify(Integer.parseInt(event.notificationId), notification);
+        }
 
         reportNotificationEvent(event);
     }
@@ -48,12 +56,10 @@ public class CastledNotificationManager {
     }
 
     public static String getOrCreateNotificationChannel(Context context, String channelId, String channelName, String channelDesc) {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
             if (notificationManager.getNotificationChannel(channelId) == null) {
@@ -62,6 +68,7 @@ public class CastledNotificationManager {
                 notificationManager.createNotificationChannel(channel);
             }
         }
+
         return channelId;
     }
 

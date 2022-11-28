@@ -7,10 +7,14 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.graphics.drawable.IconCompat;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -116,27 +120,42 @@ public class CastledNotificationBuilder {
         notificationBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
     }
 
-    // TODO: @Arun Jose
     private void setSmallIcon(NotificationCompat.Builder notificationBuilder, Map<String, String> payload) {
+
+        int resourceId = 0;
+
         Resources resources = context.getResources();
         String smallIcon = payload.get(NotificationFields.SMALL_ICON);
-        if (!CastledUtils.isEmpty(smallIcon)) {
-            //final int resourceId = resources.getIdentifier(smallIcon, "drawable", context.getPackageName());
-            //notificationBuilder.setSmallIcon(resourceId);
-            notificationBuilder.setSmallIcon(R.mipmap.small_icon); // Testing, Jose
-        } else {
-            notificationBuilder.setSmallIcon(R.drawable.io_castled_push_notification_small_icon);
+        if (!CastledUtils.isEmpty(smallIcon))
+            resourceId = resources.getIdentifier(smallIcon, "drawable", context.getPackageName());
+
+        if(resourceId <= 0)
+            resourceId = R.drawable.io_castled_push_notification_small_icon;
+
+        if(resourceId > 0) {
+            notificationBuilder.setSmallIcon(resourceId);
+        }
+        else {
+            notificationBuilder.setSmallIcon(IconCompat.createWithBitmap(
+                    getBitmapFromDrawable(context.getApplicationInfo().loadIcon(context.getPackageManager())))
+            );
         }
     }
 
     private void setLargeIcon(NotificationCompat.Builder notificationBuilder, Map<String, String> payload) {
-        // Large icon
+
         String largeIconUrl = payload.get(NotificationFields.LARGE_ICON);
         if (!CastledUtils.isEmpty(largeIconUrl)) {
             notificationBuilder.setLargeIcon(getBitmapFromUrl(largeIconUrl));
-        } else if (R.drawable.io_castled_push_notification_large_icon != 0) {
+        }
+        else if (R.drawable.io_castled_push_notification_large_icon > 0) {
             Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.io_castled_push_notification_large_icon);
             notificationBuilder.setLargeIcon(image);
+        }
+        else {
+            notificationBuilder.setLargeIcon(
+                getBitmapFromDrawable(context.getApplicationInfo().loadIcon(context.getPackageManager()))
+            );
         }
     }
 
@@ -308,5 +327,14 @@ public class CastledNotificationBuilder {
             CastledLogger.getInstance().error(e.getMessage());
         }
         return null;
+    }
+
+    @NonNull
+    static private Bitmap getBitmapFromDrawable(@NonNull Drawable drawable) {
+        final Bitmap bmp = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(bmp);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bmp;
     }
 }
