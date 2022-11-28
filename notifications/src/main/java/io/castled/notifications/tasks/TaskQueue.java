@@ -4,7 +4,9 @@ public interface TaskQueue<T> {
 
     void add(T item);
 
-    T peek();
-
     void remove();
+
+    void flush();
+
+    void empty();
 }

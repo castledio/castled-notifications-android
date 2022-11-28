@@ -25,8 +25,11 @@ public class ServerTaskQueue implements TaskQueue<CastledServerTask> {
 
     @Inject
     public ServerTaskQueue(File taskFile) {
+
         logger = CastledLogger.getInstance();
+
         try {
+
             QueueFile queueFile = new QueueFile.Builder(taskFile).build();
             PolymorphicJsonAdapterFactory<CastledServerTask> polymorphicJsonAdapterFactory = PolymorphicJsonAdapterFactory
                     .of(CastledServerTask.class, "taskType")
@@ -36,8 +39,11 @@ public class ServerTaskQueue implements TaskQueue<CastledServerTask> {
             Moshi moshi = new Moshi.Builder().add(polymorphicJsonAdapterFactory).build();
             MoshiConverter<CastledServerTask> moshiConverter = new MoshiConverter<>(moshi, CastledServerTask.class);
             this.queue = ObjectQueue.create(queueFile, moshiConverter);
-        } catch (IOException e) {
-            // TODO: cleanup
+
+            flush();
+        }
+        catch (IOException e) {
+
             logger.error("Failed to create queue file!", e);
             throw new RuntimeException(e);
         }
@@ -54,12 +60,12 @@ public class ServerTaskQueue implements TaskQueue<CastledServerTask> {
             if (queueListener != null) {
                 queueListener.onAdd(item);
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             logger.error("Adding task failed!", e);
         }
     }
 
-    @Override
     public CastledServerTask peek() {
         CastledServerTask task = null;
         try {
@@ -80,6 +86,26 @@ public class ServerTaskQueue implements TaskQueue<CastledServerTask> {
             }
         } catch (IOException e) {
             logger.error("Removing task failed!", e);
+        }
+    }
+
+    @Override
+    public void flush() {
+        if(queue.isEmpty())
+            return;
+        CastledServerTask task = peek();
+        if (task != null && queueListener != null) {
+            queueListener.onFlush(task);
+        }
+    }
+
+    @Override
+    public void empty() {
+        try {
+            queue.clear();
+        }
+        catch (IOException e) {
+            logger.error("Emptying tasks failed!", e);
         }
     }
 
