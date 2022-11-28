@@ -35,7 +35,7 @@ android {
 ext {
 
     PUBLISH_GROUP_ID = 'io.castled'
-    PUBLISH_VERSION = '0.1.0'
+    PUBLISH_VERSION = '0.1.2'
     PUBLISH_ARTIFACT_ID = 'notifications'
 }
 

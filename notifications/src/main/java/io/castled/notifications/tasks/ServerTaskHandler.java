@@ -95,7 +95,7 @@ public class ServerTaskHandler extends Handler {
 
                 Response<Void> response = castledNotificationApi.registerToken(instanceId, registerRequest).execute();
 
-                if(response.isSuccessful() || response.code() == 204) {
+                if(response.isSuccessful()) {
                     onTokenRegistered(registerRequest.getFcmToken(), userId);
                 }
                 else {
@@ -157,8 +157,7 @@ public class ServerTaskHandler extends Handler {
 
                 Response<Void> response = castledNotificationApi.reportEvent(instanceId, eventServerTask.getEvent()).execute();
 
-                if(response.isSuccessful() || response.code() == 204) {
-
+                if(response.isSuccessful()) {
                     logger.debug("notification event reported");
                 }
                 else {
