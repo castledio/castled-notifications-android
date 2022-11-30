@@ -92,6 +92,7 @@ public class CastledNotificationBuilder {
     }
 
     private void setSummaryAndBody(NotificationCompat.Builder notificationBuilder, Map<String, String> payload) {
+
         String summary = payload.get(NotificationFields.SUMMARY);
         String body = payload.get(NotificationFields.BODY);
         String image = payload.get(NotificationFields.IMAGE);

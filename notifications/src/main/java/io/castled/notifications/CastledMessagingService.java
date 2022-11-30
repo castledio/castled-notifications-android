@@ -24,9 +24,7 @@ public class CastledMessagingService extends FirebaseMessagingService {
         CastledLogger.getInstance().info("In onMessageReceived");
         CastledLogger.getInstance().debug("From: " + remoteMessage.getFrom());
 
-        // Check if message contains a data payload.
-        if (CastledNotificationManager.isCastledNotification(remoteMessage)) {
-            CastledNotificationManager.handleNotification(this, remoteMessage);
-        }
+        // Handle message payload
+        CastledNotificationManager.handleNotification(this, remoteMessage);
     }
 }

@@ -28,27 +28,29 @@ public class CastledNotificationManager {
         return false;
     }
 
-    public static void handleNotification(Context context, RemoteMessage remoteMessage) {
+    public static boolean handleNotification(Context context, RemoteMessage remoteMessage) {
 
+        if (!CastledNotificationManager.isCastledNotification(remoteMessage)) {
+            return false;
+        }
+        // Payload from Castled server
         CastledLogger.getInstance().info("handling castled notification...");
 
         CastledNotificationEventBuilder eventBuilder = new CastledNotificationEventBuilder(context);
         NotificationEvent event = eventBuilder.buildEvent(remoteMessage.getData());
 
-        if(CastledNotifications.getInstance().isAppInForeground()) { //Ignore the notification, mark event as foreground and report!
-
+        if(CastledNotifications.getInstance().isAppInForeground()) {
+            //Ignore the notification, mark event as foreground and report!
             event.setEventType(NotificationEventType.FOREGROUND);
-        }
-        else {
-
+        } else {
             CastledNotificationBuilder notificationBuilder = new CastledNotificationBuilder(context);
             Notification notification = notificationBuilder.buildNotification(remoteMessage.getData(), event.clickEvent());
 
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
             notificationManager.notify(Integer.parseInt(event.notificationId), notification);
         }
-
         reportNotificationEvent(event);
+        return true;
     }
 
     public static void reportNotificationEvent(NotificationEvent event) {
