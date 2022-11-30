@@ -54,17 +54,17 @@ public class ServerTaskHandler extends Handler {
 
             case ServerTaskListener.QUEUE_ADD:
             case ServerTaskListener.QUEUE_FLUSH:
-
                 serverTask = (CastledServerTask) msg.obj;
                 if (serverTask != null && processTask(serverTask)) {
                     taskQueue.remove();
                     taskQueue.flush();
                 }
+                break;
 
             case ServerTaskListener.QUEUE_REMOVE:
-
                 serverTask = (CastledServerTask) msg.obj;
                 logger.debug("Task (" + serverTask.getTaskType().name() + ") successfully removed!");
+                break;
 
             case ServerTaskListener.QUEUE_EMPTY:
                 //In the event of logout
