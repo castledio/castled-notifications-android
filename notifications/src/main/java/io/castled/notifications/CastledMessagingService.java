@@ -13,15 +13,12 @@ public class CastledMessagingService extends FirebaseMessagingService {
     public void onNewToken(@NonNull String token) {
 
         super.onNewToken(token);
-
-        CastledLogger.getInstance().info("fcm token:" + token);
         CastledNotifications.getInstance().handleTokenFetch(token);
     }
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
-        CastledLogger.getInstance().info("In onMessageReceived");
         CastledLogger.getInstance().debug("From: " + remoteMessage.getFrom());
 
         // Handle message payload

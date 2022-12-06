@@ -12,8 +12,8 @@ public class ApplicationClass extends MultiDexApplication {
 
         super.onCreate();
 
-        CastledNotifications.initialize(this, "test-1");
-        CastledNotifications.setUserId("arun-android@castled.io");
+        CastledNotifications.initialize(this, "YOUR_INSTANCE_ID");
+        CastledNotifications.setUserId("USER_ID");
     }
 
     @Override

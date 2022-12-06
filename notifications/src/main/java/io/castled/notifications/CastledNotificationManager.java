@@ -34,7 +34,7 @@ public class CastledNotificationManager {
             return false;
         }
         // Payload from Castled server
-        CastledLogger.getInstance().info("handling castled notification...");
+        CastledLogger.getInstance().debug("handling castled notification...");
 
         CastledNotificationEventBuilder eventBuilder = new CastledNotificationEventBuilder(context);
         NotificationEvent event = eventBuilder.buildEvent(remoteMessage.getData());
