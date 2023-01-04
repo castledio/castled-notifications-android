@@ -17,7 +17,7 @@ public class NotificationEvent implements Serializable, Cloneable {
     public String userId;
 
     public String actionLabel;
-    public String actionType = NotificationEventType.NONE.name();
+    public String actionType;
     public String actionUri;
 
     public String eventType;

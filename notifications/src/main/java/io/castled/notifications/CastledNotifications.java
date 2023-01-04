@@ -38,4 +38,9 @@ public class CastledNotifications {
     public static void setUserId(String userId) {
         instance.setUserId(userId);
     }
+
+    public static void setToken(String token) {
+        instance.handleTokenFetch(token);
+    }
+
 }
