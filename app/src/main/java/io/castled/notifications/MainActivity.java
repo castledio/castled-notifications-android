@@ -1,7 +1,6 @@
 package io.castled.notifications;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.Menu;
@@ -17,7 +16,6 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.snackbar.Snackbar;
 
 import io.castled.notifications.databinding.ActivityMainBinding;
-import io.castled.notifications.presentation.inapp.base.InAppBaseActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -55,10 +53,10 @@ public class MainActivity extends AppCompatActivity {
             Log.e("FCM Token", task.getResult());
         });*/
 
-        Intent intent = new Intent(this, InAppBaseActivity.class);
+        /*Intent intent = new Intent(this, InAppBaseActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        startActivity(intent);
+        startActivity(intent);*/
     }
 
     @Override
