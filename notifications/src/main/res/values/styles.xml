@@ -1,0 +1,25 @@
+<resources>
+
+    <style name="TextAppearance.Bold" parent="@android:style/TextAppearance">
+        <item name="fontFamily">fonts/font-Bold</item>
+    </style>
+
+    <style name="TextAppearance.Medium" parent="@android:style/TextAppearance">
+        <item name="fontFamily">fonts/font-Bold</item>
+    </style>
+
+    <style name="boldBlackFont" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/blackTwo</item>
+        <item name="android:textSize">@dimen/text_16</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textAppearance">@style/TextAppearance.Bold</item>
+    </style>
+
+    <style name="mediumBlackFont" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/blackTwo</item>
+        <item name="android:textSize">@dimen/text_16</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textAppearance">@style/TextAppearance.Medium</item>
+    </style>
+
+</resources>

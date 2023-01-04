@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <dimen name="one_dp">1dp</dimen>
+    <dimen name="two_dp">2dp</dimen>
+
+    <dimen name="default_screen_padding">24dp</dimen>
+    <dimen name="negative_padding_margin_50">-50dp</dimen>
+    <dimen name="padding_margin_1">1dp</dimen>
+    <dimen name="padding_margin_2">2dp</dimen>
+    <dimen name="padding_margin_4">4dp</dimen>
+    <dimen name="padding_margin_6">6dp</dimen>
+    <dimen name="padding_margin_8">8dp</dimen>
+    <dimen name="padding_margin_10">10dp</dimen>
+    <dimen name="padding_margin_12">12dp</dimen>
+    <dimen name="padding_margin_14">14dp</dimen>
+    <dimen name="padding_margin_16">16dp</dimen>
+    <dimen name="padding_margin_18">18dp</dimen>
+    <dimen name="padding_margin_22">22dp</dimen>
+    <dimen name="padding_margin_24">24dp</dimen>
+    <dimen name="padding_margin_26">26dp</dimen>
+    <dimen name="padding_margin_20">20dp</dimen>
+    <dimen name="padding_margin_28">28dp</dimen>
+    <dimen name="padding_margin_30">30dp</dimen>
+    <dimen name="padding_margin_32">32dp</dimen>
+    <dimen name="padding_margin_34">34dp</dimen>
+    <dimen name="padding_margin_36">36dp</dimen>
+    <dimen name="padding_margin_38">38dp</dimen>
+    <dimen name="padding_margin_40">40dp</dimen>
+    <dimen name="padding_margin_42">42dp</dimen>
+    <dimen name="padding_margin_44">44dp</dimen>
+    <dimen name="padding_margin_46">46dp</dimen>
+    <dimen name="padding_margin_48">48dp</dimen>
+    <dimen name="padding_margin_50">50dp</dimen>
+    <dimen name="padding_margin_52">52dp</dimen>
+    <dimen name="padding_margin_56">56dp</dimen>
+    <dimen name="padding_margin_60">60dp</dimen>
+    <dimen name="padding_margin_64">64dp</dimen>
+    <dimen name="padding_margin_65">65dp</dimen>
+    <dimen name="padding_margin_70">70dp</dimen>
+    <dimen name="padding_margin_74">74dp</dimen>
+    <dimen name="padding_margin_76">76dp</dimen>
+    <dimen name="padding_margin_80">80dp</dimen>
+    <dimen name="padding_margin_88">88dp</dimen>
+    <dimen name="padding_margin_90">90dp</dimen>
+    <dimen name="padding_margin_96">96dp</dimen>
+    <dimen name="padding_margin_110">110dp</dimen>
+    <dimen name="padding_margin_124">124dp</dimen>
+
+    <dimen name="height_width_0">0dp</dimen>
+    <dimen name="height_width_83">83dp</dimen>
+    <dimen name="height_width_170">170dp</dimen>
+    <dimen name="height_width_295">295dp</dimen>
+
+    <dimen name="default_status_bar_height">25dp</dimen>
+    <dimen name="default_action_bar_height">56dp</dimen>
+    <dimen name="default_field_height">56dp</dimen>
+
+    <dimen name="field_height_46">46dp</dimen>
+    <dimen name="field_height_48">48dp</dimen>
+    <dimen name="field_height_36">36dp</dimen>
+
+    <dimen name="collapsing_layout_height">300dp</dimen>
+
+    <dimen name="translation_z_8">16dp</dimen>
+
+    <dimen name="elevation_8">8dp</dimen>
+    <dimen name="elevation_16">16dp</dimen>
+
+    <dimen name="default_card_radius">10dp</dimen>
+
+    <dimen name="card_radius_25">25dp</dimen>
+    <dimen name="card_radius_20">20dp</dimen>
+    <dimen name="card_radius_8">8dp</dimen>
+    <dimen name="card_radius_6">6dp</dimen>
+
+    <dimen name="text_8">8sp</dimen>
+    <dimen name="text_10">10sp</dimen>
+    <dimen name="text_12">12sp</dimen>
+    <dimen name="text_14">14sp</dimen>
+    <dimen name="text_16">16sp</dimen>
+    <dimen name="text_18">18sp</dimen>
+    <dimen name="text_20">20sp</dimen>
+    <dimen name="text_22">22sp</dimen>
+    <dimen name="text_24">24sp</dimen>
+    <dimen name="text_26">26sp</dimen>
+    <dimen name="text_28">28sp</dimen>
+    <dimen name="text_30">30sp</dimen>
+    <dimen name="text_32">32sp</dimen>
+    <dimen name="text_34">34sp</dimen>
+    <dimen name="text_36">36sp</dimen>
+    <dimen name="text_38">38sp</dimen>
+    <dimen name="text_40">40sp</dimen>
+    <dimen name="text_44">44sp</dimen>
+    <dimen name="text_52">52sp</dimen>
+    <dimen name="text_54">54sp</dimen>
+    <dimen name="text_56">56sp</dimen>
+    <dimen name="text_64">64sp</dimen>
+    <dimen name="text_70">70sp</dimen>
+    <dimen name="text_100">100sp</dimen>
+
+    <dimen name="multiline_edit_text_border_radius">18dp</dimen>
+
+</resources>
