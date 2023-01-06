@@ -26,7 +26,6 @@ public class CastledNotifications {
         }
 
         FirebaseMessaging.getInstance().getToken().addOnSuccessListener(token -> {
-            CastledLogger.getInstance().info(token);
             setToken(token);
         });
     }
