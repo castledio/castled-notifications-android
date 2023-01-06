@@ -2,6 +2,10 @@ package io.castled.notifications;
 
 import android.content.Context;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import io.castled.notifications.logger.CastledLogger;
+
 public class CastledNotifications {
 
     private static CastledNotificationInstance instance;
@@ -21,7 +25,10 @@ public class CastledNotifications {
             throw new IllegalStateException(errorMessage);
         }
 
-        //instance.start();
+        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(token -> {
+            CastledLogger.getInstance().info(token);
+            setToken(token);
+        });
     }
 
     static CastledNotificationInstance getInstance() {
