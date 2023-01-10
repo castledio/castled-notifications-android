@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="io.castled.notifications.presentation.inapp.modal.InAppModalViewModel" />
+
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="@dimen/card_radius_6"
+        android:layout_margin="@dimen/padding_margin_24">
+
+        <LinearLayout
+            android:id="@+id/content_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="200dp">
+
+                <com.github.chrisbanes.photoview.PhotoView
+                    android:id="@+id/image_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_image_placeholder"
+                    app:imageUrl="@{viewModel.contentImage}"
+                    app:dontScale="@{false}"
+                    app:placeholder="@{io.castled.notifications.R.drawable.ic_image_placeholder}"
+                    app:progressView="@{imageProgressBar}"
+                    app:errorIcon="@{imageErrorIcon}"
+                    android:contentDescription="@string/condes_in_app_content_image"/>
+
+                <ImageView
+                    android:id="@+id/image_error_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@mipmap/error_icon"
+                    app:tint="@color/base_grey"
+                    android:visibility="gone"/>
+
+                <ProgressBar
+                    android:id="@+id/image_progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="visible"
+                    android:background="@android:color/transparent"
+                    android:indeterminate="true"/>
+
+            </FrameLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/one_dp"
+                android:background="@color/md_grey_200"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/boldBlackFont"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:textSize="@dimen/text_24"
+                android:padding="@dimen/padding_margin_10"
+                android:text="@{viewModel.title}"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/one_dp"
+                android:background="@color/md_grey_200"/>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/message_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding_margin_10"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/mediumBlackFont"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/padding_margin_10"
+                    android:gravity="center_horizontal"
+                    android:text="@{viewModel.message}"
+                    android:textColor="#212121"
+                    android:textSize="@dimen/text_18" />
+
+                <com.google.android.flexbox.FlexboxLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="@{viewModel.showButtons}"
+                    app:justifyContent="space_evenly">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="1000dp"
+                        android:maxLines="1"
+                        android:textSize="15sp"
+                        android:layout_marginStart="@dimen/padding_margin_4"
+                        android:layout_marginEnd="@dimen/padding_margin_6"
+                        android:visibility="@{viewModel.hasSecondaryButton}"
+                        android:onClick="@{() -> viewModel.onSecondaryButtonClick()}"
+                        android:text="@{viewModel.secondaryButtonText}"
+                        app:setTextColor="@{viewModel.secondaryButtonTextColor}"
+                        app:setBackgroundColor="@{viewModel.secondaryButtonColor}"
+                        app:setStrokeColor="@{viewModel.secondaryButtonBorderColor}"
+                        app:cornerRadius="@dimen/card_radius_6"
+                        app:strokeWidth="@dimen/one_dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="1000dp"
+                        android:maxLines="1"
+                        android:textSize="15sp"
+                        android:layout_marginStart="@dimen/padding_margin_6"
+                        android:layout_marginEnd="@dimen/padding_margin_4"
+                        android:onClick="@{() -> viewModel.onPrimaryButtonClick()}"
+                        android:text="@{viewModel.primaryButtonText}"
+                        app:setTextColor="@{viewModel.primaryButtonTextColor}"
+                        app:setBackgroundColor="@{viewModel.primaryButtonColor}"
+                        app:setStrokeColor="@{viewModel.primaryButtonBorderColor}"
+                        app:cornerRadius="@dimen/card_radius_6"
+                        app:strokeWidth="@dimen/one_dp" />
+
+                </com.google.android.flexbox.FlexboxLayout>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_close"
+            android:padding="10dp"
+            android:layout_gravity="end"
+            android:onClick="@{() -> viewModel.closeInAppNotification()}"
+            android:contentDescription="@string/condes_close_in_app_notification"/>
+
+    </androidx.cardview.widget.CardView>
+
+</layout>

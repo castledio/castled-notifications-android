@@ -1,0 +1,6 @@
+<resources>
+
+    <string name="condes_in_app_content_image">In-App notification image</string>
+    <string name="condes_close_in_app_notification">Close In-App notification</string>
+
+</resources>
