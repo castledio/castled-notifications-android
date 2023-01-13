@@ -1,0 +1,140 @@
+{
+	"info": {
+		"_postman_id": "01a8538a-0737-4381-aa5a-80e7e71d2ff2",
+		"name": "InApp Notification",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19786721"
+	},
+	"item": [
+		{
+			"name": "Prefetch Android InApp Messages",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://test.castled.io/backend/v1/inapp/test-3b229735-04ae-455f-a5d4-20a89c092927/android/campaigns?user=dheeraj-osw",
+					"protocol": "https",
+					"host": [
+						"test",
+						"castled",
+						"io"
+					],
+					"path": [
+						"backend",
+						"v1",
+						"inapp",
+						"test-3b229735-04ae-455f-a5d4-20a89c092927",
+						"android",
+						"campaigns"
+					],
+					"query": [
+						{
+							"key": "user",
+							"value": "dheeraj-osw"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Prefetch iOS InApp Messages",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://test.castled.io/backend/v1/inapp/test-3b229735-04ae-455f-a5d4-20a89c092927/ios/campaigns?user=dheeraj-osw",
+					"protocol": "https",
+					"host": [
+						"test",
+						"castled",
+						"io"
+					],
+					"path": [
+						"backend",
+						"v1",
+						"inapp",
+						"test-3b229735-04ae-455f-a5d4-20a89c092927",
+						"ios",
+						"campaigns"
+					],
+					"query": [
+						{
+							"key": "user",
+							"value": "dheeraj-osw"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Report Android Inapp Event",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"teamId\" : 1,\n    \"eventType\" : \"CLICKED\",\n    \"btnLabel\" : \"primary\",\n    \"actionType\" : \"DEEP_LINKING\",\n    \"actionUri\" : \"https://google.com/link1\",\n    \"sourceContext\" : \"SOURCE_CONTEXT\",\n\n    \"ts\" : 1271727783,\n    \"tz\" : \"EST\"\n}\n\n// eventType - VIEWED, CLICKED, DISCARDED",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://test.castled.io/backend/v1/inapp/test-3b229735-04ae-455f-a5d4-20a89c092927/android/event",
+					"protocol": "https",
+					"host": [
+						"test",
+						"castled",
+						"io"
+					],
+					"path": [
+						"backend",
+						"v1",
+						"inapp",
+						"test-3b229735-04ae-455f-a5d4-20a89c092927",
+						"android",
+						"event"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Report iOS Inapp Event",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"teamId\" : 1,\n    \"eventType\" : \"CLICKED\",\n    \"btnLabel\" : \"primary\",\n    \"actionType\" : \"DEEP_LINKING\",\n    \"actionUri\" : \"https://google.com\",\n    \"sourceContext\" : \"SOURCE_CONTEXT\",\n    \"ts\" : 1271727783,\n    \"tz\" : \"EST\"\n}\n\n// eventType - VIEWED, CLICKED, DISCARDED",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://test.castled.io/backend/v1/inapp/test-3b229735-04ae-455f-a5d4-20a89c092927/ios/event",
+					"protocol": "https",
+					"host": [
+						"test",
+						"castled",
+						"io"
+					],
+					"path": [
+						"backend",
+						"v1",
+						"inapp",
+						"test-3b229735-04ae-455f-a5d4-20a89c092927",
+						"ios",
+						"event"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
