@@ -47,7 +47,7 @@ public class CastledNotificationManager {
             Notification notification = notificationBuilder.buildNotification(remoteMessage.getData(), event.clickEvent());
 
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-            notificationManager.notify(Integer.parseInt(event.notificationId), notification);
+            notificationManager.notify(event.notificationId, notification);
         }
         reportNotificationEvent(event);
         return true;
