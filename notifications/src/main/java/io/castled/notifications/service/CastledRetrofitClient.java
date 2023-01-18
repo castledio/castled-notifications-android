@@ -12,7 +12,7 @@ public class CastledRetrofitClient {
 
     private static final Map<String, String> clusterMap = new HashMap<String, String>();
     static {
-        clusterMap.put("us", "app");
+        clusterMap.put("app", "app");
         clusterMap.put("ap", "in");
         clusterMap.put("test", "test");
     };

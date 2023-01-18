@@ -8,7 +8,6 @@ import io.castled.notifications.consts.NotificationEventType;
 import io.castled.notifications.consts.NotificationFields;
 import io.castled.notifications.service.models.NotificationEvent;
 import io.castled.notifications.store.CastledInstancePrefStore;
-import io.castled.notifications.utils.NotificationId;
 
 public class CastledNotificationEventBuilder {
 
@@ -24,17 +23,12 @@ public class CastledNotificationEventBuilder {
 
         NotificationEvent event = new NotificationEvent();
 
-        event.notificationId = ""+ NotificationId.getID(payload);
-        event.sourceUUID = payload.get(NotificationFields.SOURCE_UUID);
-        event.sourceType = payload.get(NotificationFields.SOURCE_TYPE);
-        event.sourceType = payload.get(NotificationFields.SOURCE_TYPE);
-        event.stepId = payload.get(NotificationFields.STEP_ID);
-        event.userId = prefStore.getUserIdIfAvailable();
+        event.sourceContext = payload.get(NotificationFields.SOURCE_CONTEXT);
+        event.teamId = Long.valueOf(payload.get(NotificationFields.TEAM_ID));
+        event.notificationId = Integer.valueOf(payload.get(NotificationFields.NOTIFICATION_ID));
         event.setEventType(NotificationEventType.RECEIVED);
         event.setEventTime();
-
         return event;
     }
-
 
 }

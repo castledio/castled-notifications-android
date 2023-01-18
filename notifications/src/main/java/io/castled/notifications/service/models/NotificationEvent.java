@@ -9,18 +9,14 @@ import io.castled.notifications.consts.NotificationEventType;
 
 public class NotificationEvent implements Serializable, Cloneable {
 
-    public String notificationId;
-    public String sourceUUID;
-    public String sourceType;
-
-    public String stepId = "0";
-    public String userId;
+    public Long teamId;
+    public Integer notificationId;
+    public String sourceContext;
+    public String eventType;
 
     public String actionLabel;
     public String actionType;
     public String actionUri;
-
-    public String eventType;
 
     public String tz;
     public Long ts;
