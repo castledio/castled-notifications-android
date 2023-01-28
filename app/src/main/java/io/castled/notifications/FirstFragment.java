@@ -10,11 +10,11 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import io.castled.notifications.databinding.FragmentFirstBinding;
-import io.castled.uitemplate.PopupHeader;
-import io.castled.uitemplate.PopupMessage;
-import io.castled.uitemplate.PopupPrimaryButton;
-import io.castled.uitemplate.PopupSecondaryButton;
-import io.castled.uitemplate.TriggerPopup;
+import io.castled.inappNotifications.modal.PopupHeader;
+import io.castled.inappNotifications.modal.PopupMessage;
+import io.castled.inappNotifications.modal.PopupPrimaryButton;
+import io.castled.inappNotifications.modal.PopupSecondaryButton;
+import io.castled.inappNotifications.modal.TriggerPopup;
 
 public class FirstFragment extends Fragment {
 

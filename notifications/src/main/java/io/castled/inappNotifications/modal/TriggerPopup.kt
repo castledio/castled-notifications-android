@@ -1,4 +1,4 @@
-package io.castled.uitemplate
+package io.castled.inappNotifications.modal
 
 import android.app.Dialog
 import android.content.Context

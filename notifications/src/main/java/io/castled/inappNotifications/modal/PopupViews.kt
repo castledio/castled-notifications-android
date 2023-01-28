@@ -1,4 +1,4 @@
-package io.castled.uitemplate
+package io.castled.inappNotifications.modal
 
 data class PopupHeader(val header: String, val fontColor:String, val fontSize:Float, val backgroundColor:String)
 
