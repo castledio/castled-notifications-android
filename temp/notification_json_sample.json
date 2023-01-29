@@ -1,0 +1,177 @@
+[
+  {
+    "notificationId": 121,
+    "sourceContext": "SOURCE_CONTEXT",
+    "message": {
+      "type": "MODAL",
+      "modal": {
+        "type": "DEFAULT",
+        "imageUrl": "https://cdn.castled.io/logo/castled_multi_color_logo_only.png",
+        "defaultClickAction": "NONE",
+        "url": null,
+        "title": "title",
+        "titleFontColor": "#000000",
+        "titleFontSize": 10,
+        "titleBgColor": "#FFFFFF",
+        "body": "body of the in-app",
+        "bodyFontColor": "#000000",
+        "bodyFontSize": 5,
+        "bodyBgColor": "#FFFFFF",
+        "screenOverlayColor": "#0F0F0F",
+        "actionButtons": [
+          {
+            "label": "primary btn",
+            "url": "app://a.b",
+            "clickAction": "DEEP_LINKING",
+            "buttonColor": "#0000FF",
+            "fontColor": "#000000",
+            "borderColor": "#0000FF",
+            "keyVals": {
+              "key1": "val1",
+              "key2": "val2"
+            }
+          },
+          {
+            "label": "secondary btn",
+            "url": null,
+            "clickAction": "DISMISS_NOTIFICATION",
+            "buttonColor": "#FFFFFF",
+            "fontColor": "#0000FF",
+            "borderColor": "#0000FF",
+            "keyVals": {
+              "key1": "val1",
+              "key2": "val2"
+            }
+          }
+        ]
+      }
+    },
+    "trigger": {
+      "type": "EVENT",
+      "eventId": null,
+      "eventName": "page_viewed",
+      "eventFilter": {
+        "type": "NESTED",
+        "joinType": "OR",
+        "nestedFilters": [
+          {
+            "type": "HAVING_PROPERTY",
+            "name": "screenA",
+            "operation": {
+              "type": "EQ",
+              "propertyType": "string",
+              "value": "ScreenA"
+            }
+          }
+        ]
+      }
+    },
+    "startTs": 1675014519,
+    "endTs": 1675018119,
+    "ttl": 3600
+  },
+  {
+    "notificationId": 128,
+    "sourceContext": "SOURCE_CONTEXT",
+    "message": {
+      "type": "FULL_SCREEN",
+      "fs": {
+        "type": "DEFAULT",
+        "imageUrl": "https://cdn.castled.io/logo/castled_multi_color_logo_only.png",
+        "defaultClickAction": "NONE",
+        "url": null,
+        "title": "title",
+        "titleFontColor": "#000000",
+        "titleFontSize": 10,
+        "titleBgColor": "#FFFFFF",
+        "body": "body of the in-app",
+        "bodyFontColor": "#000000",
+        "bodyFontSize": 5,
+        "bodyBgColor": "#FFFFFF",
+        "screenOverlayColor": "#0F0F0F",
+        "actionButtons": [
+          {
+            "label": "primary btn",
+            "url": "app://a.b",
+            "clickAction": "DEEP_LINKING",
+            "buttonColor": "#0000FF",
+            "fontColor": "#000000",
+            "borderColor": "#0000FF",
+            "keyVals": {
+              "key1": "val1",
+              "key2": "val2"
+            }
+          },
+          {
+            "label": "secondary btn",
+            "url": null,
+            "clickAction": "DISMISS_NOTIFICATION",
+            "buttonColor": "#FFFFFF",
+            "fontColor": "#0000FF",
+            "borderColor": "#0000FF",
+            "keyVals": {
+              "key1": "val1",
+              "key2": "val2"
+            }
+          }
+        ]
+      }
+    },
+    "trigger": {
+      "type": "EVENT",
+      "eventId": null,
+      "eventName": "page_viewed",
+      "eventFilter": {
+        "type": "NESTED",
+        "joinType": "OR",
+        "nestedFilters": [
+          {
+            "type": "HAVING_PROPERTY",
+            "name": "screenA",
+            "operation": {
+              "type": "EQ",
+              "propertyType": "string",
+              "value": "ScreenA"
+            }
+          }
+        ]
+      }
+    },
+    "startTs": 1675014519,
+    "endTs": 1675018119,
+    "ttl": 3600
+  },
+  {
+    "notificationId": 132,
+    "sourceContext": "SOURCE_CONTEXT",
+    "message": {
+      "type": "SLIDE_UP",
+      "slideUp": {
+        "type": "DEFAULT"
+      }
+    },
+    "trigger": {
+      "type": "EVENT",
+      "eventId": null,
+      "eventName": "page_viewed",
+      "eventFilter": {
+        "type": "NESTED",
+        "joinType": "OR",
+        "nestedFilters": [
+          {
+            "type": "HAVING_PROPERTY",
+            "name": "screenA",
+            "operation": {
+              "type": "EQ",
+              "propertyType": "string",
+              "value": "ScreenA"
+            }
+          }
+        ]
+      }
+    },
+    "startTs": 1675014519,
+    "endTs": 1675018119,
+    "ttl": 3600
+  }
+]

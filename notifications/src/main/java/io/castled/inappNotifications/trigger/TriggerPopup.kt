@@ -1,4 +1,4 @@
-package io.castled.inappNotifications.modal
+package io.castled.inappNotifications.trigger
 
 import android.app.Activity
 import android.app.AlertDialog

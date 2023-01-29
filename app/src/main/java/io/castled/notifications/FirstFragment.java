@@ -9,12 +9,13 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import io.castled.inappNotifications.trigger.APITest;
 import io.castled.notifications.databinding.FragmentFirstBinding;
-import io.castled.inappNotifications.modal.PopupHeader;
-import io.castled.inappNotifications.modal.PopupMessage;
-import io.castled.inappNotifications.modal.PopupPrimaryButton;
-import io.castled.inappNotifications.modal.PopupSecondaryButton;
-import io.castled.inappNotifications.modal.TriggerPopup;
+import io.castled.inappNotifications.trigger.PopupHeader;
+import io.castled.inappNotifications.trigger.PopupMessage;
+import io.castled.inappNotifications.trigger.PopupPrimaryButton;
+import io.castled.inappNotifications.trigger.PopupSecondaryButton;
+import io.castled.inappNotifications.trigger.TriggerPopup;
 
 public class FirstFragment extends Fragment {
 
@@ -67,6 +68,18 @@ public class FirstFragment extends Fragment {
                     new PopupPrimaryButton("Skip Now", "#000000", "#ffffff", "#000000", "https://www.google.com/"),
                     new PopupSecondaryButton("Start Shopping", "#ffe0da", "#FF6D07", "#5cdb5c","https://stackoverflow.com/")
             );
+
+        });
+
+        binding.btnApiTest.setOnClickListener(btnLaunchFullscreenPopupView -> {
+            APITest apiTest = new APITest();
+            apiTest.observeDatabaseNotification(requireContext(), getViewLifecycleOwner());
+            apiTest.fetchNotification(requireContext());
+        });
+
+        binding.btnDbNotification.setOnClickListener(btnLaunchFullscreenPopupView -> {
+            APITest apiTest = new APITest();
+            apiTest.observeDatabaseNotification(requireContext(), getViewLifecycleOwner());
 
         });
     }
