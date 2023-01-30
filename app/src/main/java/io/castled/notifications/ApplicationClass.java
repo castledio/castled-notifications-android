@@ -11,9 +11,11 @@ public class ApplicationClass extends MultiDexApplication {
     public void onCreate() {
 
         super.onCreate();
-
-        CastledNotifications.initialize(this, "YOUR_INSTANCE_ID");
-        CastledNotifications.setUserId("USER_ID");
+        CastledNotifications.initialize(this, "app-8316f859-e552-4fed-a103-7957597a093c");
+        CastledNotifications.setUserId("arun@castled.io");
+        // app-06b7d631-8c99-4622-87dc-8ebf0ae02c86
+        // CastledNotifications.initialize(this, "test-3b229735-04ae-455f-a5d4-20a89c092927");
+        // CastledNotifications.setUserId("frank@castled.io");
     }
 
     @Override
