@@ -4,4 +4,8 @@
         <item name="android:windowBackground">@drawable/popup_background</item>
     </style>
 
+    <style name="custom_style_dialog">
+        <item name="android:layout_margin">4dp</item>
+    </style>
+
 </resources>

@@ -55,15 +55,14 @@ public class FirstFragment extends Fragment {
 //            TriggerPopup.Companion.showFullScreenDialog(requireContext(), requireActivity());
 
 
-            TriggerPopup.Companion.showDialog2(
+            TriggerPopup.Companion.showFullscreenDialog(
                     requireContext(),
-                    requireActivity(),
                     "#f8ffbd",
                     new PopupHeader("Summer sale is Back!", "#FFFFFF" , 18, "#E74C3C"),
-                    new PopupMessage("30% offer on Electronics, Cloths, Sports and other categories.","#FFFFFF" , 12, "#039ADC"),
+                    new PopupMessage("Full Screen \n30% offer on Electronics, Cloths, Sports and other categories.","#FFFFFF" , 12, "#039ADC"),
 //                    "http://i.imgur.com/DvpvklR.png",
 //                    "https://www.pakainfo.com/wp-content/uploads/2021/09/image-url-for-testing.jpg",
-                    "https://www.infogrepper.com/wp-content/uploads/2022/10/image-url-for-testing.png",
+                    "https://cdn.castled.io/logo/castled_multi_color_logo_only.png",
                     "https://www.apple.com/",
                     new PopupPrimaryButton("Skip Now", "#000000", "#ffffff", "#000000", "https://www.google.com/"),
                     new PopupSecondaryButton("Start Shopping", "#ffe0da", "#FF6D07", "#5cdb5c","https://stackoverflow.com/")
