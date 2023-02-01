@@ -70,6 +70,17 @@ public class FirstFragment extends Fragment {
 
         });
 
+        binding.btnLaunchSlideupPopup.setOnClickListener(btnLaunchFullscreenPopupView -> {
+            TriggerPopup.Companion.showSlideUpDialog(
+                    requireContext(),
+                    "#ff99ff",
+                    new PopupMessage("Slide Up \n30% offer on Electronics, Cloths, Sports and other categories.", "#ffffff", 12, "#039ADC"),
+                    "https://cdn.castled.io/logo/castled_multi_color_logo_only.png",
+                    "https://www.apple.com/"
+            );
+
+        });
+
         binding.btnApiTest.setOnClickListener(btnLaunchFullscreenPopupView -> {
             APITest apiTest = new APITest();
             apiTest.observeDatabaseNotification(requireContext(), getViewLifecycleOwner());
@@ -81,6 +92,8 @@ public class FirstFragment extends Fragment {
             apiTest.observeDatabaseNotification(requireContext(), getViewLifecycleOwner());
 
         });
+
+
     }
 
     @Override

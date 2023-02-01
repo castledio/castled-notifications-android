@@ -199,6 +199,48 @@ class TriggerPopup {
             dialog.show()
         }
 
+        fun showSlideUpDialog(
+            context: Context,
+            popUpBackgroundColor: String,
+            popupMessage: PopupMessage,
+            imageUrl:String,
+            urlForOnClickOnImage: String
+        ) {
+
+            val dialog = Dialog(context, R.style.custom_style_dialog_bottom)
+
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.setCancelable(false)
+            dialog.setContentView(R.layout.dialog_popup_bottom_triggered)
+
+            val frameLayout: FrameLayout = dialog.findViewById(R.id.frame_layout_root)
+            val gradientDrawable: GradientDrawable = frameLayout.background as GradientDrawable
+            gradientDrawable.setColor(Color.parseColor(returnDefaultOrValidHexColor(popUpBackgroundColor, "#FFFFFF")))
+
+            val view: View = dialog.findViewById(R.id.view_close)
+            view.setOnClickListener { dialog.dismiss() }
+
+            val imageView: ImageView = dialog.findViewById(R.id.img_popup)
+            Glide.with(context).load(imageUrl).into(imageView)
+            imageView.setOnClickListener {
+                if (urlForOnClickOnImage.isNotEmpty()){
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlForOnClickOnImage))
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    context.startActivity(intent)
+                }
+
+            }
+
+            val textMessage: TextView = dialog.findViewById(R.id.txt_message)
+//            textMessage.setBackgroundColor(Color.parseColor(returnDefaultOrValidHexColor(popupMessage.backgroundColor, "#FFFFFF")))
+            textMessage.setTextColor(Color.parseColor(returnDefaultOrValidHexColor(popupMessage.fontColor, "#000000")))
+            textMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP,popupMessage.fontSize)
+            textMessage.text = popupMessage.message
+
+            dialog.show()
+        }
+
         private fun returnDefaultOrValidHexColor(hexColor: String , defaultHexColor: String): String {
 //            val colorPattern: Pattern = Pattern.compile("#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})")
             val colorPattern: Pattern = Pattern.compile("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$")
