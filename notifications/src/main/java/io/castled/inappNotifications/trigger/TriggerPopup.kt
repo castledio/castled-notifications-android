@@ -10,16 +10,21 @@ import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
+import android.util.Log
 import android.util.TypedValue
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.google.gson.JsonObject
+import io.castled.inappNotifications.models.NotificationModel
+import io.castled.inappNotifications.notificationConsts.NotificationConstants
 import io.castled.notifications.R
 import java.util.regex.Pattern
 
-
+private const val TAG = "TriggerPopup"
 class TriggerPopup {
 
     companion object {
@@ -84,9 +89,10 @@ class TriggerPopup {
                 if (popupPrimaryButton.urlOnClick.isNotEmpty()){
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(popupPrimaryButton.urlOnClick))
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                if (intent.resolveActivity(context.packageManager) != null)
-                    context.startActivity(intent)
-                }
+                    if (intent.resolveActivity(context.packageManager) != null)
+                        context.startActivity(intent)
+                    else Toast.makeText(context, "Not able to handle the request.", Toast.LENGTH_LONG).show()
+                } else Toast.makeText(context, "Not able to handle the request.", Toast.LENGTH_LONG).show()
             }
 
             val gradientDrawableButtonSecondary = GradientDrawable()
@@ -103,9 +109,10 @@ class TriggerPopup {
                 if (popupSecondaryButton.urlOnClick.isNotEmpty()){
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(popupSecondaryButton.urlOnClick))
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                if (intent.resolveActivity(context.packageManager) != null)
-                    context.startActivity(intent)
-                }
+                    if (intent.resolveActivity(context.packageManager) != null)
+                        context.startActivity(intent)
+                    else Toast.makeText(context, "Not able to handle the request.", Toast.LENGTH_LONG).show()
+                } else Toast.makeText(context, "Not able to handle the request.", Toast.LENGTH_LONG).show()
             }
 
             dialog.show()
@@ -365,6 +372,20 @@ class TriggerPopup {
             }
 
             dialog.show()
+        }
+
+        fun getTriggerNotificationType(notificationModel: NotificationModel): NotificationConstants.Companion.NotificationType{
+            val message:  JsonObject = notificationModel.message.asJsonObject
+
+            if (message.has("type")){
+                when(message.get("type").asString){
+                    "MODAL" -> return NotificationConstants.Companion.NotificationType.MODAL
+                    "FULL_SCREEN" -> return NotificationConstants.Companion.NotificationType.FULL_SCREEN
+                    "SLIDE_UP" -> return NotificationConstants.Companion.NotificationType.SLIDE_UP
+                }
+            }
+
+            return NotificationConstants.Companion.NotificationType.NONE
         }
     }
 }

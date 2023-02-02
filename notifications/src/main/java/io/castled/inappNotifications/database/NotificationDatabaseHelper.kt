@@ -11,4 +11,6 @@ interface NotificationDatabaseHelper {
 
     suspend fun insertNotificationIntoDb(notifications: List<NotificationModel>): LongArray
 
+    suspend fun deleteDbNotification(): Int
+
 }

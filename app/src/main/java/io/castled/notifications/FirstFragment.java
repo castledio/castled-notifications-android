@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import io.castled.inappNotifications.trigger.APITest;
+import io.castled.inappNotifications.trigger.NotificationTrigger;
 import io.castled.notifications.databinding.FragmentFirstBinding;
 import io.castled.inappNotifications.trigger.PopupHeader;
 import io.castled.inappNotifications.trigger.PopupMessage;
@@ -82,17 +82,18 @@ public class FirstFragment extends Fragment {
         });
 
         binding.btnApiTest.setOnClickListener(btnLaunchFullscreenPopupView -> {
-            APITest apiTest = new APITest();
-            apiTest.observeDatabaseNotification(requireContext(), getViewLifecycleOwner());
+            NotificationTrigger apiTest = NotificationTrigger.getInstance();
+//            apiTest.observeDatabaseNotification(requireContext(), getViewLifecycleOwner());
             apiTest.fetchNotification(requireContext());
         });
 
         binding.btnDbNotification.setOnClickListener(btnLaunchFullscreenPopupView -> {
-            APITest apiTest = new APITest();
-            apiTest.observeDatabaseNotification(requireContext(), getViewLifecycleOwner());
+//            NotificationTrigger apiTest = NotificationTrigger.getInstance();
+//            apiTest.observeDatabaseNotification(requireContext(), getViewLifecycleOwner());
+
+            NotificationTrigger.getInstance().startObservingTriggerNotification(requireContext());
 
         });
-
 
     }
 
