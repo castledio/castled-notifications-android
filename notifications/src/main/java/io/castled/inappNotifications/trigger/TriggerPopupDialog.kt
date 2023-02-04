@@ -25,11 +25,11 @@ import io.castled.notifications.R
 import java.util.regex.Pattern
 
 private const val TAG = "TriggerPopup"
-class TriggerPopup {
+class TriggerPopupDialog {
 
     companion object {
 
-        fun showDialog(
+        internal fun showDialog(
             context: Context,
             popUpBackgroundColor: String,
             popUpHeader: PopupHeader,
@@ -118,7 +118,7 @@ class TriggerPopup {
             dialog.show()
         }
 
-        fun showFullscreenDialog(
+        internal fun showFullscreenDialog(
             context: Context,
             popUpBackgroundColor: String,
             popUpHeader: PopupHeader,
@@ -206,7 +206,7 @@ class TriggerPopup {
             dialog.show()
         }
 
-        fun showSlideUpDialog(
+        internal fun showSlideUpDialog(
             context: Context,
             popUpBackgroundColor: String,
             popupMessage: PopupMessage,
@@ -273,7 +273,7 @@ class TriggerPopup {
             alertDialog.show()
         }*/
 
-        fun showFullscreenDialog(
+        internal fun showFullscreenDialog(
             context: Context,
             activity: Activity,
             popUpBackgroundColor: String,
@@ -374,7 +374,7 @@ class TriggerPopup {
             dialog.show()
         }
 
-        fun getTriggerNotificationType(notificationModel: NotificationModel): NotificationConstants.Companion.NotificationType{
+        internal fun getTriggerNotificationType(notificationModel: NotificationModel): NotificationConstants.Companion.NotificationType{
             val message:  JsonObject = notificationModel.message.asJsonObject
 
             if (message.has("type")){

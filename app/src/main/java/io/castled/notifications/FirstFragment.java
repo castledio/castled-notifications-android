@@ -10,12 +10,13 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import io.castled.inappNotifications.trigger.NotificationTrigger;
+import io.castled.inappNotifications.trigger.TestTriggerNotification;
 import io.castled.notifications.databinding.FragmentFirstBinding;
 import io.castled.inappNotifications.trigger.PopupHeader;
 import io.castled.inappNotifications.trigger.PopupMessage;
 import io.castled.inappNotifications.trigger.PopupPrimaryButton;
 import io.castled.inappNotifications.trigger.PopupSecondaryButton;
-import io.castled.inappNotifications.trigger.TriggerPopup;
+import io.castled.inappNotifications.trigger.TriggerPopupDialog;
 
 public class FirstFragment extends Fragment {
 
@@ -38,7 +39,7 @@ public class FirstFragment extends Fragment {
         binding.buttonFirst.setOnClickListener(view1 -> NavHostFragment.findNavController(FirstFragment.this)
                 .navigate(R.id.action_FirstFragment_to_SecondFragment));
 
-        binding.btnLaunchPopup.setOnClickListener(btnLaunchPopupView -> TriggerPopup.Companion.showDialog(
+        binding.btnLaunchPopup.setOnClickListener(btnLaunchPopupView -> TestTriggerNotification.getInstance().showDialog(
                 requireContext(),
                 "#f8ffbd",
                 new PopupHeader("Summer sale is Back!", "#FFFFFF" , 18, "#E74C3C"),
@@ -55,7 +56,7 @@ public class FirstFragment extends Fragment {
 //            TriggerPopup.Companion.showFullScreenDialog(requireContext(), requireActivity());
 
 
-            TriggerPopup.Companion.showFullscreenDialog(
+            TestTriggerNotification.getInstance().showFullscreenDialog(
                     requireContext(),
                     "#f8ffbd",
                     new PopupHeader("Summer sale is Back!", "#FFFFFF" , 18, "#E74C3C"),
@@ -71,7 +72,7 @@ public class FirstFragment extends Fragment {
         });
 
         binding.btnLaunchSlideupPopup.setOnClickListener(btnLaunchFullscreenPopupView -> {
-            TriggerPopup.Companion.showSlideUpDialog(
+            TestTriggerNotification.getInstance().showSlideUpDialog(
                     requireContext(),
                     "#ff99ff",
                     new PopupMessage("Slide Up \n30% offer on Electronics, Cloths, Sports and other categories.", "#ffffff", 12, "#039ADC"),
@@ -95,6 +96,13 @@ public class FirstFragment extends Fragment {
 
         });
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        NotificationTrigger.getInstance().startObservingTriggerNotification(requireContext());
     }
 
     @Override
