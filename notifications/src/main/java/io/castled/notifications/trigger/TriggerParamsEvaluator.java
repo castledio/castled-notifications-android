@@ -1,7 +1,5 @@
 package io.castled.notifications.trigger;
 
-import com.google.android.gms.common.util.CollectionUtils;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +23,7 @@ public class TriggerParamsEvaluator {
     }
 
     public boolean evaluate(Map<String, Object> params, NestedEventFilter eventFilter) {
-        if (CollectionUtils.isEmpty(eventFilter.getNestedFilters())) {
+        if (eventFilter.getNestedFilters() == null || eventFilter.getNestedFilters().size() == 0) {
             return true;
         }
         JoinType joinType = eventFilter.getJoinType();
