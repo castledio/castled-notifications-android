@@ -9,8 +9,8 @@ interface NotificationDatabaseHelper {
 
     suspend fun getLiveDataNotificationsFromDb(): LiveData<List<NotificationModel>>
 
-    suspend fun insertNotificationIntoDb(notifications: List<NotificationModel>): LongArray
+    suspend fun insertNotificationsIntoDb(notifications: List<NotificationModel>): LongArray
 
-    suspend fun deleteDbNotification(): Int
+    suspend fun deleteDbNotifications(): Int
 
 }

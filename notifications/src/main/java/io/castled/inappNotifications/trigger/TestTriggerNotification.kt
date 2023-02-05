@@ -2,7 +2,7 @@ package io.castled.inappNotifications.trigger
 
 import android.content.Context
 
-class TestTriggerNotification {
+class TestTriggerNotification private constructor(){
     companion object {
         private lateinit var testTriggerNotification: TestTriggerNotification
 
@@ -69,5 +69,9 @@ class TestTriggerNotification {
             imageUrl,
             urlForOnClickOnImage
         )
+    }
+
+    fun fetchAndSaveTriggerNotification(context: Context){
+        NotificationTrigger.getInstance().fetchAndSaveTriggerNotification(context)
     }
 }

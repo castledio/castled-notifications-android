@@ -13,9 +13,9 @@ class NotificationDatabaseHelperImpl(private val notificationDatabase: Notificat
         notificationDatabase.notificationDao().getLiveDataNotifications()
 
 
-    override suspend fun insertNotificationIntoDb(notifications: List<NotificationModel>): LongArray =
+    override suspend fun insertNotificationsIntoDb(notifications: List<NotificationModel>): LongArray =
         notificationDatabase.notificationDao().insertNotifications(notifications)
 
-    override suspend fun deleteDbNotification(): Int =
+    override suspend fun deleteDbNotifications(): Int =
         notificationDatabase.notificationDao().deleteAllNotification()
 }

@@ -16,7 +16,6 @@ import io.castled.inappNotifications.trigger.PopupHeader;
 import io.castled.inappNotifications.trigger.PopupMessage;
 import io.castled.inappNotifications.trigger.PopupPrimaryButton;
 import io.castled.inappNotifications.trigger.PopupSecondaryButton;
-import io.castled.inappNotifications.trigger.TriggerPopupDialog;
 
 public class FirstFragment extends Fragment {
 
@@ -83,13 +82,11 @@ public class FirstFragment extends Fragment {
         });
 
         binding.btnApiTest.setOnClickListener(btnLaunchFullscreenPopupView -> {
-            NotificationTrigger apiTest = NotificationTrigger.getInstance();
+            TestTriggerNotification.getInstance().fetchAndSaveTriggerNotification(requireContext());
 //            apiTest.observeDatabaseNotification(requireContext(), getViewLifecycleOwner());
-            apiTest.fetchNotification(requireContext());
         });
 
         binding.btnDbNotification.setOnClickListener(btnLaunchFullscreenPopupView -> {
-//            NotificationTrigger apiTest = NotificationTrigger.getInstance();
 //            apiTest.observeDatabaseNotification(requireContext(), getViewLifecycleOwner());
 
             NotificationTrigger.getInstance().startObservingTriggerNotification(requireContext());
