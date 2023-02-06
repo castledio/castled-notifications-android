@@ -17,7 +17,12 @@ public class ApplicationClass extends MultiDexApplication {
         CastledNotifications.initialize(this, "YOUR_INSTANCE_ID");
         CastledNotifications.setUserId("USER_ID");
 
-        EventNotification.getInstance().initialize(getApplicationContext());
+        EventNotification.getInstance().triggerEventsFetchFromCloudSetFrequencyInSeconds(10);
+
+//        EventNotification.getInstance().initialize(getApplicationContext());
+
+        EventNotification.getInstance().initialize(ApplicationClass.this);
+
 
 
 

@@ -1,13 +1,19 @@
 package io.castled.inAppTriggerEvents.event
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.lifecycle.Lifecycle
+import io.castled.inAppTriggerEvents.models.TriggerEventModel
 import io.castled.inAppTriggerEvents.trigger.TriggerEvent
 import io.castled.inAppTriggerEvents.observer.AppActivityLifecycleObserver
 import io.castled.inAppTriggerEvents.observer.AppLifecycleObserver
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.util.concurrent.Flow
 import java.util.concurrent.TimeUnit
 
 private const val TAG = "EventNotification"
@@ -16,7 +22,7 @@ class EventNotification private constructor() {
 
         private lateinit var eventNotification: EventNotification
 
-        private var triggerEventsFrequencyTime: Long = 30L
+        private var triggerEventsFrequencyTime: Long = 60000
 
         @JvmStatic
         fun getInstance(): EventNotification =
@@ -26,6 +32,16 @@ class EventNotification private constructor() {
 
     fun initialize(context: Context){
         TriggerEvent.getInstance().fetchAndSaveTriggerEvents(context)
+    }
+
+    fun initialize(application: Application){
+        GlobalScope.launch {
+            do {
+                TriggerEvent.getInstance().fetchAndSaveTriggerEvents(application)
+                Log.d(TAG, "$triggerEventsFrequencyTime: Start fetching events from cloud")
+                delay(triggerEventsFrequencyTime)
+            } while (true)
+        }
     }
 
     fun observeLifecycle(context: Context, lifecycle: Lifecycle){

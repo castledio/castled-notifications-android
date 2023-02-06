@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName
 internal data class TriggerEventModel(
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)
-    var id: Int,
+    var id: Long,
 
     @ColumnInfo(name = "notification_id")
     @SerializedName("notificationId")
