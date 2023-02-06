@@ -1,4 +1,4 @@
-package io.castled.inappNotifications.trigger
+package io.castled.inAppTriggerEvents.trigger
 
 import android.content.Context
 import android.util.Log
@@ -8,11 +8,11 @@ import androidx.lifecycle.LiveData
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import io.castled.inappNotifications.database.DatabaseBuilder
-import io.castled.inappNotifications.database.NotificationDatabaseHelperImpl
-import io.castled.inappNotifications.models.NotificationModel
-import io.castled.inappNotifications.notificationConsts.NotificationConstants
-import io.castled.inappNotifications.requests.ServiceGenerator
+import io.castled.inAppTriggerEvents.database.DatabaseBuilder
+import io.castled.inAppTriggerEvents.database.TriggerEventDatabaseHelperImpl
+import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
+import io.castled.inAppTriggerEvents.models.TriggerEventModel
+import io.castled.inAppTriggerEvents.requests.ServiceGenerator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
@@ -21,31 +21,31 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-private const val TAG = "NotificationTrigger"
+private const val TAG = "TriggerEvent"
 
-class NotificationTrigger private constructor(){
+internal class TriggerEvent private constructor(){
 
     companion object {
-        private lateinit var notificationTrigger: NotificationTrigger
+        private lateinit var triggerEvent: TriggerEvent
 
         @JvmStatic
-        fun getInstance(): NotificationTrigger{
-            return if (this::notificationTrigger.isInitialized) notificationTrigger else NotificationTrigger()
+        internal fun getInstance(): TriggerEvent{
+            return if (this::triggerEvent.isInitialized) triggerEvent else TriggerEvent()
         }
     }
 
 
-    internal fun fetchAndSaveTriggerNotification(context: Context) {
+    internal fun fetchAndSaveTriggerEvents(context: Context) {
 
         CoroutineScope(Main).launch {
-            val notifications = fetchNotificationFromCloud(context)
+            val notifications = requestTriggerEventsFromCloud(context)
             if (notifications.isNotEmpty()) {
                 Log.d(TAG, "${notifications.size} notifications fetched from server.[${notifications.map { it.notificationId }}]")
 
-                val noOfRowDeleted = dbDeleteTriggerNotifications(context)
+                val noOfRowDeleted = dbDeleteTriggerEvents(context)
                 Log.d(TAG, "$noOfRowDeleted notifications deleted from database.")
 
-                val rows = dbInsertTriggerNotifications(context, notifications)
+                val rows = dbInsertTriggerEvents(context, notifications)
                 Log.d(TAG, "inserted into db: ${rows.toList()}")
 
             } else Toast.makeText(context, "Notification fetch failed.", Toast.LENGTH_SHORT).show()
@@ -54,7 +54,7 @@ class NotificationTrigger private constructor(){
     }
 
 
-    private suspend fun fetchNotificationFromCloud(context: Context?): List<NotificationModel> {
+    private suspend fun requestTriggerEventsFromCloud(context: Context?): List<TriggerEventModel> {
 
         /*return withContext(IO) {
             val notificationResponse = ServiceGenerator.requestApi().makeNotificationQuery("<api-key>", "support-1@castled.io")
@@ -65,11 +65,11 @@ class NotificationTrigger private constructor(){
         }*/
 
         return withContext(IO) {
-            val notificationResponse = ServiceGenerator.requestApi()
+            val eventsResponse = ServiceGenerator.requestApi()
                 .makeNotificationQuery("<api-key>", "support-1@castled.io")
 //            showApiLog(notificationResponse)
-            if (notificationResponse.isSuccessful && notificationResponse.body() != null) {
-                notificationResponse.body()
+            if (eventsResponse.isSuccessful && eventsResponse.body() != null) {
+                eventsResponse.body()
             } else {
                 context?.let {
                     withContext(Main) {
@@ -82,27 +82,27 @@ class NotificationTrigger private constructor(){
                 }
                 emptyList()
             }
-        } as List<NotificationModel>
+        } as List<TriggerEventModel>
     }
 
-    private var notificationObserver: LiveData<List<NotificationModel>>? = null
+    private var notificationObserver: LiveData<List<TriggerEventModel>>? = null
     fun observeDatabaseNotification(context: Context, viewLifecycleOwner: LifecycleOwner) {
         CoroutineScope(Dispatchers.Default).launch {
             if (notificationObserver == null) {
-                val db = NotificationDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
-                notificationObserver = db.getLiveDataNotificationsFromDb()
+                val db = TriggerEventDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
+                notificationObserver = db.getLiveDataTriggerEventsFromDb()
             }
 
             if (notificationObserver?.hasObservers() != null){
-                val db = NotificationDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
-                Log.d(TAG, "hasActiveObservers: ${db.getLiveDataNotificationsFromDb().hasActiveObservers()}")
-                Log.d(TAG, "hasObservers: ${db.getLiveDataNotificationsFromDb().hasObservers()}")
+                val db = TriggerEventDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
+                Log.d(TAG, "hasActiveObservers: ${db.getLiveDataTriggerEventsFromDb().hasActiveObservers()}")
+                Log.d(TAG, "hasObservers: ${db.getLiveDataTriggerEventsFromDb().hasObservers()}")
             }
 
             if (notificationObserver?.hasObservers() == null || !notificationObserver!!.hasObservers()) {
                 withContext(Main) {
-                    val db = NotificationDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
-                    db.getLiveDataNotificationsFromDb().observe(viewLifecycleOwner) { it ->
+                    val db = TriggerEventDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
+                    db.getLiveDataTriggerEventsFromDb().observe(viewLifecycleOwner) { it ->
                         Log.d(TAG, "observeDatabaseNotification: ${it?.size} notifications added/replaced.")
                         it.forEach {
                             Log.d(TAG, "observeDatabaseNotification: ${it.notificationId}")
@@ -113,30 +113,30 @@ class NotificationTrigger private constructor(){
         }
     }
 
-    fun startObservingTriggerNotification(context: Context) {
+    private fun startObservingTriggerNotification(context: Context) {
        CoroutineScope(Main).launch {
-           fetchAndSaveTriggerNotification(context)
-           findAndLaunchTriggerNotification(context)
+           fetchAndSaveTriggerEvents(context)
+           findAndLaunchTriggerEvent(context)
        }
     }
 
-    private fun findAndLaunchTriggerNotification(context: Context) = CoroutineScope(Main).launch {
+    internal fun findAndLaunchTriggerEvent(context: Context) = CoroutineScope(Main).launch {
         withContext(Dispatchers.Default) {
 
-            val dbTriggerNotifications = dbFetchTriggerNotifications(context)
+            val dbTriggerNotifications = dbFetchTriggerEvents(context)
             Log.d(TAG, "findAndLaunchTriggerNotification: ${dbTriggerNotifications.map { it.notificationId }}")
 
             if (dbTriggerNotifications.isNotEmpty()) {
                 val notification = dbTriggerNotifications.first()
                 withContext(Main){
-                    when (TriggerPopupDialog.getTriggerNotificationType(notification)) {
-                        NotificationConstants.Companion.NotificationType.MODAL -> {
+                    when (TriggerPopupDialog.getTriggerEventType(notification)) {
+                        TriggerEventConstants.Companion.TriggerEventType.MODAL -> {
                             launchModalTriggerNotification(context, notification)
                         }
-                        NotificationConstants.Companion.NotificationType.SLIDE_UP -> {
+                        TriggerEventConstants.Companion.TriggerEventType.SLIDE_UP -> {
                             launchSlideUpTriggerNotification(context, notification)
                         }
-                        NotificationConstants.Companion.NotificationType.FULL_SCREEN -> {
+                        TriggerEventConstants.Companion.TriggerEventType.FULL_SCREEN -> {
                             launchFullScreenTriggerNotification(context, notification)
                         }
                         else -> {}
@@ -147,7 +147,7 @@ class NotificationTrigger private constructor(){
         }
     }
 
-    private fun getDefaultNotification(): NotificationModel{
+    private fun getDefaultNotification(): TriggerEventModel{
         val fs = JsonObject()
         fs.addProperty("imageUrl", "https://cdn.castled.io/logo/castled_multi_color_logo_only.png")
         fs.addProperty("defaultClickAction", "NONE")
@@ -216,7 +216,7 @@ class NotificationTrigger private constructor(){
 
         val trigger: JsonObject = JsonObject()
 
-        return  NotificationModel(1, 1, 0, 0L, 0L, 0, trigger, message)
+        return  TriggerEventModel(1, 1, 0, 0L, 0L, 0, trigger, message)
     }
 
     private fun preparePopupHeader(modal: JsonObject) = PopupHeader(
@@ -249,7 +249,7 @@ class NotificationTrigger private constructor(){
         if (secondaryPopupButtonJson.get("url").isJsonNull) "" else secondaryPopupButtonJson.get("url").asString
     )
 
-    private fun launchModalTriggerNotification(context: Context, notification: NotificationModel) {
+    private fun launchModalTriggerNotification(context: Context, notification: TriggerEventModel) {
         val message: JsonObject = notification.message.asJsonObject
         val modal: JsonObject = message.getAsJsonObject("modal")
         val buttons: JsonArray = modal.getAsJsonArray("actionButtons")
@@ -268,7 +268,7 @@ class NotificationTrigger private constructor(){
         )
     }
 
-    private fun launchFullScreenTriggerNotification(context: Context, notification: NotificationModel) {
+    private fun launchFullScreenTriggerNotification(context: Context, notification: TriggerEventModel) {
         val message: JsonObject = notification.message.asJsonObject
         val modal: JsonObject = message.getAsJsonObject("fs")
         val buttons: JsonArray = modal.getAsJsonArray("actionButtons")
@@ -287,7 +287,7 @@ class NotificationTrigger private constructor(){
         )
     }
 
-    private fun launchSlideUpTriggerNotification(context: Context, notification: NotificationModel) {
+    private fun launchSlideUpTriggerNotification(context: Context, notification: TriggerEventModel) {
         Log.d(TAG, "notification: $notification")
         val message: JsonObject = notification.message.asJsonObject
         val modal: JsonObject =
@@ -306,28 +306,28 @@ class NotificationTrigger private constructor(){
         )
     }
 
-    private suspend fun dbFetchTriggerNotifications(context: Context): List<NotificationModel> =
+    private suspend fun dbFetchTriggerEvents(context: Context): List<TriggerEventModel> =
         withContext(Dispatchers.Default) {
-            val db = NotificationDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
-            db.getNotificationsFromDb()
+            val db = TriggerEventDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
+            db.getTriggerEventsFromDb()
         }
 
-    private suspend fun dbDeleteTriggerNotifications(context: Context): Int =
+    private suspend fun dbDeleteTriggerEvents(context: Context): Int =
         withContext(Dispatchers.Default) {
-            val db = NotificationDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
-            db.deleteDbNotifications()
+            val db = TriggerEventDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
+            db.deleteDbTriggerEvents()
         }
 
-    private suspend fun dbInsertTriggerNotifications(
+    private suspend fun dbInsertTriggerEvents(
         context: Context,
-        notifications: List<NotificationModel>
+        notifications: List<TriggerEventModel>
     ) =
         withContext(Dispatchers.Default) {
-            val db = NotificationDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
-            db.insertNotificationsIntoDb(notifications)
+            val db = TriggerEventDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
+            db.insertTriggerEventsIntoDb(notifications)
         }
 
-    private fun showApiLog(notificationResponse: Response<List<NotificationModel>>) {
+    private fun showApiLog(notificationResponse: Response<List<TriggerEventModel>>) {
         Log.d(TAG, "************* fetchNotification FETCHED *************\n")
         Log.d(TAG, "1. isSuccessful: ${notificationResponse.isSuccessful}")
         Log.d(TAG, "2. Body: ${notificationResponse.body()}")

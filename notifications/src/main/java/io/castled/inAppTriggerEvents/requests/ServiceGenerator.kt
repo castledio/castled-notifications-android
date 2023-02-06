@@ -1,16 +1,16 @@
-package io.castled.inappNotifications.requests
+package io.castled.inAppTriggerEvents.requests
 
-import io.castled.inappNotifications.notificationConsts.NotificationConstants
+import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 
-object ServiceGenerator {
+internal object ServiceGenerator {
     fun requestApi(): ApiInterface {
         return Retrofit.Builder()
-            .baseUrl(NotificationConstants.notificationUrl)
+            .baseUrl(TriggerEventConstants.notificationUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .client(
                 OkHttpClient.Builder()

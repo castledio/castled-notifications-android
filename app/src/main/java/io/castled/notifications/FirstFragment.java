@@ -9,13 +9,12 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import io.castled.inappNotifications.trigger.NotificationTrigger;
-import io.castled.inappNotifications.trigger.TestTriggerNotification;
+import io.castled.inAppTriggerEvents.event.TestTriggerEvents;
+import io.castled.inAppTriggerEvents.trigger.PopupHeader;
+import io.castled.inAppTriggerEvents.trigger.PopupMessage;
+import io.castled.inAppTriggerEvents.trigger.PopupPrimaryButton;
+import io.castled.inAppTriggerEvents.trigger.PopupSecondaryButton;
 import io.castled.notifications.databinding.FragmentFirstBinding;
-import io.castled.inappNotifications.trigger.PopupHeader;
-import io.castled.inappNotifications.trigger.PopupMessage;
-import io.castled.inappNotifications.trigger.PopupPrimaryButton;
-import io.castled.inappNotifications.trigger.PopupSecondaryButton;
 
 public class FirstFragment extends Fragment {
 
@@ -38,7 +37,7 @@ public class FirstFragment extends Fragment {
         binding.buttonFirst.setOnClickListener(view1 -> NavHostFragment.findNavController(FirstFragment.this)
                 .navigate(R.id.action_FirstFragment_to_SecondFragment));
 
-        binding.btnLaunchPopup.setOnClickListener(btnLaunchPopupView -> TestTriggerNotification.getInstance().showDialog(
+        binding.btnLaunchPopup.setOnClickListener(btnLaunchPopupView -> TestTriggerEvents.getInstance().showDialog(
                 requireContext(),
                 "#f8ffbd",
                 new PopupHeader("Summer sale is Back!", "#FFFFFF" , 18, "#E74C3C"),
@@ -55,7 +54,7 @@ public class FirstFragment extends Fragment {
 //            TriggerPopup.Companion.showFullScreenDialog(requireContext(), requireActivity());
 
 
-            TestTriggerNotification.getInstance().showFullscreenDialog(
+            TestTriggerEvents.getInstance().showFullscreenDialog(
                     requireContext(),
                     "#f8ffbd",
                     new PopupHeader("Summer sale is Back!", "#FFFFFF" , 18, "#E74C3C"),
@@ -71,7 +70,7 @@ public class FirstFragment extends Fragment {
         });
 
         binding.btnLaunchSlideupPopup.setOnClickListener(btnLaunchFullscreenPopupView -> {
-            TestTriggerNotification.getInstance().showSlideUpDialog(
+            TestTriggerEvents.getInstance().showSlideUpDialog(
                     requireContext(),
                     "#ff99ff",
                     new PopupMessage("Slide Up \n30% offer on Electronics, Cloths, Sports and other categories.", "#ffffff", 12, "#039ADC"),
@@ -81,15 +80,15 @@ public class FirstFragment extends Fragment {
 
         });
 
-        binding.btnApiTest.setOnClickListener(btnLaunchFullscreenPopupView -> {
-            TestTriggerNotification.getInstance().fetchAndSaveTriggerNotification(requireContext());
+        binding.btnCloudEvent.setOnClickListener(btnLaunchFullscreenPopupView -> {
+            TestTriggerEvents.getInstance().fetchAndSaveTriggerEvents(requireContext());
 //            apiTest.observeDatabaseNotification(requireContext(), getViewLifecycleOwner());
         });
 
-        binding.btnDbNotification.setOnClickListener(btnLaunchFullscreenPopupView -> {
+        binding.btnDbEvent.setOnClickListener(btnLaunchFullscreenPopupView -> {
 //            apiTest.observeDatabaseNotification(requireContext(), getViewLifecycleOwner());
 
-            NotificationTrigger.getInstance().startObservingTriggerNotification(requireContext());
+            TestTriggerEvents.getInstance().findAndLaunchTriggerEvent(requireContext());
 
         });
 
@@ -99,7 +98,8 @@ public class FirstFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        NotificationTrigger.getInstance().startObservingTriggerNotification(requireContext());
+
+//        NotificationTrigger.getInstance().startObservingTriggerNotification(requireContext());
     }
 
     @Override

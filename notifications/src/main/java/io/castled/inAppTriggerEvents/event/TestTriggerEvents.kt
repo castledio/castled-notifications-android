@@ -1,14 +1,20 @@
-package io.castled.inappNotifications.trigger
+package io.castled.inAppTriggerEvents.event
 
 import android.content.Context
+import io.castled.inAppTriggerEvents.trigger.PopupHeader
+import io.castled.inAppTriggerEvents.trigger.PopupMessage
+import io.castled.inAppTriggerEvents.trigger.PopupPrimaryButton
+import io.castled.inAppTriggerEvents.trigger.PopupSecondaryButton
+import io.castled.inAppTriggerEvents.trigger.TriggerEvent
+import io.castled.inAppTriggerEvents.trigger.TriggerPopupDialog
 
-class TestTriggerNotification private constructor(){
+class TestTriggerEvents private constructor(){
     companion object {
-        private lateinit var testTriggerNotification: TestTriggerNotification
+        private lateinit var testTriggerEvents: TestTriggerEvents
 
         @JvmStatic
-        fun getInstance(): TestTriggerNotification{
-            return if (this::testTriggerNotification.isInitialized) testTriggerNotification else TestTriggerNotification()
+        fun getInstance(): TestTriggerEvents {
+            return if (this::testTriggerEvents.isInitialized) testTriggerEvents else TestTriggerEvents()
         }
     }
 
@@ -71,7 +77,11 @@ class TestTriggerNotification private constructor(){
         )
     }
 
-    fun fetchAndSaveTriggerNotification(context: Context){
-        NotificationTrigger.getInstance().fetchAndSaveTriggerNotification(context)
+    fun fetchAndSaveTriggerEvents(context: Context){
+        TriggerEvent.getInstance().fetchAndSaveTriggerEvents(context)
+    }
+
+    fun findAndLaunchTriggerEvent(context: Context){
+        TriggerEvent.getInstance().findAndLaunchTriggerEvent(context)
     }
 }

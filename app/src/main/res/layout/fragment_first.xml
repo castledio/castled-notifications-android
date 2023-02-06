@@ -82,7 +82,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <Button
-            android:id="@+id/btn_api_test"
+            android:id="@+id/btn_cloud_Event"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
@@ -90,11 +90,11 @@
             android:layout_weight="1"
             android:gravity="center"
             android:padding="4dp"
-            android:text="Cloud Notification"
+            android:text="Cloud Event"
             android:textAllCaps="false" />
 
         <Button
-            android:id="@+id/btn_db_notification"
+            android:id="@+id/btn_db_Event"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -102,7 +102,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:padding="4dp"
-            android:text="Db Notification"
+            android:text="Db Event"
             android:textAllCaps="false" />
 
     </LinearLayout>

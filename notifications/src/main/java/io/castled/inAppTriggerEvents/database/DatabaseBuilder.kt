@@ -1,15 +1,15 @@
-package io.castled.inappNotifications.database
+package io.castled.inAppTriggerEvents.database
 
 import android.content.Context
 import androidx.room.Room
 
-object DatabaseBuilder {
+internal object DatabaseBuilder {
 
-    private var INSTANCE: NotificationDatabase? = null
+    private var INSTANCE: TriggerEventsDatabase? = null
 
-    fun getInstance(context: Context): NotificationDatabase {
+    fun getInstance(context: Context): TriggerEventsDatabase {
         if (INSTANCE == null) {
-            synchronized(NotificationDatabase::class) {
+            synchronized(TriggerEventsDatabase::class) {
                 INSTANCE = buildRoomDB(context)
             }
         }
@@ -19,8 +19,8 @@ object DatabaseBuilder {
     private fun buildRoomDB(context: Context) =
         Room.databaseBuilder(
             context.applicationContext,
-            NotificationDatabase::class.java,
-            "notification_db"
+            TriggerEventsDatabase::class.java,
+            "trigger_event_db"
         ).build()
 
 }

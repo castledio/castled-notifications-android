@@ -1,12 +1,11 @@
-package io.castled.inappNotifications.notificationConsts
+package io.castled.inAppTriggerEvents.eventConsts
 
-import android.util.Log
 import androidx.room.TypeConverter
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 
 //This class will used by ROOM to convert appropriate data type to save it into database.
-class NotificationTypeConverter {
+internal class TriggerEventTypeConverter {
 
     @TypeConverter
     fun fromJsonObject(source: JsonObject?): String {

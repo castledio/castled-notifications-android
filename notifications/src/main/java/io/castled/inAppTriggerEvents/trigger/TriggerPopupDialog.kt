@@ -1,4 +1,4 @@
-package io.castled.inappNotifications.trigger
+package io.castled.inAppTriggerEvents.trigger
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -10,22 +10,24 @@ import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
-import android.util.Log
 import android.util.TypedValue
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.google.gson.JsonObject
-import io.castled.inappNotifications.models.NotificationModel
-import io.castled.inappNotifications.notificationConsts.NotificationConstants
+import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
+import io.castled.inAppTriggerEvents.models.TriggerEventModel
 import io.castled.notifications.R
 import java.util.regex.Pattern
 
 private const val TAG = "TriggerPopup"
-class TriggerPopupDialog {
+internal class TriggerPopupDialog {
 
     companion object {
 
@@ -374,18 +376,18 @@ class TriggerPopupDialog {
             dialog.show()
         }
 
-        internal fun getTriggerNotificationType(notificationModel: NotificationModel): NotificationConstants.Companion.NotificationType{
+        internal fun getTriggerEventType(notificationModel: TriggerEventModel): TriggerEventConstants.Companion.TriggerEventType{
             val message:  JsonObject = notificationModel.message.asJsonObject
 
             if (message.has("type")){
                 when(message.get("type").asString){
-                    "MODAL" -> return NotificationConstants.Companion.NotificationType.MODAL
-                    "FULL_SCREEN" -> return NotificationConstants.Companion.NotificationType.FULL_SCREEN
-                    "SLIDE_UP" -> return NotificationConstants.Companion.NotificationType.SLIDE_UP
+                    "MODAL" -> return TriggerEventConstants.Companion.TriggerEventType.MODAL
+                    "FULL_SCREEN" -> return TriggerEventConstants.Companion.TriggerEventType.FULL_SCREEN
+                    "SLIDE_UP" -> return TriggerEventConstants.Companion.TriggerEventType.SLIDE_UP
                 }
             }
 
-            return NotificationConstants.Companion.NotificationType.NONE
+            return TriggerEventConstants.Companion.TriggerEventType.NONE
         }
     }
 }

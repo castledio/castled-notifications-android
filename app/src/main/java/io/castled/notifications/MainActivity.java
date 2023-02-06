@@ -15,6 +15,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import io.castled.inAppTriggerEvents.event.EventNotification;
 import io.castled.notifications.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+//        EventNotification.getInstance().observeLifecycle(getLifecycle());
+        EventNotification.getInstance().observeLifecycle(MainActivity.this);
 
         setSupportActionBar(binding.toolbar);
 

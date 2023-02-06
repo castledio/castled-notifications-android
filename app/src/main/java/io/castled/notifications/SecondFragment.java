@@ -1,5 +1,6 @@
 package io.castled.notifications;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +36,10 @@ public class SecondFragment extends Fragment {
                 NavHostFragment.findNavController(SecondFragment.this)
                         .navigate(R.id.action_SecondFragment_to_FirstFragment);
             }
+        });
+
+        binding.buttonSecondActivity.setOnClickListener(v -> {
+            startActivity(new Intent(requireActivity(), SecondActivity.class));
         });
     }
 

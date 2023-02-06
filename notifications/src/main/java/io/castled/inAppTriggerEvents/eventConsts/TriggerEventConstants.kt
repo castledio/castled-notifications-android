@@ -1,10 +1,10 @@
-package io.castled.inappNotifications.notificationConsts
+package io.castled.inAppTriggerEvents.eventConsts
 
-class NotificationConstants {
+internal class TriggerEventConstants {
     companion object {
         val notificationUrl = "https://test.castled.io/"
 
-        enum class NotificationType {
+        enum class TriggerEventType {
             MODAL,
             FULL_SCREEN,
             SLIDE_UP,

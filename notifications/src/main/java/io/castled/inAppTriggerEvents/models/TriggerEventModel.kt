@@ -1,15 +1,13 @@
-package io.castled.inappNotifications.models
+package io.castled.inAppTriggerEvents.models
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
-import io.castled.inappNotifications.notificationConsts.NotificationTypeConverter
 
-@Entity(tableName = "notification")
-data class NotificationModel(
+@Entity(tableName = "trigger_event")
+internal data class TriggerEventModel(
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)
     var id: Int,
