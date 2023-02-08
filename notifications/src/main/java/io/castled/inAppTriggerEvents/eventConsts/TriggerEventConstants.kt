@@ -10,5 +10,12 @@ internal class TriggerEventConstants {
             SLIDE_UP,
             NONE
         }
+
+        enum class EventClickType {
+            PRIMARY_BUTTON,
+            SECONDARY_BUTTON,
+            CLOSE_EVENT,
+            IMAGE_CLICK
+        }
     }
 }

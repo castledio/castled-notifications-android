@@ -1,13 +1,14 @@
 package io.castled.inAppTriggerEvents.event
 
 import android.content.Context
-import io.castled.inAppTriggerEvents.trigger.PopupHeader
-import io.castled.inAppTriggerEvents.trigger.PopupMessage
-import io.castled.inAppTriggerEvents.trigger.PopupPrimaryButton
-import io.castled.inAppTriggerEvents.trigger.PopupSecondaryButton
+import android.util.Log
+import com.google.gson.JsonObject
+import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
+import io.castled.inAppTriggerEvents.trigger.*
 import io.castled.inAppTriggerEvents.trigger.TriggerEvent
 import io.castled.inAppTriggerEvents.trigger.TriggerPopupDialog
 
+private const val TAG = "TestTriggerEvents"
 class TestTriggerEvents private constructor(){
     companion object {
         private lateinit var testTriggerEvents: TestTriggerEvents
@@ -36,7 +37,17 @@ class TestTriggerEvents private constructor(){
             imageUrl,
             urlForOnClickOnImage,
             popupPrimaryButton,
-            popupSecondaryButton
+            popupSecondaryButton,
+            JsonObject(),
+            object : TriggerEventClickAction {
+                override fun onTriggerEventAction(
+                    jsonObjectBody: JsonObject,
+                    triggerEventConstants: TriggerEventConstants.Companion.EventClickType
+                ) {
+                    Log.d(TAG, "Event Action API Body: $jsonObjectBody")
+                }
+
+            }
         )
     }
 
@@ -58,7 +69,17 @@ class TestTriggerEvents private constructor(){
             imageUrl,
             urlForOnClickOnImage,
             popupPrimaryButton,
-            popupSecondaryButton
+            popupSecondaryButton,
+            JsonObject(),
+            object : TriggerEventClickAction {
+                override fun onTriggerEventAction(
+                    jsonObjectBody: JsonObject,
+                    triggerEventConstants: TriggerEventConstants.Companion.EventClickType
+                ) {
+                    Log.d(TAG, "Event Action API Body: $jsonObjectBody")
+                }
+
+            }
         )
     }
 
@@ -69,11 +90,21 @@ class TestTriggerEvents private constructor(){
         imageUrl:String,
         urlForOnClickOnImage: String
     ) {
-        showSlideUpDialog(context,
+        TriggerPopupDialog.showSlideUpDialog(context,
             popUpBackgroundColor,
             popupMessage,
             imageUrl,
-            urlForOnClickOnImage
+            urlForOnClickOnImage,
+            JsonObject(),
+            object : TriggerEventClickAction {
+                override fun onTriggerEventAction(
+                    jsonObjectBody: JsonObject,
+                    triggerEventConstants: TriggerEventConstants.Companion.EventClickType
+                ) {
+                    Log.d(TAG, "Event Action API Body: $jsonObjectBody")
+                }
+
+            }
         )
     }
 

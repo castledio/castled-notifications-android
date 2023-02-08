@@ -10,6 +10,7 @@ import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +25,7 @@ import com.google.gson.JsonObject
 import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
 import io.castled.inAppTriggerEvents.models.TriggerEventModel
 import io.castled.notifications.R
+import java.util.*
 import java.util.regex.Pattern
 
 private const val TAG = "TriggerPopup"
@@ -39,7 +41,9 @@ internal class TriggerPopupDialog {
             imageUrl:String,
             urlForOnClickOnImage: String,
             popupPrimaryButton: PopupPrimaryButton,
-            popupSecondaryButton: PopupSecondaryButton
+            popupSecondaryButton: PopupSecondaryButton,
+            eventClickActionData: JsonObject,
+            triggerEventClickAction: TriggerEventClickAction
         ) {
             val dialog = Dialog(context)
             dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -52,11 +56,37 @@ internal class TriggerPopupDialog {
             gradientDrawable.setColor(Color.parseColor(returnDefaultOrValidHexColor(popUpBackgroundColor, "#FFFFFF")))
 
             val view: View = dialog.findViewById(R.id.view_close)
-            view.setOnClickListener { dialog.dismiss() }
+            view.setOnClickListener {
+
+//                val d = TimeZone.getDefault()
+//                Log.d(TAG, "1->>: ${Calendar.getInstance().timeZone.getDisplayName(false, TimeZone.SHORT)}")
+//                Log.d(TAG, "2: ${Calendar.getInstance()}")
+//                Log.d(TAG, "3: ${context.getResources().getConfiguration().locale.getCountry()}")
+
+                eventClickActionData.addProperty("eventType", "DISCARDED")
+                eventClickActionData.addProperty("ts", System.currentTimeMillis())
+                eventClickActionData.addProperty("tz", TimeZone.getDefault().displayName)
+
+                triggerEventClickAction.onTriggerEventAction(
+                    eventClickActionData,
+                    TriggerEventConstants.Companion.EventClickType.CLOSE_EVENT
+                )
+
+                dialog.dismiss()
+            }
 
             val imageView: ImageView = dialog.findViewById(R.id.img_popup)
             Glide.with(context).load(imageUrl).into(imageView)
             imageView.setOnClickListener {
+                eventClickActionData.addProperty("eventType", "CLICKED")
+                eventClickActionData.addProperty("ts", System.currentTimeMillis())
+                eventClickActionData.addProperty("tz", TimeZone.getDefault().displayName)
+
+                triggerEventClickAction.onTriggerEventAction(
+                    eventClickActionData,
+                    TriggerEventConstants.Companion.EventClickType.IMAGE_CLICK
+                )
+
                 if (urlForOnClickOnImage.isNotEmpty()){
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlForOnClickOnImage))
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -87,14 +117,28 @@ internal class TriggerPopupDialog {
             btnPrimary.setTextColor(Color.parseColor(returnDefaultOrValidHexColor(popupPrimaryButton.fontColor, "#000000")))
             btnPrimary.text = popupPrimaryButton.buttonText
             btnPrimary.setOnClickListener {
-                dialog.dismiss()
+
+                eventClickActionData.addProperty("eventType", "CLICKED")
+                eventClickActionData.addProperty("ts", System.currentTimeMillis())
+                eventClickActionData.addProperty("tz", TimeZone.getDefault().displayName)
+
+                triggerEventClickAction.onTriggerEventAction(
+                    eventClickActionData,
+                    TriggerEventConstants.Companion.EventClickType.PRIMARY_BUTTON
+                )
+
                 if (popupPrimaryButton.urlOnClick.isNotEmpty()){
+                    Log.d(TAG, "PrimaryButton performing onClick action. ${popupPrimaryButton.urlOnClick}")
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(popupPrimaryButton.urlOnClick))
+                    //The below line is to test.
+//                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/"))
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     if (intent.resolveActivity(context.packageManager) != null)
                         context.startActivity(intent)
-                    else Toast.makeText(context, "Not able to handle the request.", Toast.LENGTH_LONG).show()
+                    else Toast.makeText(context, "No application found to process the request.", Toast.LENGTH_LONG).show()
                 } else Toast.makeText(context, "Not able to handle the request.", Toast.LENGTH_LONG).show()
+
+                dialog.dismiss()
             }
 
             val gradientDrawableButtonSecondary = GradientDrawable()
@@ -107,7 +151,16 @@ internal class TriggerPopupDialog {
             btnSecondary.setTextColor(Color.parseColor(returnDefaultOrValidHexColor(popupSecondaryButton.fontColor, "#000000")))
             btnSecondary.text = popupSecondaryButton.buttonText
             btnSecondary.setOnClickListener {
-                dialog.dismiss()
+
+                eventClickActionData.addProperty("eventType", "CLICKED")
+                eventClickActionData.addProperty("ts", System.currentTimeMillis())
+                eventClickActionData.addProperty("tz", TimeZone.getDefault().displayName)
+
+                triggerEventClickAction.onTriggerEventAction(
+                    eventClickActionData,
+                    TriggerEventConstants.Companion.EventClickType.SECONDARY_BUTTON
+                )
+
                 if (popupSecondaryButton.urlOnClick.isNotEmpty()){
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(popupSecondaryButton.urlOnClick))
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -115,6 +168,8 @@ internal class TriggerPopupDialog {
                         context.startActivity(intent)
                     else Toast.makeText(context, "Not able to handle the request.", Toast.LENGTH_LONG).show()
                 } else Toast.makeText(context, "Not able to handle the request.", Toast.LENGTH_LONG).show()
+
+                dialog.dismiss()
             }
 
             dialog.show()
@@ -128,7 +183,9 @@ internal class TriggerPopupDialog {
             imageUrl:String,
             urlForOnClickOnImage: String,
             popupPrimaryButton: PopupPrimaryButton,
-            popupSecondaryButton: PopupSecondaryButton
+            popupSecondaryButton: PopupSecondaryButton,
+            eventClickActionData: JsonObject,
+            triggerEventClickAction: TriggerEventClickAction
         ) {
             val dialog = Dialog(context, R.style.custom_style_dialog)
 
@@ -142,7 +199,18 @@ internal class TriggerPopupDialog {
             gradientDrawable.setColor(Color.parseColor(returnDefaultOrValidHexColor(popUpBackgroundColor, "#FFFFFF")))
 
             val view: View = dialog.findViewById(R.id.view_close)
-            view.setOnClickListener { dialog.dismiss() }
+            view.setOnClickListener {
+                dialog.dismiss()
+
+                eventClickActionData.addProperty("eventType", "DISCARDED")
+                eventClickActionData.addProperty("ts", System.currentTimeMillis())
+                eventClickActionData.addProperty("tz", TimeZone.getDefault().displayName)
+
+                triggerEventClickAction.onTriggerEventAction(
+                    eventClickActionData,
+                    TriggerEventConstants.Companion.EventClickType.CLOSE_EVENT
+                )
+            }
 
             val imageView: ImageView = dialog.findViewById(R.id.img_popup)
             Glide.with(context).load(imageUrl).into(imageView)
@@ -200,7 +268,7 @@ internal class TriggerPopupDialog {
                 if (popupSecondaryButton.urlOnClick.isNotEmpty()){
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(popupSecondaryButton.urlOnClick))
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                if (intent.resolveActivity(context.packageManager) != null)
+                if (intent.resolveActivity(context.packageManager) != null)
                     context.startActivity(intent)
                 }
             }
@@ -213,7 +281,9 @@ internal class TriggerPopupDialog {
             popUpBackgroundColor: String,
             popupMessage: PopupMessage,
             imageUrl:String,
-            urlForOnClickOnImage: String
+            urlForOnClickOnImage: String,
+            eventClickActionData: JsonObject,
+            triggerEventClickAction: TriggerEventClickAction
         ) {
 
             val dialog = Dialog(context, R.style.custom_style_dialog_bottom)
@@ -228,7 +298,18 @@ internal class TriggerPopupDialog {
             gradientDrawable.setColor(Color.parseColor(returnDefaultOrValidHexColor(popUpBackgroundColor, "#FFFFFF")))
 
             val view: View = dialog.findViewById(R.id.view_close)
-            view.setOnClickListener { dialog.dismiss() }
+            view.setOnClickListener {
+                dialog.dismiss()
+
+                eventClickActionData.addProperty("eventType", "DISCARDED")
+                eventClickActionData.addProperty("ts", System.currentTimeMillis())
+                eventClickActionData.addProperty("tz", TimeZone.getDefault().displayName)
+
+                triggerEventClickAction.onTriggerEventAction(
+                    eventClickActionData,
+                    TriggerEventConstants.Companion.EventClickType.CLOSE_EVENT
+                )
+            }
 
             val imageView: ImageView = dialog.findViewById(R.id.img_popup)
             Glide.with(context).load(imageUrl).into(imageView)

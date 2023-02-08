@@ -19,7 +19,12 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType
+import okhttp3.RequestBody
+import org.json.JSONObject
 import retrofit2.Response
+import java.util.*
+
 
 private const val TAG = "TriggerEvent"
 
@@ -83,6 +88,47 @@ internal class TriggerEvent private constructor(){
                 emptyList()
             }
         } as List<TriggerEventModel>
+    }
+
+    private suspend fun updateTriggerEventLogToCloud(eventBody: JSONObject): String {
+
+        val body: RequestBody = RequestBody.create(
+            MediaType.parse("application/json; charset=utf-8"),
+            eventBody.toString()
+        )
+
+        val body2: RequestBody =
+            RequestBody.create(MediaType.parse("application/json; charset=utf-8"), eventBody.toString())
+
+
+        Log.d(TAG, "1a. ->: ${body.contentType().toString()}")
+        Log.d(TAG, "2a. ->: ${eventBody.toString()}")
+
+        return withContext(IO) {
+            val eventsResponse = ServiceGenerator.requestApi()
+                .logEventView("test-3b229735-04ae-455f-a5d4-20a89c092927", body2)
+
+            Log.d(TAG, "1. ->: ${eventsResponse.body()}")
+            Log.d(TAG, "2. ->: ${eventsResponse.isSuccessful}")
+            Log.d(TAG, "3. ->: ${eventsResponse.message()}")
+            Log.d(TAG, "4. ->: ${eventsResponse.code()}")
+            Log.d(TAG, "5. ->: ${eventsResponse.raw()}")
+            Log.d(TAG, "6. ->: ${eventsResponse.headers()}")
+            Log.d(TAG, "7. ->: $eventBody")
+
+            (if (eventsResponse.isSuccessful && eventsResponse.body() != null){
+                eventsResponse.body()
+            } else {
+                ""
+            }).toString()
+        }
+    }
+
+    private fun initiateTriggerEventLogToCloud(eventBody: JSONObject){
+        CoroutineScope(Main).launch {
+            val response = updateTriggerEventLogToCloud(eventBody)
+            Log.d(TAG, "Return value for Event log to cloud: $response")
+        }
     }
 
     private var notificationObserver: LiveData<List<TriggerEventModel>>? = null
@@ -216,7 +262,7 @@ internal class TriggerEvent private constructor(){
 
         val trigger: JsonObject = JsonObject()
 
-        return  TriggerEventModel(1, 1, 0, 0L, 0L, 0, trigger, message)
+        return  TriggerEventModel(1L, 1, 1L, "",0L, 0L, 0, trigger, message)
     }
 
     private fun preparePopupHeader(modal: JsonObject) = PopupHeader(
@@ -249,12 +295,32 @@ internal class TriggerEvent private constructor(){
         if (secondaryPopupButtonJson.get("url").isJsonNull) "" else secondaryPopupButtonJson.get("url").asString
     )
 
-    private fun launchModalTriggerNotification(context: Context, notification: TriggerEventModel) {
-        val message: JsonObject = notification.message.asJsonObject
+    private fun launchModalTriggerNotification(context: Context, eventModel: TriggerEventModel) {
+        val message: JsonObject = eventModel.message.asJsonObject
         val modal: JsonObject = message.getAsJsonObject("modal")
         val buttons: JsonArray = modal.getAsJsonArray("actionButtons")
         val buttonPrimary: JsonObject = buttons[0].asJsonObject
         val buttonSecondary: JsonObject = buttons[1].asJsonObject
+
+        val eventClickActionData = JsonObject()
+        eventClickActionData.addProperty("teamId", eventModel.teamId)
+        eventClickActionData.addProperty("sourceContext", eventModel.sourceContext)
+
+        val eventViewActionData = JsonObject()
+        eventViewActionData.addProperty("teamId", eventModel.teamId)
+        eventViewActionData.addProperty("eventType", "VIEWED")
+        eventViewActionData.addProperty("sourceContext", eventModel.sourceContext)
+        eventViewActionData.addProperty("ts", System.currentTimeMillis())
+        eventViewActionData.addProperty("tz", TimeZone.getDefault().displayName)
+
+        val ev = JSONObject()
+       ev.put("teamId", eventModel.teamId)
+       ev.put("eventType", "VIEWED")
+       ev.put("sourceContext", eventModel.sourceContext)
+       ev.put("ts", System.currentTimeMillis())
+       ev.put("tz", TimeZone.getDefault().displayName)
+
+        initiateTriggerEventLogToCloud(ev)
 
         TriggerPopupDialog.showDialog(
             context,
@@ -264,7 +330,33 @@ internal class TriggerEvent private constructor(){
             if(modal.get("imageUrl").isJsonNull) "" else modal.get("imageUrl").asString,
             if(modal.get("defaultClickAction").isJsonNull) "" else modal.get("defaultClickAction").asString,
             preparePopupPrimaryButton(buttonPrimary),
-            preparePopupSecondaryButton(buttonSecondary)
+            preparePopupSecondaryButton(buttonSecondary),
+            eventClickActionData,
+            object : TriggerEventClickAction{
+                override fun onTriggerEventAction(
+                    jsonObjectBody: JsonObject,
+                    triggerEventConstants: TriggerEventConstants.Companion.EventClickType
+                ) {
+                    when(triggerEventConstants) {
+                        TriggerEventConstants.Companion.EventClickType.CLOSE_EVENT -> {
+                            Log.d(TAG, "Event Action API Body: $jsonObjectBody")
+                        }
+                        TriggerEventConstants.Companion.EventClickType.IMAGE_CLICK -> {
+                            jsonObjectBody.addProperty("actionType", modal.get("defaultClickAction").asString)
+                            jsonObjectBody.addProperty("actionUri", modal.get("url").asString)
+                            Log.d(TAG, "Event Action API Body: $jsonObjectBody")
+                        }
+                        TriggerEventConstants.Companion.EventClickType.PRIMARY_BUTTON -> {
+                            getJsonObjectBodyOnButtonClick(jsonObjectBody, buttonPrimary)
+                        }
+                        TriggerEventConstants.Companion.EventClickType.SECONDARY_BUTTON -> {
+                            getJsonObjectBodyOnButtonClick(jsonObjectBody, buttonSecondary)
+                        }
+                        else -> {}
+                    }
+
+                }
+            }
         )
     }
 
@@ -275,6 +367,8 @@ internal class TriggerEvent private constructor(){
         val buttonPrimary: JsonObject = buttons[0].asJsonObject
         val buttonSecondary: JsonObject = buttons[1].asJsonObject
 
+        val eventClickActionData = JsonObject()
+
         TriggerPopupDialog.showFullscreenDialog(
             context,
             modal.get("screenOverlayColor").asString,
@@ -283,27 +377,81 @@ internal class TriggerEvent private constructor(){
             if(modal.get("imageUrl").isJsonNull) "" else modal.get("imageUrl").asString,
             if(modal.get("defaultClickAction").isJsonNull) "" else modal.get("defaultClickAction").asString,
             preparePopupPrimaryButton(buttonPrimary),
-            preparePopupSecondaryButton(buttonSecondary)
+            preparePopupSecondaryButton(buttonSecondary),
+            eventClickActionData,
+            object : TriggerEventClickAction{
+                override fun onTriggerEventAction(
+                    jsonObjectBody: JsonObject,
+                    triggerEventConstants: TriggerEventConstants.Companion.EventClickType
+                ) {
+                    when(triggerEventConstants) {
+                        TriggerEventConstants.Companion.EventClickType.CLOSE_EVENT -> {
+                            Log.d(TAG, "Event Action API Body: $jsonObjectBody")
+                        }
+                        TriggerEventConstants.Companion.EventClickType.IMAGE_CLICK -> {
+                            jsonObjectBody.addProperty("actionType", modal.get("defaultClickAction").asString)
+                            jsonObjectBody.addProperty("actionUri", modal.get("url").asString)
+                            Log.d(TAG, "Event Action API Body: $jsonObjectBody")
+                        }
+                        TriggerEventConstants.Companion.EventClickType.PRIMARY_BUTTON -> {
+                            getJsonObjectBodyOnButtonClick(jsonObjectBody, buttonPrimary)
+                        }
+                        TriggerEventConstants.Companion.EventClickType.SECONDARY_BUTTON -> {
+                            getJsonObjectBodyOnButtonClick(jsonObjectBody, buttonSecondary)
+                        }
+                        else -> {}
+                    }
+                }
+            }
         )
     }
 
     private fun launchSlideUpTriggerNotification(context: Context, notification: TriggerEventModel) {
         Log.d(TAG, "notification: $notification")
         val message: JsonObject = notification.message.asJsonObject
-        val modal: JsonObject =
-            if (message.has("su"))
-                message.getAsJsonObject("su")
-            else
-                getDefaultNotification().message.getAsJsonObject("su")
+        val modal: JsonObject = message.getAsJsonObject("slideUp")
 
-        Log.d(TAG, "modal: $modal")
+
+        val eventClickActionData = JsonObject()
+
+        Log.d(TAG, "slideUp: $modal")
         TriggerPopupDialog.showSlideUpDialog(
             context,
-            modal.get("screenOverlayColor").asString,
+            modal.get("bgColor").asString,
             preparePopupMessage(modal),
             if(modal.get("imageUrl").isJsonNull) "" else modal.get("imageUrl").asString,
-            if(modal.get("defaultClickAction").isJsonNull) "" else modal.get("defaultClickAction").asString
+            if(modal.get("url").isJsonNull) "" else modal.get("url").asString,
+            eventClickActionData,
+            object : TriggerEventClickAction{
+                override fun onTriggerEventAction(
+                    jsonObjectBody: JsonObject,
+                    triggerEventConstants: TriggerEventConstants.Companion.EventClickType
+                ) {
+                    when(triggerEventConstants) {
+                        TriggerEventConstants.Companion.EventClickType.CLOSE_EVENT -> {
+                            Log.d(TAG, "Event Action API Body: $jsonObjectBody")
+                        }
+                        TriggerEventConstants.Companion.EventClickType.IMAGE_CLICK -> {
+                            jsonObjectBody.addProperty("actionType", modal.get("defaultClickAction").asString)
+                            jsonObjectBody.addProperty("actionUri", modal.get("url").asString)
+                            Log.d(TAG, "Event Action API Body: $jsonObjectBody")
+                        }
+                        TriggerEventConstants.Companion.EventClickType.PRIMARY_BUTTON -> {}
+                        TriggerEventConstants.Companion.EventClickType.SECONDARY_BUTTON -> {}
+                        else -> {}
+                    }
+                }
+            }
         )
+    }
+
+    private fun getJsonObjectBodyOnButtonClick(jsonObjectBody: JsonObject, jsonButton: JsonObject):JsonObject {
+
+        jsonObjectBody.addProperty("actionType", jsonButton.get("clickAction").asString)
+        jsonObjectBody.addProperty("actionUri", if (jsonButton.get("url").isJsonNull) null else jsonButton.get("url").asString)
+        jsonObjectBody.addProperty("btnLabel", jsonButton.get("label").asString)
+        Log.d(TAG, "Event Action API Body: $jsonObjectBody")
+        return jsonObjectBody
     }
 
     private suspend fun dbFetchTriggerEvents(context: Context): List<TriggerEventModel> =

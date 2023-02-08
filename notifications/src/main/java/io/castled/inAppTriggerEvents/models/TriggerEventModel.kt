@@ -16,11 +16,13 @@ internal data class TriggerEventModel(
     @SerializedName("notificationId")
     var notificationId: Int,
 
-    @ColumnInfo(name = "trigger_count")
-    val triggerCount: Int,
+    @ColumnInfo(name = "team_id")
+    @SerializedName("teamId")
+    var teamId: Long,
 
-//    @ColumnInfo(name = "last_shown_ts")
-//    val lastShownTimestamp: String,
+    @ColumnInfo(name = "source_context")
+    @SerializedName("sourceContext")
+    var sourceContext: String,
 
     @ColumnInfo(name = "start_ts")
     @SerializedName("startTs")
