@@ -372,7 +372,7 @@ internal class TriggerEvent private constructor(){
                             initiateTriggerEventLogToCloud(prepareEventCloseActionBodyData(eventModel))
                         }
                         TriggerEventConstants.Companion.EventClickType.IMAGE_CLICK -> {
-                            initiateTriggerEventLogToCloud(prepareEventCloseActionBodyData(eventModel))
+                            initiateTriggerEventLogToCloud(prepareEventImageClickActionBodyData(eventModel))
                         }
                         TriggerEventConstants.Companion.EventClickType.PRIMARY_BUTTON -> {
                             initiateTriggerEventLogToCloud(prepareEventButtonClickActionBodyData(eventClickActionData, buttonPrimary))
@@ -420,7 +420,7 @@ internal class TriggerEvent private constructor(){
                         TriggerEventConstants.Companion.EventClickType.CLOSE_EVENT -> {
                             eventClickActionData.addProperty("eventType", "DISCARDED")
 //                            Log.d(TAG, "Event Action API Body: $jsonObjectBody")
-                            initiateTriggerEventLogToCloud(eventClickActionData)
+                            initiateTriggerEventLogToCloud(prepareEventCloseActionBodyData(eventModel))
                         }
                         TriggerEventConstants.Companion.EventClickType.IMAGE_CLICK -> {
                             initiateTriggerEventLogToCloud(prepareEventImageClickActionBodyData(eventModel))

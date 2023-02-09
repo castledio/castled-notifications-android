@@ -78,7 +78,7 @@ internal class TriggerPopupDialog {
                     if (intent.resolveActivity(context.packageManager) != null)
                         context.startActivity(intent)
                 }
-
+                dialog.dismiss()
             }
 
             val textHeader: TextView = dialog.findViewById(R.id.txt_header)
@@ -175,11 +175,12 @@ internal class TriggerPopupDialog {
 
             val view: View = dialog.findViewById(R.id.view_close)
             view.setOnClickListener {
-                dialog.dismiss()
 
                 triggerEventClickAction.onTriggerEventAction(
                     TriggerEventConstants.Companion.EventClickType.CLOSE_EVENT
                 )
+
+                dialog.dismiss()
             }
 
             val imageView: ImageView = dialog.findViewById(R.id.img_popup)
@@ -188,9 +189,15 @@ internal class TriggerPopupDialog {
                 if (urlForOnClickOnImage.isNotEmpty()){
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlForOnClickOnImage))
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    if (intent.resolveActivity(context.packageManager) != null)
                     context.startActivity(intent)
                 }
 
+                triggerEventClickAction.onTriggerEventAction(
+                    TriggerEventConstants.Companion.EventClickType.IMAGE_CLICK
+                )
+
+                dialog.dismiss()
             }
 
             val textHeader: TextView = dialog.findViewById(R.id.txt_header)
@@ -215,13 +222,18 @@ internal class TriggerPopupDialog {
             btnPrimary.setTextColor(Color.parseColor(returnDefaultOrValidHexColor(popupPrimaryButton.fontColor, "#000000")))
             btnPrimary.text = popupPrimaryButton.buttonText
             btnPrimary.setOnClickListener {
-                dialog.dismiss()
+                triggerEventClickAction.onTriggerEventAction(
+                    TriggerEventConstants.Companion.EventClickType.PRIMARY_BUTTON
+                )
+
                 if (popupPrimaryButton.urlOnClick.isNotEmpty()){
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(popupPrimaryButton.urlOnClick))
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                if (intent.resolveActivity(context.packageManager) != null)
+                if (intent.resolveActivity(context.packageManager) != null)
                     context.startActivity(intent)
                 }
+
+                dialog.dismiss()
             }
 
             val gradientDrawableButtonSecondary = GradientDrawable()
@@ -234,13 +246,17 @@ internal class TriggerPopupDialog {
             btnSecondary.setTextColor(Color.parseColor(returnDefaultOrValidHexColor(popupSecondaryButton.fontColor, "#000000")))
             btnSecondary.text = popupSecondaryButton.buttonText
             btnSecondary.setOnClickListener {
-                dialog.dismiss()
+
+                triggerEventClickAction.onTriggerEventAction(
+                    TriggerEventConstants.Companion.EventClickType.SECONDARY_BUTTON
+                )
                 if (popupSecondaryButton.urlOnClick.isNotEmpty()){
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(popupSecondaryButton.urlOnClick))
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 if (intent.resolveActivity(context.packageManager) != null)
                     context.startActivity(intent)
                 }
+                dialog.dismiss()
             }
 
             dialog.show()
@@ -268,22 +284,28 @@ internal class TriggerPopupDialog {
 
             val view: View = dialog.findViewById(R.id.view_close)
             view.setOnClickListener {
-                dialog.dismiss()
 
                 triggerEventClickAction.onTriggerEventAction(
                     TriggerEventConstants.Companion.EventClickType.CLOSE_EVENT
                 )
+
+                dialog.dismiss()
             }
 
             val imageView: ImageView = dialog.findViewById(R.id.img_popup)
             Glide.with(context).load(imageUrl).into(imageView)
             imageView.setOnClickListener {
+                triggerEventClickAction.onTriggerEventAction(
+                    TriggerEventConstants.Companion.EventClickType.IMAGE_CLICK
+                )
                 if (urlForOnClickOnImage.isNotEmpty()){
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlForOnClickOnImage))
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    if (intent.resolveActivity(context.packageManager) != null)
                     context.startActivity(intent)
                 }
 
+                dialog.dismiss()
             }
 
             val textMessage: TextView = dialog.findViewById(R.id.txt_message)
@@ -394,7 +416,7 @@ internal class TriggerPopupDialog {
                 if (popupPrimaryButton.urlOnClick.isNotEmpty()){
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(popupPrimaryButton.urlOnClick))
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                if (intent.resolveActivity(context.packageManager) != null)
+                if (intent.resolveActivity(context.packageManager) != null)
                     context.startActivity(intent)
                 }
             }
@@ -413,7 +435,7 @@ internal class TriggerPopupDialog {
                 if (popupSecondaryButton.urlOnClick.isNotEmpty()){
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(popupSecondaryButton.urlOnClick))
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                if (intent.resolveActivity(context.packageManager) != null)
+                if (intent.resolveActivity(context.packageManager) != null)
                     context.startActivity(intent)
                 }
             }
