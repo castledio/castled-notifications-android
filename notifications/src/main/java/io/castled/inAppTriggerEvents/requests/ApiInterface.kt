@@ -37,7 +37,6 @@ internal interface ApiInterface {
     "tz" : "EST"
     }
     * */
-///backend/v1/inapp/test-3b229735-04ae-455f-a5d4-20a89c092927/android/event
     @POST("backend/v1/inapp/{api-key}/android/event")
     suspend fun logEventView(
         @Path("api-key")
@@ -45,21 +44,4 @@ internal interface ApiInterface {
         @Body
         body: JsonObject
     ): Response<Unit>
-
-   /* @POST("backend/v1/inapp/{api-key}/android/event")
-    suspend fun logEventView(
-        @Path("api-key")
-        apikey: String,
-        @Body
-        params: RequestBody
-    ): Response<String>
-
-    @POST("backend/v1/inapp/{api-key}/android/event")
-    suspend fun logEventView(
-        @Path("api-key")
-        apikey: String,
-        @Body
-        params: String
-    ): Response<String>*/
-
 }

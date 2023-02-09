@@ -42,7 +42,6 @@ internal class TriggerPopupDialog {
             urlForOnClickOnImage: String,
             popupPrimaryButton: PopupPrimaryButton,
             popupSecondaryButton: PopupSecondaryButton,
-            eventClickActionData: JsonObject,
             triggerEventClickAction: TriggerEventClickAction
         ) {
             val dialog = Dialog(context)
@@ -58,17 +57,7 @@ internal class TriggerPopupDialog {
             val view: View = dialog.findViewById(R.id.view_close)
             view.setOnClickListener {
 
-//                val d = TimeZone.getDefault()
-//                Log.d(TAG, "1->>: ${Calendar.getInstance().timeZone.getDisplayName(false, TimeZone.SHORT)}")
-//                Log.d(TAG, "2: ${Calendar.getInstance()}")
-//                Log.d(TAG, "3: ${context.getResources().getConfiguration().locale.getCountry()}")
-
-                eventClickActionData.addProperty("eventType", "DISCARDED")
-                eventClickActionData.addProperty("ts", System.currentTimeMillis())
-                eventClickActionData.addProperty("tz", TimeZone.getDefault().displayName)
-
                 triggerEventClickAction.onTriggerEventAction(
-                    eventClickActionData,
                     TriggerEventConstants.Companion.EventClickType.CLOSE_EVENT
                 )
 
@@ -78,19 +67,16 @@ internal class TriggerPopupDialog {
             val imageView: ImageView = dialog.findViewById(R.id.img_popup)
             Glide.with(context).load(imageUrl).into(imageView)
             imageView.setOnClickListener {
-                eventClickActionData.addProperty("eventType", "CLICKED")
-                eventClickActionData.addProperty("ts", System.currentTimeMillis())
-                eventClickActionData.addProperty("tz", TimeZone.getDefault().displayName)
 
                 triggerEventClickAction.onTriggerEventAction(
-                    eventClickActionData,
                     TriggerEventConstants.Companion.EventClickType.IMAGE_CLICK
                 )
 
                 if (urlForOnClickOnImage.isNotEmpty()){
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlForOnClickOnImage))
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    context.startActivity(intent)
+                    if (intent.resolveActivity(context.packageManager) != null)
+                        context.startActivity(intent)
                 }
 
             }
@@ -118,12 +104,7 @@ internal class TriggerPopupDialog {
             btnPrimary.text = popupPrimaryButton.buttonText
             btnPrimary.setOnClickListener {
 
-                eventClickActionData.addProperty("eventType", "CLICKED")
-                eventClickActionData.addProperty("ts", System.currentTimeMillis())
-                eventClickActionData.addProperty("tz", TimeZone.getDefault().displayName)
-
                 triggerEventClickAction.onTriggerEventAction(
-                    eventClickActionData,
                     TriggerEventConstants.Companion.EventClickType.PRIMARY_BUTTON
                 )
 
@@ -152,12 +133,7 @@ internal class TriggerPopupDialog {
             btnSecondary.text = popupSecondaryButton.buttonText
             btnSecondary.setOnClickListener {
 
-                eventClickActionData.addProperty("eventType", "CLICKED")
-                eventClickActionData.addProperty("ts", System.currentTimeMillis())
-                eventClickActionData.addProperty("tz", TimeZone.getDefault().displayName)
-
                 triggerEventClickAction.onTriggerEventAction(
-                    eventClickActionData,
                     TriggerEventConstants.Companion.EventClickType.SECONDARY_BUTTON
                 )
 
@@ -184,7 +160,6 @@ internal class TriggerPopupDialog {
             urlForOnClickOnImage: String,
             popupPrimaryButton: PopupPrimaryButton,
             popupSecondaryButton: PopupSecondaryButton,
-            eventClickActionData: JsonObject,
             triggerEventClickAction: TriggerEventClickAction
         ) {
             val dialog = Dialog(context, R.style.custom_style_dialog)
@@ -202,12 +177,7 @@ internal class TriggerPopupDialog {
             view.setOnClickListener {
                 dialog.dismiss()
 
-                eventClickActionData.addProperty("eventType", "DISCARDED")
-                eventClickActionData.addProperty("ts", System.currentTimeMillis())
-                eventClickActionData.addProperty("tz", TimeZone.getDefault().displayName)
-
                 triggerEventClickAction.onTriggerEventAction(
-                    eventClickActionData,
                     TriggerEventConstants.Companion.EventClickType.CLOSE_EVENT
                 )
             }
@@ -282,7 +252,6 @@ internal class TriggerPopupDialog {
             popupMessage: PopupMessage,
             imageUrl:String,
             urlForOnClickOnImage: String,
-            eventClickActionData: JsonObject,
             triggerEventClickAction: TriggerEventClickAction
         ) {
 
@@ -301,12 +270,7 @@ internal class TriggerPopupDialog {
             view.setOnClickListener {
                 dialog.dismiss()
 
-                eventClickActionData.addProperty("eventType", "DISCARDED")
-                eventClickActionData.addProperty("ts", System.currentTimeMillis())
-                eventClickActionData.addProperty("tz", TimeZone.getDefault().displayName)
-
                 triggerEventClickAction.onTriggerEventAction(
-                    eventClickActionData,
                     TriggerEventConstants.Companion.EventClickType.CLOSE_EVENT
                 )
             }

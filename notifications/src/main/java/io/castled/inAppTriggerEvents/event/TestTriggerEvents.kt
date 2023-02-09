@@ -38,14 +38,10 @@ class TestTriggerEvents private constructor(){
             urlForOnClickOnImage,
             popupPrimaryButton,
             popupSecondaryButton,
-            JsonObject(),
             object : TriggerEventClickAction {
                 override fun onTriggerEventAction(
-                    jsonObjectBody: JsonObject,
                     triggerEventConstants: TriggerEventConstants.Companion.EventClickType
-                ) {
-                    Log.d(TAG, "Event Action API Body: $jsonObjectBody")
-                }
+                ) { }
 
             }
         )
@@ -70,14 +66,10 @@ class TestTriggerEvents private constructor(){
             urlForOnClickOnImage,
             popupPrimaryButton,
             popupSecondaryButton,
-            JsonObject(),
             object : TriggerEventClickAction {
                 override fun onTriggerEventAction(
-                    jsonObjectBody: JsonObject,
                     triggerEventConstants: TriggerEventConstants.Companion.EventClickType
-                ) {
-                    Log.d(TAG, "Event Action API Body: $jsonObjectBody")
-                }
+                ) {}
 
             }
         )
@@ -95,17 +87,17 @@ class TestTriggerEvents private constructor(){
             popupMessage,
             imageUrl,
             urlForOnClickOnImage,
-            JsonObject(),
             object : TriggerEventClickAction {
                 override fun onTriggerEventAction(
-                    jsonObjectBody: JsonObject,
                     triggerEventConstants: TriggerEventConstants.Companion.EventClickType
-                ) {
-                    Log.d(TAG, "Event Action API Body: $jsonObjectBody")
-                }
+                ) {}
 
             }
         )
+    }
+
+    fun showDbTriggerEventDialog(context: Context, eventType: Int){
+        TriggerEvent.getInstance().findAndLaunchTriggerEventForTest(context, eventType)
     }
 
     fun fetchAndSaveTriggerEvents(context: Context){

@@ -5,7 +5,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
-import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
@@ -15,14 +14,11 @@ import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
 import io.castled.inAppTriggerEvents.models.TriggerEventModel
 import io.castled.inAppTriggerEvents.requests.ServiceGenerator
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType
-import okhttp3.RequestBody
-import org.json.JSONObject
 import retrofit2.Response
 import java.util.*
 
@@ -97,7 +93,7 @@ internal class TriggerEvent private constructor(){
             val eventsResponse = ServiceGenerator.requestApi()
                 .logEventView("test-3b229735-04ae-455f-a5d4-20a89c092927", eventBody)
 
-            Log.d(TAG, "1. ->: ${eventsResponse.body()}")
+            /*Log.d(TAG, "1. ->: ${eventsResponse.body()}")
             Log.d(TAG, "2. ->: ${eventsResponse.isSuccessful}")
             Log.d(TAG, "3. ->: ${eventsResponse.message()}")
             Log.d(TAG, "4. ->: ${eventsResponse.code()}")
@@ -110,20 +106,33 @@ internal class TriggerEvent private constructor(){
                 eventsResponse.body()
             } else {
                 ""
-            }).toString()
+            }).toString()*/
+
+            eventsResponse.raw().toString()
         }
     }
 
     private fun initiateTriggerEventLogToCloud(eventBody: JsonObject){
-        CoroutineScope(Main).launch {
+
+        CoroutineScope(Default).launch {
+//            val d = TimeZone.getDefault()
+//            Log.d(TAG, "1->>: ${Calendar.getInstance().timeZone.getDisplayName(false, TimeZone.SHORT)}")
+//            Log.d(TAG, "2: ${Calendar.getInstance()}")
+//            Log.d(TAG, "3: ${context.getResources().getConfiguration().locale.getCountry()}")
+
+            eventBody.addProperty("ts", System.currentTimeMillis())
+            eventBody.addProperty("tz", TimeZone.getDefault().displayName)
+
             val response = updateTriggerEventLogToCloud(eventBody)
-            Log.d(TAG, "Return value for Event log to cloud: $response")
+            Log.d(TAG, "********* ## Log Trigger Event to Cloud ## *********")
+            Log.d(TAG, "Body(raw): $eventBody\nResponse: $response")
+            Log.d(TAG, "*********  *********  *********  *********")
         }
     }
 
     private var notificationObserver: LiveData<List<TriggerEventModel>>? = null
     fun observeDatabaseNotification(context: Context, viewLifecycleOwner: LifecycleOwner) {
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Default).launch {
             if (notificationObserver == null) {
                 val db = TriggerEventDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
                 notificationObserver = db.getLiveDataTriggerEventsFromDb()
@@ -157,23 +166,52 @@ internal class TriggerEvent private constructor(){
     }
 
     internal fun findAndLaunchTriggerEvent(context: Context) = CoroutineScope(Main).launch {
-        withContext(Dispatchers.Default) {
+        withContext(Default) {
 
             val dbTriggerNotifications = dbFetchTriggerEvents(context)
             Log.d(TAG, "findAndLaunchTriggerNotification: ${dbTriggerNotifications.map { it.notificationId }}")
 
             if (dbTriggerNotifications.isNotEmpty()) {
-                val notification = dbTriggerNotifications.first()
+                val event = dbTriggerNotifications.first()
                 withContext(Main){
-                    when (TriggerPopupDialog.getTriggerEventType(notification)) {
+                    when (TriggerPopupDialog.getTriggerEventType(event)) {
                         TriggerEventConstants.Companion.TriggerEventType.MODAL -> {
-                            launchModalTriggerNotification(context, notification)
+                            launchModalTriggerNotification(context, event)
                         }
                         TriggerEventConstants.Companion.TriggerEventType.SLIDE_UP -> {
-                            launchSlideUpTriggerNotification(context, notification)
+                            launchSlideUpTriggerNotification(context, event)
                         }
                         TriggerEventConstants.Companion.TriggerEventType.FULL_SCREEN -> {
-                            launchFullScreenTriggerNotification(context, notification)
+                            launchFullScreenTriggerNotification(context, event)
+                        }
+                        else -> {}
+                    }
+                }
+            }
+
+        }
+    }
+
+
+//The below code is just to test the different Event Dialog on the screen. eventType is 0 or 1 or 2
+    internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) = CoroutineScope(Main).launch {
+        withContext(Default) {
+
+            val dbTriggerNotifications = dbFetchTriggerEvents(context)
+            Log.d(TAG, "findAndLaunchTriggerNotification: ${dbTriggerNotifications.map { it.notificationId }}")
+
+            if (dbTriggerNotifications.isNotEmpty()) {
+                val event = dbTriggerNotifications[eventType]
+                withContext(Main){
+                    when (TriggerPopupDialog.getTriggerEventType(event)) {
+                        TriggerEventConstants.Companion.TriggerEventType.MODAL -> {
+                            launchModalTriggerNotification(context, event)
+                        }
+                        TriggerEventConstants.Companion.TriggerEventType.SLIDE_UP -> {
+                            launchSlideUpTriggerNotification(context, event)
+                        }
+                        TriggerEventConstants.Companion.TriggerEventType.FULL_SCREEN -> {
+                            launchFullScreenTriggerNotification(context, event)
                         }
                         else -> {}
                     }
@@ -296,33 +334,7 @@ internal class TriggerEvent private constructor(){
         eventClickActionData.addProperty("teamId", eventModel.teamId)
         eventClickActionData.addProperty("sourceContext", eventModel.sourceContext)
 
-        val eventViewActionData = JsonObject()
-        eventViewActionData.addProperty("teamId", eventModel.teamId)
-        eventViewActionData.addProperty("eventType", "VIEWED")
-        eventViewActionData.addProperty("sourceContext", eventModel.sourceContext)
-        eventViewActionData.addProperty("ts", System.currentTimeMillis())
-        eventViewActionData.addProperty("tz", TimeZone.getDefault().displayName)
-
-        val ev = JSONObject()
-       ev.put("teamId", eventModel.teamId)
-       ev.put("eventType", "VIEWED")
-       ev.put("sourceContext", eventModel.sourceContext)
-       ev.put("ts", System.currentTimeMillis())
-       ev.put("tz", TimeZone.getDefault().displayName)
-
-
-        val jsonObject1 = JSONObject()
-        jsonObject1.put("teamId", eventModel.teamId)
-        jsonObject1.put("eventType", "VIEWED")
-        jsonObject1.put("sourceContext", eventModel.sourceContext)
-        jsonObject1.put("ts", System.currentTimeMillis())
-        jsonObject1.put("tz", TimeZone.getDefault().displayName)
-
-        val jsonObjectString = jsonObject1.toString()
-
-
-
-        initiateTriggerEventLogToCloud(eventViewActionData)
+        initiateTriggerEventLogToCloud(prepareEventViewActionBodyData(eventModel))
 
         TriggerPopupDialog.showDialog(
             context,
@@ -333,26 +345,22 @@ internal class TriggerEvent private constructor(){
             if(modal.get("defaultClickAction").isJsonNull) "" else modal.get("defaultClickAction").asString,
             preparePopupPrimaryButton(buttonPrimary),
             preparePopupSecondaryButton(buttonSecondary),
-            eventClickActionData,
             object : TriggerEventClickAction{
                 override fun onTriggerEventAction(
-                    jsonObjectBody: JsonObject,
                     triggerEventConstants: TriggerEventConstants.Companion.EventClickType
                 ) {
                     when(triggerEventConstants) {
                         TriggerEventConstants.Companion.EventClickType.CLOSE_EVENT -> {
-                            Log.d(TAG, "Event Action API Body: $jsonObjectBody")
+                            initiateTriggerEventLogToCloud(prepareEventCloseActionBodyData(eventModel))
                         }
                         TriggerEventConstants.Companion.EventClickType.IMAGE_CLICK -> {
-                            jsonObjectBody.addProperty("actionType", modal.get("defaultClickAction").asString)
-                            jsonObjectBody.addProperty("actionUri", modal.get("url").asString)
-                            Log.d(TAG, "Event Action API Body: $jsonObjectBody")
+                            initiateTriggerEventLogToCloud(prepareEventCloseActionBodyData(eventModel))
                         }
                         TriggerEventConstants.Companion.EventClickType.PRIMARY_BUTTON -> {
-                            getJsonObjectBodyOnButtonClick(jsonObjectBody, buttonPrimary)
+                            initiateTriggerEventLogToCloud(prepareEventButtonClickActionBodyData(eventClickActionData, buttonPrimary))
                         }
                         TriggerEventConstants.Companion.EventClickType.SECONDARY_BUTTON -> {
-                            getJsonObjectBodyOnButtonClick(jsonObjectBody, buttonSecondary)
+                            initiateTriggerEventLogToCloud(prepareEventButtonClickActionBodyData(eventClickActionData, buttonSecondary))
                         }
                         else -> {}
                     }
@@ -362,14 +370,20 @@ internal class TriggerEvent private constructor(){
         )
     }
 
-    private fun launchFullScreenTriggerNotification(context: Context, notification: TriggerEventModel) {
-        val message: JsonObject = notification.message.asJsonObject
+
+
+    private fun launchFullScreenTriggerNotification(context: Context, eventModel: TriggerEventModel) {
+        val message: JsonObject = eventModel.message.asJsonObject
         val modal: JsonObject = message.getAsJsonObject("fs")
         val buttons: JsonArray = modal.getAsJsonArray("actionButtons")
         val buttonPrimary: JsonObject = buttons[0].asJsonObject
         val buttonSecondary: JsonObject = buttons[1].asJsonObject
 
         val eventClickActionData = JsonObject()
+        eventClickActionData.addProperty("teamId", eventModel.teamId)
+        eventClickActionData.addProperty("sourceContext", eventModel.sourceContext)
+
+        initiateTriggerEventLogToCloud(prepareEventViewActionBodyData(eventModel))
 
         TriggerPopupDialog.showFullscreenDialog(
             context,
@@ -380,26 +394,24 @@ internal class TriggerEvent private constructor(){
             if(modal.get("defaultClickAction").isJsonNull) "" else modal.get("defaultClickAction").asString,
             preparePopupPrimaryButton(buttonPrimary),
             preparePopupSecondaryButton(buttonSecondary),
-            eventClickActionData,
             object : TriggerEventClickAction{
                 override fun onTriggerEventAction(
-                    jsonObjectBody: JsonObject,
                     triggerEventConstants: TriggerEventConstants.Companion.EventClickType
                 ) {
                     when(triggerEventConstants) {
                         TriggerEventConstants.Companion.EventClickType.CLOSE_EVENT -> {
-                            Log.d(TAG, "Event Action API Body: $jsonObjectBody")
+                            eventClickActionData.addProperty("eventType", "DISCARDED")
+//                            Log.d(TAG, "Event Action API Body: $jsonObjectBody")
+                            initiateTriggerEventLogToCloud(eventClickActionData)
                         }
                         TriggerEventConstants.Companion.EventClickType.IMAGE_CLICK -> {
-                            jsonObjectBody.addProperty("actionType", modal.get("defaultClickAction").asString)
-                            jsonObjectBody.addProperty("actionUri", modal.get("url").asString)
-                            Log.d(TAG, "Event Action API Body: $jsonObjectBody")
+                            initiateTriggerEventLogToCloud(prepareEventImageClickActionBodyData(eventModel))
                         }
                         TriggerEventConstants.Companion.EventClickType.PRIMARY_BUTTON -> {
-                            getJsonObjectBodyOnButtonClick(jsonObjectBody, buttonPrimary)
+                            initiateTriggerEventLogToCloud(prepareEventButtonClickActionBodyData(eventClickActionData, buttonPrimary))
                         }
                         TriggerEventConstants.Companion.EventClickType.SECONDARY_BUTTON -> {
-                            getJsonObjectBodyOnButtonClick(jsonObjectBody, buttonSecondary)
+                            initiateTriggerEventLogToCloud(prepareEventButtonClickActionBodyData(eventClickActionData, buttonSecondary))
                         }
                         else -> {}
                     }
@@ -408,35 +420,34 @@ internal class TriggerEvent private constructor(){
         )
     }
 
-    private fun launchSlideUpTriggerNotification(context: Context, notification: TriggerEventModel) {
-        Log.d(TAG, "notification: $notification")
-        val message: JsonObject = notification.message.asJsonObject
+    private fun launchSlideUpTriggerNotification(context: Context, eventModel: TriggerEventModel) {
+        Log.d(TAG, "notification: $eventModel")
+        val message: JsonObject = eventModel.message.asJsonObject
         val modal: JsonObject = message.getAsJsonObject("slideUp")
-
+        Log.d(TAG, "slideUp: $modal")
 
         val eventClickActionData = JsonObject()
+        eventClickActionData.addProperty("teamId", eventModel.teamId)
+        eventClickActionData.addProperty("sourceContext", eventModel.sourceContext)
 
-        Log.d(TAG, "slideUp: $modal")
+        initiateTriggerEventLogToCloud(prepareEventViewActionBodyData(eventModel))
+
         TriggerPopupDialog.showSlideUpDialog(
             context,
             modal.get("bgColor").asString,
             preparePopupMessage(modal),
             if(modal.get("imageUrl").isJsonNull) "" else modal.get("imageUrl").asString,
             if(modal.get("url").isJsonNull) "" else modal.get("url").asString,
-            eventClickActionData,
             object : TriggerEventClickAction{
                 override fun onTriggerEventAction(
-                    jsonObjectBody: JsonObject,
                     triggerEventConstants: TriggerEventConstants.Companion.EventClickType
                 ) {
                     when(triggerEventConstants) {
                         TriggerEventConstants.Companion.EventClickType.CLOSE_EVENT -> {
-                            Log.d(TAG, "Event Action API Body: $jsonObjectBody")
+                            initiateTriggerEventLogToCloud(prepareEventCloseActionBodyData(eventModel))
                         }
                         TriggerEventConstants.Companion.EventClickType.IMAGE_CLICK -> {
-                            jsonObjectBody.addProperty("actionType", modal.get("defaultClickAction").asString)
-                            jsonObjectBody.addProperty("actionUri", modal.get("url").asString)
-                            Log.d(TAG, "Event Action API Body: $jsonObjectBody")
+                            initiateTriggerEventLogToCloud(prepareEventImageClickActionBodyData(eventModel))
                         }
                         TriggerEventConstants.Companion.EventClickType.PRIMARY_BUTTON -> {}
                         TriggerEventConstants.Companion.EventClickType.SECONDARY_BUTTON -> {}
@@ -447,8 +458,54 @@ internal class TriggerEvent private constructor(){
         )
     }
 
-    private fun getJsonObjectBodyOnButtonClick(jsonObjectBody: JsonObject, jsonButton: JsonObject):JsonObject {
+    private fun prepareEventViewActionBodyData(eventModel: TriggerEventModel): JsonObject {
+        val eventViewActionBodyData = JsonObject()
+        eventViewActionBodyData.addProperty("teamId", eventModel.teamId)
+        eventViewActionBodyData.addProperty("eventType", "VIEWED")
+        eventViewActionBodyData.addProperty("sourceContext", eventModel.sourceContext)
 
+        return eventViewActionBodyData
+    }
+
+    private fun prepareEventCloseActionBodyData(eventModel: TriggerEventModel): JsonObject {
+        val eventViewActionBodyData = JsonObject()
+        eventViewActionBodyData.addProperty("teamId", eventModel.teamId)
+        eventViewActionBodyData.addProperty("eventType", "DISCARDED")
+        eventViewActionBodyData.addProperty("sourceContext", eventModel.sourceContext)
+
+        return eventViewActionBodyData
+    }
+
+    fun prepareEventImageClickActionBodyData(eventModel: TriggerEventModel): JsonObject{
+        val message: JsonObject = eventModel.message.asJsonObject
+        val modal: JsonObject =
+            if (message.has("modal"))
+                message.getAsJsonObject("modal")
+            else if (message.has("fs"))
+                message.getAsJsonObject("fs")
+            else if (message.has("slideUp"))
+                message.getAsJsonObject("slideUp")
+            else JsonObject()
+
+        val eventClickActionData = JsonObject()
+        eventClickActionData.addProperty("teamId", eventModel.teamId)
+        eventClickActionData.addProperty("sourceContext", eventModel.sourceContext)
+        eventClickActionData.addProperty("eventType", "CLICKED")
+        if (modal.has("defaultClickAction")){
+            eventClickActionData.addProperty("actionType", if (modal.get("defaultClickAction").isJsonNull) null else modal.get("defaultClickAction").asString)
+        } else if (modal.has("clickAction")){
+            eventClickActionData.addProperty("actionType", if (modal.get("clickAction").isJsonNull) null else modal.get("clickAction").asString)
+        }
+        if (modal.has("url")){
+            eventClickActionData.addProperty("actionUri", if (modal.get("url").isJsonNull) null else modal.get("url").asString)
+        }
+
+       return eventClickActionData
+    }
+
+    private fun prepareEventButtonClickActionBodyData(jsonObjectBody: JsonObject, jsonButton: JsonObject):JsonObject {
+
+        jsonObjectBody.addProperty("eventType", "CLICKED")
         jsonObjectBody.addProperty("actionType", jsonButton.get("clickAction").asString)
         jsonObjectBody.addProperty("actionUri", if (jsonButton.get("url").isJsonNull) null else jsonButton.get("url").asString)
         jsonObjectBody.addProperty("btnLabel", jsonButton.get("label").asString)
@@ -457,13 +514,13 @@ internal class TriggerEvent private constructor(){
     }
 
     private suspend fun dbFetchTriggerEvents(context: Context): List<TriggerEventModel> =
-        withContext(Dispatchers.Default) {
+        withContext(Default) {
             val db = TriggerEventDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
             db.getTriggerEventsFromDb()
         }
 
     private suspend fun dbDeleteTriggerEvents(context: Context): Int =
-        withContext(Dispatchers.Default) {
+        withContext(Default) {
             val db = TriggerEventDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
             db.deleteDbTriggerEvents()
         }
@@ -472,7 +529,7 @@ internal class TriggerEvent private constructor(){
         context: Context,
         notifications: List<TriggerEventModel>
     ) =
-        withContext(Dispatchers.Default) {
+        withContext(Default) {
             val db = TriggerEventDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
             db.insertTriggerEventsIntoDb(notifications)
         }
