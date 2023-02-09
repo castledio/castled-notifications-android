@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
@@ -90,23 +91,11 @@ internal class TriggerEvent private constructor(){
         } as List<TriggerEventModel>
     }
 
-    private suspend fun updateTriggerEventLogToCloud(eventBody: JSONObject): String {
-
-        val body: RequestBody = RequestBody.create(
-            MediaType.parse("application/json; charset=utf-8"),
-            eventBody.toString()
-        )
-
-        val body2: RequestBody =
-            RequestBody.create(MediaType.parse("application/json; charset=utf-8"), eventBody.toString())
-
-
-        Log.d(TAG, "1a. ->: ${body.contentType().toString()}")
-        Log.d(TAG, "2a. ->: ${eventBody.toString()}")
+    private suspend fun updateTriggerEventLogToCloud(eventBody: JsonObject): String {
 
         return withContext(IO) {
             val eventsResponse = ServiceGenerator.requestApi()
-                .logEventView("test-3b229735-04ae-455f-a5d4-20a89c092927", body2)
+                .logEventView("test-3b229735-04ae-455f-a5d4-20a89c092927", eventBody)
 
             Log.d(TAG, "1. ->: ${eventsResponse.body()}")
             Log.d(TAG, "2. ->: ${eventsResponse.isSuccessful}")
@@ -117,6 +106,7 @@ internal class TriggerEvent private constructor(){
             Log.d(TAG, "7. ->: $eventBody")
 
             (if (eventsResponse.isSuccessful && eventsResponse.body() != null){
+                "eventsResponse.body()"
                 eventsResponse.body()
             } else {
                 ""
@@ -124,7 +114,7 @@ internal class TriggerEvent private constructor(){
         }
     }
 
-    private fun initiateTriggerEventLogToCloud(eventBody: JSONObject){
+    private fun initiateTriggerEventLogToCloud(eventBody: JsonObject){
         CoroutineScope(Main).launch {
             val response = updateTriggerEventLogToCloud(eventBody)
             Log.d(TAG, "Return value for Event log to cloud: $response")
@@ -320,7 +310,19 @@ internal class TriggerEvent private constructor(){
        ev.put("ts", System.currentTimeMillis())
        ev.put("tz", TimeZone.getDefault().displayName)
 
-        initiateTriggerEventLogToCloud(ev)
+
+        val jsonObject1 = JSONObject()
+        jsonObject1.put("teamId", eventModel.teamId)
+        jsonObject1.put("eventType", "VIEWED")
+        jsonObject1.put("sourceContext", eventModel.sourceContext)
+        jsonObject1.put("ts", System.currentTimeMillis())
+        jsonObject1.put("tz", TimeZone.getDefault().displayName)
+
+        val jsonObjectString = jsonObject1.toString()
+
+
+
+        initiateTriggerEventLogToCloud(eventViewActionData)
 
         TriggerPopupDialog.showDialog(
             context,

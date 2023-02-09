@@ -2,8 +2,6 @@ package io.castled.inAppTriggerEvents.requests
 
 import com.google.gson.JsonObject
 import io.castled.inAppTriggerEvents.models.TriggerEventModel
-import okhttp3.RequestBody
-import org.json.JSONObject
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -45,7 +43,15 @@ internal interface ApiInterface {
         @Path("api-key")
         apikey: String,
         @Body
-        body: JSONObject
+        body: JsonObject
+    ): Response<Unit>
+
+   /* @POST("backend/v1/inapp/{api-key}/android/event")
+    suspend fun logEventView(
+        @Path("api-key")
+        apikey: String,
+        @Body
+        params: RequestBody
     ): Response<String>
 
     @POST("backend/v1/inapp/{api-key}/android/event")
@@ -53,7 +59,7 @@ internal interface ApiInterface {
         @Path("api-key")
         apikey: String,
         @Body
-        params: RequestBody
-    ): Response<String>
+        params: String
+    ): Response<String>*/
 
 }
