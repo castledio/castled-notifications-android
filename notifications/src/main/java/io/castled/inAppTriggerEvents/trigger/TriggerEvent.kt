@@ -300,12 +300,30 @@ internal class TriggerEvent private constructor(){
         modal.get("titleBgColor").asString
     )
 
-    private fun preparePopupMessage(modal: JsonObject) = PopupMessage(
-        if (modal.get("body").isJsonNull) "" else modal.get("body").asString,
-        modal.get("bodyFontColor").asString,
-        modal.get("bodyFontSize").asFloat,
-        modal.get("bodyBgColor").asString
-    )
+    private fun preparePopupMessage(modal: JsonObject): PopupMessage{
+
+
+        if (modal.has("bodyFontColor") && modal.has("bodyFontSize") && modal.has("bodyBgColor")){
+        return PopupMessage(
+            if (modal.get("body").isJsonNull) "" else modal.get("body").asString,
+            modal.get("bodyFontColor").asString,
+            modal.get("bodyFontSize").asFloat,
+            modal.get("bodyBgColor").asString
+        )
+        } else if (modal.has("bgColor") && modal.has("fontSize") && modal.has("fontColor")){
+            return PopupMessage(
+                if (modal.get("body").isJsonNull) "" else modal.get("body").asString,
+                modal.get("fontColor").asString,
+                modal.get("fontSize").asFloat,
+                modal.get("bgColor").asString
+            )
+        } else return PopupMessage(
+            if (modal.get("body").isJsonNull) "" else modal.get("body").asString,
+            "#000000",
+            18F,
+            "#FFFFFF"
+        )
+    }
 
     private fun preparePopupPrimaryButton(primaryPopupButtonJson: JsonObject) = PopupPrimaryButton(
         primaryPopupButtonJson.get("label").asString,

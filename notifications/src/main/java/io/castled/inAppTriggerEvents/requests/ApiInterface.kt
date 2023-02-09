@@ -24,7 +24,7 @@ internal interface ApiInterface {
     * Sample URL:-
     * https://test.castled.io/backend/v1/inapp/test-3b229735-04ae-455f-a5d4-20a89c092927/android/event
     *
-    * Body(raw):-
+    * Sample Body(raw):-
     * {
     "teamId" : 1,
     "eventType" : "CLICKED",
