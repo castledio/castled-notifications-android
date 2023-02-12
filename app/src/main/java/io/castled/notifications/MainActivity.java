@@ -30,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-//        EventNotification.getInstance().observeLifecycle(getLifecycle());
-        EventNotification.getInstance().observeLifecycle(MainActivity.this);
+//        EventNotification.getInstance().observeLifecycle(this, getLifecycle(), "MainActivity");
+//        EventNotification.getInstance().observeLifecycle(MainActivity.this);
 
         setSupportActionBar(binding.toolbar);
 

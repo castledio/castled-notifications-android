@@ -5,11 +5,14 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import io.castled.inAppTriggerEvents.models.TriggerEventModel
 import io.castled.inAppTriggerEvents.trigger.TriggerEvent
 import io.castled.inAppTriggerEvents.observer.AppActivityLifecycleObserver
 import io.castled.inAppTriggerEvents.observer.AppLifecycleObserver
+import io.castled.inAppTriggerEvents.observer.FragmentLifeCycleObserver
+import io.castled.inAppTriggerEvents.observer.ScreenLifeCycleObserver
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -44,8 +47,8 @@ class EventNotification private constructor() {
         }
     }
 
-    fun observeLifecycle(context: Context, lifecycle: Lifecycle){
-        lifecycle.addObserver(AppLifecycleObserver(context))
+    fun observeLifecycle(context: Context, lifecycle: Lifecycle, screenName: String){
+        lifecycle.addObserver(AppLifecycleObserver(context, screenName))
     }
 
     fun observeLifecycle(activity: Activity){
@@ -54,11 +57,57 @@ class EventNotification private constructor() {
         }
     }
 
+    fun observeLifecycle(fragment: Fragment, screenName: String) {
+        fragment.viewLifecycleOwner.lifecycle.addObserver(FragmentLifeCycleObserver(fragment.requireContext(), screenName))
+    }
+
+    fun logCustomEventBySdk(context: Context, eventName: String, eventParams: Map<String, Any>){
+        val e = mutableMapOf<String, Any>()
+        e["event"] = eventName
+        e["params"] = eventParams
+        TriggerEvent.getInstance().findAndLaunchEvent(context, eventName, e){ events ->
+            Log.d(TAG, "=>>(Size: ${events.size})")
+        }
+    }
+
+    fun logCustomEvent(context: Context, eventName: String, eventParams: Map<String, Any>){
+        TriggerEvent.getInstance().findAndLaunchEvent(context, eventName, eventParams){ events ->
+            Log.d(TAG, "=>>(Size: ${events.size})")
+        }
+    }
+
+    fun logCustomEventForEventNameInEventParam(context: Context, eventParams: Map<String, Any>){
+        TriggerEvent.getInstance().findAndLaunchEvent(context, eventParams){ events ->
+            Log.d(TAG, "=>>(Size: ${events.size})")
+        }
+    }
+
+    fun logAppOpenEvent(context: Context){
+        val eventParams = mutableMapOf<String, Any?>()
+        eventParams["event"] = "app_opened"
+        eventParams["params"] = null
+        TriggerEvent.getInstance().findAndLaunchEvent(context, eventParams){ events ->
+            Log.d(TAG, "=>>(Size: ${events.size})")
+        }
+    }
+
+    fun logPageViewedEvent(context: Context, pageName: String){
+        val eventParams = mutableMapOf<String, Any?>()
+        eventParams["event"] = "page_viewed"
+
+        val params = mutableMapOf<String, Any>()
+        eventParams["name"] = pageName
+
+        eventParams["params"] = params
+        TriggerEvent.getInstance().findAndLaunchEvent(context, eventParams){ events ->
+            Log.d(TAG, "=>>(Size: ${events.size})")
+        }
+    }
+
     fun triggerEventsFetchFromCloudSetFrequencyInSeconds(timeInSeconds: Long){
         triggerEventsFrequencyTime = TimeUnit.SECONDS.toMillis(timeInSeconds)
         Log.d(TAG, "Event Frequency: $timeInSeconds seconds or $triggerEventsFrequencyTime milliseconds")
     }
-
 
     fun observeEventNotification(context: Context, lifecycle: Lifecycle) {
 

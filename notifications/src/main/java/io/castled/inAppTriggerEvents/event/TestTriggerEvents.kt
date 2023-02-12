@@ -2,11 +2,8 @@ package io.castled.inAppTriggerEvents.event
 
 import android.content.Context
 import android.util.Log
-import com.google.gson.JsonObject
 import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
 import io.castled.inAppTriggerEvents.trigger.*
-import io.castled.inAppTriggerEvents.trigger.TriggerEvent
-import io.castled.inAppTriggerEvents.trigger.TriggerPopupDialog
 
 private const val TAG = "TestTriggerEvents"
 class TestTriggerEvents private constructor(){
@@ -105,6 +102,12 @@ class TestTriggerEvents private constructor(){
     }
 
     fun findAndLaunchTriggerEvent(context: Context){
-        TriggerEvent.getInstance().findAndLaunchTriggerEvent(context)
+        TriggerEvent.getInstance().findAndLaunchDbTriggerEvent(context)
+    }
+
+    fun testLogTriggerEvent(context: Context, screenName: String){
+        TriggerEvent.getInstance().findAndLaunchEvent(context, screenName) { triggerEvents ->
+            Log.d(TAG, "=>>(Size: ${triggerEvents.size}) ${triggerEvents.toList()}")
+        }
     }
 }

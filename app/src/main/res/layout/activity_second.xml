@@ -27,10 +27,24 @@
         android:inputType="number" />
 
     <Button
-        android:id="@+id/btn_show_db_Event"
+        android:id="@+id/btn_show_db_event"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="Show Db event" />
+
+    <Button
+        android:id="@+id/btn_log_custom_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Log Custom Event" />
+
+    <Button
+        android:id="@+id/btn_log_custom_event_name_in"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Log Custom Event(Event name inside Eventparams)" />
 
 </LinearLayout>

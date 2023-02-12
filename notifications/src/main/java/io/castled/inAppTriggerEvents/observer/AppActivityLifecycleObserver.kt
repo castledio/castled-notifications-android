@@ -20,7 +20,7 @@ internal class AppActivityLifecycleObserver: Application.ActivityLifecycleCallba
     override fun onActivityResumed(activity: Activity) {
         Log.d(TAG, "onActivityResumed: ${activity.componentName.shortClassName}")
 
-        TriggerEvent.getInstance().findAndLaunchTriggerEvent(activity)
+//        TriggerEvent.getInstance().findAndLaunchDbTriggerEvent(activity)
     }
 
     override fun onActivityPaused(activity: Activity) {

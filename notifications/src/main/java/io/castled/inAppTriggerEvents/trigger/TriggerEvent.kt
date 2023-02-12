@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
@@ -13,6 +14,10 @@ import io.castled.inAppTriggerEvents.database.TriggerEventDatabaseHelperImpl
 import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
 import io.castled.inAppTriggerEvents.models.TriggerEventModel
 import io.castled.inAppTriggerEvents.requests.ServiceGenerator
+import io.castled.notifications.trigger.EventFilterDeserializer
+import io.castled.notifications.trigger.TriggerParamsEvaluator
+import io.castled.notifications.trigger.models.EventFilter
+import io.castled.notifications.trigger.models.NestedEventFilter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
@@ -21,6 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 import java.util.*
+import kotlin.collections.HashMap
 
 
 private const val TAG = "TriggerEvent"
@@ -35,7 +41,6 @@ internal class TriggerEvent private constructor(){
             return if (this::triggerEvent.isInitialized) triggerEvent else TriggerEvent()
         }
     }
-
 
     internal fun fetchAndSaveTriggerEvents(context: Context) {
 
@@ -54,7 +59,6 @@ internal class TriggerEvent private constructor(){
         }
 
     }
-
 
     private suspend fun requestTriggerEventsFromCloud(context: Context?): List<TriggerEventModel> {
 
@@ -161,35 +165,100 @@ internal class TriggerEvent private constructor(){
     private fun startObservingTriggerNotification(context: Context) {
        CoroutineScope(Main).launch {
            fetchAndSaveTriggerEvents(context)
-           findAndLaunchTriggerEvent(context)
+           findAndLaunchDbTriggerEvent(context)
        }
     }
 
-    internal fun findAndLaunchTriggerEvent(context: Context) = CoroutineScope(Main).launch {
+    internal fun findAndLaunchEvent(context: Context, screenName: String, callBack: (List<TriggerEventModel>) -> Unit) {
+        CoroutineScope(Main).launch {
+            Log.d(TAG, "findAndLaunchEvent: ")
+            val eventParams: MutableMap<String, Any?> = HashMap()
+            eventParams["name"] = screenName
+
+            val value = evaluateDbTriggerEvent(context, eventParams)
+            launchTriggerEvent(context, value)
+            callBack.invoke(value)
+        }
+    }
+
+    internal fun findAndLaunchEvent(context: Context, eventName: String, eventParams: Map<String, Any?>, callBack: (List<TriggerEventModel>) -> Unit) {
+        CoroutineScope(Main).launch {
+            val eParams = eventParams.toMutableMap()
+            eParams["name"] = eventName
+            val value = evaluateDbTriggerEvent(context, eParams)
+            launchTriggerEvent(context, value)
+            callBack.invoke(value)
+        }
+    }
+
+
+    internal fun findAndLaunchEvent(context: Context, eventParamsWithEventName: Map<String, Any?>, callBack: (List<TriggerEventModel>) -> Unit) {
+        CoroutineScope(Main).launch {
+            val value = evaluateDbTriggerEvent(context, eventParamsWithEventName.toMutableMap())
+            launchTriggerEvent(context, value)
+            callBack.invoke(value)
+        }
+    }
+
+
+    private suspend fun evaluateDbTriggerEvent(
+        context: Context,
+        eventParam: MutableMap<String, Any?>
+    ): List<TriggerEventModel> =
+
         withContext(Default) {
+            val showOnScreenEvent = mutableListOf<TriggerEventModel>()
+            val triggerEvent = dbFetchTriggerEvents(context)
+            val triggerParamsEvaluator = TriggerParamsEvaluator()
 
-            val dbTriggerNotifications = dbFetchTriggerEvents(context)
-            Log.d(TAG, "findAndLaunchTriggerNotification: ${dbTriggerNotifications.map { it.notificationId }}")
+            triggerEvent.forEach { triggerEventModel ->
+//                    Log.d(TAG, "DB trigger JSON: ${triggerEventModel.trigger}")
+//                    Log.d(TAG, "DB trigger JSON(eventFilter): ${triggerEventModel.trigger.get("eventFilter").asJsonObject}")
 
-            if (dbTriggerNotifications.isNotEmpty()) {
-                val event = dbTriggerNotifications.first()
-                withContext(Main){
-                    when (TriggerPopupDialog.getTriggerEventType(event)) {
-                        TriggerEventConstants.Companion.TriggerEventType.MODAL -> {
-                            launchModalTriggerNotification(context, event)
-                        }
-                        TriggerEventConstants.Companion.TriggerEventType.SLIDE_UP -> {
-                            launchSlideUpTriggerNotification(context, event)
-                        }
-                        TriggerEventConstants.Companion.TriggerEventType.FULL_SCREEN -> {
-                            launchFullScreenTriggerNotification(context, event)
-                        }
-                        else -> {}
+                val gson = GsonBuilder()
+                    .registerTypeAdapter(EventFilter::class.java, EventFilterDeserializer())
+                    .create()
+                val eventFilter: EventFilter =
+                    gson.fromJson(
+                        triggerEventModel.trigger.get("eventFilter").asJsonObject,
+                        EventFilter::class.java
+                    )
+                if (triggerParamsEvaluator.evaluate(eventParam, eventFilter as NestedEventFilter))
+                    showOnScreenEvent.add(triggerEventModel)
+            }
+            showOnScreenEvent
+        }
+
+    internal fun findAndLaunchDbTriggerEvent(context: Context) = CoroutineScope(Default).launch {
+        val dbTriggerEvents = dbFetchTriggerEvents(context)
+        Log.d(TAG, "findAndLaunchTriggerNotification: ${dbTriggerEvents.map { it.notificationId }}")
+        launchTriggerEvent(context, dbTriggerEvents)
+    }
+
+    private fun launchTriggerEvent(
+        context: Context,
+        triggerEvents: List<TriggerEventModel>
+    ) {
+
+        if (triggerEvents.isNotEmpty()) {
+            val event = triggerEvents.first()
+            CoroutineScope(Main).launch {
+                Log.d(TAG, "launchTriggerEvent: ")
+                when (TriggerPopupDialog.getTriggerEventType(event)) {
+                    TriggerEventConstants.Companion.TriggerEventType.MODAL -> {
+                        launchModalTriggerNotification(context, event)
                     }
+                    TriggerEventConstants.Companion.TriggerEventType.SLIDE_UP -> {
+                        launchSlideUpTriggerNotification(context, event)
+                    }
+                    TriggerEventConstants.Companion.TriggerEventType.FULL_SCREEN -> {
+                        launchFullScreenTriggerNotification(context, event)
+                    }
+                    else -> {}
                 }
             }
-
         }
+
     }
 
 
@@ -301,8 +370,6 @@ internal class TriggerEvent private constructor(){
     )
 
     private fun preparePopupMessage(modal: JsonObject): PopupMessage{
-
-
         if (modal.has("bodyFontColor") && modal.has("bodyFontSize") && modal.has("bodyBgColor")){
         return PopupMessage(
             if (modal.get("body").isJsonNull) "" else modal.get("body").asString,
@@ -387,8 +454,6 @@ internal class TriggerEvent private constructor(){
             }
         )
     }
-
-
 
     private fun launchFullScreenTriggerNotification(context: Context, eventModel: TriggerEventModel) {
         val message: JsonObject = eventModel.message.asJsonObject
