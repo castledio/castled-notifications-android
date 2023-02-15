@@ -318,11 +318,13 @@ internal class TriggerPopupDialog {
         }
 
         private fun returnDefaultOrValidHexColor(hexColor: String , defaultHexColor: String): String {
+            if (hexColor.length == 7){
 //            val colorPattern: Pattern = Pattern.compile("#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})")
             val colorPattern: Pattern = Pattern.compile("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$")
             return if (colorPattern.matcher(hexColor).matches()) hexColor
             else if (colorPattern.matcher(defaultHexColor).matches()) defaultHexColor
             else throw Exception()
+            } else return defaultHexColor
         }
 
         /*fun showFullScreenDialog(context: Context, activity: Activity){
@@ -443,7 +445,9 @@ internal class TriggerPopupDialog {
             dialog.show()
         }
 
-        internal fun getTriggerEventType(notificationModel: TriggerEventModel): TriggerEventConstants.Companion.TriggerEventType{
+        internal fun getTriggerEventType(notificationModel: TriggerEventModel?): TriggerEventConstants.Companion.TriggerEventType{
+            if (notificationModel == null) return TriggerEventConstants.Companion.TriggerEventType.NONE
+
             val message:  JsonObject = notificationModel.message.asJsonObject
 
             if (message.has("type")){

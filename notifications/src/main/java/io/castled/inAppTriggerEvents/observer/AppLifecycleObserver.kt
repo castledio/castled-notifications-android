@@ -6,6 +6,7 @@ import android.util.Log.d
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import io.castled.inAppTriggerEvents.event.EventNotification
 import io.castled.inAppTriggerEvents.trigger.TriggerEvent
 
 private const val TAG = "AppLifecycleObserver"
@@ -20,6 +21,9 @@ internal class AppLifecycleObserver(val context: Context, val screenName: String
             }
             Lifecycle.Event.ON_RESUME -> {
                 d(TAG, "on resume $source, ${source.lifecycle.currentState}" )
+
+                EventNotification.getInstance().logAppOpenEvent(context)
+                EventNotification.getInstance().logPageViewedEvent(context, screenName)
                 // The below line is to just test Db events.
 //                TriggerEvent.getInstance().findAndLaunchDbTriggerEvent(context)
 

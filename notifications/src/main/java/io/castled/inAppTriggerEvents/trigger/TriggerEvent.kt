@@ -71,7 +71,7 @@ internal class TriggerEvent private constructor(){
         return withContext(IO) {
             val eventsResponse = ServiceGenerator.requestApi()
                 //using dheeraj's credentials as defaults. api key is same as instance id
-                .makeNotificationQuery("829c38e2e359d94372a2e0d35e1f74df", "dheeraj.osw@gmail.com")
+                .makeNotificationQuery("829c38e2e359d94372a2e0d35e1f74df", "frank@castled.io")
 //            showApiLog(eventsResponse)
             if (eventsResponse.isSuccessful && eventsResponse.body() != null) {
                 eventsResponse.body()
@@ -266,31 +266,55 @@ internal class TriggerEvent private constructor(){
 
 
 //The below code is just to test the different Event Dialog on the screen. eventType is 0 or 1 or 2
-    internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) = CoroutineScope(Main).launch {
-        withContext(Default) {
+internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) =
+    CoroutineScope(Main).launch {
+        if (eventType == 0 || eventType == 1 || eventType == 2) {
 
-            val dbTriggerNotifications = dbFetchTriggerEvents(context)
-            Log.d(TAG, "findAndLaunchTriggerNotification: ${dbTriggerNotifications.map { it.notificationId }}")
+            withContext(Default) {
 
-            if (dbTriggerNotifications.isNotEmpty()) {
-                val event = dbTriggerNotifications[eventType]
-                withContext(Main){
-                    when (TriggerPopupDialog.getTriggerEventType(event)) {
-                        TriggerEventConstants.Companion.TriggerEventType.MODAL -> {
-                            launchModalTriggerNotification(context, event)
+                val triggerEventType = when (eventType) {
+                    0 -> TriggerEventConstants.Companion.TriggerEventType.MODAL
+                    1 -> TriggerEventConstants.Companion.TriggerEventType.FULL_SCREEN
+                    2 -> TriggerEventConstants.Companion.TriggerEventType.SLIDE_UP
+                    else -> TriggerEventConstants.Companion.TriggerEventType.NONE
+                }
+
+                val dbTriggerNotifications = dbFetchTriggerEvents(context)
+                Log.d(TAG, "findAndLaunchTriggerNotification: ${dbTriggerNotifications.map { it.notificationId }}")
+
+                if (dbTriggerNotifications.isNotEmpty()) {
+                    val event =
+                        dbTriggerNotifications.firstOrNull { TriggerPopupDialog.getTriggerEventType(it) == triggerEventType }
+                    withContext(Main) {
+                        when (TriggerPopupDialog.getTriggerEventType(event)) {
+                            TriggerEventConstants.Companion.TriggerEventType.MODAL -> {
+                                launchModalTriggerNotification(context, event!!)
+                            }
+                            TriggerEventConstants.Companion.TriggerEventType.SLIDE_UP -> {
+                                launchSlideUpTriggerNotification(context, event!!)
+                            }
+                            TriggerEventConstants.Companion.TriggerEventType.FULL_SCREEN -> {
+                                launchFullScreenTriggerNotification(context, event!!)
+                            }
+                            TriggerEventConstants.Companion.TriggerEventType.NONE -> {
+                                Toast.makeText(
+                                    context,
+                                    "No ${triggerEventType.name} event found in the database.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            else -> {}
                         }
-                        TriggerEventConstants.Companion.TriggerEventType.SLIDE_UP -> {
-                            launchSlideUpTriggerNotification(context, event)
-                        }
-                        TriggerEventConstants.Companion.TriggerEventType.FULL_SCREEN -> {
-                            launchFullScreenTriggerNotification(context, event)
-                        }
-                        else -> {}
                     }
                 }
+
             }
 
-        }
+        } else Toast.makeText(
+            context,
+            "Please enter 0 for MODAL, 1 for FULL_SCREEN or 2 for SLIDE_UP.",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     private fun getDefaultNotification(): TriggerEventModel{
