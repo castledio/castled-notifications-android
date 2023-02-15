@@ -71,8 +71,8 @@ internal class TriggerEvent private constructor(){
         return withContext(IO) {
             val eventsResponse = ServiceGenerator.requestApi()
                 //using dheeraj's credentials as defaults. api key is same as instance id
-                .makeNotificationQuery("829c38e2e359d94372a2e0d35e1f74df", "frank@castled.io")
-//            showApiLog(eventsResponse)
+                .makeNotificationQuery("829c38e2e359d94372a2e0d35e1f74df", "dheeraj.osw@gmail.com")
+            showApiLog(eventsResponse)
             if (eventsResponse.isSuccessful && eventsResponse.body() != null) {
                 eventsResponse.body()
             } else {
@@ -215,8 +215,8 @@ internal class TriggerEvent private constructor(){
             val triggerParamsEvaluator = TriggerParamsEvaluator()
 
             triggerEvent.forEach { triggerEventModel ->
-//                    Log.d(TAG, "DB trigger JSON: ${triggerEventModel.trigger}")
-//                    Log.d(TAG, "DB trigger JSON(eventFilter): ${triggerEventModel.trigger.get("eventFilter").asJsonObject}")
+                    Log.d(TAG, "DB trigger JSON: ${triggerEventModel.trigger}")
+                    Log.d(TAG, "DB trigger JSON(eventFilter): ${triggerEventModel.trigger.get("eventFilter").asJsonObject}")
 
                 val gson = GsonBuilder()
                     .registerTypeAdapter(EventFilter::class.java, EventFilterDeserializer())
@@ -316,6 +316,41 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
             Toast.LENGTH_SHORT
         ).show()
     }
+
+    //The below code is just to test the different Event Dialog on the screen. eventType is 0 or 1 or 2
+    internal fun findAndLaunchTriggerEventForTest(context: Context, event: JsonObject) =
+        CoroutineScope(Default).launch {
+
+            Log.d(TAG, "selected event: $event")
+
+            val eventLocal = TriggerEventModel(
+                event.get("id").asLong,
+                event.get("notificationId").asInt,
+                event.get("teamId").asLong,
+                event.get("sourceContext").asString,
+                event.get("startTs").asLong,
+                event.get("endTs").asLong,
+                event.get("ttl").asInt,
+                event.get("trigger").asJsonObject,
+                event.get("message").asJsonObject
+            )
+
+            withContext(Main) {
+                when (TriggerPopupDialog.getTriggerEventType(eventLocal)) {
+                    TriggerEventConstants.Companion.TriggerEventType.MODAL -> {
+                        launchModalTriggerNotification(context, eventLocal)
+                    }
+                    TriggerEventConstants.Companion.TriggerEventType.SLIDE_UP -> {
+                        launchSlideUpTriggerNotification(context, eventLocal)
+                    }
+                    TriggerEventConstants.Companion.TriggerEventType.FULL_SCREEN -> {
+                        launchFullScreenTriggerNotification(context, eventLocal)
+                    }
+                    TriggerEventConstants.Companion.TriggerEventType.NONE -> {}
+                    else -> {}
+                }
+            }
+        }
 
     private fun getDefaultNotification(): TriggerEventModel{
         val fs = JsonObject()
@@ -439,6 +474,12 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
         val message: JsonObject = eventModel.message.asJsonObject
         val modal: JsonObject = message.getAsJsonObject("modal")
         val buttons: JsonArray = modal.getAsJsonArray("actionButtons")
+
+        if (buttons.size() < 2) {
+            Toast.makeText(context, "Event is not valid for notificationId ${eventModel.notificationId}.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val buttonPrimary: JsonObject = buttons[0].asJsonObject
         val buttonSecondary: JsonObject = buttons[1].asJsonObject
 
@@ -623,7 +664,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
         return jsonObjectBody
     }
 
-    private suspend fun dbFetchTriggerEvents(context: Context): List<TriggerEventModel> =
+    internal suspend fun dbFetchTriggerEvents(context: Context): List<TriggerEventModel> =
         withContext(Default) {
             val db = TriggerEventDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
             db.getTriggerEventsFromDb()
@@ -650,7 +691,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
         Log.d(TAG, "2. Body: ${cloudEventResponse.body()}")
         Log.d(TAG, "3. Code: ${cloudEventResponse.code()}")
         Log.d(TAG, "4. Message: ${cloudEventResponse.message()}")
-        Log.d(TAG, "5. Headers: ${cloudEventResponse.headers()}")
+//        Log.d(TAG, "5. Headers: ${cloudEventResponse.headers()}")
         Log.d(TAG, "6. Raw: ${cloudEventResponse.raw()}")
         Log.d(TAG, "7. ${cloudEventResponse.body()?.size} ")
         Log.d(TAG, "************* fetchCloudEvents FETCHED DONE *************\n")

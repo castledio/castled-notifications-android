@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import io.castled.inAppTriggerEvents.event.EventNotification
 import io.castled.inAppTriggerEvents.trigger.TriggerEvent
 import io.castled.inAppTriggerEvents.trigger.TriggerPopupDialog
 
@@ -22,10 +23,14 @@ class FragmentLifeCycleObserver(val context: Context, val screenName: String) :
             }
             Lifecycle.Event.ON_RESUME -> {
                 Log.d(TAG, "on resume $source, ${source.lifecycle.currentState.name}")
-                TriggerEvent.getInstance().findAndLaunchEvent(context, screenName) { events ->
+
+//                EventNotification.getInstance().logAppOpenEvent(context)
+//                EventNotification.getInstance().logPageViewedEvent(context, screenName)
+
+                /*TriggerEvent.getInstance().findAndLaunchEvent(context, screenName) { events ->
 //                    Log.d(TAG, "=>>(Size: ${events.size}) ${events.toList()}")
                     Log.d(TAG, "=>>(Size: ${events.size})")
-                }
+                }*/
             }
             Lifecycle.Event.ON_PAUSE -> {
                 Log.d(TAG, "on pause $source, ${source.lifecycle.currentState.name}")

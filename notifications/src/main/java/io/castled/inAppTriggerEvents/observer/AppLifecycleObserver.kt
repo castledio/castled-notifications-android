@@ -10,7 +10,7 @@ import io.castled.inAppTriggerEvents.event.EventNotification
 import io.castled.inAppTriggerEvents.trigger.TriggerEvent
 
 private const val TAG = "AppLifecycleObserver"
-internal class AppLifecycleObserver(val context: Context, val screenName: String): LifecycleEventObserver {
+internal class AppLifecycleObserver(val context: Context, private val screenName: String): LifecycleEventObserver {
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
             Lifecycle.Event.ON_CREATE -> {
@@ -22,8 +22,10 @@ internal class AppLifecycleObserver(val context: Context, val screenName: String
             Lifecycle.Event.ON_RESUME -> {
                 d(TAG, "on resume $source, ${source.lifecycle.currentState}" )
 
-                EventNotification.getInstance().logAppOpenEvent(context)
-                EventNotification.getInstance().logPageViewedEvent(context, screenName)
+//                EventNotification.getInstance().logAppOpenEvent(context)
+//                EventNotification.getInstance().logPageViewedEvent(context, screenName)
+
+
                 // The below line is to just test Db events.
 //                TriggerEvent.getInstance().findAndLaunchDbTriggerEvent(context)
 

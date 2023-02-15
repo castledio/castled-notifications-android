@@ -2,8 +2,17 @@ package io.castled.inAppTriggerEvents.event
 
 import android.content.Context
 import android.util.Log
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
+import io.castled.inAppTriggerEvents.models.TriggerEventModel
 import io.castled.inAppTriggerEvents.trigger.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
 
 private const val TAG = "TestTriggerEvents"
 class TestTriggerEvents private constructor(){
@@ -93,7 +102,36 @@ class TestTriggerEvents private constructor(){
         )
     }
 
+    fun fetchDbTriggerEvents(context: Context, callback: (JsonArray) -> Unit){
+        CoroutineScope(Dispatchers.Default).launch {
+            val dbData = TriggerEvent.getInstance().dbFetchTriggerEvents(context)
+            val jsonArray = JsonArray()
+            dbData.forEach {
+                val jsonObject = JsonObject()
+                jsonObject.addProperty("id", it.id)
+                jsonObject.addProperty("sourceContext", it.sourceContext)
+                jsonObject.addProperty("notificationId", it.notificationId)
+                jsonObject.addProperty("teamId", it.teamId)
+                jsonObject.addProperty("endTs", it.endTs)
+                jsonObject.addProperty("startTs", it.startTs)
+                jsonObject.addProperty("ttl", it.ttl)
+                jsonObject.add("message", it.message.asJsonObject)
+                jsonObject.add("trigger", it.trigger.asJsonObject)
+
+                jsonArray.add(jsonObject)
+            }
+            withContext(Main){
+                callback.invoke(jsonArray)
+            }
+
+        }
+    }
+
     fun showDbTriggerEventDialog(context: Context, eventType: Int){
+        TriggerEvent.getInstance().findAndLaunchTriggerEventForTest(context, eventType)
+    }
+
+    fun showDbTriggerEventDialog(context: Context, eventType: JsonObject){
         TriggerEvent.getInstance().findAndLaunchTriggerEventForTest(context, eventType)
     }
 
