@@ -11,7 +11,7 @@ internal object ServiceGenerator {
     fun requestApi(): ApiInterface {
         return Retrofit.Builder()
 //            .baseUrl(TriggerEventConstants.notificationUrl)
-            .baseUrl(BuildConfig.BASE_URL_TEST)
+            .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(
                 OkHttpClient.Builder()
