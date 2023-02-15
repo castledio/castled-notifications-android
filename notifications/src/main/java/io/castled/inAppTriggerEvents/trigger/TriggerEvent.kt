@@ -18,12 +18,10 @@ import io.castled.notifications.trigger.EventFilterDeserializer
 import io.castled.notifications.trigger.TriggerParamsEvaluator
 import io.castled.notifications.trigger.models.EventFilter
 import io.castled.notifications.trigger.models.NestedEventFilter
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import retrofit2.Response
 import java.util.*
 import kotlin.collections.HashMap
@@ -60,7 +58,7 @@ internal class TriggerEvent private constructor(){
 
     }
 
-    private suspend fun requestTriggerEventsFromCloud(context: Context?): List<TriggerEventModel> {
+    private suspend fun requestTriggerEventsFromCloud(context: Context): List<TriggerEventModel> {
 
         /*return withContext(IO) {
             val notificationResponse = ServiceGenerator.requestApi().makeNotificationQuery("<api-key>", "support-1@castled.io")
@@ -73,11 +71,11 @@ internal class TriggerEvent private constructor(){
         return withContext(IO) {
             val eventsResponse = ServiceGenerator.requestApi()
                 .makeNotificationQuery("<api-key>", "support-1@castled.io")
-//            showApiLog(notificationResponse)
+//            showApiLog(eventsResponse)
             if (eventsResponse.isSuccessful && eventsResponse.body() != null) {
                 eventsResponse.body()
             } else {
-                context?.let {
+                context.let {
                     withContext(Main) {
                         Toast.makeText(
                             context,
@@ -91,47 +89,50 @@ internal class TriggerEvent private constructor(){
         } as List<TriggerEventModel>
     }
 
-    private suspend fun updateTriggerEventLogToCloud(eventBody: JsonObject): String {
-
+    private suspend fun updateTriggerEventLogToCloudWithCount(eventBody: JsonObject, tryCount: Int): String {
         return withContext(IO) {
-            val eventsResponse = ServiceGenerator.requestApi()
+            eventBody.addProperty("ts", System.currentTimeMillis())
+            eventBody.addProperty("tz", TimeZone.getDefault().displayName)
+            val response = ServiceGenerator.requestApi()
                 .logEventView("test-3b229735-04ae-455f-a5d4-20a89c092927", eventBody)
 
-            /*Log.d(TAG, "1. ->: ${eventsResponse.body()}")
-            Log.d(TAG, "2. ->: ${eventsResponse.isSuccessful}")
-            Log.d(TAG, "3. ->: ${eventsResponse.message()}")
-            Log.d(TAG, "4. ->: ${eventsResponse.code()}")
-            Log.d(TAG, "5. ->: ${eventsResponse.raw()}")
-            Log.d(TAG, "6. ->: ${eventsResponse.headers()}")
-            Log.d(TAG, "7. ->: $eventBody")
+            Log.d(TAG, "\n\n\n** START ******* ## Log Trigger Event to Cloud(Try: $tryCount) ## *********\n" +
+                    "Body(raw):1:: $eventBody\n" +
+                    "Response isSuccess:2:: ${response.isSuccessful}\n" +
+//                    "Response Header:3:: ${response.headers()}\n" +
+                    "Response Body:4:: ${response.body()}\n" +
+                    "Response Message:5:: ${response.message()}\n" +
+                    "Response errorBody:6:: ${response.errorBody()}\n" +
+                    "Response raw:7:: ${response.raw()}\n" +
+                    "Response Code:8:: ${response.code()}\n" +
+                    "*********  *********  *********  ******* END **\n"
+            )
 
-            (if (eventsResponse.isSuccessful && eventsResponse.body() != null){
-                "eventsResponse.body()"
-                eventsResponse.body()
-            } else {
-                ""
-            }).toString()*/
-
-            eventsResponse.raw().toString()
+            if (response.isSuccessful){
+                response.raw().toString()
+            } else if (!response.isSuccessful && tryCount < 99){
+                delay(100)
+                updateTriggerEventLogToCloudWithCount(eventBody, (tryCount + 1))
+            } else ""
         }
     }
 
+    private suspend fun updateTriggerEventLogToCloud(eventBody: JsonObject): String {
+
+        return updateTriggerEventLogToCloudWithCount(eventBody, 0)
+    }
+
     private fun initiateTriggerEventLogToCloud(eventBody: JsonObject){
-
-        CoroutineScope(Default).launch {
-//            val d = TimeZone.getDefault()
-//            Log.d(TAG, "1->>: ${Calendar.getInstance().timeZone.getDisplayName(false, TimeZone.SHORT)}")
-//            Log.d(TAG, "2: ${Calendar.getInstance()}")
-//            Log.d(TAG, "3: ${context.getResources().getConfiguration().locale.getCountry()}")
-
-            eventBody.addProperty("ts", System.currentTimeMillis())
-            eventBody.addProperty("tz", TimeZone.getDefault().displayName)
-
-            val response = updateTriggerEventLogToCloud(eventBody)
-            Log.d(TAG, "********* ## Log Trigger Event to Cloud ## *********")
-            Log.d(TAG, "Body(raw): $eventBody\nResponse: $response")
-            Log.d(TAG, "*********  *********  *********  *********")
+        /*
+        * I used Coroutine GlobalScope because it will keep retrying until and unless the app completely closed.
+        * */
+        GlobalScope.launch {
+            updateTriggerEventLogToCloud(eventBody)
         }
+
+        /*CoroutineScope(Default).launch {
+            updateTriggerEventLogToCloud(eventBody)
+        }*/
     }
 
     private var notificationObserver: LiveData<List<TriggerEventModel>>? = null
@@ -617,15 +618,15 @@ internal class TriggerEvent private constructor(){
             db.insertTriggerEventsIntoDb(notifications)
         }
 
-    private fun showApiLog(notificationResponse: Response<List<TriggerEventModel>>) {
-        Log.d(TAG, "************* fetchNotification FETCHED *************\n")
-        Log.d(TAG, "1. isSuccessful: ${notificationResponse.isSuccessful}")
-        Log.d(TAG, "2. Body: ${notificationResponse.body()}")
-        Log.d(TAG, "3. Code: ${notificationResponse.code()}")
-        Log.d(TAG, "4. Message: ${notificationResponse.message()}")
-        Log.d(TAG, "5. Headers: ${notificationResponse.headers()}")
-        Log.d(TAG, "6. Raw: ${notificationResponse.raw()}")
-        Log.d(TAG, "7. ${notificationResponse.body()?.size} ")
-        Log.d(TAG, "************* fetchNotification FETCHED DONE *************\n")
+    private fun showApiLog(cloudEventResponse: Response<List<TriggerEventModel>>) {
+        Log.d(TAG, "************* fetchCloudEvents FETCHED *************\n")
+        Log.d(TAG, "1. isSuccessful: ${cloudEventResponse.isSuccessful}")
+        Log.d(TAG, "2. Body: ${cloudEventResponse.body()}")
+        Log.d(TAG, "3. Code: ${cloudEventResponse.code()}")
+        Log.d(TAG, "4. Message: ${cloudEventResponse.message()}")
+        Log.d(TAG, "5. Headers: ${cloudEventResponse.headers()}")
+        Log.d(TAG, "6. Raw: ${cloudEventResponse.raw()}")
+        Log.d(TAG, "7. ${cloudEventResponse.body()?.size} ")
+        Log.d(TAG, "************* fetchCloudEvents FETCHED DONE *************\n")
     }
 }

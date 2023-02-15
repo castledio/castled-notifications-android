@@ -31,7 +31,7 @@ class FragmentLifeCycleObserver(val context: Context, val screenName: String) :
                 Log.d(TAG, "on pause $source, ${source.lifecycle.currentState.name}")
             }
             Lifecycle.Event.ON_STOP -> {
-                Log.d(TAG, "on stop $source, ${source.lifecycle.currentState.name}")
+                Log.d(TAG, "on stop $source, ${source.lifecycle.currentState}")
             }
             Lifecycle.Event.ON_DESTROY -> {
                 Log.d(TAG, "on destroy $source, ${source.lifecycle.currentState.name}")
