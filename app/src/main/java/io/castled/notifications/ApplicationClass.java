@@ -14,8 +14,9 @@ public class ApplicationClass extends MultiDexApplication {
 
         super.onCreate();
 
-        CastledNotifications.initialize(this, "YOUR_INSTANCE_ID");
-        CastledNotifications.setUserId("USER_ID");
+        //FIXME: push notifications is crashing here. Tracking in https://github.com/dheerajbhaskar/castled-notifications-android/issues/16
+//        CastledNotifications.initialize(this, "829c38e2e359d94372a2e0d35e1f74df");
+//        CastledNotifications.setUserId("dheeraj.osw@gmail.com");
 
         EventNotification.getInstance().triggerEventsFetchFromCloudSetFrequencyInSeconds(45);
 
