@@ -70,7 +70,8 @@ internal class TriggerEvent private constructor(){
 
         return withContext(IO) {
             val eventsResponse = ServiceGenerator.requestApi()
-                .makeNotificationQuery("<api-key>", "support-1@castled.io")
+                //using dheeraj's credentials as defaults. api key is same as instance id
+                .makeNotificationQuery("829c38e2e359d94372a2e0d35e1f74df", "dheeraj.osw@gmail.com ")
 //            showApiLog(eventsResponse)
             if (eventsResponse.isSuccessful && eventsResponse.body() != null) {
                 eventsResponse.body()
@@ -94,7 +95,8 @@ internal class TriggerEvent private constructor(){
             eventBody.addProperty("ts", System.currentTimeMillis())
             eventBody.addProperty("tz", TimeZone.getDefault().displayName)
             val response = ServiceGenerator.requestApi()
-                .logEventView("test-3b229735-04ae-455f-a5d4-20a89c092927", eventBody)
+                //using dheeraj's credentials as defaults. api key is same as instance id
+                .logEventView("829c38e2e359d94372a2e0d35e1f74df", eventBody)
 
             Log.d(TAG, "\n\n\n** START ******* ## Log Trigger Event to Cloud(Try: $tryCount) ## *********\n" +
                     "Body(raw):1:: $eventBody\n" +
