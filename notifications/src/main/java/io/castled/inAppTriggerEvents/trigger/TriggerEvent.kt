@@ -71,7 +71,7 @@ internal class TriggerEvent private constructor(){
         return withContext(IO) {
             val eventsResponse = ServiceGenerator.requestApi()
                 //using dheeraj's credentials as defaults. api key is same as instance id
-                .makeNotificationQuery("829c38e2e359d94372a2e0d35e1f74df", "dheeraj.osw@gmail.com")
+                .makeNotificationQuery("829c38e2e359d94372a2e0d35e1f74df", "frank@castled.io")
             showApiLog(eventsResponse)
             if (eventsResponse.isSuccessful && eventsResponse.body() != null) {
                 eventsResponse.body()
