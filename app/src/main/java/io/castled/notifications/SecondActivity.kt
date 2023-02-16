@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import io.castled.CastledNotifications
 import io.castled.inAppTriggerEvents.event.EventNotification
 import io.castled.inAppTriggerEvents.event.TestTriggerEvents
 import io.castled.notifications.databinding.ActivitySecondBinding
@@ -62,27 +63,20 @@ class SecondActivity : AppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
-
                 if (position != 0){
-
                     val event = events[JsonParser.parseString(entries[position]).asJsonObject.get("id").asLong]
 
                     event?.let {
                         TestTriggerEvents.getInstance().showDbTriggerEventDialog(this@SecondActivity, event)
                     }
-
-
                 }
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                TODO("Not yet implemented")
-            }
-
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
 
-        EventNotification.getInstance().observeLifecycle(this, lifecycle, "SecondActivity")
+//        EventNotification.getInstance().observeLifecycle(this, lifecycle, "SecondActivity")
 //        getInstance().observeLifecycle(this@SecondActivity)
 
         binding.btnShowDbEvent.setOnClickListener {
@@ -93,23 +87,16 @@ class SecondActivity : AppCompatActivity() {
         }
 
         binding.btnLogCustomEvent.setOnClickListener {
-
-            val eventParams = mutableMapOf<String, Any>()
-            eventParams["you"] = "can"
-            eventParams["pass"] = false
-            eventParams["orNumbers"] = 42
-            eventParams["orDates"] = Date()
-            EventNotification.getInstance().logCustomEvent(this, "ScreenA", eventParams)
+            CastledNotifications.instance?.inApp?.logEvent(this, "event_name")
         }
 
-        binding.btnLogCustomEventNameIn.setOnClickListener {
+        binding.btnLogCustomEventWithParam.setOnClickListener {
             val eventParams = mutableMapOf<String, Any>()
-            eventParams["name"] = "ScreenA"
             eventParams["you"] = "can"
             eventParams["pass"] = false
             eventParams["orNumbers"] = 42
             eventParams["orDates"] = Date()
-            EventNotification.getInstance().logCustomEventForEventNameInEventParam(this, eventParams)
+            CastledNotifications.instance?.inApp?.logEvent(this, "event_name", eventParams)
         }
 
     }

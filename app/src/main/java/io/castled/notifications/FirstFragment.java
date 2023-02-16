@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import io.castled.CastledNotifications;
 import io.castled.inAppTriggerEvents.event.EventNotification;
 import io.castled.inAppTriggerEvents.event.TestTriggerEvents;
 import io.castled.inAppTriggerEvents.trigger.PopupHeader;
@@ -36,7 +37,7 @@ public class FirstFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
 //        EventNotification.getInstance().observeLifecycle(FirstFragment.this, "FirstFragment");
-        EventNotification.getInstance().observeLifecycle(FirstFragment.this, "ScreenA");
+//        EventNotification.getInstance().observeLifecycle(FirstFragment.this, "ScreenA");
 
         binding.buttonFirst.setOnClickListener(view1 -> NavHostFragment.findNavController(FirstFragment.this)
                 .navigate(R.id.action_FirstFragment_to_SecondFragment));
@@ -95,20 +96,16 @@ public class FirstFragment extends Fragment {
             TestTriggerEvents.getInstance().findAndLaunchTriggerEvent(requireContext());
 
         });
-
-        binding.btnTriggerEvaluator.setOnClickListener(btnTriggerEvaluator -> {
-            TestTriggerEvents.getInstance().testLogTriggerEvent(requireContext(), "ScreenA");
-//            TestTriggerEvents.getInstance().executeTriggerEvaluator(requireContext(), "FirstFragment");
-        });
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-
-//        NotificationTrigger.getInstance().startObservingTriggerNotification(requireContext());
+        if (io.castled.CastledNotifications.getInstance() != null && io.castled.CastledNotifications.getInstance().getInApp() != null){
+            io.castled.CastledNotifications.getInstance().getInApp().logAppOpenedEvent(requireActivity());
+            io.castled.CastledNotifications.getInstance().getInApp().logInAppPageViewEvent(requireActivity(), "FirstFragment");
+        }
     }
 
     @Override

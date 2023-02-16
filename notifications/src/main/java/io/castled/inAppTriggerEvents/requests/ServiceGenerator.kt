@@ -11,6 +11,7 @@ internal object ServiceGenerator {
     fun requestApi(): ApiInterface {
         return Retrofit.Builder()
 //            .baseUrl(TriggerEventConstants.notificationUrl)
+            //TODO: close gitHub-> update backend api url #10
             .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(

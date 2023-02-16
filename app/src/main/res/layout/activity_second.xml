@@ -47,13 +47,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Log Custom Event" />
+        android:text="Log Custom Event(Only Event Name)" />
 
     <Button
-        android:id="@+id/btn_log_custom_event_name_in"
+        android:id="@+id/btn_log_custom_event_with_param"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Log Custom Event(Event name inside Eventparams)" />
+        android:text="Log Custom Event(With Event Param)" />
 
 </LinearLayout>

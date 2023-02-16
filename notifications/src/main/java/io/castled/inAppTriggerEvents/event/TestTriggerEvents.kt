@@ -142,10 +142,4 @@ class TestTriggerEvents private constructor(){
     fun findAndLaunchTriggerEvent(context: Context){
         TriggerEvent.getInstance().findAndLaunchDbTriggerEvent(context)
     }
-
-    fun testLogTriggerEvent(context: Context, screenName: String){
-        TriggerEvent.getInstance().findAndLaunchEvent(context, screenName) { triggerEvents ->
-            Log.d(TAG, "=>>(Size: ${triggerEvents.size}) ${triggerEvents.toList()}")
-        }
-    }
 }

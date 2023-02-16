@@ -3,6 +3,7 @@ package io.castled.notifications;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -15,10 +16,14 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.Objects;
+
+import io.castled.CastledNotifications;
 import io.castled.inAppTriggerEvents.event.EventNotification;
 import io.castled.notifications.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
@@ -78,5 +83,16 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         return NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (CastledNotifications.getInstance() != null && CastledNotifications.getInstance().getInApp() != null){
+            CastledNotifications.getInstance().getInApp().logAppOpenedEvent(this);
+            CastledNotifications.getInstance().getInApp().logInAppPageViewEvent(this, "MainActivity");
+        }
+
     }
 }

@@ -1,18 +1,19 @@
 package io.castled.notifications;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
 import java.util.List;
 
-import io.castled.inAppTriggerEvents.CastledNotifications;
+import io.castled.CastledNotifications;
 import io.castled.inAppTriggerEvents.InAppChannelConfig;
 import io.castled.inAppTriggerEvents.event.EventNotification;
 
 public class ApplicationClass extends MultiDexApplication {
-
+    private static final String TAG = "ApplicationClass";
     @Override
     public void onCreate() {
 
@@ -22,20 +23,9 @@ public class ApplicationClass extends MultiDexApplication {
 //        CastledNotifications.initialize(this, "829c38e2e359d94372a2e0d35e1f74df");
 //        CastledNotifications.setUserId("dheeraj.osw@gmail.com");
 
-        EventNotification.getInstance().triggerEventsFetchFromCloudSetFrequencyInSeconds(30);
-
-//        EventNotification.getInstance().initialize(getApplicationContext());
-
-        EventNotification.getInstance().initialize(ApplicationClass.this);
-
-
         InAppChannelConfig inAppConfig = InAppChannelConfig.builder().enable(true).fetchFromCloudInterval(45).build();
-        CastledNotifications.initialize(ApplicationClass.this, "INSTANCE_ID", List.of(inAppConfig));
-
-
-//        registerActivityLifecycleCallbacks(new ActivityLifecycleObserver());
-
-//        EventNotification.getInstance().registerCallback(registerActivityLifecycleCallbacks())
+        String t = CastledNotifications.initialize(ApplicationClass.this, "829c38e2e359d94372a2e0d35e1f74df", inAppConfig);
+//        Log.d(TAG, "CastledNotifications.initialize: " + t);
     }
 
     @Override

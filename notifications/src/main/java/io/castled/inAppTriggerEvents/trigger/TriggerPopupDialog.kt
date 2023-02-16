@@ -317,6 +317,7 @@ internal class TriggerPopupDialog {
             dialog.show()
         }
 
+        // TODO: close gitHub-> Bug - Provide color hex code in correct format #20
         private fun returnDefaultOrValidHexColor(hexColor: String , defaultHexColor: String): String {
             if (hexColor.length == 7){
 //            val colorPattern: Pattern = Pattern.compile("#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})")

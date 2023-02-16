@@ -11,6 +11,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import io.castled.inAppTriggerEvents.database.DatabaseBuilder
 import io.castled.inAppTriggerEvents.database.TriggerEventDatabaseHelperImpl
+import io.castled.inAppTriggerEvents.event.EventNotification
 import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
 import io.castled.inAppTriggerEvents.models.TriggerEventModel
 import io.castled.inAppTriggerEvents.requests.ServiceGenerator
@@ -45,10 +46,10 @@ internal class TriggerEvent private constructor(){
         CoroutineScope(Main).launch {
             val notifications = requestTriggerEventsFromCloud(context)
             if (notifications.isNotEmpty()) {
-                Log.d(TAG, "${notifications.size} notifications fetched from server.[${notifications.map { it.notificationId }}]")
+//                Log.d(TAG, "${notifications.size} notifications fetched from server.[${notifications.map { it.notificationId }}]")
 
                 val noOfRowDeleted = dbDeleteTriggerEvents(context)
-                Log.d(TAG, "$noOfRowDeleted notifications deleted from database.")
+//                Log.d(TAG, "$noOfRowDeleted notifications deleted from database.")
 
                 val rows = dbInsertTriggerEvents(context, notifications)
                 Log.d(TAG, "inserted into db: ${rows.toList()}")
@@ -71,19 +72,17 @@ internal class TriggerEvent private constructor(){
         return withContext(IO) {
             val eventsResponse = ServiceGenerator.requestApi()
                 //using dheeraj's credentials as defaults. api key is same as instance id
-                .makeNotificationQuery("829c38e2e359d94372a2e0d35e1f74df", "frank@castled.io")
-            showApiLog(eventsResponse)
+                .makeNotificationQuery(EventNotification.getInstance.instanceId, "dheeraj.osw@gmail.com")
+//            showApiLog(eventsResponse)
             if (eventsResponse.isSuccessful && eventsResponse.body() != null) {
                 eventsResponse.body()
             } else {
-                context.let {
-                    withContext(Main) {
-                        Toast.makeText(
-                            context,
-                            "Error while getting data.",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
+                withContext(Main) {
+                    Toast.makeText(
+                        context,
+                        "Error while getting data.",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
                 emptyList()
             }
@@ -113,6 +112,7 @@ internal class TriggerEvent private constructor(){
             if (response.isSuccessful){
                 response.raw().toString()
             } else if (!response.isSuccessful && tryCount < 99){
+                //TODO: close gitHub-> do retries 100x pausing 100ms every time #13
                 delay(100)
                 updateTriggerEventLogToCloudWithCount(eventBody, (tryCount + 1))
             } else ""
@@ -172,7 +172,7 @@ internal class TriggerEvent private constructor(){
        }
     }
 
-    internal fun findAndLaunchEvent(context: Context, screenName: String, callBack: (List<TriggerEventModel>) -> Unit) {
+    /*internal fun findAndLaunchEvent(context: Context, screenName: String, callBack: (List<TriggerEventModel>) -> Unit) {
         CoroutineScope(Main).launch {
             Log.d(TAG, "findAndLaunchEvent: ")
             val eventParams: MutableMap<String, Any?> = HashMap()
@@ -192,7 +192,7 @@ internal class TriggerEvent private constructor(){
             launchTriggerEvent(context, value)
             callBack.invoke(value)
         }
-    }
+    }*/
 
 
     internal fun findAndLaunchEvent(context: Context, eventParamsWithEventName: Map<String, Any?>, callBack: (List<TriggerEventModel>) -> Unit) {
@@ -210,24 +210,34 @@ internal class TriggerEvent private constructor(){
     ): List<TriggerEventModel> =
 
         withContext(Default) {
+            Log.d(TAG, "**** evaluateDbTriggerEvent:: ****\neventParam:${eventParam.toList()}")
             val showOnScreenEvent = mutableListOf<TriggerEventModel>()
             val triggerEvent = dbFetchTriggerEvents(context)
             val triggerParamsEvaluator = TriggerParamsEvaluator()
 
             triggerEvent.forEach { triggerEventModel ->
-                    Log.d(TAG, "DB trigger JSON: ${triggerEventModel.trigger}")
-                    Log.d(TAG, "DB trigger JSON(eventFilter): ${triggerEventModel.trigger.get("eventFilter").asJsonObject}")
+                Log.d(TAG, "DB trigger JSON: ${triggerEventModel.trigger}")
+                // TODO: close gitHub-> API contract #22
+                //TODO: close gitHub-> Please share backend test login for e2e testing for demo #8
+                if (!triggerEventModel.trigger.asJsonObject.isJsonNull
+                    && triggerEventModel.trigger.asJsonObject.has("eventFilter")
+                    && !triggerEventModel.trigger.asJsonObject.get("eventFilter").isJsonNull
+                    && triggerEventModel.trigger.asJsonObject.get("eventFilter").asJsonObject.has("nestedFilters")
+                    && !triggerEventModel.trigger.asJsonObject.get("eventFilter").asJsonObject.get("nestedFilters").isJsonNull
+                ){
+                    Log.d(TAG, "DB trigger JSON(Condition Pass): ${triggerEventModel.trigger}")
 
-                val gson = GsonBuilder()
-                    .registerTypeAdapter(EventFilter::class.java, EventFilterDeserializer())
-                    .create()
-                val eventFilter: EventFilter =
-                    gson.fromJson(
-                        triggerEventModel.trigger.get("eventFilter").asJsonObject,
-                        EventFilter::class.java
-                    )
-                if (triggerParamsEvaluator.evaluate(eventParam, eventFilter as NestedEventFilter))
-                    showOnScreenEvent.add(triggerEventModel)
+                    val gson = GsonBuilder()
+                        .registerTypeAdapter(EventFilter::class.java, EventFilterDeserializer())
+                        .create()
+                    val eventFilter: EventFilter =
+                        gson.fromJson(
+                            triggerEventModel.trigger.get("eventFilter").asJsonObject,
+                            EventFilter::class.java
+                        )
+                    if (triggerParamsEvaluator.evaluate(eventParam, eventFilter as NestedEventFilter))
+                        showOnScreenEvent.add(triggerEventModel)
+                }
             }
             showOnScreenEvent
         }
