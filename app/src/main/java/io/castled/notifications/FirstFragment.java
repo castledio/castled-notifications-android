@@ -1,6 +1,7 @@
 package io.castled.notifications;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import io.castled.notifications.databinding.FragmentFirstBinding;
 
 public class FirstFragment extends Fragment {
 
+    private static final String TAG = "FirstFragment";
     private FragmentFirstBinding binding;
 
     @Override
@@ -102,10 +104,24 @@ public class FirstFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+        /*
+        The below code return string which we can use to send the status.
+        Example: currently sending "CastledNotifications: SDK already initialized."
+        if you will use the below code before initialization of CastledNotifications
+        in the Application class.
+        */
+
+        CastledNotifications.logAppOpenedEvent(requireActivity());
+        String isError = CastledNotifications.logInAppPageViewEvent(requireContext(), "FirstFragment");
+        Log.d(TAG, "onResume: " + isError);
+
+        //The below code is now removed and will delete after review.
+        /*
         if (io.castled.CastledNotifications.getInstance() != null && io.castled.CastledNotifications.getInstance().getInApp() != null){
             io.castled.CastledNotifications.getInstance().getInApp().logAppOpenedEvent(requireActivity());
             io.castled.CastledNotifications.getInstance().getInApp().logInAppPageViewEvent(requireActivity(), "FirstFragment");
         }
+        */
     }
 
     @Override

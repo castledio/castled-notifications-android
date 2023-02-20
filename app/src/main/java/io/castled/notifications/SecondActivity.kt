@@ -87,7 +87,7 @@ class SecondActivity : AppCompatActivity() {
         }
 
         binding.btnLogCustomEvent.setOnClickListener {
-            CastledNotifications.instance?.inApp?.logEvent(this, "event_name")
+            CastledNotifications.logEvent(this, "event_name")
         }
 
         binding.btnLogCustomEventWithParam.setOnClickListener {
@@ -96,7 +96,7 @@ class SecondActivity : AppCompatActivity() {
             eventParams["pass"] = false
             eventParams["orNumbers"] = 42
             eventParams["orDates"] = Date()
-            CastledNotifications.instance?.inApp?.logEvent(this, "event_name", eventParams)
+            CastledNotifications.logEvent(this, "event_name", eventParams)
         }
 
     }

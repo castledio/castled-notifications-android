@@ -25,7 +25,6 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import retrofit2.Response
 import java.util.*
-import kotlin.collections.HashMap
 
 
 private const val TAG = "TriggerEvent"
@@ -72,7 +71,7 @@ internal class TriggerEvent private constructor(){
         return withContext(IO) {
             val eventsResponse = ServiceGenerator.requestApi()
                 //using dheeraj's credentials as defaults. api key is same as instance id
-                .makeNotificationQuery(EventNotification.getInstance.instanceId, "dheeraj.osw@gmail.com")
+                .makeNotificationQuery(EventNotification.getInstance.instanceIdKey, EventNotification.getInstance.userId)
 //            showApiLog(eventsResponse)
             if (eventsResponse.isSuccessful && eventsResponse.body() != null) {
                 eventsResponse.body()
@@ -95,7 +94,7 @@ internal class TriggerEvent private constructor(){
             eventBody.addProperty("tz", TimeZone.getDefault().displayName)
             val response = ServiceGenerator.requestApi()
                 //using dheeraj's credentials as defaults. api key is same as instance id
-                .logEventView("829c38e2e359d94372a2e0d35e1f74df", eventBody)
+                .logEventView(EventNotification.getInstance.instanceIdKey, eventBody)
 
             Log.d(TAG, "\n\n\n** START ******* ## Log Trigger Event to Cloud(Try: $tryCount) ## *********\n" +
                     "Body(raw):1:: $eventBody\n" +
