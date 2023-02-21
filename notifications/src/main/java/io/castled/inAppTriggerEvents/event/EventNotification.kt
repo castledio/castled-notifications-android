@@ -120,7 +120,9 @@ class EventNotification private constructor() {
 
     //TODO: close gitHub-> Trigger evaluator implementation #2
 
-    // AppLogPageViewEvent with overloaded methods
+    /**
+     * AppLogPageViewEvent with overloaded methods
+     */
     internal fun logInAppPageViewEvent(appCompatActivity: AppCompatActivity, screenName:String): Unit =
         logPageViewedEvent(appCompatActivity, screenName)
 
@@ -131,7 +133,9 @@ class EventNotification private constructor() {
         logPageViewedEvent(context, screenName)
 
 
-    // LogAppOpenedEvent with overloaded methods
+    /**
+     * LogAppOpenedEvent with overloaded methods
+     */
     internal fun logAppOpenedEvent(appCompatActivity: AppCompatActivity): Unit =
         logAppOpenEvent(appCompatActivity)
 
@@ -142,7 +146,9 @@ class EventNotification private constructor() {
         logAppOpenEvent(context)
 
 
-    // CustomEvent tracked by SDk with overloaded methods
+    /**
+     *  CustomEvent tracked by SDk with overloaded methods
+     */
     internal fun logCustomEvent(appCompatActivity: AppCompatActivity, eventName: String, eventParams: Map<String, Any>): Unit =
         logCustomEventBySdk(appCompatActivity, eventName, eventParams)
 
@@ -164,7 +170,9 @@ class EventNotification private constructor() {
         logCustomEvent1(context, eventName)
 
 
-    // LogEvent with Event name and with Event param with  overloaded methods
+    /**
+     * LogEvent with Event name and with Event param with  overloaded methods
+     */
     internal fun logEvent(appCompatActivity: AppCompatActivity, eventName:String, eventParams: Map<String, Any>) =
         logCustomEvent1(appCompatActivity, eventName, eventParams)
 
