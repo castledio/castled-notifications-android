@@ -1,7 +1,9 @@
 package io.castled.inAppTriggerEvents
 
-//https://www.baeldung.com/kotlin/builder-pattern
-//https://www.tutorialspoint.com/design_pattern/builder_pattern.htm
+/**
+ * https://www.baeldung.com/kotlin/builder-pattern
+ * https://www.tutorialspoint.com/design_pattern/builder_pattern.htm
+ */
 data class InAppChannelConfigBuilder internal constructor(
     private var enabled: Boolean = false,
     private var fetchFromCloudInterval: Long = 0
