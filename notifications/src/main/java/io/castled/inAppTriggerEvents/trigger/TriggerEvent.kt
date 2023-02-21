@@ -231,7 +231,9 @@ internal class TriggerEvent private constructor(){
     }
 
 
-//The below code is just to test the different Event Dialog on the screen. eventType is 0 or 1 or 2
+/**
+ * The below code is just to test the different Event Dialog on the screen. eventType is 0 or 1 or 2
+ */
 internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) =
     CoroutineScope(Main).launch {
         if (eventType == 0 || eventType == 1 || eventType == 2) {
@@ -283,7 +285,9 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
         ).show()
     }
 
-    //The below code is just to test the different Event Dialog on the screen. eventType is 0 or 1 or 2
+    /**
+     *  The below code is just to test the different Event Dialog on the screen. eventType is 0 or 1 or 2
+     */
     internal fun findAndLaunchTriggerEventForTest(context: Context, event: JsonObject) =
         CoroutineScope(Default).launch {
 

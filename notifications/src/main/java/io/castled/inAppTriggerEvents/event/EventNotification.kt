@@ -154,7 +154,9 @@ class EventNotification private constructor() {
         logCustomEventBySdk(context, eventName, eventParams)
 
 
-    // LogEvent only by event name with overloaded methods
+    /**
+     *  LogEvent only by event name with overloaded methods
+     */
     internal fun logEvent(appCompatActivity: AppCompatActivity, eventName:String) =
         logCustomEvent1(appCompatActivity, eventName)
 

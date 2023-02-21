@@ -57,7 +57,9 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
             }
 
 
-        // AppLogPageViewEvent with overloaded methods internal
+        /**
+         *  AppLogPageViewEvent with overloaded methods internal
+         */
         @JvmStatic
         fun logInAppPageViewEvent(
             appCompatActivity: AppCompatActivity,
@@ -89,7 +91,9 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
             }
 
 
-        // LogAppOpenedEvent with overloaded methods
+        /**
+         *  LogAppOpenedEvent with overloaded methods
+         */
         @JvmStatic
         fun logAppOpenedEvent(appCompatActivity: AppCompatActivity): String =
             if (instance == null) error4
@@ -118,7 +122,9 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
             }
 
 
-        // CustomEvent tracked by SDk with overloaded methods
+        /**
+         * CustomEvent tracked by SDk with overloaded methods
+         */
         @JvmStatic
         fun logCustomEvent(
             appCompatActivity: AppCompatActivity,
@@ -159,7 +165,9 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
             }
 
 
-        // LogEvent only by event name with overloaded methods
+        /**
+         * LogEvent only by event name with overloaded methods
+         */
         @JvmStatic
         fun logEvent(appCompatActivity: AppCompatActivity, eventName: String): String =
             if (instance == null) error4
@@ -188,7 +196,9 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
             }
 
 
-        // LogEvent with Event name and with Event param with  overloaded methods
+        /**
+         * LogEvent with Event name and with Event param with  overloaded methods
+         */
         @JvmStatic
         fun logEvent(
             appCompatActivity: AppCompatActivity,
