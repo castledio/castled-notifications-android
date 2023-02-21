@@ -47,7 +47,6 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
             return success1
         }
 
-        // TODO: close gitHub-> add userid in api [] use existing CastledNotification.setUserId(userId) in notifications/castlednotifications class #30
         @JvmStatic
         fun setUserId(userId: String): String =
             if (userId.isBlank()) error5a
