@@ -230,8 +230,6 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
     }
 }
 
-//TODO: close gitHub-> Fix current crashes #23
 //TODO: close gitHub-> implement watching for network state changes and retrying network requests #15
 //TODO: close gitHub-> implement exponential backoff #14
 //TODO: close gitHub-> store reporting events in db until they are sent successfully #12
-//TODO: close gitHub-> Do e2e testing #9
