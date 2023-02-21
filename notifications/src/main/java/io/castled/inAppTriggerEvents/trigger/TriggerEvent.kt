@@ -182,7 +182,7 @@ internal class TriggerEvent private constructor(){
                     && triggerEventModel.trigger.asJsonObject.has("eventFilter")
                     && !triggerEventModel.trigger.asJsonObject.get("eventFilter").isJsonNull
                     && triggerEventModel.trigger.asJsonObject.get("eventFilter").asJsonObject.has("nestedFilters")
-                    && !triggerEventModel.trigger.asJsonObject.get("eventFilter").asJsonObject.get("nestedFilters").isJsonNull
+//                    && !triggerEventModel.trigger.asJsonObject.get("eventFilter").asJsonObject.get("nestedFilters").isJsonNull
                 ){
                     Log.d(TAG, "DB trigger JSON(Condition Pass): ${triggerEventModel.trigger}")
 
