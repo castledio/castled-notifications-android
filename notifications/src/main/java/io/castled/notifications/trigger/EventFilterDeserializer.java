@@ -45,12 +45,16 @@ public class EventFilterDeserializer implements JsonDeserializer<EventFilter> {
 
     private NestedEventFilter deserializeNestedFilter(JsonElement json) {
         JsonObject jsonObject = json.getAsJsonObject();
-        JoinType joinType = JoinType.valueOf(jsonObject.get("joinType").getAsString());
-        JsonArray nestedFiltersArray = jsonObject.get("nestedFilters").getAsJsonArray();
 
+        JoinType joinType = JoinType.valueOf(jsonObject.get("joinType").getAsString());
+
+        JsonElement nestedFilter = jsonObject.get("nestedFilters");
         List<EventFilter> eventFilters = new ArrayList<>();
-        for (JsonElement element : nestedFiltersArray) {
-            eventFilters.add(deserializeEventFilter(element));
+        if (!nestedFilter.isJsonNull()) {
+            JsonArray nestedFiltersArray = jsonObject.get("nestedFilters").getAsJsonArray();
+            for (JsonElement element : nestedFiltersArray) {
+                eventFilters.add(deserializeEventFilter(element));
+            }
         }
         return new NestedEventFilter(joinType, eventFilters);
     }
