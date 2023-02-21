@@ -217,8 +217,6 @@ internal class TriggerEvent private constructor(){
 
             triggerEvent.forEach { triggerEventModel ->
                 Log.d(TAG, "DB trigger JSON: ${triggerEventModel.trigger}")
-                // TODO: close gitHub-> API contract #22
-                //TODO: close gitHub-> Please share backend test login for e2e testing for demo #8
                 if (!triggerEventModel.trigger.asJsonObject.isJsonNull
                     && triggerEventModel.trigger.asJsonObject.has("eventFilter")
                     && !triggerEventModel.trigger.asJsonObject.get("eventFilter").isJsonNull
