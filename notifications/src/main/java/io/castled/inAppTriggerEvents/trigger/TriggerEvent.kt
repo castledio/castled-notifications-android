@@ -153,9 +153,11 @@ internal class TriggerEvent private constructor(){
        }
     }
 
+    //TODO rename this to findAndLaunchUi
     internal fun findAndLaunchEvent(context: Context, eventParamsWithEventName: Map<String, Any?>, callBack: (List<TriggerEventModel>) -> Unit) {
         CoroutineScope(Main).launch {
             val value = evaluateDbTriggerEvent(context, eventParamsWithEventName.toMutableMap())
+            //TODO maybe rename this to launchUi
             launchTriggerEvent(context, value)
             callBack.invoke(value)
         }
