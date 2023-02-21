@@ -175,6 +175,7 @@ internal class TriggerEvent private constructor(){
             val triggerEvent = dbFetchTriggerEvents(context)
             val triggerParamsEvaluator = TriggerParamsEvaluator()
 
+            //TODO rename "triggerEvent" to campaign. Rename related stuff
             triggerEvent.forEach { triggerEventModel ->
                 Log.d(TAG, "DB trigger JSON: ${triggerEventModel.trigger}")
                 if (!triggerEventModel.trigger.asJsonObject.isJsonNull
