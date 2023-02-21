@@ -326,23 +326,6 @@ internal class TriggerPopupDialog {
             } else return defaultHexColor
         }
 
-        /*fun showFullScreenDialog(context: Context, activity: Activity){
-            val displayRectangle = Rect()
-            val window: Window = activity.window
-            window.decorView.getWindowVisibleDisplayFrame(displayRectangle)
-            val builder = AlertDialog.Builder(context, R.style.CustomAlertDialog)
-            val viewGroup: ViewGroup = activity.findViewById(android.R.id.content)
-            val dialogView: View =
-                LayoutInflater.from(context).inflate(R.layout.dialog_popup_fullscreen_triggered, viewGroup, false)
-            dialogView.minimumWidth = (displayRectangle.width() * 1f).toInt()
-            dialogView.minimumHeight = (displayRectangle.height() * 1f).toInt()
-            builder.setView(dialogView)
-            val alertDialog = builder.create()
-            val buttonOk = dialogView.findViewById<Button>(R.id.buttonOk)
-            buttonOk.setOnClickListener { alertDialog.dismiss() }
-            alertDialog.show()
-        }*/
-
         internal fun showFullscreenDialog(
             context: Context,
             activity: Activity,
