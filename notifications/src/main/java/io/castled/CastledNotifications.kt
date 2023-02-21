@@ -26,7 +26,6 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         @JvmStatic
         private var instance: CastledNotifications? = null
 
-        // TODO: close gitHub-> Inapp module initialization cleanups #5
         @JvmStatic
         fun initialize(
             application: Application,

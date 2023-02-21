@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        // TODO: close gitHub-> Inapp module initialization cleanups #5
         /*
         The below code return string which we can use to send the status.
         Example: currently sending "CastledNotifications: SDK already initialized."
