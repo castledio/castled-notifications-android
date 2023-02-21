@@ -36,15 +36,10 @@ class EventNotification private constructor() {
             if (this::eventNotification.isInitialized) eventNotification else EventNotification()
     }
 
-//    fun initialize(context: Context){
-//        TriggerEvent.getInstance().fetchAndSaveTriggerEvents(context)
-//    }
-
     internal fun initialize(application: Application) {
         GlobalScope.launch {
             do {
                 TriggerEvent.getInstance().fetchAndSaveTriggerEvents(application)
-//                Log.d(TAG, "$triggerEventsFrequencyTime: Start fetching events from cloud")
                 delay(triggerEventsFrequencyTime)
             } while (true)
         }

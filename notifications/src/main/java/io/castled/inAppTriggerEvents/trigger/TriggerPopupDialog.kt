@@ -112,7 +112,7 @@ internal class TriggerPopupDialog {
                     Log.d(TAG, "PrimaryButton performing onClick action. ${popupPrimaryButton.urlOnClick}")
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(popupPrimaryButton.urlOnClick))
                     //The below line is to test.
-//                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/"))
+//                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https:www.google.com/"))
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     if (intent.resolveActivity(context.packageManager) != null)
                         context.startActivity(intent)
@@ -190,7 +190,7 @@ internal class TriggerPopupDialog {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlForOnClickOnImage))
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     if (intent.resolveActivity(context.packageManager) != null)
-                    context.startActivity(intent)
+                        context.startActivity(intent)
                 }
 
                 triggerEventClickAction.onTriggerEventAction(
@@ -309,7 +309,7 @@ internal class TriggerPopupDialog {
             }
 
             val textMessage: TextView = dialog.findViewById(R.id.txt_message)
-//            textMessage.setBackgroundColor(Color.parseColor(returnDefaultOrValidHexColor(popupMessage.backgroundColor, "#FFFFFF")))
+            textMessage.setBackgroundColor(Color.parseColor(returnDefaultOrValidHexColor(popupMessage.backgroundColor, "#FFFFFF")))
             textMessage.setTextColor(Color.parseColor(returnDefaultOrValidHexColor(popupMessage.fontColor, "#000000")))
             textMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP,popupMessage.fontSize)
             textMessage.text = popupMessage.message
@@ -317,10 +317,8 @@ internal class TriggerPopupDialog {
             dialog.show()
         }
 
-        // TODO: close gitHub-> Bug - Provide color hex code in correct format #20
         private fun returnDefaultOrValidHexColor(hexColor: String , defaultHexColor: String): String {
             if (hexColor.length == 7){
-//            val colorPattern: Pattern = Pattern.compile("#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})")
             val colorPattern: Pattern = Pattern.compile("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$")
             return if (colorPattern.matcher(hexColor).matches()) hexColor
             else if (colorPattern.matcher(defaultHexColor).matches()) defaultHexColor
@@ -368,12 +366,6 @@ internal class TriggerPopupDialog {
             dialogView.minimumHeight = (displayRectangle.height() * 1f).toInt()
             builder.setView(dialogView)
             val dialog = builder.create()
-
-//            val dialog = Dialog(context)
-//            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-//            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-//            dialog.setCancelable(false)
-//            dialog.setContentView(R.layout.dialog_popup_triggered)
 
             val frameLayout: FrameLayout = dialogView.findViewById(R.id.frame_layout_root)
             val gradientDrawable: GradientDrawable = frameLayout.background as GradientDrawable

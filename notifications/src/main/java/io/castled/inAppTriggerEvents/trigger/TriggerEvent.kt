@@ -45,11 +45,7 @@ internal class TriggerEvent private constructor(){
         CoroutineScope(Main).launch {
             val notifications = requestTriggerEventsFromCloud(context)
             if (notifications.isNotEmpty()) {
-//                Log.d(TAG, "${notifications.size} notifications fetched from server.[${notifications.map { it.notificationId }}]")
-
                 val noOfRowDeleted = dbDeleteTriggerEvents(context)
-//                Log.d(TAG, "$noOfRowDeleted notifications deleted from database.")
-
                 val rows = dbInsertTriggerEvents(context, notifications)
                 Log.d(TAG, "inserted into db: ${rows.toList()}")
 
@@ -60,18 +56,8 @@ internal class TriggerEvent private constructor(){
 
     //TODO rename to request campaignsFromCloud
     private suspend fun requestTriggerEventsFromCloud(context: Context): List<TriggerEventModel> {
-
-        /*return withContext(IO) {
-            val notificationResponse = ServiceGenerator.requestApi().makeNotificationQuery("<api-key>", "support-1@castled.io")
-            (if (notificationResponse.isSuccessful && notificationResponse.body() != null)
-                notificationResponse.body()
-            else
-                emptyList<NotificationModel>())!!
-        }*/
-
         return withContext(IO) {
             val eventsResponse = ServiceGenerator.requestApi()
-                //using dheeraj's credentials as defaults. api key is same as instance id
                 .makeNotificationQuery(EventNotification.getInstance.instanceIdKey, EventNotification.getInstance.userId)
             showApiLog(eventsResponse)
             if (eventsResponse.isSuccessful && eventsResponse.body() != null) {
@@ -94,7 +80,6 @@ internal class TriggerEvent private constructor(){
             eventBody.addProperty("ts", System.currentTimeMillis())
             eventBody.addProperty("tz", TimeZone.getDefault().displayName)
             val response = ServiceGenerator.requestApi()
-                //using dheeraj's credentials as defaults. api key is same as instance id
                 .logEventView(EventNotification.getInstance.instanceIdKey, eventBody)
 
             Log.d(TAG, "\n\n\n** START ******* ## Log Trigger Event to Cloud(Try: $tryCount) ## *********\n" +
@@ -131,10 +116,6 @@ internal class TriggerEvent private constructor(){
         GlobalScope.launch {
             updateTriggerEventLogToCloud(eventBody)
         }
-
-        /*CoroutineScope(Default).launch {
-            updateTriggerEventLogToCloud(eventBody)
-        }*/
     }
 
     private var notificationObserver: LiveData<List<TriggerEventModel>>? = null
@@ -171,29 +152,6 @@ internal class TriggerEvent private constructor(){
            findAndLaunchDbTriggerEvent(context)
        }
     }
-
-    /*internal fun findAndLaunchEvent(context: Context, screenName: String, callBack: (List<TriggerEventModel>) -> Unit) {
-        CoroutineScope(Main).launch {
-            Log.d(TAG, "findAndLaunchEvent: ")
-            val eventParams: MutableMap<String, Any?> = HashMap()
-            eventParams["name"] = screenName
-
-            val value = evaluateDbTriggerEvent(context, eventParams)
-            launchTriggerEvent(context, value)
-            callBack.invoke(value)
-        }
-    }
-
-    internal fun findAndLaunchEvent(context: Context, eventName: String, eventParams: Map<String, Any?>, callBack: (List<TriggerEventModel>) -> Unit) {
-        CoroutineScope(Main).launch {
-            val eParams = eventParams.toMutableMap()
-            eParams["name"] = eventName
-            val value = evaluateDbTriggerEvent(context, eParams)
-            launchTriggerEvent(context, value)
-            callBack.invoke(value)
-        }
-    }*/
-
 
     internal fun findAndLaunchEvent(context: Context, eventParamsWithEventName: Map<String, Any?>, callBack: (List<TriggerEventModel>) -> Unit) {
         CoroutineScope(Main).launch {
@@ -560,7 +518,6 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
                     when(triggerEventConstants) {
                         TriggerEventConstants.Companion.EventClickType.CLOSE_EVENT -> {
                             eventClickActionData.addProperty("eventType", "DISCARDED")
-//                            Log.d(TAG, "Event Action API Body: $jsonObjectBody")
                             initiateTriggerEventLogToCloud(prepareEventCloseActionBodyData(eventModel))
                         }
                         TriggerEventConstants.Companion.EventClickType.IMAGE_CLICK -> {

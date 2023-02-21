@@ -22,11 +22,7 @@ internal class AppLifecycleObserver(val context: Context, private val screenName
             Lifecycle.Event.ON_RESUME -> {
                 d(TAG, "on resume $source, ${source.lifecycle.currentState}" )
 
-//                EventNotification.getInstance().logAppOpenEvent(context)
-//                EventNotification.getInstance().logPageViewedEvent(context, screenName)
-
-
-                // The below line is to just test Db events.
+                //The below line is to just test Db events.
 //                TriggerEvent.getInstance().findAndLaunchDbTriggerEvent(context)
 
                 //The below line need to enable if event need to trigger on Activity.

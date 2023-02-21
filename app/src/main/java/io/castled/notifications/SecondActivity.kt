@@ -76,8 +76,6 @@ class SecondActivity : AppCompatActivity() {
         }
 
 
-//        EventNotification.getInstance().observeLifecycle(this, lifecycle, "SecondActivity")
-//        getInstance().observeLifecycle(this@SecondActivity)
 
         binding.btnShowDbEvent.setOnClickListener {
 

@@ -5,7 +5,6 @@ import android.app.Application
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import io.castled.inAppTriggerEvents.trigger.TriggerEvent
 
 private const val TAG = "AppActivityLifecycleObs"
 internal class AppActivityLifecycleObserver: Application.ActivityLifecycleCallbacks{
@@ -19,8 +18,6 @@ internal class AppActivityLifecycleObserver: Application.ActivityLifecycleCallba
 
     override fun onActivityResumed(activity: Activity) {
         Log.d(TAG, "onActivityResumed: ${activity.componentName.shortClassName}")
-
-//        TriggerEvent.getInstance().findAndLaunchDbTriggerEvent(activity)
     }
 
     override fun onActivityPaused(activity: Activity) {
