@@ -35,9 +35,6 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-//        EventNotification.getInstance().observeLifecycle(this, getLifecycle(), "MainActivity");
-//        EventNotification.getInstance().observeLifecycle(MainActivity.this);
-
         setSupportActionBar(binding.toolbar);
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -99,14 +96,5 @@ public class MainActivity extends AppCompatActivity {
         CastledNotifications.logAppOpenedEvent(this);
         String ifErrorMessage = CastledNotifications.logInAppPageViewEvent(this, "MainActivity");
         Log.d(TAG, "onResume: " + ifErrorMessage);
-
-        //The below code is now removed and will delete after review.
-        /*
-        if (CastledNotifications.getInstance() != null && CastledNotifications.getInstance().getInApp() != null){
-            CastledNotifications.getInstance().getInApp().logAppOpenedEvent(this);
-            CastledNotifications.getInstance().getInApp().logInAppPageViewEvent(this, "MainActivity");
-        }
-        */
-
     }
 }

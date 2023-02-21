@@ -38,9 +38,6 @@ public class FirstFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-//        EventNotification.getInstance().observeLifecycle(FirstFragment.this, "FirstFragment");
-//        EventNotification.getInstance().observeLifecycle(FirstFragment.this, "ScreenA");
-
         binding.buttonFirst.setOnClickListener(view1 -> NavHostFragment.findNavController(FirstFragment.this)
                 .navigate(R.id.action_FirstFragment_to_SecondFragment));
 
@@ -49,8 +46,6 @@ public class FirstFragment extends Fragment {
                 "#f8ffbd",
                 new PopupHeader("Summer sale is Back!", "#FFFFFF" , 18, "#E74C3C"),
                 new PopupMessage("30% offer on Electronics, Cloths, Sports and other categories.","#FFFFFF" , 12, "#039ADC"),
-//                    "http://i.imgur.com/DvpvklR.png",
-//                    "https://www.pakainfo.com/wp-content/uploads/2021/09/image-url-for-testing.jpg",
                 "https://www.infogrepper.com/wp-content/uploads/2022/10/image-url-for-testing.png",
                 "https://www.apple.com/",
                 new PopupPrimaryButton("Skip Now", "#000000", "#ffffff", "#000000", "https://www.google.com/"),
@@ -58,7 +53,6 @@ public class FirstFragment extends Fragment {
         ));
 
         binding.btnLaunchFullscreenPopup.setOnClickListener(btnLaunchFullscreenPopupView -> {
-//            TriggerPopup.Companion.showFullScreenDialog(requireContext(), requireActivity());
 
 
             TestTriggerEvents.getInstance().showFullscreenDialog(
@@ -66,8 +60,6 @@ public class FirstFragment extends Fragment {
                     "#f8ffbd",
                     new PopupHeader("Summer sale is Back!", "#FFFFFF" , 18, "#E74C3C"),
                     new PopupMessage("Full Screen \n30% offer on Electronics, Cloths, Sports and other categories.","#FFFFFF" , 12, "#039ADC"),
-//                    "http://i.imgur.com/DvpvklR.png",
-//                    "https://www.pakainfo.com/wp-content/uploads/2021/09/image-url-for-testing.jpg",
                     "https://cdn.castled.io/logo/castled_multi_color_logo_only.png",
                     "https://www.apple.com/",
                     new PopupPrimaryButton("Skip Now", "#000000", "#ffffff", "#000000", "https://www.google.com/"),
@@ -93,8 +85,6 @@ public class FirstFragment extends Fragment {
         });
 
         binding.btnDbEvent.setOnClickListener(btnLaunchFullscreenPopupView -> {
-//            apiTest.observeDatabaseNotification(requireContext(), getViewLifecycleOwner());
-
             TestTriggerEvents.getInstance().findAndLaunchTriggerEvent(requireContext());
 
         });
@@ -110,18 +100,9 @@ public class FirstFragment extends Fragment {
         if you will use the below code before initialization of CastledNotifications
         in the Application class.
         */
-
         CastledNotifications.logAppOpenedEvent(requireActivity());
         String isError = CastledNotifications.logInAppPageViewEvent(requireContext(), "FirstFragment");
         Log.d(TAG, "onResume: " + isError);
-
-        //The below code is now removed and will delete after review.
-        /*
-        if (io.castled.CastledNotifications.getInstance() != null && io.castled.CastledNotifications.getInstance().getInApp() != null){
-            io.castled.CastledNotifications.getInstance().getInApp().logAppOpenedEvent(requireActivity());
-            io.castled.CastledNotifications.getInstance().getInApp().logInAppPageViewEvent(requireActivity(), "FirstFragment");
-        }
-        */
     }
 
     @Override
