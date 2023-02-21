@@ -28,7 +28,6 @@ public class ApplicationClass extends MultiDexApplication {
                 .fetchFromCloudInterval(45)
                 .build();
 
-        // TODO: close gitHub-> Inapp module initialization cleanups #5
         // You need to call below line first before calling CastledNotifications.initialize
         CastledNotifications.setUserId("dheeraj.osw@gmail.com");
 
