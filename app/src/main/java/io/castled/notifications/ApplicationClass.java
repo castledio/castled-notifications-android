@@ -23,7 +23,10 @@ public class ApplicationClass extends MultiDexApplication {
 //        CastledNotifications.initialize(this, "829c38e2e359d94372a2e0d35e1f74df");
 //        CastledNotifications.setUserId("dheeraj.osw@gmail.com");
 
-        InAppChannelConfig inAppConfig = InAppChannelConfig.builder().enable(true).fetchFromCloudInterval(45).build();
+        InAppChannelConfig inAppConfig = InAppChannelConfig.builder()
+                .enable(true)
+                .fetchFromCloudInterval(45)
+                .build();
 
         // TODO: close gitHub-> Inapp module initialization cleanups #5
         // You need to call below line first before calling CastledNotifications.initialize
