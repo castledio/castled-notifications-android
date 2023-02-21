@@ -8,10 +8,12 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ProcessLifecycleOwner
 import io.castled.inAppTriggerEvents.trigger.TriggerEvent
 import io.castled.inAppTriggerEvents.observer.AppActivityLifecycleObserver
 import io.castled.inAppTriggerEvents.observer.AppLifecycleObserver
 import io.castled.inAppTriggerEvents.observer.FragmentLifeCycleObserver
+import io.castled.inAppTriggerEvents.requests.connectivity.base.ConnectivityProvider
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -20,12 +22,26 @@ import java.util.concurrent.TimeUnit
 private const val TAG = "EventNotification"
 
 class EventNotification private constructor() {
+    internal lateinit var connectivityProvider: ConnectivityProvider
     internal lateinit var instanceIdKey: String
     internal lateinit var userId: String
+    internal var hasInternet = false
     internal var triggerEventsFrequencyTime: Long = 60000
     set(timeInSeconds) {
         Log.d(TAG, "Event Frequency(Default: $triggerEventsFrequencyTime milliseconds) set to $timeInSeconds seconds.")
         field = TimeUnit.SECONDS.toMillis(timeInSeconds)
+    }
+
+    // TODO: close gitHub-> implement watching for network state changes and retrying network requests #15
+    private val connectivityStateListener: ConnectivityProvider.ConnectivityStateListener = object: ConnectivityProvider.ConnectivityStateListener{
+        override fun onStateChange(state: ConnectivityProvider.NetworkState) {
+            hasInternet = state.hasInternet()
+        }
+
+    }
+
+    private fun ConnectivityProvider.NetworkState.hasInternet(): Boolean {
+        return (this as? ConnectivityProvider.NetworkState.ConnectedState)?.hasInternet == true
     }
 
     companion object {
@@ -37,6 +53,10 @@ class EventNotification private constructor() {
     }
 
     internal fun initialize(application: Application) {
+        //No use of the below line currently. Just to log and watch the lifecycle of the activities.
+        application.registerActivityLifecycleCallbacks(AppActivityLifecycleObserver())
+
+        observeAppLifecycle(application)
         GlobalScope.launch {
             do {
                 TriggerEvent.getInstance().fetchAndSaveTriggerEvents(application)
@@ -45,8 +65,12 @@ class EventNotification private constructor() {
         }
     }
 
-    internal fun observeLifecycle(context: Context, lifecycle: Lifecycle, screenName: String) {
-        lifecycle.addObserver(AppLifecycleObserver(context, screenName))
+    internal fun observeAppLifecycle(context: Context) {
+        connectivityProvider = ConnectivityProvider.createProvider(context)
+        val appLifecycleObserver = AppLifecycleObserver(context)
+        appLifecycleObserver.provider = connectivityProvider
+        appLifecycleObserver.connectivityStateListener = this.connectivityStateListener
+        ProcessLifecycleOwner.get().lifecycle.addObserver(appLifecycleObserver)
     }
 
     internal fun observeLifecycle(activity: Activity) {

@@ -56,6 +56,11 @@ internal class TriggerEvent private constructor(){
 
     //TODO rename to requestCampaignsFromCloud
     private suspend fun requestTriggerEventsFromCloud(context: Context): List<TriggerEventModel> {
+        if (!EventNotification.getInstance.hasInternet) {
+            Log.d(TAG, "Error: No Internet.")
+            return emptyList()
+        }
+
         return withContext(IO) {
             val eventsResponse = ServiceGenerator.requestApi()
                 .makeNotificationQuery(EventNotification.getInstance.instanceIdKey, EventNotification.getInstance.userId)
@@ -76,6 +81,10 @@ internal class TriggerEvent private constructor(){
     }
 
     private suspend fun updateTriggerEventLogToCloudWithCount(eventBody: JsonObject, tryCount: Int): String {
+        if (!EventNotification.getInstance.hasInternet) {
+            Log.d(TAG, "Error: No Internet.")
+            return "Error: No Internet."
+        }
         return withContext(IO) {
             eventBody.addProperty("ts", System.currentTimeMillis())
             eventBody.addProperty("tz", TimeZone.getDefault().displayName)
@@ -170,7 +179,7 @@ internal class TriggerEvent private constructor(){
     ): List<TriggerEventModel> =
 
         withContext(Default) {
-            Log.d(TAG, "**** evaluateDbTriggerEvent:: ****\neventParam:${eventParam.toList()}")
+            Log.d(TAG, "**** evaluateDbTriggerEvent:: ****\teventParam:${eventParam.toList()}")
             val showOnScreenEvent = mutableListOf<TriggerEventModel>()
             val triggerEvent = dbFetchTriggerEvents(context)
             val triggerParamsEvaluator = TriggerParamsEvaluator()
@@ -178,6 +187,8 @@ internal class TriggerEvent private constructor(){
             //TODO rename "triggerEvent" to campaign. Rename related stuff
             triggerEvent.forEach { triggerEventModel ->
                 Log.d(TAG, "DB trigger JSON: ${triggerEventModel.trigger}")
+                // TODO: close gitHub-> API contract #22
+                //TODO: close gitHub-> Please share backend test login for e2e testing for demo #8
                 if (!triggerEventModel.trigger.asJsonObject.isJsonNull
                     && triggerEventModel.trigger.asJsonObject.has("eventFilter")
                     && !triggerEventModel.trigger.asJsonObject.get("eventFilter").isJsonNull

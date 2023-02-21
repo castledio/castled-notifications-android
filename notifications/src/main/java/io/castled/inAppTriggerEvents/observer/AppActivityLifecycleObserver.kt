@@ -8,8 +8,17 @@ import android.util.Log
 
 private const val TAG = "AppActivityLifecycleObs"
 internal class AppActivityLifecycleObserver: Application.ActivityLifecycleCallbacks{
+
+    override fun onActivityPreCreated(activity: Activity, savedInstanceState: Bundle?) {
+        Log.d(TAG, "onActivityPreCreated: ${activity.componentName.shortClassName}")
+    }
+
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-        Log.d(TAG, "onActivityCreated: ")
+        Log.d(TAG, "onActivityCreated: ${activity.componentName.shortClassName}")
+    }
+
+    override fun onActivityPostCreated(activity: Activity, savedInstanceState: Bundle?) {
+        Log.d(TAG, "onActivityPostCreated: ${activity.componentName.shortClassName}")
     }
 
     override fun onActivityStarted(activity: Activity) {
@@ -18,6 +27,14 @@ internal class AppActivityLifecycleObserver: Application.ActivityLifecycleCallba
 
     override fun onActivityResumed(activity: Activity) {
         Log.d(TAG, "onActivityResumed: ${activity.componentName.shortClassName}")
+    }
+
+    override fun onActivityPreResumed(activity: Activity) {
+        Log.d(TAG, "onActivityPreResumed: ${activity.componentName.shortClassName}")
+    }
+
+    override fun onActivityPostResumed(activity: Activity) {
+        Log.d(TAG, "onActivityPostResumed: ${activity.componentName.shortClassName}")
     }
 
     override fun onActivityPaused(activity: Activity) {

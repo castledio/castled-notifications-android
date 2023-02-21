@@ -4,9 +4,12 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ProcessLifecycleOwner
 import io.castled.inAppTriggerEvents.ChannelConfig
 import io.castled.inAppTriggerEvents.InAppChannelConfig
 import io.castled.inAppTriggerEvents.event.EventNotification
+import io.castled.inAppTriggerEvents.observer.AppLifecycleObserver
+import io.castled.inAppTriggerEvents.requests.connectivity.base.ConnectivityProvider
 
 private const val TAG = "CastledNotifications"
 
@@ -37,7 +40,10 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
             if (instanceId.isBlank()) return error3
             if (!(configs as InAppChannelConfig).enable) return error2
 
+
             inApp.apply {
+//                observeAppLifecycle(application)
+                connectivityProvider = ConnectivityProvider.createProvider(application)
                 triggerEventsFrequencyTime = configs.fetchFromCloudInterval
                 instanceIdKey = instanceId
                 initialize(application)
