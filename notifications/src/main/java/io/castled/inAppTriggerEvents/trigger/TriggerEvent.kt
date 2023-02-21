@@ -54,7 +54,7 @@ internal class TriggerEvent private constructor(){
 
     }
 
-    //TODO rename to request campaignsFromCloud
+    //TODO rename to requestCampaignsFromCloud
     private suspend fun requestTriggerEventsFromCloud(context: Context): List<TriggerEventModel> {
         return withContext(IO) {
             val eventsResponse = ServiceGenerator.requestApi()
@@ -85,7 +85,7 @@ internal class TriggerEvent private constructor(){
             Log.d(TAG, "\n\n\n** START ******* ## Log Trigger Event to Cloud(Try: $tryCount) ## *********\n" +
                     "Body(raw):1:: $eventBody\n" +
                     "Response isSuccess:2:: ${response.isSuccessful}\n" +
-//                    "Response Header:3:: ${response.headers()}\n" +
+                    "Response Header:3:: ${response.headers()}\n" +
                     "Response Body:4:: ${response.body()}\n" +
                     "Response Message:5:: ${response.message()}\n" +
                     "Response errorBody:6:: ${response.errorBody()}\n" +
@@ -660,7 +660,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
         Log.d(TAG, "2. Body: ${cloudEventResponse.body()}")
         Log.d(TAG, "3. Code: ${cloudEventResponse.code()}")
         Log.d(TAG, "4. Message: ${cloudEventResponse.message()}")
-//        Log.d(TAG, "5. Headers: ${cloudEventResponse.headers()}")
+        Log.d(TAG, "5. Headers: ${cloudEventResponse.headers()}")
         Log.d(TAG, "6. Raw: ${cloudEventResponse.raw()}")
         Log.d(TAG, "7. ${cloudEventResponse.body()?.size} ")
         Log.d(TAG, "************* fetchCloudEvents FETCHED DONE *************\n")
