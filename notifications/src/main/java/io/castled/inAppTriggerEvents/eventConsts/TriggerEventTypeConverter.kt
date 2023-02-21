@@ -4,7 +4,9 @@ import androidx.room.TypeConverter
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 
-//This class will used by ROOM to convert appropriate data type to save it into database.
+/**
+ * This class will be used by ROOM to convert appropriate data type to save it into database.
+ */
 internal class TriggerEventTypeConverter {
 
     @TypeConverter
