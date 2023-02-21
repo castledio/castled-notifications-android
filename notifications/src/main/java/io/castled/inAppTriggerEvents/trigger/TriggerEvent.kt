@@ -58,6 +58,7 @@ internal class TriggerEvent private constructor(){
 
     }
 
+    //TODO rename to request campaignsFromCloud
     private suspend fun requestTriggerEventsFromCloud(context: Context): List<TriggerEventModel> {
 
         /*return withContext(IO) {
@@ -72,7 +73,7 @@ internal class TriggerEvent private constructor(){
             val eventsResponse = ServiceGenerator.requestApi()
                 //using dheeraj's credentials as defaults. api key is same as instance id
                 .makeNotificationQuery(EventNotification.getInstance.instanceIdKey, EventNotification.getInstance.userId)
-//            showApiLog(eventsResponse)
+            showApiLog(eventsResponse)
             if (eventsResponse.isSuccessful && eventsResponse.body() != null) {
                 eventsResponse.body()
             } else {
