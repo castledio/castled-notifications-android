@@ -43,6 +43,7 @@ internal class TriggerEvent private constructor(){
     internal fun fetchAndSaveTriggerEvents(context: Context) {
 
         CoroutineScope(Main).launch {
+            //TODO rename `notifications` here to campaigns
             val notifications = requestTriggerEventsFromCloud(context)
             if (notifications.isNotEmpty()) {
                 val noOfRowDeleted = dbDeleteTriggerEvents(context)
@@ -57,7 +58,7 @@ internal class TriggerEvent private constructor(){
 
     }
 
-    //TODO rename to requestCampaignsFromCloud
+    //TODO rename to requestCampaignsFromCloud; TriggerEventModel should be CampaignModel
     private suspend fun requestTriggerEventsFromCloud(context: Context): List<TriggerEventModel> {
         if (!EventNotification.getInstance.hasInternet) {
             Log.d(TAG, "Error: No Internet.")
