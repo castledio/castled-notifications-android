@@ -459,6 +459,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
         if (secondaryPopupButtonJson.get("url").isJsonNull) "" else secondaryPopupButtonJson.get("url").asString
     )
 
+    //TODO rename these to launchModalInapp
     private fun launchModalTriggerNotification(context: Context, eventModel: TriggerEventModel) {
         val message: JsonObject = eventModel.message.asJsonObject
         val modal: JsonObject = message.getAsJsonObject("modal")
