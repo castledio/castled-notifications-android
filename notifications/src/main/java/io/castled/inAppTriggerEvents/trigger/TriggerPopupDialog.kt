@@ -12,21 +12,15 @@ import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.util.Log
 import android.util.TypedValue
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.Window
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.view.*
+import android.widget.*
 import com.bumptech.glide.Glide
 import com.google.gson.JsonObject
 import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
 import io.castled.inAppTriggerEvents.models.TriggerEventModel
 import io.castled.notifications.R
-import java.util.*
 import java.util.regex.Pattern
+
 
 private const val TAG = "TriggerPopup"
 internal class TriggerPopupDialog {
@@ -45,12 +39,42 @@ internal class TriggerPopupDialog {
             triggerEventClickAction: TriggerEventClickAction
         ) {
             val dialog = Dialog(context)
+//            val dialog = Dialog(context, R.style.event_dialog_style)
             dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
             dialog.setCancelable(false)
             dialog.setContentView(R.layout.dialog_popup_triggered)
 
-            val frameLayout: FrameLayout = dialog.findViewById(R.id.frame_layout_root)
+
+
+            // e.g. top + right margins:
+//            dialog.window!!.setGravity(Gravity.TOP or Gravity.RIGHT)
+//            val layoutParams = dialog.window!!.attributes
+//            layoutParams.x = 100 // right margin
+//
+//            layoutParams.y = 170 // top margin
+//
+//            dialog.window!!.attributes = layoutParams
+
+
+// e.g. bottom + left margins:
+//            dialog.window!!.setGravity(Gravity.BOTTOM or Gravity.LEFT)
+//            val layoutParams = dialog.window!!.attributes
+//            layoutParams.x = 100 // left margin
+//
+//            layoutParams.y = 170 // bottom margin
+//
+//            dialog.window!!.attributes = layoutParams
+
+
+
+            /*val lp = WindowManager.LayoutParams()
+            lp.copyFrom(dialog.window?.attributes)
+            lp.width = WindowManager.LayoutParams.MATCH_PARENT
+            lp.height = WindowManager.LayoutParams.MATCH_PARENT*/
+
+//            val frameLayout: FrameLayout = dialog.findViewById(R.id.frame_layout_root)
+            val frameLayout: RelativeLayout = dialog.findViewById(R.id.frame_layout_root)
             val gradientDrawable: GradientDrawable = frameLayout.background as GradientDrawable
             gradientDrawable.setColor(Color.parseColor(returnDefaultOrValidHexColor(popUpBackgroundColor, "#FFFFFF")))
 
@@ -65,7 +89,9 @@ internal class TriggerPopupDialog {
             }
 
             val imageView: ImageView = dialog.findViewById(R.id.img_popup)
-            Glide.with(context).load(imageUrl).into(imageView)
+            Glide.with(context).load(imageUrl)
+                .centerCrop()
+                .into(imageView)
             imageView.setOnClickListener {
 
                 triggerEventClickAction.onTriggerEventAction(
@@ -184,7 +210,13 @@ internal class TriggerPopupDialog {
             }
 
             val imageView: ImageView = dialog.findViewById(R.id.img_popup)
-            Glide.with(context).load(imageUrl).into(imageView)
+            Glide
+                .with(context)
+                .load(imageUrl)
+//                .centerInside()
+//                .fitCenter()
+                .centerCrop()
+                .into(imageView)
             imageView.setOnClickListener {
                 if (urlForOnClickOnImage.isNotEmpty()){
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlForOnClickOnImage))
