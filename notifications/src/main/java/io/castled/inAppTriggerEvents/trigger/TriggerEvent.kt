@@ -45,7 +45,9 @@ internal class TriggerEvent private constructor(){
         CoroutineScope(Main).launch {
             //TODO rename `notifications` here to campaigns
             val notifications = requestTriggerEventsFromCloud(context)
-            if (notifications.isNotEmpty()) {
+
+            //No error in fetching notifications. This allows notiticaions to be empty
+            if (notifications != null) {
                 val noOfRowDeleted = dbDeleteTriggerEvents(context)
                 val rows = dbInsertTriggerEvents(context, notifications)
                 Log.d(TAG, "inserted into db: ${rows.toList()}")
@@ -53,16 +55,16 @@ internal class TriggerEvent private constructor(){
             }
 
             //TODO: close gitHub-> Live Campaign fetch fails when there are no campaigns #47
-//            else Toast.makeText(context, "Notification fetch failed.", Toast.LENGTH_SHORT).show()
+            else Toast.makeText(context, "Notification fetch failed.", Toast.LENGTH_SHORT).show()
         }
 
     }
 
     //TODO rename to requestCampaignsFromCloud; TriggerEventModel should be CampaignModel
-    private suspend fun requestTriggerEventsFromCloud(context: Context): List<TriggerEventModel> {
+    private suspend fun requestTriggerEventsFromCloud(context: Context): List<TriggerEventModel>? {
         if (!EventNotification.getInstance.hasInternet) {
             Log.d(TAG, "Error: No Internet.")
-            return emptyList()
+            return null
         }
 
         return withContext(IO) {
@@ -79,7 +81,7 @@ internal class TriggerEvent private constructor(){
                         Toast.LENGTH_LONG
                     ).show()
                 }
-                emptyList()
+                null
             }
         } as List<TriggerEventModel>
     }
