@@ -54,7 +54,6 @@ internal class TriggerEvent private constructor(){
 
             }
 
-            //TODO: close gitHub-> Live Campaign fetch fails when there are no campaigns #47
             else Toast.makeText(context, "Notification fetch failed.", Toast.LENGTH_SHORT).show()
         }
 
