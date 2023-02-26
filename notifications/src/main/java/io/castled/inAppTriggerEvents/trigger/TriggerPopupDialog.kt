@@ -76,7 +76,9 @@ internal class TriggerPopupDialog {
 //            val frameLayout: FrameLayout = dialog.findViewById(R.id.frame_layout_root)
             val frameLayout: RelativeLayout = dialog.findViewById(R.id.frame_layout_root)
             val gradientDrawable: GradientDrawable = frameLayout.background as GradientDrawable
-            gradientDrawable.setColor(Color.parseColor(returnDefaultOrValidHexColor(popUpBackgroundColor, "#FFFFFF")))
+//            gradientDrawable.setColor(Color.parseColor(returnDefaultOrValidHexColor(popUpBackgroundColor, "#FFFFFF")))
+            // popup bg colour should be white. Note: this is NOT overlay colour
+            gradientDrawable.setColor(Color.WHITE)
 
             val view: View = dialog.findViewById(R.id.view_close)
             view.setOnClickListener {
