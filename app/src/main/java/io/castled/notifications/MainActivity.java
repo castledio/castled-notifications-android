@@ -93,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
         in the Application class.
         */
         CastledNotifications.logAppOpenedEvent(this);
-        String ifErrorMessage = CastledNotifications.logInAppPageViewEvent(this, "MainActivity");
-        Log.d(TAG, "onResume: " + ifErrorMessage);
+        CastledNotifications.logInAppPageViewEvent(this, "MainActivity");
     }
 }

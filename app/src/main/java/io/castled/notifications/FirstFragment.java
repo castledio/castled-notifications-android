@@ -101,8 +101,7 @@ public class FirstFragment extends Fragment {
         in the Application class.
         */
         CastledNotifications.logAppOpenedEvent(requireActivity());
-        String isError = CastledNotifications.logInAppPageViewEvent(requireContext(), "FirstFragment");
-        Log.d(TAG, "onResume: " + isError);
+        CastledNotifications.logInAppPageViewEvent(requireContext(), "FirstFragment");
     }
 
     @Override
