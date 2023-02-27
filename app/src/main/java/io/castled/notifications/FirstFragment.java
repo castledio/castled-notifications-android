@@ -93,14 +93,6 @@ public class FirstFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        /*
-        The below code return string which we can use to send the status.
-        Example: currently sending "CastledNotifications: SDK already initialized."
-        if you will use the below code before initialization of CastledNotifications
-        in the Application class.
-        */
-        CastledNotifications.logAppOpenedEvent(requireActivity());
         CastledNotifications.logInAppPageViewEvent(requireContext(), "FirstFragment");
     }
 
