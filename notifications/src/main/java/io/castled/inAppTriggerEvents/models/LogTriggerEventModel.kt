@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.JsonObject
 
+//TODO check are these for reporting events?
 @Entity(tableName = "log_trigger_event")
 class LogTriggerEventModel (
     @ColumnInfo(name = "id")

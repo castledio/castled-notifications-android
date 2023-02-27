@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 
+//TODO rename this to campaign
 @Entity(tableName = "trigger_event")
 internal data class TriggerEventModel(
     @ColumnInfo(name = "id")

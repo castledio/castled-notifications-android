@@ -170,8 +170,9 @@ internal class TriggerEvent private constructor(){
     //TODO rename this to findAndLaunchUi
     internal fun findAndLaunchEvent(context: Context, eventParamsWithEventName: Map<String, Any?>, callBack: (List<TriggerEventModel>) -> Unit) {
         CoroutineScope(Main).launch {
+            //TODO rename value variable
             val value = evaluateDbTriggerEvent(context, eventParamsWithEventName.toMutableMap())
-            //TODO maybe rename this to launchUi
+            //TODO maybe rename this to launchInapp
             launchTriggerEvent(context, value)
             callBack.invoke(value)
         }
@@ -198,7 +199,6 @@ internal class TriggerEvent private constructor(){
                     && triggerEventModel.trigger.asJsonObject.has("eventFilter")
                     && !triggerEventModel.trigger.asJsonObject.get("eventFilter").isJsonNull
                     && triggerEventModel.trigger.asJsonObject.get("eventFilter").asJsonObject.has("nestedFilters")
-//                    && !triggerEventModel.trigger.asJsonObject.get("eventFilter").asJsonObject.get("nestedFilters").isJsonNull
                 ){
                     Log.d(TAG, "DB trigger JSON(Condition Pass): ${triggerEventModel.trigger}")
 

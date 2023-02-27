@@ -22,6 +22,9 @@ public class TriggerParamsEvaluator {
         paramsEvaluators.put(PropertyType.string, new StringConditionEvaluator());
     }
 
+    //TODO create a filter here itself. OR see if a coroutine is better. OR we can convert this into kt and use a coroutine
+
+    //TODO rename to evaluate nestedfilter
     public boolean evaluate(Map<String, Object> params, NestedEventFilter eventFilter) {
         if (eventFilter.getNestedFilters() == null || eventFilter.getNestedFilters().size() == 0) {
             return true;
