@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CastledNotifications.logAppOpenedEvent(this);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -86,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        CastledNotifications.logAppOpenedEvent(this);
         CastledNotifications.logInAppPageViewEvent(this, "MainActivity");
     }
 }
