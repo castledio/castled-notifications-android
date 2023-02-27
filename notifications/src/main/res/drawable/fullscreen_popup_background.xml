@@ -10,15 +10,15 @@
         android:color="#C4CDE0" >
     </stroke>
 
-    <padding
+    <!--<padding
         android:left="6dp"
         android:top="6dp"
         android:right="6dp"
         android:bottom="6dp"    >
-    </padding>
+    </padding>-->
 
     <corners
-        android:radius="16dp"   >
+        android:radius="4dp"   >
     </corners>
 
 </shape>

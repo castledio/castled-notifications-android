@@ -14,6 +14,7 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.*
 import android.widget.*
+import androidx.appcompat.widget.AppCompatImageView
 import com.bumptech.glide.Glide
 import com.google.gson.JsonObject
 import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
@@ -73,12 +74,13 @@ internal class TriggerPopupDialog {
             lp.width = WindowManager.LayoutParams.MATCH_PARENT
             lp.height = WindowManager.LayoutParams.MATCH_PARENT*/
 
-//            val frameLayout: FrameLayout = dialog.findViewById(R.id.frame_layout_root)
-            val frameLayout: RelativeLayout = dialog.findViewById(R.id.frame_layout_root)
-            val gradientDrawable: GradientDrawable = frameLayout.background as GradientDrawable
+
+            // The below 3 lines is commented, because "Screen Overlay" color is not for the background of Dialog
+            // but "Screen Overlay" is for transparent color for the background activity/fragment.
+            // will handle this when, we get some more clearance.
+//            val frameLayout: RelativeLayout = dialog.findViewById(R.id.frame_layout_root)
+//            val gradientDrawable: GradientDrawable = frameLayout.background as GradientDrawable
 //            gradientDrawable.setColor(Color.parseColor(returnDefaultOrValidHexColor(popUpBackgroundColor, "#FFFFFF")))
-            // popup bg colour should be white. Note: this is NOT overlay colour
-            gradientDrawable.setColor(Color.WHITE)
 
             val view: View = dialog.findViewById(R.id.view_close)
             view.setOnClickListener {
@@ -90,9 +92,14 @@ internal class TriggerPopupDialog {
                 dialog.dismiss()
             }
 
+//            https://img.uswitch.com/qhi9fkhtpbo3/hSSkIfF0OsQQGuiCCm0EQ/6c1a9b54de813e0a71a85edb400d58d8/rsz_1android.jpg
+            //https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Google_Images_2015_logo.svg/800px-Google_Images_2015_logo.svg.png
+            // TODO: close gitHub(Image scaling issue)-> https://github.com/dheerajbhaskar/castled-notifications-android/issues/54
             val imageView: ImageView = dialog.findViewById(R.id.img_popup)
             Glide.with(context).load(imageUrl)
-                .centerCrop()
+//                .centerCrop()
+//                .centerInside()
+                .fitCenter()
                 .into(imageView)
             imageView.setOnClickListener {
 
@@ -106,7 +113,9 @@ internal class TriggerPopupDialog {
                     if (intent.resolveActivity(context.packageManager) != null)
                         context.startActivity(intent)
                 }
-                dialog.dismiss()
+                // TODO: close gitHub(on image top dialog will not close)-> https://github.com/dheerajbhaskar/castled-notifications-android/issues/54
+                //below line commented because the Dialog not need to close when tapping on the image
+//                dialog.dismiss()
             }
 
             val textHeader: TextView = dialog.findViewById(R.id.txt_header)
@@ -144,8 +153,14 @@ internal class TriggerPopupDialog {
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     if (intent.resolveActivity(context.packageManager) != null)
                         context.startActivity(intent)
-                    else Toast.makeText(context, "No application found to process the request.", Toast.LENGTH_LONG).show()
-                } else Toast.makeText(context, "Not able to handle the request.", Toast.LENGTH_LONG).show()
+                    else {
+//                        Toast.makeText(context, "No application found to process the request.", Toast.LENGTH_LONG).show()
+                        Log.d(TAG, "showDialog: No application found to process the request.")
+                    }
+                } else {
+//                    Toast.makeText(context, "Not able to handle the request.", Toast.LENGTH_LONG).show()
+                    Log.d(TAG, "showDialog: Not able to handle the request.")
+                }
 
                 dialog.dismiss()
             }
@@ -170,8 +185,14 @@ internal class TriggerPopupDialog {
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     if (intent.resolveActivity(context.packageManager) != null)
                         context.startActivity(intent)
-                    else Toast.makeText(context, "Not able to handle the request.", Toast.LENGTH_LONG).show()
-                } else Toast.makeText(context, "Not able to handle the request.", Toast.LENGTH_LONG).show()
+                    else {
+//                        Toast.makeText(context, "Not able to handle the request.", Toast.LENGTH_LONG).show()
+                        Log.d(TAG, "showDialog: Not able to handle the request.")
+                    }
+                } else {
+//                    Toast.makeText(context, "Not able to handle the request.", Toast.LENGTH_LONG).show()
+                    Log.d(TAG, "showDialog: Not able to handle the request.")
+                }
 
                 dialog.dismiss()
             }
@@ -197,9 +218,9 @@ internal class TriggerPopupDialog {
             dialog.setCancelable(false)
             dialog.setContentView(R.layout.dialog_popup_fullscreen_triggered)
 
-            val frameLayout: FrameLayout = dialog.findViewById(R.id.frame_layout_root)
-            val gradientDrawable: GradientDrawable = frameLayout.background as GradientDrawable
-            gradientDrawable.setColor(Color.parseColor(returnDefaultOrValidHexColor(popUpBackgroundColor, "#FFFFFF")))
+//            val frameLayout: FrameLayout = dialog.findViewById(R.id.frame_layout_root)
+//            val gradientDrawable: GradientDrawable = frameLayout.background as GradientDrawable
+//            gradientDrawable.setColor(Color.parseColor(returnDefaultOrValidHexColor(popUpBackgroundColor, "#FFFFFF")))
 
             val view: View = dialog.findViewById(R.id.view_close)
             view.setOnClickListener {
@@ -211,13 +232,14 @@ internal class TriggerPopupDialog {
                 dialog.dismiss()
             }
 
-            val imageView: ImageView = dialog.findViewById(R.id.img_popup)
+            // TODO: close gitHub-> https://github.com/dheerajbhaskar/castled-notifications-android/issues/54
+            val imageView: AppCompatImageView = dialog.findViewById(R.id.img_popup)
             Glide
                 .with(context)
                 .load(imageUrl)
 //                .centerInside()
-//                .fitCenter()
-                .centerCrop()
+                .fitCenter()
+//                .centerCrop()
                 .into(imageView)
             imageView.setOnClickListener {
                 if (urlForOnClickOnImage.isNotEmpty()){
@@ -231,7 +253,9 @@ internal class TriggerPopupDialog {
                     TriggerEventConstants.Companion.EventClickType.IMAGE_CLICK
                 )
 
-                dialog.dismiss()
+                // TODO: close gitHub(on image top dialog will not close)-> https://github.com/dheerajbhaskar/castled-notifications-android/issues/54
+                //below line commented because the Dialog not need to close when tapping on the image
+//                dialog.dismiss()
             }
 
             val textHeader: TextView = dialog.findViewById(R.id.txt_header)

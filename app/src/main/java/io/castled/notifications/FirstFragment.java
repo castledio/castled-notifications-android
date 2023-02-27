@@ -46,7 +46,9 @@ public class FirstFragment extends Fragment {
                 "#f8ffbd",
                 new PopupHeader("Summer sale is Back!", "#FFFFFF" , 18, "#E74C3C"),
                 new PopupMessage("30% offer on Electronics, Cloths, Sports and other categories.","#FFFFFF" , 12, "#039ADC"),
-                "https://www.infogrepper.com/wp-content/uploads/2022/10/image-url-for-testing.png",
+                "https://img.uswitch.com/qhi9fkhtpbo3/hSSkIfF0OsQQGuiCCm0EQ/6c1a9b54de813e0a71a85edb400d58d8/rsz_1android.jpg",
+//                "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Google_Images_2015_logo.svg/800px-Google_Images_2015_logo.svg.png",
+//                "https://www.infogrepper.com/wp-content/uploads/2022/10/image-url-for-testing.png",
                 "https://www.apple.com/",
                 new PopupPrimaryButton("Skip Now", "#000000", "#ffffff", "#000000", "https://www.google.com/"),
                 new PopupSecondaryButton("Start Shopping", "#ffe0da", "#FF6D07", "#5cdb5c","https://stackoverflow.com/")
@@ -60,7 +62,9 @@ public class FirstFragment extends Fragment {
                     "#f8ffbd",
                     new PopupHeader("Summer sale is Back!", "#FFFFFF" , 18, "#E74C3C"),
                     new PopupMessage("Full Screen \n30% offer on Electronics, Cloths, Sports and other categories.","#FFFFFF" , 12, "#039ADC"),
-                    "https://cdn.castled.io/logo/castled_multi_color_logo_only.png",
+//                    "https://cdn.castled.io/logo/castled_multi_color_logo_only.png",
+                    "https://img.uswitch.com/qhi9fkhtpbo3/hSSkIfF0OsQQGuiCCm0EQ/6c1a9b54de813e0a71a85edb400d58d8/rsz_1android.jpg",
+//                    "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Google_Images_2015_logo.svg/800px-Google_Images_2015_logo.svg.png",
                     "https://www.apple.com/",
                     new PopupPrimaryButton("Skip Now", "#000000", "#ffffff", "#000000", "https://www.google.com/"),
                     new PopupSecondaryButton("Start Shopping", "#ffe0da", "#FF6D07", "#5cdb5c","https://stackoverflow.com/")

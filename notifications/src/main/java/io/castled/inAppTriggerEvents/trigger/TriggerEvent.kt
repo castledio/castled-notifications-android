@@ -1,6 +1,7 @@
 package io.castled.inAppTriggerEvents.trigger
 
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
@@ -25,6 +26,7 @@ import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import retrofit2.Response
+import java.time.Instant
 import java.util.*
 
 
@@ -75,11 +77,8 @@ internal class TriggerEvent private constructor(){
                 eventsResponse.body()
             } else {
                 withContext(Main) {
-                    Toast.makeText(
-                        context,
-                        "Error while getting data.",
-                        Toast.LENGTH_LONG
-                    ).show()
+//                    Toast.makeText(context, "Error while getting data.", Toast.LENGTH_LONG).show()
+                    Log.d(TAG, "requestTriggerEventsFromCloud:  Error while getting data.")
                 }
                 null
             }
@@ -97,7 +96,7 @@ internal class TriggerEvent private constructor(){
             val response = ServiceGenerator.requestApi()
                 .logEventView(EventNotification.getInstance.instanceIdKey, eventBody)
 
-            Log.d(TAG, "\n\n\n** START ******* ## Log Trigger Event to Cloud(Try: $tryCount) ## *********\n" +
+            /*Log.d(TAG, "\n\n\n** START ******* ## Log Trigger Event to Cloud(Try: $tryCount) ## *********\n" +
                     "Body(raw):1:: $eventBody\n" +
                     "Response isSuccess:2:: ${response.isSuccessful}\n" +
                     "Response Header:3:: ${response.headers()}\n" +
@@ -107,7 +106,7 @@ internal class TriggerEvent private constructor(){
                     "Response raw:7:: ${response.raw()}\n" +
                     "Response Code:8:: ${response.code()}\n" +
                     "*********  *********  *********  ******* END **\n"
-            )
+            )*/
 
             if (response.isSuccessful){
                 response.raw().toString()
@@ -208,6 +207,7 @@ internal class TriggerEvent private constructor(){
             }
 
             //TODO rename "triggerEvent" to campaign. Rename related stuff
+            val timeRightNow = System.currentTimeMillis()
             triggerEvent.forEach { triggerEventModel ->
                 Log.d(TAG, "DB trigger JSON: ${triggerEventModel.trigger}")
                 if (!triggerEventModel.trigger.asJsonObject.isJsonNull
@@ -216,16 +216,35 @@ internal class TriggerEvent private constructor(){
                 ){
                     Log.d(TAG, "DB trigger JSON(Condition Pass): ${triggerEventModel.trigger}")
 
-                    val gson = GsonBuilder()
-                        .registerTypeAdapter(EventFilter::class.java, EventFilterDeserializer())
-                        .create()
-                    val eventFilter: EventFilter =
-                        gson.fromJson(
-                            triggerEventModel.trigger.get("eventFilter").asJsonObject,
-                            EventFilter::class.java
-                        )
-                    if (triggerParamsEvaluator.evaluate(eventParam, eventFilter as NestedEventFilter))
-                        showOnScreenEvent.add(triggerEventModel)
+                    Log.d(TAG, "timeRightNow: $timeRightNow, Event endTime: ${triggerEventModel.endTs}, startTime: ${triggerEventModel.startTs}")
+
+                    // TODO: close gitHub-> https://github.com/dheerajbhaskar/castled-notifications-android/issues/54
+                    if (triggerEventModel.endTs > timeRightNow){
+                        Log.d(TAG, "${triggerEventModel.notificationId} not expired.")
+                        val gson = GsonBuilder()
+                            .registerTypeAdapter(EventFilter::class.java, EventFilterDeserializer())
+                            .create()
+                        val eventFilter: EventFilter =
+                            gson.fromJson(
+                                triggerEventModel.trigger.get("eventFilter").asJsonObject,
+                                EventFilter::class.java
+                            )
+                        if (triggerParamsEvaluator.evaluate(eventParam, eventFilter as NestedEventFilter))
+                            showOnScreenEvent.add(triggerEventModel)
+                    } else {
+                        Log.d(TAG, "${triggerEventModel.notificationId} expired.")
+                    }
+
+                    /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        val timeRightNow = Instant.now()
+                        Log.d(TAG, "timeRightNow: ${timeRightNow.toEpochMilli()}, Event endTime: ${triggerEventModel.endTs}, startTime: ${triggerEventModel.startTs}")
+                        if (timeRightNow.isBefore(Instant.ofEpochSecond(triggerEventModel.endTs))){
+                            Log.d(TAG, "BEFORE")
+                        } else {
+                            Log.d(TAG, "AFTER")
+                        }
+                    }*/
+
                 }
             }
             showOnScreenEvent
@@ -298,11 +317,8 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
                                 launchFullScreenTriggerNotification(context, event!!)
                             }
                             TriggerEventConstants.Companion.TriggerEventType.NONE -> {
-                                Toast.makeText(
-                                    context,
-                                    "No ${triggerEventType.name} event found in the database.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+//                                Toast.makeText(context, "No ${triggerEventType.name} event found in the database.", Toast.LENGTH_SHORT).show()
+                                Log.d(TAG, "findAndLaunchTriggerEventForTest: No ${triggerEventType.name} event found in the database.")
                             }
                             else -> {}
                         }
@@ -311,11 +327,10 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
 
             }
 
-        } else Toast.makeText(
-            context,
-            "Please enter 0 for MODAL, 1 for FULL_SCREEN or 2 for SLIDE_UP.",
-            Toast.LENGTH_SHORT
-        ).show()
+        } else {
+//            Toast.makeText(context, "Please enter 0 for MODAL, 1 for FULL_SCREEN or 2 for SLIDE_UP.", Toast.LENGTH_SHORT).show()
+            Log.d(TAG, "findAndLaunchTriggerEventForTest: Please enter 0 for MODAL, 1 for FULL_SCREEN or 2 for SLIDE_UP.")
+        }
     }
 
     /**
@@ -480,7 +495,8 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
         val buttons: JsonArray = modal.getAsJsonArray("actionButtons")
 
         if (buttons.size() < 2) {
-            Toast.makeText(context, "Event is not valid for notificationId ${eventModel.notificationId}.", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context, "Event is not valid for notificationId ${eventModel.notificationId}.", Toast.LENGTH_SHORT).show()
+            Log.d(TAG, "launchModalTriggerNotification: Event is not valid for notificationId ${eventModel.notificationId}.")
             return
         }
 

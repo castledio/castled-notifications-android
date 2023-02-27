@@ -15,15 +15,15 @@ internal data class TriggerEventModel(
 
     @ColumnInfo(name = "notification_id")
     @SerializedName("notificationId")
-    var notificationId: Int,
+    val notificationId: Int,
 
     @ColumnInfo(name = "team_id")
     @SerializedName("teamId")
-    var teamId: Long,
+    val teamId: Long,
 
     @ColumnInfo(name = "source_context")
     @SerializedName("sourceContext")
-    var sourceContext: String,
+    val sourceContext: String,
 
     @ColumnInfo(name = "start_ts")
     @SerializedName("startTs")

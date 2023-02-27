@@ -18,4 +18,6 @@
         <item name="android:windowMinWidthMinor">-50%</item>
     </style>
 
+    <style name="activity_horizontal_margin"></style>
+
 </resources>

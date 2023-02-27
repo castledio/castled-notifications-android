@@ -4,13 +4,17 @@
     android:id="@+id/frame_layout_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingRight="0dp"
+    android:paddingTop="0dp"
+    android:paddingBottom="0dp"
     android:background="@drawable/fullscreen_popup_background" >
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:paddingRight="0dp"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp" >
 
         <LinearLayout
             android:id="@+id/layout_btn"
@@ -51,7 +55,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:padding="18dp"
+            android:paddingTop="18dp"
+            android:paddingBottom="18dp"
             tools:text="Message Text"
             android:layout_above="@id/layout_btn"/>
         <TextView
@@ -59,16 +64,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:padding="21dp"
+            android:paddingTop="21dp"
+            android:paddingBottom="21dp"
             android:textStyle="bold"
             android:layout_above="@id/txt_message"
             tools:text="Header Text" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/img_popup"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/txt_header"/>
+            android:layout_above="@id/txt_header"
+            android:adjustViewBounds="true"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:padding="0dp"
+            android:scaleType="fitXY" />
 
 
     </RelativeLayout>
