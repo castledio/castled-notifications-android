@@ -15,6 +15,7 @@ import io.castled.inAppTriggerEvents.event.EventNotification
 import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
 import io.castled.inAppTriggerEvents.models.TriggerEventModel
 import io.castled.inAppTriggerEvents.requests.ServiceGenerator
+import io.castled.notifications.logger.CastledLogger
 import io.castled.notifications.trigger.EventFilterDeserializer
 import io.castled.notifications.trigger.TriggerParamsEvaluator
 import io.castled.notifications.trigger.models.EventFilter
@@ -161,6 +162,7 @@ internal class TriggerEvent private constructor(){
     }
 
     private fun startObservingTriggerNotification(context: Context) {
+        // TODO remove. This is the wrong way. We need to react to events, not just go through db without events
        CoroutineScope(Main).launch {
            fetchAndSaveTriggerEvents(context)
            findAndLaunchDbTriggerEvent(context)
@@ -187,18 +189,30 @@ internal class TriggerEvent private constructor(){
         withContext(Default) {
             Log.d(TAG, "**** evaluateDbTriggerEvent:: ****\teventParam:${eventParam.toList()}")
             val showOnScreenEvent = mutableListOf<TriggerEventModel>()
-            val triggerEvent = dbFetchTriggerEvents(context)
+            var triggerEvent = dbFetchTriggerEvents(context)
             val triggerParamsEvaluator = TriggerParamsEvaluator()
+
+            //TODO filter the inapps to be looked at here. LATER do this at the db level
+            //TODO test this code for all scenarios
+            val eventNameFromParams = eventParam["event"]
+            triggerEvent = triggerEvent.filter { triggerObj ->
+                val eventNameFromTrigger = triggerObj.trigger.asJsonObject.get("eventName").asString
+
+                when (eventNameFromParams){
+                    "app_opened" -> eventNameFromTrigger.equals(eventNameFromParams)
+                    //TODO update the page_viewed condition to check for the screen name as well
+                    "page_viewed" -> eventNameFromTrigger.equals(eventNameFromParams)
+//                            &&
+                    else -> false
+                }
+            }
 
             //TODO rename "triggerEvent" to campaign. Rename related stuff
             triggerEvent.forEach { triggerEventModel ->
                 Log.d(TAG, "DB trigger JSON: ${triggerEventModel.trigger}")
-                // TODO: close gitHub-> API contract #22
-                //TODO: close gitHub-> Please share backend test login for e2e testing for demo #8
                 if (!triggerEventModel.trigger.asJsonObject.isJsonNull
                     && triggerEventModel.trigger.asJsonObject.has("eventFilter")
                     && !triggerEventModel.trigger.asJsonObject.get("eventFilter").isJsonNull
-                    && triggerEventModel.trigger.asJsonObject.get("eventFilter").asJsonObject.has("nestedFilters")
                 ){
                     Log.d(TAG, "DB trigger JSON(Condition Pass): ${triggerEventModel.trigger}")
 
