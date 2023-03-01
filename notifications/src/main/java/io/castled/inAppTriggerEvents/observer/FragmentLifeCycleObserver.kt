@@ -5,9 +5,6 @@ import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import io.castled.inAppTriggerEvents.event.EventNotification
-import io.castled.inAppTriggerEvents.trigger.TriggerEvent
-import io.castled.inAppTriggerEvents.trigger.TriggerPopupDialog
 import io.castled.notifications.logger.CastledLogger
 
 private const val TAG = "FragmentLifeCycleObserv"

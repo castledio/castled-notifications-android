@@ -1,14 +1,11 @@
 package io.castled.inAppTriggerEvents.observer
 
 import android.content.Context
-import android.util.Log
 import android.util.Log.d
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import io.castled.inAppTriggerEvents.event.EventNotification
 import io.castled.inAppTriggerEvents.requests.connectivity.base.ConnectivityProvider
-import io.castled.inAppTriggerEvents.trigger.TriggerEvent
 
 private const val TAG = "AppLifecycleObserver"
 internal class AppLifecycleObserver(val context: Context): LifecycleEventObserver {

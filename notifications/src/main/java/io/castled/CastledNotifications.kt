@@ -4,11 +4,9 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ProcessLifecycleOwner
 import io.castled.inAppTriggerEvents.ChannelConfig
 import io.castled.inAppTriggerEvents.InAppChannelConfig
 import io.castled.inAppTriggerEvents.event.EventNotification
-import io.castled.inAppTriggerEvents.observer.AppLifecycleObserver
 import io.castled.inAppTriggerEvents.requests.connectivity.base.ConnectivityProvider
 import io.castled.notifications.logger.CastledLogger
 

@@ -1,18 +1,15 @@
 package io.castled.inAppTriggerEvents.event
 
 import android.content.Context
-import android.util.Log
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
-import io.castled.inAppTriggerEvents.models.TriggerEventModel
 import io.castled.inAppTriggerEvents.trigger.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 
 private const val TAG = "TestTriggerEvents"
 class TestTriggerEvents private constructor(){

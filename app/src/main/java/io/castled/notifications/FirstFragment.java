@@ -1,7 +1,6 @@
 package io.castled.notifications;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import io.castled.CastledNotifications;
-import io.castled.inAppTriggerEvents.event.EventNotification;
 import io.castled.inAppTriggerEvents.event.TestTriggerEvents;
 import io.castled.inAppTriggerEvents.trigger.PopupHeader;
 import io.castled.inAppTriggerEvents.trigger.PopupMessage;
