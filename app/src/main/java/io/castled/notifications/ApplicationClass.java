@@ -28,10 +28,9 @@ public class ApplicationClass extends MultiDexApplication {
                 .fetchFromCloudInterval(45)
                 .build();
 
-        // You need to call below line first before calling CastledNotifications.initialize
-
         CastledNotifications.initialize(ApplicationClass.this, "829c38e2e359d94372a2e0d35e1f74df", inAppConfig);
 
+        //TODO: close gitHub-> V1 pr bugs - set 1 #45(13. setUserId call happens after init and not before. Also userId should be stored in pref store. You can refer the push code)
         CastledNotifications.setUserId("dheeraj.osw@gmail.com");
     }
 

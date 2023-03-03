@@ -6,7 +6,7 @@ package io.castled.inAppTriggerEvents
  */
 data class InAppChannelConfigBuilder internal constructor(
     private var enabled: Boolean = false,
-    private var fetchFromCloudInterval: Long = 0
+    private var fetchFromCloudInterval: Long = 60000
 ){
 
     fun enable(enabled: Boolean): InAppChannelConfigBuilder {

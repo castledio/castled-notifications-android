@@ -9,39 +9,20 @@ import io.castled.inAppTriggerEvents.InAppChannelConfig
 import io.castled.inAppTriggerEvents.event.EventNotification
 import io.castled.inAppTriggerEvents.requests.connectivity.base.ConnectivityProvider
 import io.castled.notifications.logger.CastledLogger
-import io.castled.notifications.store.CastledInstancePrefStore
-import io.castled.notifications.store.consts.PrefStoreKeys
 
 private const val TAG = "CastledNotifications"
 
 class CastledNotifications private constructor(internal val configs: ChannelConfig) {
 
     companion object {
-
         private val inApp = EventNotification.getInstance
-        private val success1 = "CastledNotifications: SDK initialized successfully."
-        private val error1 = "CastledNotifications: SDK already initialized."
-        private val error2 = "CastledNotifications: Please enable InApp event."
-        private val error3 = "CastledNotifications: Please provide instanceId"
-        private val error4 = "CastledNotifications: SDK not yet initialized."
-        private val error5a = "CastledNotifications: UserId is empty."
-        private val error5b = "CastledNotifications: UserId is not yet provided to the SDK."
-        private var application:Application? = null
-        lateinit internal var prefStore: CastledInstancePrefStore
-        var userId:String?
-        @JvmStatic
-        get() = this.prefStore.userIdIfAvailable
-        @JvmStatic
-        set(newUserId) {
-            this.prefStore.put(PrefStoreKeys.PREF_KEY_USER_ID, newUserId)
-
-            //initialize background job if it's not running
-            val backgroundFetchJob = inApp.backgroundFetchJob
-            if (backgroundFetchJob != null
-                && !backgroundFetchJob.isActive
-                && application != null)
-                inApp.initialize(application!!)
-        }
+        internal val success1 = "CastledNotifications: SDK initialized successfully."
+        internal val error1 = "CastledNotifications: SDK already initialized."
+        internal val error2 = "CastledNotifications: Please enable InApp event."
+        internal val error3 = "CastledNotifications: Please provide instanceId"
+        internal val error4 = "CastledNotifications: SDK not yet initialized."
+        internal val error5a = "CastledNotifications: UserId is empty."
+        internal val error5b = "CastledNotifications: UserId is not yet provided to the SDK."
 
 
         @JvmStatic
@@ -53,42 +34,42 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
             instanceId: String,
             configs: ChannelConfig
         ) {
-            if (this.instance != null) CastledLogger.getInstance().error(error1)
-//            if (this.userId == null) CastledLogger.getInstance().error(error5b)
-            if (instanceId.isBlank()) CastledLogger.getInstance().error(error3)
-            if (!(configs as InAppChannelConfig).enable) CastledLogger.getInstance().error(error2)
+            if (this.instance != null) {
+                CastledLogger.getInstance().error(error1)
+                return
+            }
+            //The below two line is commented because we are not checking userId at the time of initialization.
+//            else if(inApp.userId == null) CastledLogger.getInstance().error(error5b)
+//            else if(inApp.userId!!.isBlank()) CastledLogger.getInstance().error(error5a)
+            if (instanceId.isBlank()) {
+                CastledLogger.getInstance().error(error3)
+                return
+            }
+            if (!(configs as InAppChannelConfig).enable) {
+                CastledLogger.getInstance().error(error2)
+                return
+            }
 
-            //initialize the prefStore
-            CastledInstancePrefStore.init(application, instanceId)
-            this.prefStore = CastledInstancePrefStore.getInstance()
 
             inApp.apply {
 //                observeAppLifecycle(application)
-                connectivityProvider = ConnectivityProvider.createProvider(application)
+//                connectivityProvider = ConnectivityProvider.createProvider(application)
                 triggerEventsFrequencyTime = configs.fetchFromCloudInterval
                 instanceIdKey = instanceId
-
-                // proceed to init bg job if userId available, else don't
-                if (userId != null)
-                    initialize(application)
-                else
-                    CastledLogger.getInstance().debug("$TAG: Skipped running bg job. Because userid not initialized")
+                initialize(application)
             }
             instance = CastledNotifications(configs)
             CastledLogger.getInstance().info(success1)
         }
 
-//        @JvmStatic
-//        fun setUserId(userId: String) {
-//            this.userId = userId
-//
-//            //initialize background job if it's not running
-//            val backgroundFetchJob = inApp.backgroundFetchJob
-//            if (backgroundFetchJob != null
-//                && !backgroundFetchJob.isActive
-//                && application != null)
-//                inApp.initialize(application!!)
-//        }
+        @JvmStatic
+        fun setUserId(userId: String) =
+            if (userId.isBlank()) CastledLogger.getInstance().error(error5a)
+            else if (instance == null)  CastledLogger.getInstance().error(error4)
+            else {
+                inApp.userId = userId
+                inApp.checkAndStartJobToGetEvents()
+            }
 
 
         /**
@@ -98,26 +79,20 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         fun logInAppPageViewEvent(
             appCompatActivity: AppCompatActivity,
             screenName: String
-        ) =
-            if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(this.userId == null) CastledLogger.getInstance().error(error5b)
-            else {
+        ) {
+            if (checkSdkInitialized("logInAppPageViewEvent"))
                 inApp.logInAppPageViewEvent(appCompatActivity, screenName)
             }
 
         @JvmStatic
-        fun logInAppPageViewEvent(activity: Activity, screenName: String) =
-            if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(this.userId == null) CastledLogger.getInstance().error(error5b)
-            else {
+        fun logInAppPageViewEvent(activity: Activity, screenName: String) {
+            if (checkSdkInitialized("logInAppPageViewEvent"))
                 inApp.logInAppPageViewEvent(activity, screenName)
             }
 
         @JvmStatic
-        fun logInAppPageViewEvent(context: Context, screenName: String) =
-            if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(this.userId == null) CastledLogger.getInstance().error(error5b)
-            else {
+        fun logInAppPageViewEvent(context: Context, screenName: String) {
+            if (checkSdkInitialized("logInAppPageViewEvent"))
                 inApp.logInAppPageViewEvent(context, screenName)
             }
 
@@ -126,26 +101,20 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
          *  LogAppOpenedEvent with overloaded methods
          */
         @JvmStatic
-        fun logAppOpenedEvent(appCompatActivity: AppCompatActivity) =
-            if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(this.userId == null) CastledLogger.getInstance().error(error5b)
-            else {
+        fun logAppOpenedEvent(appCompatActivity: AppCompatActivity) {
+            if (checkSdkInitialized("logAppOpenedEvent"))
                 inApp.logAppOpenedEvent(appCompatActivity)
             }
 
         @JvmStatic
-        fun logAppOpenedEvent(activity: Activity) =
-            if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(this.userId == null) CastledLogger.getInstance().error(error5b)
-            else {
+        fun logAppOpenedEvent(activity: Activity) {
+            if (checkSdkInitialized("logAppOpenedEvent"))
                 inApp.logAppOpenedEvent(activity)
             }
 
         @JvmStatic
-        fun logAppOpenedEvent(context: Context) =
-            if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(this.userId == null) CastledLogger.getInstance().error(error5b)
-            else {
+        fun logAppOpenedEvent(context: Context) {
+            if (checkSdkInitialized("logAppOpenedEvent"))
                 inApp.logAppOpenedEvent(context)
             }
 
@@ -158,10 +127,8 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
             appCompatActivity: AppCompatActivity,
             eventName: String,
             eventParams: Map<String, Any>
-        ) =
-            if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(this.userId == null) CastledLogger.getInstance().error(error5b)
-            else {
+        ) {
+            if (checkSdkInitialized("logCustomEvent"))
                 inApp.logCustomEvent(appCompatActivity, eventName, eventParams)
             }
 
@@ -170,10 +137,8 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
             activity: Activity,
             eventName: String,
             eventParams: Map<String, Any>
-        ) =
-            if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(this.userId == null) CastledLogger.getInstance().error(error5b)
-            else {
+        ) {
+            if (checkSdkInitialized("logCustomEvent"))
                 inApp.logCustomEvent(activity, eventName, eventParams)
             }
 
@@ -182,10 +147,8 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
             context: Context,
             eventName: String,
             eventParams: Map<String, Any>
-        ) =
-            if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(this.userId == null) CastledLogger.getInstance().error(error5b)
-            else {
+        ) {
+            if (checkSdkInitialized("logCustomEvent"))
                 inApp.logCustomEvent(context, eventName, eventParams)
             }
 
@@ -194,62 +157,64 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
          * LogEvent only by event name with overloaded methods
          */
         @JvmStatic
-        fun logEvent(appCompatActivity: AppCompatActivity, eventName: String) =
-            if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(this.userId == null) CastledLogger.getInstance().error(error5b)
-            else {
+        fun logEvent(appCompatActivity: AppCompatActivity, eventName: String) {
+            if (checkSdkInitialized("logEvent"))
                 inApp.logEvent(appCompatActivity, eventName)
             }
 
         @JvmStatic
-        fun logEvent(activity: Activity, eventName: String) =
-            if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(this.userId == null) CastledLogger.getInstance().error(error5b)
-            else {
+        fun logEvent(activity: Activity, eventName: String) {
+            if (checkSdkInitialized("logEvent"))
                 inApp.logEvent(activity, eventName)
             }
 
         @JvmStatic
-        fun logEvent(context: Context, eventName: String) =
-            if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(this.userId == null) CastledLogger.getInstance().error(error5b)
-            else {
+        fun logEvent(context: Context, eventName: String) {
+            if (checkSdkInitialized("logEvent"))
                 inApp.logEvent(context, eventName)
             }
 
 
         /**
-         * LogEvent with Event name and with Event param with  overloaded methods
+         * LogEvent with Event name and with Event param with overloaded methods
          */
         @JvmStatic
         fun logEvent(
             appCompatActivity: AppCompatActivity,
             eventName: String,
             eventParams: Map<String, Any>
-        ) =
-            if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(this.userId == null) CastledLogger.getInstance().error(error5b)
-            else {
+        ) {
+            if (checkSdkInitialized("logEvent"))
                 inApp.logEvent(appCompatActivity, eventName, eventParams)
             }
 
         @JvmStatic
-        fun logEvent(activity: Activity, eventName: String, eventParams: Map<String, Any>) =
-            if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(this.userId == null) CastledLogger.getInstance().error(error5b)
-            else {
+        fun logEvent(activity: Activity, eventName: String, eventParams: Map<String, Any>) {
+            if (checkSdkInitialized("logEvent"))
                 inApp.logEvent(activity, eventName, eventParams)
             }
 
         @JvmStatic
-        fun logEvent(context: Context, eventName: String, eventParams: Map<String, Any>) =
-            if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(this.userId == null) CastledLogger.getInstance().error(error5b)
-            else {
+        fun logEvent(context: Context, eventName: String, eventParams: Map<String, Any>) {
+            if (checkSdkInitialized("logEvent"))
                 inApp.logEvent(context, eventName, eventParams)
+        }
+
+
+        private fun checkSdkInitialized(message: String): Boolean =
+            if (instance == null) {
+                CastledLogger.getInstance().error("$error4 \t Message: $message")
+                false
             }
-
-
+            else if(inApp.userId == null) {
+                CastledLogger.getInstance().error("$error5b \t Message: $message")
+                false
+            }
+            else if(inApp.userId!!.isBlank()) {
+                CastledLogger.getInstance().error("$error5a \t Message: $message")
+                false
+            }
+            else true
     }
 }
 
