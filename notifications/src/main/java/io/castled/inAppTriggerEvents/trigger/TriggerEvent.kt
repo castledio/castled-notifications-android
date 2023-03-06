@@ -53,7 +53,7 @@ internal class TriggerEvent private constructor(){
             if (notifications != null) {
                 val noOfRowDeleted = dbDeleteTriggerEvents(context)
                 val rows = dbInsertTriggerEvents(context, notifications)
-                Log.d(TAG, "inserted into db: ${rows.toList()}")
+                CastledLogger.getInstance().debug("$TAG: inserted into db: ${rows.toList()}")
 
             }
 
@@ -65,7 +65,7 @@ internal class TriggerEvent private constructor(){
     //TODO rename to requestCampaignsFromCloud; TriggerEventModel should be CampaignModel
     private suspend fun requestTriggerEventsFromCloud(context: Context): List<TriggerEventModel>? {
         if (!EventNotification.getInstance.hasInternet) {
-            Log.d(TAG, "Error: No Internet.")
+            CastledLogger.getInstance().debug("$TAG: Error: No Internet.")
             return null
         }
 
@@ -78,7 +78,7 @@ internal class TriggerEvent private constructor(){
             } else {
                 withContext(Main) {
 //                    Toast.makeText(context, "Error while getting data.", Toast.LENGTH_LONG).show()
-                    Log.d(TAG, "requestTriggerEventsFromCloud:  Error while getting data.")
+                    CastledLogger.getInstance().debug("$TAG: requestTriggerEventsFromCloud:  Error while getting data.")
                 }
                 null
             }
@@ -87,7 +87,7 @@ internal class TriggerEvent private constructor(){
 
     private suspend fun updateTriggerEventLogToCloudWithCount(eventBody: JsonObject, tryCount: Int): String {
         if (!EventNotification.getInstance.hasInternet) {
-            Log.d(TAG, "Error: No Internet.")
+            CastledLogger.getInstance().debug("$TAG: Error: No Internet.")
             return "Error: No Internet."
         }
         return withContext(IO) {
@@ -96,7 +96,7 @@ internal class TriggerEvent private constructor(){
             val response = ServiceGenerator.requestApi()
                 .logEventView(EventNotification.getInstance.instanceIdKey, eventBody)
 
-            /*Log.d(TAG, "\n\n\n** START ******* ## Log Trigger Event to Cloud(Try: $tryCount) ## *********\n" +
+            /*CastledLogger.getInstance().debug("$TAG: \n\n\n** START ******* ## Log Trigger Event to Cloud(Try: $tryCount) ## *********\n" +
                     "Body(raw):1:: $eventBody\n" +
                     "Response isSuccess:2:: ${response.isSuccessful}\n" +
                     "Response Header:3:: ${response.headers()}\n" +
@@ -142,17 +142,17 @@ internal class TriggerEvent private constructor(){
 
             if (notificationObserver?.hasObservers() != null){
                 val db = TriggerEventDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
-                Log.d(TAG, "hasActiveObservers: ${db.getLiveDataTriggerEventsFromDb().hasActiveObservers()}")
-                Log.d(TAG, "hasObservers: ${db.getLiveDataTriggerEventsFromDb().hasObservers()}")
+                CastledLogger.getInstance().debug("$TAG: hasActiveObservers: ${db.getLiveDataTriggerEventsFromDb().hasActiveObservers()}")
+                CastledLogger.getInstance().debug("$TAG: hasObservers: ${db.getLiveDataTriggerEventsFromDb().hasObservers()}")
             }
 
             if (notificationObserver?.hasObservers() == null || !notificationObserver!!.hasObservers()) {
                 withContext(Main) {
                     val db = TriggerEventDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
                     db.getLiveDataTriggerEventsFromDb().observe(viewLifecycleOwner) { it ->
-                        Log.d(TAG, "observeDatabaseNotification: ${it?.size} notifications added/replaced.")
+                        CastledLogger.getInstance().debug("$TAG: observeDatabaseNotification: ${it?.size} notifications added/replaced.")
                         it.forEach {
-                            Log.d(TAG, "observeDatabaseNotification: ${it.notificationId}")
+                            CastledLogger.getInstance().debug("$TAG: observeDatabaseNotification: ${it.notificationId}")
                         }
                     }
                 }
@@ -186,7 +186,7 @@ internal class TriggerEvent private constructor(){
     ): List<TriggerEventModel> =
 
         withContext(Default) {
-            Log.d(TAG, "**** evaluateDbTriggerEvent:: ****\teventParam:${eventParam.toList()}")
+            CastledLogger.getInstance().debug("$TAG: **** evaluateDbTriggerEvent:: ****\teventParam:${eventParam.toList()}")
             val showOnScreenEvent = mutableListOf<TriggerEventModel>()
             var triggerEvent = dbFetchTriggerEvents(context)
             val triggerParamsEvaluator = TriggerParamsEvaluator()
@@ -209,18 +209,18 @@ internal class TriggerEvent private constructor(){
             //TODO rename "triggerEvent" to campaign. Rename related stuff
             val timeRightNow = System.currentTimeMillis()
             triggerEvent.forEach { triggerEventModel ->
-                Log.d(TAG, "DB trigger JSON: ${triggerEventModel.trigger}")
+                CastledLogger.getInstance().debug("$TAG: DB trigger JSON: ${triggerEventModel.trigger}")
                 if (!triggerEventModel.trigger.asJsonObject.isJsonNull
                     && triggerEventModel.trigger.asJsonObject.has("eventFilter")
                     && !triggerEventModel.trigger.asJsonObject.get("eventFilter").isJsonNull
                 ){
-                    Log.d(TAG, "DB trigger JSON(Condition Pass): ${triggerEventModel.trigger}")
+                    CastledLogger.getInstance().debug("$TAG: DB trigger JSON(Condition Pass): ${triggerEventModel.trigger}")
 
-                    Log.d(TAG, "timeRightNow: $timeRightNow, Event endTime: ${triggerEventModel.endTs}, startTime: ${triggerEventModel.startTs}")
+                    CastledLogger.getInstance().debug("$TAG: timeRightNow: $timeRightNow, Event endTime: ${triggerEventModel.endTs}, startTime: ${triggerEventModel.startTs}")
 
                     // TODO: close gitHub-> https://github.com/dheerajbhaskar/castled-notifications-android/issues/54
                     if (triggerEventModel.endTs > timeRightNow){
-                        Log.d(TAG, "${triggerEventModel.notificationId} not expired.")
+                        CastledLogger.getInstance().debug("$TAG: ${triggerEventModel.notificationId} not expired.")
                         val gson = GsonBuilder()
                             .registerTypeAdapter(EventFilter::class.java, EventFilterDeserializer())
                             .create()
@@ -232,16 +232,16 @@ internal class TriggerEvent private constructor(){
                         if (triggerParamsEvaluator.evaluate(eventParam, eventFilter as NestedEventFilter))
                             showOnScreenEvent.add(triggerEventModel)
                     } else {
-                        Log.d(TAG, "${triggerEventModel.notificationId} expired.")
+                        CastledLogger.getInstance().debug("$TAG: ${triggerEventModel.notificationId} expired.")
                     }
 
                     /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         val timeRightNow = Instant.now()
-                        Log.d(TAG, "timeRightNow: ${timeRightNow.toEpochMilli()}, Event endTime: ${triggerEventModel.endTs}, startTime: ${triggerEventModel.startTs}")
+                        CastledLogger.getInstance().debug("$TAG: timeRightNow: ${timeRightNow.toEpochMilli()}, Event endTime: ${triggerEventModel.endTs}, startTime: ${triggerEventModel.startTs}")
                         if (timeRightNow.isBefore(Instant.ofEpochSecond(triggerEventModel.endTs))){
-                            Log.d(TAG, "BEFORE")
+                            CastledLogger.getInstance().debug("$TAG: BEFORE")
                         } else {
-                            Log.d(TAG, "AFTER")
+                            CastledLogger.getInstance().debug("$TAG: AFTER")
                         }
                     }*/
 
@@ -252,7 +252,7 @@ internal class TriggerEvent private constructor(){
 
     internal fun findAndLaunchDbTriggerEvent(context: Context) = CoroutineScope(Default).launch {
         val dbTriggerEvents = dbFetchTriggerEvents(context)
-        Log.d(TAG, "findAndLaunchTriggerNotification: ${dbTriggerEvents.map { it.notificationId }}")
+        CastledLogger.getInstance().debug("$TAG: findAndLaunchTriggerNotification: ${dbTriggerEvents.map { it.notificationId }}")
         launchTriggerEvent(context, dbTriggerEvents)
     }
 
@@ -264,7 +264,7 @@ internal class TriggerEvent private constructor(){
         if (triggerEvents.isNotEmpty()) {
             val event = triggerEvents.first()
             CoroutineScope(Main).launch {
-                Log.d(TAG, "launchTriggerEvent: ")
+                CastledLogger.getInstance().debug("$TAG: launchTriggerEvent: ")
                 when (TriggerPopupDialog.getTriggerEventType(event)) {
                     TriggerEventConstants.Companion.TriggerEventType.MODAL -> {
                         launchModalTriggerNotification(context, event)
@@ -300,7 +300,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
                 }
 
                 val dbTriggerNotifications = dbFetchTriggerEvents(context)
-                Log.d(TAG, "findAndLaunchTriggerNotification: ${dbTriggerNotifications.map { it.notificationId }}")
+                CastledLogger.getInstance().debug("$TAG: findAndLaunchTriggerNotification: ${dbTriggerNotifications.map { it.notificationId }}")
 
                 if (dbTriggerNotifications.isNotEmpty()) {
                     val event =
@@ -318,7 +318,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
                             }
                             TriggerEventConstants.Companion.TriggerEventType.NONE -> {
 //                                Toast.makeText(context, "No ${triggerEventType.name} event found in the database.", Toast.LENGTH_SHORT).show()
-                                Log.d(TAG, "findAndLaunchTriggerEventForTest: No ${triggerEventType.name} event found in the database.")
+                                CastledLogger.getInstance().debug("$TAG: findAndLaunchTriggerEventForTest: No ${triggerEventType.name} event found in the database.")
                             }
                             else -> {}
                         }
@@ -329,7 +329,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
 
         } else {
 //            Toast.makeText(context, "Please enter 0 for MODAL, 1 for FULL_SCREEN or 2 for SLIDE_UP.", Toast.LENGTH_SHORT).show()
-            Log.d(TAG, "findAndLaunchTriggerEventForTest: Please enter 0 for MODAL, 1 for FULL_SCREEN or 2 for SLIDE_UP.")
+            CastledLogger.getInstance().debug("$TAG: findAndLaunchTriggerEventForTest: Please enter 0 for MODAL, 1 for FULL_SCREEN or 2 for SLIDE_UP.")
         }
     }
 
@@ -339,7 +339,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
     internal fun findAndLaunchTriggerEventForTest(context: Context, event: JsonObject) =
         CoroutineScope(Default).launch {
 
-            Log.d(TAG, "selected event: $event")
+            CastledLogger.getInstance().debug("$TAG: selected event: $event")
 
             val eventLocal = TriggerEventModel(
                 event.get("id").asLong,
@@ -496,7 +496,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
 
         if (buttons.size() < 2) {
 //            Toast.makeText(context, "Event is not valid for notificationId ${eventModel.notificationId}.", Toast.LENGTH_SHORT).show()
-            Log.d(TAG, "launchModalTriggerNotification: Event is not valid for notificationId ${eventModel.notificationId}.")
+            CastledLogger.getInstance().debug("$TAG: launchModalTriggerNotification: Event is not valid for notificationId ${eventModel.notificationId}.")
             return
         }
 
@@ -591,10 +591,10 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
     }
 
     private fun launchSlideUpTriggerNotification(context: Context, eventModel: TriggerEventModel) {
-        Log.d(TAG, "notification: $eventModel")
+        CastledLogger.getInstance().debug("$TAG: notification: $eventModel")
         val message: JsonObject = eventModel.message.asJsonObject
         val modal: JsonObject = message.getAsJsonObject("slideUp")
-        Log.d(TAG, "slideUp: $modal")
+        CastledLogger.getInstance().debug("$TAG: slideUp: $modal")
 
         val eventClickActionData = JsonObject()
         eventClickActionData.addProperty("teamId", eventModel.teamId)
@@ -679,7 +679,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
         jsonObjectBody.addProperty("actionType", jsonButton.get("clickAction").asString)
         jsonObjectBody.addProperty("actionUri", if (jsonButton.get("url").isJsonNull) null else jsonButton.get("url").asString)
         jsonObjectBody.addProperty("btnLabel", jsonButton.get("label").asString)
-        Log.d(TAG, "Event Action API Body: $jsonObjectBody")
+        CastledLogger.getInstance().debug("$TAG: Event Action API Body: $jsonObjectBody")
         return jsonObjectBody
     }
 
@@ -705,14 +705,14 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
         }
 
     private fun showApiLog(cloudEventResponse: Response<List<TriggerEventModel>>) {
-        Log.d(TAG, "************* fetchCloudEvents FETCHED *************\n")
-        Log.d(TAG, "1. isSuccessful: ${cloudEventResponse.isSuccessful}")
-        Log.d(TAG, "2. Body: ${cloudEventResponse.body()}")
-        Log.d(TAG, "3. Code: ${cloudEventResponse.code()}")
-        Log.d(TAG, "4. Message: ${cloudEventResponse.message()}")
-        Log.d(TAG, "5. Headers: ${cloudEventResponse.headers()}")
-        Log.d(TAG, "6. Raw: ${cloudEventResponse.raw()}")
-        Log.d(TAG, "7. ${cloudEventResponse.body()?.size} ")
-        Log.d(TAG, "************* fetchCloudEvents FETCHED DONE *************\n")
+        CastledLogger.getInstance().debug("$TAG: ************* fetchCloudEvents FETCHED *************\n")
+        CastledLogger.getInstance().debug("$TAG: 1. isSuccessful: ${cloudEventResponse.isSuccessful}")
+        CastledLogger.getInstance().debug("$TAG: 2. Body: ${cloudEventResponse.body()}")
+        CastledLogger.getInstance().debug("$TAG: 3. Code: ${cloudEventResponse.code()}")
+        CastledLogger.getInstance().debug("$TAG: 4. Message: ${cloudEventResponse.message()}")
+        CastledLogger.getInstance().debug("$TAG: 5. Headers: ${cloudEventResponse.headers()}")
+        CastledLogger.getInstance().debug("$TAG: 6. Raw: ${cloudEventResponse.raw()}")
+        CastledLogger.getInstance().debug("$TAG: 7. ${cloudEventResponse.body()?.size} ")
+        CastledLogger.getInstance().debug("$TAG: ************* fetchCloudEvents FETCHED DONE *************\n")
     }
 }

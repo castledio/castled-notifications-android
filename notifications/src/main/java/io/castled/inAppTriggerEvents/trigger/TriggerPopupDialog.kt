@@ -20,6 +20,7 @@ import com.google.gson.JsonObject
 import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
 import io.castled.inAppTriggerEvents.models.TriggerEventModel
 import io.castled.notifications.R
+import io.castled.notifications.logger.CastledLogger
 import java.util.regex.Pattern
 
 
@@ -146,7 +147,7 @@ internal class TriggerPopupDialog {
                 )
 
                 if (popupPrimaryButton.urlOnClick.isNotEmpty()){
-                    Log.d(TAG, "PrimaryButton performing onClick action. ${popupPrimaryButton.urlOnClick}")
+                    CastledLogger.getInstance().debug("$TAG: PrimaryButton performing onClick action. ${popupPrimaryButton.urlOnClick}")
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(popupPrimaryButton.urlOnClick))
                     //The below line is to test.
 //                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https:www.google.com/"))
@@ -155,11 +156,11 @@ internal class TriggerPopupDialog {
                         context.startActivity(intent)
                     else {
 //                        Toast.makeText(context, "No application found to process the request.", Toast.LENGTH_LONG).show()
-                        Log.d(TAG, "showDialog: No application found to process the request.")
+                        CastledLogger.getInstance().debug("$TAG: showDialog: No application found to process the request.")
                     }
                 } else {
 //                    Toast.makeText(context, "Not able to handle the request.", Toast.LENGTH_LONG).show()
-                    Log.d(TAG, "showDialog: Not able to handle the request.")
+                    CastledLogger.getInstance().debug("$TAG: showDialog: Not able to handle the request.")
                 }
 
                 dialog.dismiss()
@@ -187,11 +188,11 @@ internal class TriggerPopupDialog {
                         context.startActivity(intent)
                     else {
 //                        Toast.makeText(context, "Not able to handle the request.", Toast.LENGTH_LONG).show()
-                        Log.d(TAG, "showDialog: Not able to handle the request.")
+                        CastledLogger.getInstance().debug("$TAG: showDialog: Not able to handle the request.")
                     }
                 } else {
 //                    Toast.makeText(context, "Not able to handle the request.", Toast.LENGTH_LONG).show()
-                    Log.d(TAG, "showDialog: Not able to handle the request.")
+                    CastledLogger.getInstance().debug("$TAG: showDialog: Not able to handle the request.")
                 }
 
                 dialog.dismiss()

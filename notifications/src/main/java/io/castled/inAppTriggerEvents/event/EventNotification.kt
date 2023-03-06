@@ -14,6 +14,7 @@ import io.castled.inAppTriggerEvents.observer.AppActivityLifecycleObserver
 import io.castled.inAppTriggerEvents.observer.AppLifecycleObserver
 import io.castled.inAppTriggerEvents.observer.FragmentLifeCycleObserver
 import io.castled.inAppTriggerEvents.requests.connectivity.base.ConnectivityProvider
+import io.castled.notifications.logger.CastledLogger
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -28,7 +29,7 @@ class EventNotification private constructor() {
     internal var hasInternet = false
     internal var triggerEventsFrequencyTime: Long = 60000
     set(timeInSeconds) {
-        Log.d(TAG, "Event Frequency(Default: $triggerEventsFrequencyTime milliseconds) set to $timeInSeconds seconds.")
+        CastledLogger.getInstance().debug("$TAG: Event Frequency(Default: $triggerEventsFrequencyTime milliseconds) set to $timeInSeconds seconds.")
         field = TimeUnit.SECONDS.toMillis(timeInSeconds)
     }
 
@@ -93,7 +94,7 @@ class EventNotification private constructor() {
         e["event"] = eventName
         e["params"] = eventParams
         TriggerEvent.getInstance().findAndLaunchEvent(context, e) { events ->
-            Log.d(TAG, "=>>(Size: ${events.size})")
+            CastledLogger.getInstance().debug("$TAG: =>>(Size: ${events.size})")
         }
     }
 
@@ -102,7 +103,7 @@ class EventNotification private constructor() {
         eventParams["event"] = eventName
         eventParams["params"] = null
         TriggerEvent.getInstance().findAndLaunchEvent(context, eventParams) { events ->
-            Log.d(TAG, "=>>(Size: ${events.size})")
+            CastledLogger.getInstance().debug("$TAG: =>>(Size: ${events.size})")
         }
     }
 
@@ -111,7 +112,7 @@ class EventNotification private constructor() {
         eventParamsLocal["event"] = eventName
         eventParamsLocal["params"] = eventParams
         TriggerEvent.getInstance().findAndLaunchEvent(context, eventParamsLocal) { events ->
-            Log.d(TAG, "=>>(Size: ${events.size})")
+            CastledLogger.getInstance().debug("$TAG: =>>(Size: ${events.size})")
         }
     }
 
@@ -120,7 +121,7 @@ class EventNotification private constructor() {
         eventParams["event"] = "app_opened"
         eventParams["params"] = null
         TriggerEvent.getInstance().findAndLaunchEvent(context, eventParams) { events ->
-            Log.d(TAG, "=>>(Size: ${events.size})")
+            CastledLogger.getInstance().debug("$TAG: =>>(Size: ${events.size})")
         }
     }
 
@@ -133,7 +134,7 @@ class EventNotification private constructor() {
 
         eventParams["params"] = params
         TriggerEvent.getInstance().findAndLaunchEvent(context, eventParams) { events ->
-            Log.d(TAG, "=>>(Size: ${events.size})")
+            CastledLogger.getInstance().debug("$TAG: =>>(Size: ${events.size})")
         }
     }
 
