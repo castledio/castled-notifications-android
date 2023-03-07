@@ -15,6 +15,7 @@ import io.castled.inAppTriggerEvents.event.EventNotification
 import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
 import io.castled.inAppTriggerEvents.models.TriggerEventModel
 import io.castled.inAppTriggerEvents.requests.ServiceGenerator
+import io.castled.notifications.logger.CastledLogger
 import io.castled.notifications.trigger.EventFilterDeserializer
 import io.castled.notifications.trigger.TriggerParamsEvaluator
 import io.castled.notifications.trigger.models.EventFilter
