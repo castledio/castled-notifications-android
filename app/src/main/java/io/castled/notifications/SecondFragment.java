@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import io.castled.CastledNotifications;
 import io.castled.notifications.databinding.FragmentSecondBinding;
 
 public class SecondFragment extends Fragment {
@@ -41,6 +42,13 @@ public class SecondFragment extends Fragment {
         binding.buttonSecondActivity.setOnClickListener(v -> {
             startActivity(new Intent(requireActivity(), SecondActivity.class));
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        CastledNotifications.logInAppPageViewEvent(requireContext(), "SecondFragment");
     }
 
     @Override
