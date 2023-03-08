@@ -6,8 +6,8 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ProcessLifecycleOwner
-import io.castled.CastledNotifications
 import io.castled.inAppTriggerEvents.trigger.TriggerEvent
 import io.castled.inAppTriggerEvents.observer.AppActivityLifecycleObserver
 import io.castled.inAppTriggerEvents.observer.AppLifecycleObserver
@@ -15,6 +15,7 @@ import io.castled.inAppTriggerEvents.observer.FragmentLifeCycleObserver
 import io.castled.inAppTriggerEvents.requests.connectivity.base.ConnectivityProvider
 import io.castled.notifications.logger.CastledLogger
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
@@ -26,28 +27,14 @@ class EventNotification private constructor() {
 
     //TODO? move this to CastledNotifications.kt. Check push notifications class if it's handling instanceId
     internal lateinit var instanceIdKey: String
-    private lateinit var application: Application
+//    internal var userId: String? = null
     internal var hasInternet = false
-    private var jobToGetEvents: Job? = null
     internal var triggerEventsFrequencyTime: Long = 60000
     set(timeInSeconds) {
         CastledLogger.getInstance().debug("$TAG: Event Frequency(Default: $triggerEventsFrequencyTime milliseconds) set to $timeInSeconds seconds.")
         field = TimeUnit.SECONDS.toMillis(timeInSeconds)
     }
-
-    internal var userId: String? = null
-    get() {
-
-        if (userId == null)
-        //TODO: write code to get it from Shared preferences
-            return null
-        else return userId
-        return field
-    }
-    set(value) {
-        //TODO: write code to set it to the Shared preferences
-        field = value
-    }
+    internal var backgroundFetchJob: Job? = null
 
     // TODO: close gitHub-> implement watching for network state changes and retrying network requests #15
     private val connectivityStateListener: ConnectivityProvider.ConnectivityStateListener = object: ConnectivityProvider.ConnectivityStateListener{
@@ -70,26 +57,11 @@ class EventNotification private constructor() {
     }
 
     internal fun initialize(application: Application) {
-        //TODO: close gitHub-> Automatically track activity lifecycle without boilerplate in every activity #26
         //No use of the below line currently. Just to log and watch the lifecycle of the activities.
         application.registerActivityLifecycleCallbacks(AppActivityLifecycleObserver())
 
-        this.application = application
         observeAppLifecycle(application)
-
-        checkAndStartJobToGetEvents()
-    }
-
-    internal fun checkAndStartJobToGetEvents() {
-        if ((jobToGetEvents == null || !jobToGetEvents!!.isActive)
-            && userId != null
-            && this::application.isInitialized)
-            startJobToGetEvents()
-    }
-
-    private fun startJobToGetEvents() {
-        CastledLogger.getInstance().info("startJobToGetEvents:: Interval: $triggerEventsFrequencyTime, userId: $userId")
-        jobToGetEvents = GlobalScope.launch {
+        backgroundFetchJob = GlobalScope.launch {
             do {
                 TriggerEvent.getInstance().fetchAndSaveTriggerEvents(application)
                 delay(triggerEventsFrequencyTime)
@@ -111,7 +83,7 @@ class EventNotification private constructor() {
         }
     }
 
-    private fun observeLifecycle(fragment: androidx.fragment.app.Fragment, screenName: String) {
+    private fun observeLifecycle(fragment: Fragment, screenName: String) {
         fragment.viewLifecycleOwner.lifecycle.addObserver(
             FragmentLifeCycleObserver(
                 fragment.requireContext(),

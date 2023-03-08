@@ -46,12 +46,12 @@ internal class TriggerEvent private constructor(){
 
         CoroutineScope(Main).launch {
             //TODO rename `notifications` here to campaigns
-            val campaigns = requestTriggerEventsFromCloud()
+            val notifications = requestTriggerEventsFromCloud(context)
 
             //No error in fetching notifications. This allows notiticaions to be empty
-            if (campaigns != null) {
+            if (notifications != null) {
                 val noOfRowDeleted = dbDeleteTriggerEvents(context)
-                val rows = dbInsertTriggerEvents(context, campaigns)
+                val rows = dbInsertTriggerEvents(context, notifications)
                 CastledLogger.getInstance().debug("$TAG: inserted into db: ${rows.toList()}")
 
             }
@@ -62,22 +62,16 @@ internal class TriggerEvent private constructor(){
     }
 
     //TODO rename to requestCampaignsFromCloud; TriggerEventModel should be CampaignModel
-    private suspend fun requestTriggerEventsFromCloud(): List<TriggerEventModel>? {
-        if (!EventNotification.getInstance.hasInternet) {
-            CastledLogger.getInstance().error("$TAG: Error: No Internet.")
-            return null
-        }
-
-        val userId = EventNotification.getInstance.userId
-
-        if (userId == null) {
-            CastledLogger.getInstance().error(CastledNotifications.error5b)
+    private suspend fun requestTriggerEventsFromCloud(context: Context): List<TriggerEventModel>? {
+        val inapp = EventNotification.getInstance
+        if (!inapp.hasInternet) {
+            CastledLogger.getInstance().debug("$TAG: Error: No Internet.")
             return null
         }
 
         return withContext(IO) {
-            val eventsResponse = ServiceGenerator.requestApi()
-                .makeNotificationQuery(EventNotification.getInstance.instanceIdKey, userId)
+                val eventsResponse = ServiceGenerator.requestApi()
+                .makeNotificationQuery(inapp.instanceIdKey, CastledNotifications.userId!!)
             showApiLog(eventsResponse)
             if (eventsResponse.isSuccessful && eventsResponse.body() != null) {
                 eventsResponse.body()
@@ -713,7 +707,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
     private fun showApiLog(cloudEventResponse: Response<List<TriggerEventModel>>) {
         CastledLogger.getInstance().debug("$TAG: ************* fetchCloudEvents FETCHED *************\n")
         CastledLogger.getInstance().debug("$TAG: 1. isSuccessful: ${cloudEventResponse.isSuccessful}")
-        CastledLogger.getInstance().debug("$TAG: 2. BodySize: ${cloudEventResponse.body()?.size}")
+        CastledLogger.getInstance().debug("$TAG: 2. Body: ${cloudEventResponse.body()}")
         CastledLogger.getInstance().debug("$TAG: 3. Code: ${cloudEventResponse.code()}")
         CastledLogger.getInstance().debug("$TAG: 4. Message: ${cloudEventResponse.message()}")
         CastledLogger.getInstance().debug("$TAG: 5. Headers: ${cloudEventResponse.headers()}")
