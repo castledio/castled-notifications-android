@@ -98,4 +98,10 @@ class SecondActivity : AppCompatActivity() {
         }
 
     }
+
+    override fun onResume() {
+        super.onResume()
+        CastledNotifications.logInAppPageViewEvent(this, "SecondActivity");
+
+    }
 }

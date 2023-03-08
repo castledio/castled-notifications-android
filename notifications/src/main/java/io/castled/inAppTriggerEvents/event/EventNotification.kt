@@ -37,6 +37,7 @@ class EventNotification private constructor() {
     internal var backgroundFetchJob: Job? = null
 
     // TODO: close gitHub-> implement watching for network state changes and retrying network requests #15
+    //TODO: this is giving wrongly showing no internet. Check internet in the bg task as well
     private val connectivityStateListener: ConnectivityProvider.ConnectivityStateListener = object: ConnectivityProvider.ConnectivityStateListener{
         override fun onStateChange(state: ConnectivityProvider.NetworkState) {
             hasInternet = state.hasInternet()
