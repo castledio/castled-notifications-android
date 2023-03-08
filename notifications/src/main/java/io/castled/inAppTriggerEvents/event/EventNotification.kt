@@ -27,7 +27,7 @@ class EventNotification private constructor() {
 
     //TODO? move this to CastledNotifications.kt. Check push notifications class if it's handling instanceId
     internal lateinit var instanceIdKey: String
-    internal var userId: String? = null
+//    internal var userId: String? = null
     internal var hasInternet = false
     internal var triggerEventsFrequencyTime: Long = 60000
     set(timeInSeconds) {

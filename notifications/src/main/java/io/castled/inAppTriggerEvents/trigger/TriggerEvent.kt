@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import io.castled.CastledNotifications
 import io.castled.inAppTriggerEvents.database.DatabaseBuilder
 import io.castled.inAppTriggerEvents.database.TriggerEventDatabaseHelperImpl
 import io.castled.inAppTriggerEvents.event.EventNotification
@@ -70,7 +71,7 @@ internal class TriggerEvent private constructor(){
 
         return withContext(IO) {
                 val eventsResponse = ServiceGenerator.requestApi()
-                .makeNotificationQuery(inapp.instanceIdKey, inapp.userId!!)
+                .makeNotificationQuery(inapp.instanceIdKey, CastledNotifications.userId!!)
             showApiLog(eventsResponse)
             if (eventsResponse.isSuccessful && eventsResponse.body() != null) {
                 eventsResponse.body()
