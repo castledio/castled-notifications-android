@@ -24,6 +24,8 @@ private const val TAG = "EventNotification"
 
 class EventNotification private constructor() {
     internal lateinit var connectivityProvider: ConnectivityProvider
+
+    //TODO? move this to CastledNotifications.kt. Check push notifications class if it's handling instanceId
     internal lateinit var instanceIdKey: String
     private lateinit var application: Application
     internal var hasInternet = false
