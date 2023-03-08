@@ -15,6 +15,7 @@ import io.castled.inAppTriggerEvents.observer.FragmentLifeCycleObserver
 import io.castled.inAppTriggerEvents.requests.connectivity.base.ConnectivityProvider
 import io.castled.notifications.logger.CastledLogger
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
@@ -26,13 +27,14 @@ class EventNotification private constructor() {
 
     //TODO? move this to CastledNotifications.kt. Check push notifications class if it's handling instanceId
     internal lateinit var instanceIdKey: String
-    internal lateinit var userId: String
+    internal var userId: String? = null
     internal var hasInternet = false
     internal var triggerEventsFrequencyTime: Long = 60000
     set(timeInSeconds) {
         CastledLogger.getInstance().debug("$TAG: Event Frequency(Default: $triggerEventsFrequencyTime milliseconds) set to $timeInSeconds seconds.")
         field = TimeUnit.SECONDS.toMillis(timeInSeconds)
     }
+    internal var backgroundFetchJob: Job? = null
 
     // TODO: close gitHub-> implement watching for network state changes and retrying network requests #15
     private val connectivityStateListener: ConnectivityProvider.ConnectivityStateListener = object: ConnectivityProvider.ConnectivityStateListener{
@@ -59,7 +61,7 @@ class EventNotification private constructor() {
         application.registerActivityLifecycleCallbacks(AppActivityLifecycleObserver())
 
         observeAppLifecycle(application)
-        GlobalScope.launch {
+        backgroundFetchJob = GlobalScope.launch {
             do {
                 TriggerEvent.getInstance().fetchAndSaveTriggerEvents(application)
                 delay(triggerEventsFrequencyTime)

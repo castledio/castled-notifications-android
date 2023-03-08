@@ -62,14 +62,15 @@ internal class TriggerEvent private constructor(){
 
     //TODO rename to requestCampaignsFromCloud; TriggerEventModel should be CampaignModel
     private suspend fun requestTriggerEventsFromCloud(context: Context): List<TriggerEventModel>? {
-        if (!EventNotification.getInstance.hasInternet) {
+        val inapp = EventNotification.getInstance
+        if (!inapp.hasInternet) {
             CastledLogger.getInstance().debug("$TAG: Error: No Internet.")
             return null
         }
 
         return withContext(IO) {
-            val eventsResponse = ServiceGenerator.requestApi()
-                .makeNotificationQuery(EventNotification.getInstance.instanceIdKey, EventNotification.getInstance.userId)
+                val eventsResponse = ServiceGenerator.requestApi()
+                .makeNotificationQuery(inapp.instanceIdKey, inapp.userId!!)
             showApiLog(eventsResponse)
             if (eventsResponse.isSuccessful && eventsResponse.body() != null) {
                 eventsResponse.body()

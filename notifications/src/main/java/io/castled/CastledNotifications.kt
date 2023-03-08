@@ -23,7 +23,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         private val error4 = "CastledNotifications: SDK not yet initialized."
         private val error5a = "CastledNotifications: UserId is empty."
         private val error5b = "CastledNotifications: UserId is not yet provided to the SDK."
-
+        private var application:Application? = null
 
         @JvmStatic
         private var instance: CastledNotifications? = null
@@ -35,28 +35,37 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
             configs: ChannelConfig
         ) {
             if (this.instance != null) CastledLogger.getInstance().error(error1)
-            if (inApp.userId.isBlank()) CastledLogger.getInstance().error(error5b)
+//            if (inApp.userId == null) CastledLogger.getInstance().error(error5b)
             if (instanceId.isBlank()) CastledLogger.getInstance().error(error3)
             if (!(configs as InAppChannelConfig).enable) CastledLogger.getInstance().error(error2)
-
 
             inApp.apply {
 //                observeAppLifecycle(application)
                 connectivityProvider = ConnectivityProvider.createProvider(application)
                 triggerEventsFrequencyTime = configs.fetchFromCloudInterval
                 instanceIdKey = instanceId
-                initialize(application)
+
+                // proceed to init bg job if userId available, else don't
+                if (inApp.userId != null)
+                    initialize(application)
+                else
+                    CastledLogger.getInstance().debug("$TAG: Skipped running bg job. Because userid not initialized")
             }
             instance = CastledNotifications(configs)
             CastledLogger.getInstance().info(success1)
         }
 
         @JvmStatic
-        fun setUserId(userId: String) =
-            if (userId.isBlank()) CastledLogger.getInstance().error(error5a)
-            else {
-                inApp.userId = userId
-            }
+        fun setUserId(userId: String) {
+            inApp.userId = userId
+
+            //initialize background job if it's not running
+            val backgroundFetchJob = inApp.backgroundFetchJob
+            if (backgroundFetchJob != null
+                && !backgroundFetchJob.isActive
+                && application != null)
+                inApp.initialize(application!!)
+        }
 
 
         /**
@@ -68,7 +77,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
             screenName: String
         ) =
             if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(inApp.userId.isBlank()) CastledLogger.getInstance().error(error5b)
+            else if(inApp.userId == null) CastledLogger.getInstance().error(error5b)
             else {
                 inApp.logInAppPageViewEvent(appCompatActivity, screenName)
             }
@@ -76,7 +85,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         @JvmStatic
         fun logInAppPageViewEvent(activity: Activity, screenName: String) =
             if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(inApp.userId.isBlank()) CastledLogger.getInstance().error(error5b)
+            else if(inApp.userId == null) CastledLogger.getInstance().error(error5b)
             else {
                 inApp.logInAppPageViewEvent(activity, screenName)
             }
@@ -84,7 +93,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         @JvmStatic
         fun logInAppPageViewEvent(context: Context, screenName: String) =
             if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(inApp.userId.isBlank()) CastledLogger.getInstance().error(error5b)
+            else if(inApp.userId == null) CastledLogger.getInstance().error(error5b)
             else {
                 inApp.logInAppPageViewEvent(context, screenName)
             }
@@ -96,7 +105,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         @JvmStatic
         fun logAppOpenedEvent(appCompatActivity: AppCompatActivity) =
             if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(inApp.userId.isBlank()) CastledLogger.getInstance().error(error5b)
+            else if(inApp.userId == null) CastledLogger.getInstance().error(error5b)
             else {
                 inApp.logAppOpenedEvent(appCompatActivity)
             }
@@ -104,7 +113,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         @JvmStatic
         fun logAppOpenedEvent(activity: Activity) =
             if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(inApp.userId.isBlank()) CastledLogger.getInstance().error(error5b)
+            else if(inApp.userId == null) CastledLogger.getInstance().error(error5b)
             else {
                 inApp.logAppOpenedEvent(activity)
             }
@@ -112,7 +121,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         @JvmStatic
         fun logAppOpenedEvent(context: Context) =
             if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(inApp.userId.isBlank()) CastledLogger.getInstance().error(error5b)
+            else if(inApp.userId == null) CastledLogger.getInstance().error(error5b)
             else {
                 inApp.logAppOpenedEvent(context)
             }
@@ -128,7 +137,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
             eventParams: Map<String, Any>
         ) =
             if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(inApp.userId.isBlank()) CastledLogger.getInstance().error(error5b)
+            else if(inApp.userId == null) CastledLogger.getInstance().error(error5b)
             else {
                 inApp.logCustomEvent(appCompatActivity, eventName, eventParams)
             }
@@ -140,7 +149,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
             eventParams: Map<String, Any>
         ) =
             if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(inApp.userId.isBlank()) CastledLogger.getInstance().error(error5b)
+            else if(inApp.userId == null) CastledLogger.getInstance().error(error5b)
             else {
                 inApp.logCustomEvent(activity, eventName, eventParams)
             }
@@ -152,7 +161,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
             eventParams: Map<String, Any>
         ) =
             if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(inApp.userId.isBlank()) CastledLogger.getInstance().error(error5b)
+            else if(inApp.userId == null) CastledLogger.getInstance().error(error5b)
             else {
                 inApp.logCustomEvent(context, eventName, eventParams)
             }
@@ -164,7 +173,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         @JvmStatic
         fun logEvent(appCompatActivity: AppCompatActivity, eventName: String) =
             if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(inApp.userId.isBlank()) CastledLogger.getInstance().error(error5b)
+            else if(inApp.userId == null) CastledLogger.getInstance().error(error5b)
             else {
                 inApp.logEvent(appCompatActivity, eventName)
             }
@@ -172,7 +181,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         @JvmStatic
         fun logEvent(activity: Activity, eventName: String) =
             if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(inApp.userId.isBlank()) CastledLogger.getInstance().error(error5b)
+            else if(inApp.userId == null) CastledLogger.getInstance().error(error5b)
             else {
                 inApp.logEvent(activity, eventName)
             }
@@ -180,7 +189,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         @JvmStatic
         fun logEvent(context: Context, eventName: String) =
             if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(inApp.userId.isBlank()) CastledLogger.getInstance().error(error5b)
+            else if(inApp.userId == null) CastledLogger.getInstance().error(error5b)
             else {
                 inApp.logEvent(context, eventName)
             }
@@ -196,7 +205,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
             eventParams: Map<String, Any>
         ) =
             if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(inApp.userId.isBlank()) CastledLogger.getInstance().error(error5b)
+            else if(inApp.userId == null) CastledLogger.getInstance().error(error5b)
             else {
                 inApp.logEvent(appCompatActivity, eventName, eventParams)
             }
@@ -204,7 +213,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         @JvmStatic
         fun logEvent(activity: Activity, eventName: String, eventParams: Map<String, Any>) =
             if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(inApp.userId.isBlank()) CastledLogger.getInstance().error(error5b)
+            else if(inApp.userId == null) CastledLogger.getInstance().error(error5b)
             else {
                 inApp.logEvent(activity, eventName, eventParams)
             }
@@ -212,7 +221,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         @JvmStatic
         fun logEvent(context: Context, eventName: String, eventParams: Map<String, Any>) =
             if (instance == null) CastledLogger.getInstance().error(error4)
-            else if(inApp.userId.isBlank()) CastledLogger.getInstance().error(error5b)
+            else if(inApp.userId == null) CastledLogger.getInstance().error(error5b)
             else {
                 inApp.logEvent(context, eventName, eventParams)
             }
