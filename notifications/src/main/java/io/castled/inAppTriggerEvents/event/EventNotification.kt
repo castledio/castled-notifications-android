@@ -15,7 +15,6 @@ import io.castled.inAppTriggerEvents.observer.FragmentLifeCycleObserver
 import io.castled.inAppTriggerEvents.requests.connectivity.base.ConnectivityProvider
 import io.castled.notifications.logger.CastledLogger
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
