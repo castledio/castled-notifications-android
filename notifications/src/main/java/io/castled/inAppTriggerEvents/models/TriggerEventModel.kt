@@ -37,6 +37,32 @@ internal data class TriggerEventModel(
     @SerializedName("ttl")
     val ttl: Int,
 
+    //------------------------
+    @ColumnInfo(name = "displayLimit")
+    @SerializedName("displayLimit")
+    val displayLimit: Long,
+
+    @ColumnInfo(name = "timesDisplayed")
+    @SerializedName("timesDisplayed")
+    val timesDisplayed: Long,
+
+    @ColumnInfo(name = "minIntervalBtwDisplays")
+    @SerializedName("minIntervalBtwDisplays")
+    val minIntervalBtwDisplays: Long,
+
+    @ColumnInfo(name = "lastDisplayedTime")
+    @SerializedName("lastDisplayedTime")
+    val lastDisplayedTime: Long,
+
+    @ColumnInfo(name = "minIntervalBtwDisplaysGlobal")
+    @SerializedName("minIntervalBtwDisplaysGlobal")
+    val minIntervalBtwDisplaysGlobal: Long,
+
+    @ColumnInfo(name = "autoDismissInterval")
+    @SerializedName("autoDismissInterval")
+    val autoDismissInterval: Long,
+    //------------------------
+
     @ColumnInfo(name = "trigger")
     @SerializedName("trigger")
     val trigger: JsonObject,
