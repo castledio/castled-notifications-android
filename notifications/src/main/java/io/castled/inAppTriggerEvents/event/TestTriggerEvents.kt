@@ -38,7 +38,6 @@ class TestTriggerEvents private constructor(){
             popUpHeader,
             popupMessage,
             imageUrl,
-            urlForOnClickOnImage,
             popupPrimaryButton,
             popupSecondaryButton,
             object : TriggerEventClickAction {

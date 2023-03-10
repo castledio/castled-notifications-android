@@ -35,7 +35,6 @@ internal class TriggerPopupDialog {
             popUpHeader: PopupHeader,
             popupMessage: PopupMessage,
             imageUrl:String,
-            urlForOnClickOnImage: String,
             popupPrimaryButton: PopupPrimaryButton,
             popupSecondaryButton: PopupSecondaryButton,
             triggerEventClickAction: TriggerEventClickAction
@@ -108,12 +107,15 @@ internal class TriggerPopupDialog {
                     TriggerEventConstants.Companion.EventClickType.IMAGE_CLICK
                 )
 
-                if (urlForOnClickOnImage.isNotEmpty()){
+
+
+                /*if (urlForOnClickOnImage.isNotEmpty()){
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlForOnClickOnImage))
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     if (intent.resolveActivity(context.packageManager) != null)
                         context.startActivity(intent)
                 }
+                */
                 // TODO: close gitHub(on image top dialog will not close)-> https://github.com/dheerajbhaskar/castled-notifications-android/issues/54
                 //below line commented because the Dialog not need to close when tapping on the image
 //                dialog.dismiss()
@@ -146,7 +148,7 @@ internal class TriggerPopupDialog {
                     TriggerEventConstants.Companion.EventClickType.PRIMARY_BUTTON
                 )
 
-                if (popupPrimaryButton.urlOnClick.isNotEmpty()){
+               /* if (popupPrimaryButton.urlOnClick.isNotEmpty()){
                     CastledLogger.getInstance().debug("$TAG: PrimaryButton performing onClick action. ${popupPrimaryButton.urlOnClick}")
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(popupPrimaryButton.urlOnClick))
                     //The below line is to test.
@@ -161,7 +163,7 @@ internal class TriggerPopupDialog {
                 } else {
 //                    Toast.makeText(context, "Not able to handle the request.", Toast.LENGTH_LONG).show()
                     CastledLogger.getInstance().debug("$TAG: showDialog: Not able to handle the request.")
-                }
+                }*/
 
                 dialog.dismiss()
             }
@@ -181,7 +183,7 @@ internal class TriggerPopupDialog {
                     TriggerEventConstants.Companion.EventClickType.SECONDARY_BUTTON
                 )
 
-                if (popupSecondaryButton.urlOnClick.isNotEmpty()){
+                /*if (popupSecondaryButton.urlOnClick.isNotEmpty()){
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(popupSecondaryButton.urlOnClick))
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     if (intent.resolveActivity(context.packageManager) != null)
@@ -193,7 +195,7 @@ internal class TriggerPopupDialog {
                 } else {
 //                    Toast.makeText(context, "Not able to handle the request.", Toast.LENGTH_LONG).show()
                     CastledLogger.getInstance().debug("$TAG: showDialog: Not able to handle the request.")
-                }
+                }*/
 
                 dialog.dismiss()
             }

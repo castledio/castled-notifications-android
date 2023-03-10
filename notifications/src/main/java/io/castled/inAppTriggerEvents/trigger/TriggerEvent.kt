@@ -1,6 +1,7 @@
 package io.castled.inAppTriggerEvents.trigger
 
 import android.content.Context
+import android.content.Intent
 import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
@@ -14,6 +15,8 @@ import io.castled.inAppTriggerEvents.event.EventNotification
 import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
 import io.castled.inAppTriggerEvents.models.TriggerEventModel
 import io.castled.inAppTriggerEvents.requests.ServiceGenerator
+import io.castled.notifications.CastledEventListener
+import io.castled.notifications.consts.Constants
 import io.castled.notifications.logger.CastledLogger
 import io.castled.notifications.trigger.EventFilterDeserializer
 import io.castled.notifications.trigger.TriggerParamsEvaluator
@@ -518,7 +521,6 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
             preparePopupHeader(modal),
             preparePopupMessage(modal),
             if(modal.get("imageUrl").isJsonNull) "" else modal.get("imageUrl").asString,
-            if(modal.get("defaultClickAction").isJsonNull) "" else modal.get("defaultClickAction").asString,
             preparePopupPrimaryButton(buttonPrimary),
             preparePopupSecondaryButton(buttonSecondary),
             object : TriggerEventClickAction{
@@ -530,12 +532,73 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
                             initiateTriggerEventLogToCloud(prepareEventCloseActionBodyData(eventModel))
                         }
                         TriggerEventConstants.Companion.EventClickType.IMAGE_CLICK -> {
+
+                            //                            if(modal.get("defaultClickAction").isJsonNull) "" else modal.get("defaultClickAction").asString
+                            // NONE, SEND, CLICKED, DISCARDED, RECEIVED, FOREGROUND
+
+                            val intent = Intent()
+
+                            if(!modal.get("url").isJsonNull)
+                                intent.putExtra(Constants.EXTRA_URI, modal.get("url").asString)
+
+                            if (!modal.get("defaultClickAction").isJsonNull)
+                                intent.putExtra(Constants.EXTRA_ACTION, modal.get("defaultClickAction").asString)
+
+
+//                            intent.putExtra(Constants.EXTRA_LABEL, "")
+//                            intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, "")
+
+                            context.startActivity(intent)
+
                             initiateTriggerEventLogToCloud(prepareEventImageClickActionBodyData(eventModel))
                         }
                         TriggerEventConstants.Companion.EventClickType.PRIMARY_BUTTON -> {
+
+                            //                            if(modal.get("defaultClickAction").isJsonNull) "" else modal.get("defaultClickAction").asString
+                            // NONE, SEND, CLICKED, DISCARDED, RECEIVED, FOREGROUND
+
+                            CastledLogger.getInstance().info("buttonPrimary: $buttonPrimary")
+                            val intent = Intent(context, CastledEventListener::class.java)
+                            intent.action = ""
+
+                            if(!buttonPrimary.get("url").isJsonNull)
+                                intent.putExtra(Constants.EXTRA_URI, buttonPrimary.get("url").asString)
+
+                            if (!buttonPrimary.get("clickAction").isJsonNull)
+                                intent.putExtra(Constants.EXTRA_ACTION, buttonPrimary.get("clickAction").asString)
+
+                            if (!buttonPrimary.get("label").isJsonNull)
+                                intent.putExtra(Constants.EXTRA_LABEL, buttonPrimary.get("label").asString)
+
+                            if (!buttonPrimary.get("keyVals").isJsonNull)
+                                intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, buttonPrimary.get("keyVals").toString())
+
+                            context.startActivity(intent)
+
+
                             initiateTriggerEventLogToCloud(prepareEventButtonClickActionBodyData(eventClickActionData, buttonPrimary))
                         }
                         TriggerEventConstants.Companion.EventClickType.SECONDARY_BUTTON -> {
+
+                            CastledLogger.getInstance().info("buttonSecondary: $buttonSecondary")
+
+                            val intent = Intent()
+
+                            if(!buttonSecondary.get("url").isJsonNull)
+                                intent.putExtra(Constants.EXTRA_URI, buttonSecondary.get("url").asString)
+
+                            if (!buttonSecondary.get("clickAction").isJsonNull)
+                                intent.putExtra(Constants.EXTRA_ACTION, buttonSecondary.get("clickAction").asString)
+
+                            if (!buttonSecondary.get("label").isJsonNull)
+                                intent.putExtra(Constants.EXTRA_LABEL, buttonSecondary.get("label").asString)
+
+                            if (!buttonSecondary.get("keyVals").isJsonNull)
+                                intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, buttonSecondary.get("keyVals").asString)
+
+                            context.startActivity(intent)
+
+
                             initiateTriggerEventLogToCloud(prepareEventButtonClickActionBodyData(eventClickActionData, buttonSecondary))
                         }
                         else -> {}
