@@ -38,7 +38,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
                 CastledLogger.getInstance().error(error1)
                 return
             }
-            //The below two line is commented because we are not checking userId at the time of initialization.
+            //The below two lines are commented because we are not checking userId at the time of initialization.
 //            else if(inApp.userId == null) CastledLogger.getInstance().error(error5b)
 //            else if(inApp.userId!!.isBlank()) CastledLogger.getInstance().error(error5a)
             if (instanceId.isBlank()) {
@@ -82,19 +82,19 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         ) {
             if (checkSdkInitialized("logInAppPageViewEvent"))
                 inApp.logInAppPageViewEvent(appCompatActivity, screenName)
-            }
+        }
 
         @JvmStatic
         fun logInAppPageViewEvent(activity: Activity, screenName: String) {
             if (checkSdkInitialized("logInAppPageViewEvent"))
                 inApp.logInAppPageViewEvent(activity, screenName)
-            }
+        }
 
         @JvmStatic
         fun logInAppPageViewEvent(context: Context, screenName: String) {
             if (checkSdkInitialized("logInAppPageViewEvent"))
                 inApp.logInAppPageViewEvent(context, screenName)
-            }
+        }
 
 
         /**
@@ -104,19 +104,19 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         fun logAppOpenedEvent(appCompatActivity: AppCompatActivity) {
             if (checkSdkInitialized("logAppOpenedEvent"))
                 inApp.logAppOpenedEvent(appCompatActivity)
-            }
+        }
 
         @JvmStatic
         fun logAppOpenedEvent(activity: Activity) {
             if (checkSdkInitialized("logAppOpenedEvent"))
                 inApp.logAppOpenedEvent(activity)
-            }
+        }
 
         @JvmStatic
         fun logAppOpenedEvent(context: Context) {
             if (checkSdkInitialized("logAppOpenedEvent"))
                 inApp.logAppOpenedEvent(context)
-            }
+        }
 
 
         /**
@@ -130,7 +130,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         ) {
             if (checkSdkInitialized("logCustomEvent"))
                 inApp.logCustomEvent(appCompatActivity, eventName, eventParams)
-            }
+        }
 
         @JvmStatic
         fun logCustomEvent(
@@ -140,7 +140,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         ) {
             if (checkSdkInitialized("logCustomEvent"))
                 inApp.logCustomEvent(activity, eventName, eventParams)
-            }
+        }
 
         @JvmStatic
         fun logCustomEvent(
@@ -150,7 +150,7 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         ) {
             if (checkSdkInitialized("logCustomEvent"))
                 inApp.logCustomEvent(context, eventName, eventParams)
-            }
+        }
 
 
         /**
@@ -160,19 +160,19 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         fun logEvent(appCompatActivity: AppCompatActivity, eventName: String) {
             if (checkSdkInitialized("logEvent"))
                 inApp.logEvent(appCompatActivity, eventName)
-            }
+        }
 
         @JvmStatic
         fun logEvent(activity: Activity, eventName: String) {
             if (checkSdkInitialized("logEvent"))
                 inApp.logEvent(activity, eventName)
-            }
+        }
 
         @JvmStatic
         fun logEvent(context: Context, eventName: String) {
             if (checkSdkInitialized("logEvent"))
                 inApp.logEvent(context, eventName)
-            }
+        }
 
 
         /**
@@ -186,13 +186,13 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
         ) {
             if (checkSdkInitialized("logEvent"))
                 inApp.logEvent(appCompatActivity, eventName, eventParams)
-            }
+        }
 
         @JvmStatic
         fun logEvent(activity: Activity, eventName: String, eventParams: Map<String, Any>) {
             if (checkSdkInitialized("logEvent"))
                 inApp.logEvent(activity, eventName, eventParams)
-            }
+        }
 
         @JvmStatic
         fun logEvent(context: Context, eventName: String, eventParams: Map<String, Any>) {
@@ -203,15 +203,15 @@ class CastledNotifications private constructor(internal val configs: ChannelConf
 
         private fun checkSdkInitialized(message: String): Boolean =
             if (instance == null) {
-                CastledLogger.getInstance().error("$error4 \t Message: $message")
+                CastledLogger.getInstance().error("$error4 \t Method: $message")
                 false
             }
             else if(inApp.userId == null) {
-                CastledLogger.getInstance().error("$error5b \t Message: $message")
+                CastledLogger.getInstance().error("$error5b \t Method: $message")
                 false
             }
             else if(inApp.userId!!.isBlank()) {
-                CastledLogger.getInstance().error("$error5a \t Message: $message")
+                CastledLogger.getInstance().error("$error5a \t Method: $message")
                 false
             }
             else true

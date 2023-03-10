@@ -1,7 +1,6 @@
 package io.castled.inAppTriggerEvents.trigger
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
@@ -9,7 +8,6 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import io.castled.CastledNotifications
 import io.castled.inAppTriggerEvents.database.DatabaseBuilder
 import io.castled.inAppTriggerEvents.database.TriggerEventDatabaseHelperImpl
 import io.castled.inAppTriggerEvents.event.EventNotification
@@ -46,9 +44,9 @@ internal class TriggerEvent private constructor(){
 
         CoroutineScope(Main).launch {
             //TODO rename `notifications` here to campaigns
-            val notifications = requestTriggerEventsFromCloud(context)
+            val notifications = requestTriggerEventsFromCloud()
 
-            //No error in fetching notifications. This allows notiticaions to be empty
+            //No error in fetching notifications. This allows notifications to be empty
             if (notifications != null) {
                 val noOfRowDeleted = dbDeleteTriggerEvents(context)
                 val rows = dbInsertTriggerEvents(context, notifications)
@@ -62,16 +60,21 @@ internal class TriggerEvent private constructor(){
     }
 
     //TODO rename to requestCampaignsFromCloud; TriggerEventModel should be CampaignModel
-    private suspend fun requestTriggerEventsFromCloud(context: Context): List<TriggerEventModel>? {
-        val inapp = EventNotification.getInstance
-        if (!inapp.hasInternet) {
-            CastledLogger.getInstance().debug("$TAG: Error: No Internet.")
+    private suspend fun requestTriggerEventsFromCloud(): List<TriggerEventModel>? {
+        val inApp = EventNotification.getInstance
+        if (!inApp.hasInternet) {
+            CastledLogger.getInstance().error("$TAG: Error: No Internet.")
+            return null
+        }
+
+        if (inApp.userId.isNullOrBlank()) {
+            CastledLogger.getInstance().error("$TAG: UserId is null.")
             return null
         }
 
         return withContext(IO) {
                 val eventsResponse = ServiceGenerator.requestApi()
-                .makeNotificationQuery(inapp.instanceIdKey, CastledNotifications.userId!!)
+                .makeNotificationQuery(inApp.instanceIdKey, inApp.userId!!)
             showApiLog(eventsResponse)
             if (eventsResponse.isSuccessful && eventsResponse.body() != null) {
                 eventsResponse.body()
@@ -707,12 +710,12 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
     private fun showApiLog(cloudEventResponse: Response<List<TriggerEventModel>>) {
         CastledLogger.getInstance().debug("$TAG: ************* fetchCloudEvents FETCHED *************\n")
         CastledLogger.getInstance().debug("$TAG: 1. isSuccessful: ${cloudEventResponse.isSuccessful}")
-        CastledLogger.getInstance().debug("$TAG: 2. Body: ${cloudEventResponse.body()}")
+//        CastledLogger.getInstance().debug("$TAG: 2. Body: ${cloudEventResponse.body()}")
         CastledLogger.getInstance().debug("$TAG: 3. Code: ${cloudEventResponse.code()}")
         CastledLogger.getInstance().debug("$TAG: 4. Message: ${cloudEventResponse.message()}")
-        CastledLogger.getInstance().debug("$TAG: 5. Headers: ${cloudEventResponse.headers()}")
-        CastledLogger.getInstance().debug("$TAG: 6. Raw: ${cloudEventResponse.raw()}")
-        CastledLogger.getInstance().debug("$TAG: 7. ${cloudEventResponse.body()?.size} ")
+//        CastledLogger.getInstance().debug("$TAG: 5. Headers: ${cloudEventResponse.headers()}")
+//        CastledLogger.getInstance().debug("$TAG: 6. Raw: ${cloudEventResponse.raw()}")
+        CastledLogger.getInstance().debug("$TAG: 7. Body(Size): ${cloudEventResponse.body()?.size} ")
         CastledLogger.getInstance().debug("$TAG: ************* fetchCloudEvents FETCHED DONE *************\n")
     }
 }
