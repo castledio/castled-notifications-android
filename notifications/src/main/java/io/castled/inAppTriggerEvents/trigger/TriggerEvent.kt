@@ -599,7 +599,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
                             // NONE, SEND, CLICKED, DISCARDED, RECEIVED, FOREGROUND
 
                             val intent = Intent(context, CastledEventListener::class.java)
-                            intent.action = ""
+                            intent.action = NotificationEventType.CLICKED.toString()
 
                             if(!modal.get("url").isJsonNull)
                                 intent.putExtra(Constants.EXTRA_URI, modal.get("url").asString)
