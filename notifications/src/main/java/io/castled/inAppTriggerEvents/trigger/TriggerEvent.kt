@@ -613,6 +613,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
                             if (!modal.get("defaultClickAction").isJsonNull)
                                 intent.putExtra(Constants.EXTRA_ACTION, modal.get("defaultClickAction").asString)
 
+                            //TODO should action label be sent to backend. Tracked in #68
 //                            intent.putExtra(Constants.EXTRA_LABEL, "")
 //                            intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, "")
 

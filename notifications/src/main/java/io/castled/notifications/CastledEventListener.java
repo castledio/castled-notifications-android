@@ -59,6 +59,7 @@ public class CastledEventListener extends AppCompatActivity {
                     String clickUri = intent.hasExtra(Constants.EXTRA_URI) ?
                             intent.getStringExtra(Constants.EXTRA_URI) : null;
 
+                    //TODO should action label be sent to backend. Tracked in #68
                     String actionLabel = intent.hasExtra(Constants.EXTRA_LABEL) ?
                             intent.getStringExtra(Constants.EXTRA_LABEL) : null;
 
