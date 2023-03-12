@@ -84,7 +84,10 @@ public class CastledEventListener extends AppCompatActivity {
                     }
                     else if(clickedAction.equals(ClickAction.RICH_LANDING.name())) {
 
-                        clientIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+                        clientIntent = new Intent();
+                        clientIntent.setAction(Intent.ACTION_VIEW);
+                        clientIntent.setData(Uri.parse(keyValuesMap != null ? Utils.addQueryParams(clickUri, keyValuesMap) : clickUri));
+//                        clientIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
                     }
                     else if(clickedAction.equals(ClickAction.DEFAULT.name())) { //Default click action
 
