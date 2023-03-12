@@ -76,6 +76,7 @@ internal class TriggerEvent private constructor(){
 
         return withContext(IO) {
                 val eventsResponse = ServiceGenerator.requestApi()
+                //TODO move userId. It should be in CastledNotifications as it's a sdk level var
                 .makeNotificationQuery(inApp.instanceIdKey, inApp.userId!!)
 //            showApiLog(eventsResponse)
             if (eventsResponse.isSuccessful && eventsResponse.body() != null) {
