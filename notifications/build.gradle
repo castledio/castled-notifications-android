@@ -29,7 +29,6 @@ android {
 
         debug {
             minifyEnabled false
-            debuggable true
 
             buildConfigField "String", "BASE_URL", "\"https://app.castled.io/\""
             buildConfigField "String", "BASE_URL_TEST", "\"https://test.castled.io/\""
