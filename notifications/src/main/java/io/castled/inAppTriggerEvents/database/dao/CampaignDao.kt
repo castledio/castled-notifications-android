@@ -14,7 +14,7 @@ internal interface CampaignDao {
     fun dbGetLiveDataCampaigns(): LiveData<List<CampaignModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun dbInsertCampaigns(notifications: List<CampaignModel>) : LongArray
+    suspend fun dbInsertCampaigns(campaignList: List<CampaignModel>) : LongArray
 
     @Query("DELETE FROM campaign")
     fun dbDeleteAllCampaigns(): Int

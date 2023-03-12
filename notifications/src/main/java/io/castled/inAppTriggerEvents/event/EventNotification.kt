@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ProcessLifecycleOwner
 import io.castled.CastledNotifications
+import io.castled.inAppTriggerEvents.database.PreferencesManager
 import io.castled.inAppTriggerEvents.trigger.TriggerEvent
 import io.castled.inAppTriggerEvents.observer.AppActivityLifecycleObserver
 import io.castled.inAppTriggerEvents.observer.AppLifecycleObserver
@@ -34,19 +35,16 @@ class EventNotification private constructor() {
             field = TimeUnit.SECONDS.toMillis(timeInSeconds)
         }
 
-    internal var userId: String? = null
-        /*get() {
-
-            if (userId == null)
-            //TODO: write code to get it from Shared preferences
-                return null
-            else return userId
-            return field
+    internal var userId: String = ""
+        get() {
+            return field.ifEmpty {
+                PreferencesManager(application).userId
+            }
         }
         set(value) {
-            //TODO: write code to set it to the Shared preferences
+            PreferencesManager(application).userId = value
             field = value
-        }*/
+        }
 
     // TODO: close gitHub-> implement watching for network state changes and retrying network requests #15
     private val connectivityStateListener: ConnectivityProvider.ConnectivityStateListener = object: ConnectivityProvider.ConnectivityStateListener{
@@ -81,7 +79,7 @@ class EventNotification private constructor() {
 
     internal fun checkAndStartJobToGetEvents() {
         if ((jobToGetEvents == null || !jobToGetEvents!!.isActive)
-            && userId != null
+            && userId.isNotBlank()
             && this::application.isInitialized)
             startJobToGetEvents()
     }

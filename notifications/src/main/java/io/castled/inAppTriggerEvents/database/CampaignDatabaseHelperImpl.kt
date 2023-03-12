@@ -2,6 +2,7 @@ package io.castled.inAppTriggerEvents.database
 
 import androidx.lifecycle.LiveData
 import io.castled.inAppTriggerEvents.models.CampaignModel
+import io.castled.inAppTriggerEvents.models.LogCampaignModel
 
 internal class CampaignDatabaseHelperImpl(private val campaignDatabase: CampaignDatabase) :
     CampaignDatabaseHelper {
@@ -19,15 +20,26 @@ internal class CampaignDatabaseHelperImpl(private val campaignDatabase: Campaign
     override suspend fun deleteDbCampaigns(): Int =
         campaignDatabase.campaignDao().dbDeleteAllCampaigns()
 
-    override suspend fun updateDbCampaignLastDisplayed(campaign: CampaignModel) =
-        campaignDatabase.campaignDao().dbUpdateCampaignLastDisplayed(campaign)
+    override suspend fun updateDbCampaignLastDisplayed(campaignModel: CampaignModel) =
+        campaignDatabase.campaignDao().dbUpdateCampaignLastDisplayed(campaignModel)
 
     override suspend fun updateDbCampaignLastDisplayed(
-        timesDisplayed: Long,
+        timeDisplayed: Long,
         lastDisplayedTime: Long,
         id: Int,
         notificationId: Int
-    ): Int = campaignDatabase.campaignDao().dbUpdateCampaignLastDisplayed(timesDisplayed, lastDisplayedTime, id, notificationId)
+    ): Int = campaignDatabase.campaignDao().dbUpdateCampaignLastDisplayed(timeDisplayed, lastDisplayedTime, id, notificationId)
+
+
+
+    override suspend fun getLogCampaignFromDb(): List<LogCampaignModel> =
+        campaignDatabase.logCampaignDao().dbGetLogCampaigns()
+
+    override suspend fun insertLogCampaigns(logCampaigns: List<LogCampaignModel>): LongArray =
+        campaignDatabase.logCampaignDao().dbInsertLogCampaigns(logCampaigns)
+
+    override suspend fun insertLogCampaign(logCampaign: LogCampaignModel): Long =
+            campaignDatabase.logCampaignDao().dbInsertLogCampaign(logCampaign)
 
 
 }
