@@ -18,9 +18,11 @@ import androidx.appcompat.widget.AppCompatImageView
 import com.bumptech.glide.Glide
 import com.google.gson.JsonObject
 import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
-import io.castled.inAppTriggerEvents.models.TriggerEventModel
+import io.castled.inAppTriggerEvents.models.CampaignModel
 import io.castled.notifications.R
 import io.castled.notifications.logger.CastledLogger
+import kotlinx.coroutines.*
+import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 
@@ -31,6 +33,7 @@ internal class TriggerPopupDialog {
 
         internal fun showDialog(
             context: Context,
+            autoDismissInterval: Long,
             popUpBackgroundColor: String,
             popUpHeader: PopupHeader,
             popupMessage: PopupMessage,
@@ -201,6 +204,20 @@ internal class TriggerPopupDialog {
             }
 
             dialog.show()
+
+
+            if (autoDismissInterval > 0){
+                CoroutineScope(Dispatchers.Default).launch {
+                    val t = TimeUnit.SECONDS.toMillis(autoDismissInterval)
+                    CastledLogger.getInstance().info("$TAG: autoDismissInterval: [$t milli sec or $autoDismissInterval sec].")
+                    delay(t)
+                    if (dialog.isShowing){
+                        withContext(Dispatchers.Main){
+                            dialog.dismiss()
+                        }
+                    }
+                }
+            }
         }
 
         internal fun showFullscreenDialog(
@@ -482,7 +499,7 @@ internal class TriggerPopupDialog {
             dialog.show()
         }
 
-        internal fun getTriggerEventType(notificationModel: TriggerEventModel?): TriggerEventConstants.Companion.TriggerEventType{
+        internal fun getTriggerEventType(notificationModel: CampaignModel?): TriggerEventConstants.Companion.TriggerEventType{
             if (notificationModel == null) return TriggerEventConstants.Companion.TriggerEventType.NONE
 
             val message:  JsonObject = notificationModel.message.asJsonObject

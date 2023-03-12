@@ -5,11 +5,11 @@ import androidx.room.Room
 
 internal object DatabaseBuilder {
 
-    private var INSTANCE: TriggerEventsDatabase? = null
+    private var INSTANCE: CampaignDatabase? = null
 
-    fun getInstance(context: Context): TriggerEventsDatabase {
+    fun getInstance(context: Context): CampaignDatabase {
         if (INSTANCE == null) {
-            synchronized(TriggerEventsDatabase::class) {
+            synchronized(CampaignDatabase::class) {
                 INSTANCE = buildRoomDB(context)
             }
         }
@@ -19,8 +19,8 @@ internal object DatabaseBuilder {
     private fun buildRoomDB(context: Context) =
         Room.databaseBuilder(
             context.applicationContext,
-            TriggerEventsDatabase::class.java,
-            "trigger_event_db"
+            CampaignDatabase::class.java,
+            "campaign_db"
         ).build()
 
 }

@@ -25,7 +25,7 @@ public class ApplicationClass extends MultiDexApplication {
 
         InAppChannelConfig inAppConfig = InAppChannelConfig.builder()
                 .enable(true)
-                .fetchFromCloudInterval(45)
+                .fetchFromCloudInterval(600)
                 .build();
 
         CastledNotifications.initialize(ApplicationClass.this, "829c38e2e359d94372a2e0d35e1f74df", inAppConfig);

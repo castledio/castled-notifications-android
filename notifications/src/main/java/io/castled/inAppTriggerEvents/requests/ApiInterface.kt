@@ -1,7 +1,7 @@
 package io.castled.inAppTriggerEvents.requests
 
 import com.google.gson.JsonObject
-import io.castled.inAppTriggerEvents.models.TriggerEventModel
+import io.castled.inAppTriggerEvents.models.CampaignModelApi
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -16,7 +16,7 @@ internal interface ApiInterface {
         apikey: String,
         @Query("user")
         customers: String
-    ): Response<List<TriggerEventModel>>
+    ): Response<List<CampaignModelApi>>
 
 
 

@@ -2,7 +2,6 @@ package io.castled.inAppTriggerEvents.trigger
 
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import com.google.gson.GsonBuilder
@@ -10,10 +9,12 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import io.castled.inAppTriggerEvents.database.DatabaseBuilder
-import io.castled.inAppTriggerEvents.database.TriggerEventDatabaseHelperImpl
+import io.castled.inAppTriggerEvents.database.CampaignDatabaseHelperImpl
+import io.castled.inAppTriggerEvents.database.DbOperation
 import io.castled.inAppTriggerEvents.event.EventNotification
 import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
-import io.castled.inAppTriggerEvents.models.TriggerEventModel
+import io.castled.inAppTriggerEvents.models.CampaignModel
+import io.castled.inAppTriggerEvents.models.CampaignModelApi
 import io.castled.inAppTriggerEvents.requests.ServiceGenerator
 import io.castled.notifications.CastledEventListener
 import io.castled.notifications.consts.Constants
@@ -33,6 +34,7 @@ import java.util.*
 private const val TAG = "TriggerEvent"
 
 internal class TriggerEvent private constructor(){
+    private val castledLogger = CastledLogger.getInstance()
 
     companion object {
         private lateinit var triggerEvent: TriggerEvent
@@ -46,24 +48,21 @@ internal class TriggerEvent private constructor(){
     internal fun fetchAndSaveTriggerEvents(context: Context) {
 
         CoroutineScope(Main).launch {
-            //TODO rename `notifications` here to campaigns
-            val notifications = requestTriggerEventsFromCloud()
+            val campaigns = requestTriggerEventsFromCloud(context)
 
             //No error in fetching notifications. This allows notifications to be empty
-            if (notifications != null) {
+            if (campaigns != null) {
                 val noOfRowDeleted = dbDeleteTriggerEvents(context)
-                val rows = dbInsertTriggerEvents(context, notifications)
-                CastledLogger.getInstance().debug("$TAG: inserted into db: ${rows.toList()}")
+                val rows = dbInsertTriggerEvents(context, campaigns)
+                castledLogger.debug("$TAG: inserted into db: ${rows.toList()}")
 
-            }
-
-            else Toast.makeText(context, "Notification fetch failed.", Toast.LENGTH_SHORT).show()
+            } else
+                castledLogger.info("$TAG: Notification fetch failed.")
         }
 
     }
 
-    //TODO rename to requestCampaignsFromCloud; TriggerEventModel should be CampaignModel
-    private suspend fun requestTriggerEventsFromCloud(): List<TriggerEventModel>? {
+    private suspend fun requestTriggerEventsFromCloud(context: Context): List<CampaignModel>? {
         val inApp = EventNotification.getInstance
         if (!inApp.hasInternet) {
             CastledLogger.getInstance().error("$TAG: Error: No Internet.")
@@ -78,17 +77,59 @@ internal class TriggerEvent private constructor(){
         return withContext(IO) {
                 val eventsResponse = ServiceGenerator.requestApi()
                 .makeNotificationQuery(inApp.instanceIdKey, inApp.userId!!)
-            showApiLog(eventsResponse)
+//            showApiLog(eventsResponse)
             if (eventsResponse.isSuccessful && eventsResponse.body() != null) {
-                eventsResponse.body()
+                convertCampaignModelApiListToCampaignModelList(context, eventsResponse.body())
             } else {
                 withContext(Main) {
-//                    Toast.makeText(context, "Error while getting data.", Toast.LENGTH_LONG).show()
                     CastledLogger.getInstance().debug("$TAG: requestTriggerEventsFromCloud:  Error while getting data.")
                 }
                 null
             }
-        } as List<TriggerEventModel>
+        }
+    }
+
+    private suspend fun convertCampaignModelApiListToCampaignModelList(context: Context, campaignModelApi: List<CampaignModelApi>?): List<CampaignModel>? {
+        if (campaignModelApi == null)
+            return null
+
+        return withContext(Default){
+            val campaignModelList = mutableListOf<CampaignModel>()
+            campaignModelApi.forEachIndexed { index, campaignApi ->
+                campaignModelList.add(
+                    CampaignModel(
+                        (index+1),
+                        campaignApi.notificationId,
+                        campaignApi.teamId,
+                        campaignApi.sourceContext,
+                        campaignApi.startTs,
+                        campaignApi.endTs,
+                        campaignApi.ttl,
+                        campaignApi.displayConfig.displayLimit,
+                        0,
+                        campaignApi.displayConfig.minIntervalBtwDisplays,
+                        0,
+                        campaignApi.displayConfig.minIntervalBtwDisplaysGlobal,
+//                        5,
+                        campaignApi.displayConfig.autoDismissInterval,
+                        campaignApi.trigger,
+                        campaignApi.message,
+                    )
+                )
+            }
+
+            val dbCampaigns = dbFetchCampaigns(context)
+            dbCampaigns.forEach { dbCampaign ->
+                campaignModelList.map { model ->
+                    if (model.notificationId == dbCampaign.notificationId){
+                        model.lastDisplayedTime = dbCampaign.lastDisplayedTime
+                        model.timesDisplayed = dbCampaign.timesDisplayed
+                        model
+                    } else model
+                }
+            }
+            campaignModelList
+        }
     }
 
     private suspend fun updateTriggerEventLogToCloudWithCount(eventBody: JsonObject, tryCount: Int): String {
@@ -138,24 +179,24 @@ internal class TriggerEvent private constructor(){
         }
     }
 
-    private var notificationObserver: LiveData<List<TriggerEventModel>>? = null
+    private var notificationObserver: LiveData<List<CampaignModel>>? = null
     fun observeDatabaseNotification(context: Context, viewLifecycleOwner: LifecycleOwner) {
         CoroutineScope(Default).launch {
             if (notificationObserver == null) {
-                val db = TriggerEventDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
-                notificationObserver = db.getLiveDataTriggerEventsFromDb()
+                val db = CampaignDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
+                notificationObserver = db.getLiveDataCampaignsFromDb()
             }
 
             if (notificationObserver?.hasObservers() != null){
-                val db = TriggerEventDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
-                CastledLogger.getInstance().debug("$TAG: hasActiveObservers: ${db.getLiveDataTriggerEventsFromDb().hasActiveObservers()}")
-                CastledLogger.getInstance().debug("$TAG: hasObservers: ${db.getLiveDataTriggerEventsFromDb().hasObservers()}")
+                val db = CampaignDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
+                CastledLogger.getInstance().debug("$TAG: hasActiveObservers: ${db.getLiveDataCampaignsFromDb().hasActiveObservers()}")
+                CastledLogger.getInstance().debug("$TAG: hasObservers: ${db.getLiveDataCampaignsFromDb().hasObservers()}")
             }
 
             if (notificationObserver?.hasObservers() == null || !notificationObserver!!.hasObservers()) {
                 withContext(Main) {
-                    val db = TriggerEventDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
-                    db.getLiveDataTriggerEventsFromDb().observe(viewLifecycleOwner) { it ->
+                    val db = CampaignDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
+                    db.getLiveDataCampaignsFromDb().observe(viewLifecycleOwner) { it ->
                         CastledLogger.getInstance().debug("$TAG: observeDatabaseNotification: ${it?.size} notifications added/replaced.")
                         it.forEach {
                             CastledLogger.getInstance().debug("$TAG: observeDatabaseNotification: ${it.notificationId}")
@@ -175,7 +216,7 @@ internal class TriggerEvent private constructor(){
     }
 
     //TODO rename this to findAndLaunchUi
-    internal fun findAndLaunchEvent(context: Context, eventParamsWithEventName: Map<String, Any?>, callBack: (List<TriggerEventModel>) -> Unit) {
+    internal fun findAndLaunchEvent(context: Context, eventParamsWithEventName: Map<String, Any?>, callBack: (List<CampaignModel>) -> Unit) {
         CoroutineScope(Main).launch {
             //TODO rename value variable
             val value = evaluateDbTriggerEvent(context, eventParamsWithEventName.toMutableMap())
@@ -189,12 +230,12 @@ internal class TriggerEvent private constructor(){
     private suspend fun evaluateDbTriggerEvent(
         context: Context,
         eventParam: MutableMap<String, Any?>
-    ): List<TriggerEventModel> =
+    ): List<CampaignModel> =
 
         withContext(Default) {
             CastledLogger.getInstance().debug("$TAG: **** evaluateDbTriggerEvent:: ****\teventParam:${eventParam.toList()}")
-            val showOnScreenEvent = mutableListOf<TriggerEventModel>()
-            var triggerEvent = dbFetchTriggerEvents(context)
+            val showOnScreenEvent = mutableListOf<CampaignModel>()
+            var triggerEvent = dbFetchCampaigns(context)
             val triggerParamsEvaluator = TriggerParamsEvaluator()
 
             //TODO filter the inapps to be looked at here. LATER do this at the db level
@@ -214,6 +255,11 @@ internal class TriggerEvent private constructor(){
 
             //TODO rename "triggerEvent" to campaign. Rename related stuff
             val timeRightNow = System.currentTimeMillis()
+            var lastCampaignViewTime = 0L
+            triggerEvent.maxByOrNull { it.lastDisplayedTime }?.let {
+                castledLogger.info("$TAG: max ${it.notificationId}")
+                lastCampaignViewTime = it.lastDisplayedTime
+            }
             triggerEvent.forEach { triggerEventModel ->
                 CastledLogger.getInstance().debug("$TAG: DB trigger JSON: ${triggerEventModel.trigger}")
                 if (!triggerEventModel.trigger.asJsonObject.isJsonNull
@@ -225,8 +271,12 @@ internal class TriggerEvent private constructor(){
                     CastledLogger.getInstance().debug("$TAG: timeRightNow: $timeRightNow, Event endTime: ${triggerEventModel.endTs}, startTime: ${triggerEventModel.startTs}")
 
                     // TODO: close gitHub-> https://github.com/dheerajbhaskar/castled-notifications-android/issues/54
-                    if (triggerEventModel.endTs > timeRightNow){
-                        CastledLogger.getInstance().debug("$TAG: ${triggerEventModel.notificationId} not expired.")
+                    if (triggerEventModel.endTs > timeRightNow
+                        && triggerEventModel.displayLimit > triggerEventModel.timesDisplayed
+                        && timeRightNow > (triggerEventModel.lastDisplayedTime + triggerEventModel.minIntervalBtwDisplays)
+                        && timeRightNow > (lastCampaignViewTime + triggerEventModel.minIntervalBtwDisplaysGlobal)
+//                        && triggerEventModel.minIntervalBtwDisplays >= (timeRightNow - triggerEventModel.lastDisplayedTime)
+                    ){
                         val gson = GsonBuilder()
                             .registerTypeAdapter(EventFilter::class.java, EventFilterDeserializer())
                             .create()
@@ -238,7 +288,7 @@ internal class TriggerEvent private constructor(){
                         if (triggerParamsEvaluator.evaluate(eventParam, eventFilter as NestedEventFilter))
                             showOnScreenEvent.add(triggerEventModel)
                     } else {
-                        CastledLogger.getInstance().debug("$TAG: ${triggerEventModel.notificationId} expired.")
+                        CastledLogger.getInstance().debug("$TAG: ${triggerEventModel.notificationId} expired or crossed the display limit or minIntervalBtwDisplays not crossed")
                     }
 
                     /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -257,14 +307,14 @@ internal class TriggerEvent private constructor(){
         }
 
     internal fun findAndLaunchDbTriggerEvent(context: Context) = CoroutineScope(Default).launch {
-        val dbTriggerEvents = dbFetchTriggerEvents(context)
+        val dbTriggerEvents = dbFetchCampaigns(context)
         CastledLogger.getInstance().debug("$TAG: findAndLaunchTriggerNotification: ${dbTriggerEvents.map { it.notificationId }}")
         launchTriggerEvent(context, dbTriggerEvents)
     }
 
     private fun launchTriggerEvent(
         context: Context,
-        triggerEvents: List<TriggerEventModel>
+        triggerEvents: List<CampaignModel>
     ) {
 
         if (triggerEvents.isNotEmpty()) {
@@ -273,7 +323,7 @@ internal class TriggerEvent private constructor(){
                 CastledLogger.getInstance().debug("$TAG: launchTriggerEvent: ")
                 when (TriggerPopupDialog.getTriggerEventType(event)) {
                     TriggerEventConstants.Companion.TriggerEventType.MODAL -> {
-                        launchModalTriggerNotification(context, event)
+                        launchModalInApp(context, event)
                     }
                     TriggerEventConstants.Companion.TriggerEventType.SLIDE_UP -> {
                         launchSlideUpTriggerNotification(context, event)
@@ -305,7 +355,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
                     else -> TriggerEventConstants.Companion.TriggerEventType.NONE
                 }
 
-                val dbTriggerNotifications = dbFetchTriggerEvents(context)
+                val dbTriggerNotifications = dbFetchCampaigns(context)
                 CastledLogger.getInstance().debug("$TAG: findAndLaunchTriggerNotification: ${dbTriggerNotifications.map { it.notificationId }}")
 
                 if (dbTriggerNotifications.isNotEmpty()) {
@@ -314,7 +364,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
                     withContext(Main) {
                         when (TriggerPopupDialog.getTriggerEventType(event)) {
                             TriggerEventConstants.Companion.TriggerEventType.MODAL -> {
-                                launchModalTriggerNotification(context, event!!)
+                                launchModalInApp(context, event!!)
                             }
                             TriggerEventConstants.Companion.TriggerEventType.SLIDE_UP -> {
                                 launchSlideUpTriggerNotification(context, event!!)
@@ -347,14 +397,20 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
 
             CastledLogger.getInstance().debug("$TAG: selected event: $event")
 
-            val eventLocal = TriggerEventModel(
-                event.get("id").asLong,
+            val eventLocal = CampaignModel(
+                event.get("id").asInt,
                 event.get("notificationId").asInt,
                 event.get("teamId").asLong,
                 event.get("sourceContext").asString,
                 event.get("startTs").asLong,
                 event.get("endTs").asLong,
                 event.get("ttl").asInt,
+                event.get("displayLimit").asLong,
+                event.get("timesDisplayed").asLong,
+                event.get("minIntervalBtwDisplays").asLong,
+                event.get("lastDisplayedTime").asLong,
+                event.get("minIntervalBtwDisplaysGlobal").asLong,
+                event.get("autoDismissInterval").asLong,
                 event.get("trigger").asJsonObject,
                 event.get("message").asJsonObject
             )
@@ -362,7 +418,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
             withContext(Main) {
                 when (TriggerPopupDialog.getTriggerEventType(eventLocal)) {
                     TriggerEventConstants.Companion.TriggerEventType.MODAL -> {
-                        launchModalTriggerNotification(context, eventLocal)
+                        launchModalInApp(context, eventLocal)
                     }
                     TriggerEventConstants.Companion.TriggerEventType.SLIDE_UP -> {
                         launchSlideUpTriggerNotification(context, eventLocal)
@@ -376,7 +432,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
             }
         }
 
-    private fun getDefaultNotification(): TriggerEventModel{
+    private fun getDefaultNotification(): CampaignModel{
         val fs = JsonObject()
         fs.addProperty("imageUrl", "https://cdn.castled.io/logo/castled_multi_color_logo_only.png")
         fs.addProperty("defaultClickAction", "NONE")
@@ -445,7 +501,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
 
         val trigger: JsonObject = JsonObject()
 
-        return  TriggerEventModel(1L, 1, 1L, "",0L, 0L, 0, trigger, message)
+        return  CampaignModel(1, 1, 1L, "", 0L, 0L, 0, 0, 1, 1, 1, 1, 1, trigger, message)
     }
 
     private fun preparePopupHeader(modal: JsonObject) = PopupHeader(
@@ -494,15 +550,13 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
         if (secondaryPopupButtonJson.get("url").isJsonNull) "" else secondaryPopupButtonJson.get("url").asString
     )
 
-    //TODO rename these to launchModalInapp
-    private fun launchModalTriggerNotification(context: Context, eventModel: TriggerEventModel) {
-        val message: JsonObject = eventModel.message.asJsonObject
+    private fun launchModalInApp(context: Context, campaignModel: CampaignModel) {
+        val message: JsonObject = campaignModel.message.asJsonObject
         val modal: JsonObject = message.getAsJsonObject("modal")
         val buttons: JsonArray = modal.getAsJsonArray("actionButtons")
 
         if (buttons.size() < 2) {
-//            Toast.makeText(context, "Event is not valid for notificationId ${eventModel.notificationId}.", Toast.LENGTH_SHORT).show()
-            CastledLogger.getInstance().debug("$TAG: launchModalTriggerNotification: Event is not valid for notificationId ${eventModel.notificationId}.")
+            CastledLogger.getInstance().debug("$TAG: launchModalTriggerNotification: Event is not valid for notificationId ${campaignModel.notificationId}.")
             return
         }
 
@@ -510,13 +564,15 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
         val buttonSecondary: JsonObject = buttons[1].asJsonObject
 
         val eventClickActionData = JsonObject()
-        eventClickActionData.addProperty("teamId", eventModel.teamId)
-        eventClickActionData.addProperty("sourceContext", eventModel.sourceContext)
+        eventClickActionData.addProperty("teamId", campaignModel.teamId)
+        eventClickActionData.addProperty("sourceContext", campaignModel.sourceContext)
 
-        initiateTriggerEventLogToCloud(prepareEventViewActionBodyData(eventModel))
+        DbOperation.dbUpdateCampaignLastDisplayedAndTimesDisplayed(context, campaignModel)
+        initiateTriggerEventLogToCloud(prepareEventViewActionBodyData(campaignModel))
 
         TriggerPopupDialog.showDialog(
             context,
+            campaignModel.autoDismissInterval,
             modal.get("screenOverlayColor").asString,
             preparePopupHeader(modal),
             preparePopupMessage(modal),
@@ -529,14 +585,15 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
                 ) {
                     when(triggerEventConstants) {
                         TriggerEventConstants.Companion.EventClickType.CLOSE_EVENT -> {
-                            initiateTriggerEventLogToCloud(prepareEventCloseActionBodyData(eventModel))
+                            initiateTriggerEventLogToCloud(prepareEventCloseActionBodyData(campaignModel))
                         }
                         TriggerEventConstants.Companion.EventClickType.IMAGE_CLICK -> {
 
-                            //                            if(modal.get("defaultClickAction").isJsonNull) "" else modal.get("defaultClickAction").asString
+                            //if(modal.get("defaultClickAction").isJsonNull) "" else modal.get("defaultClickAction").asString
                             // NONE, SEND, CLICKED, DISCARDED, RECEIVED, FOREGROUND
 
-                            val intent = Intent()
+                            val intent = Intent(context, CastledEventListener::class.java)
+                            intent.action = ""
 
                             if(!modal.get("url").isJsonNull)
                                 intent.putExtra(Constants.EXTRA_URI, modal.get("url").asString)
@@ -544,13 +601,12 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
                             if (!modal.get("defaultClickAction").isJsonNull)
                                 intent.putExtra(Constants.EXTRA_ACTION, modal.get("defaultClickAction").asString)
 
-
 //                            intent.putExtra(Constants.EXTRA_LABEL, "")
 //                            intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, "")
 
                             context.startActivity(intent)
 
-                            initiateTriggerEventLogToCloud(prepareEventImageClickActionBodyData(eventModel))
+                            initiateTriggerEventLogToCloud(prepareEventImageClickActionBodyData(campaignModel))
                         }
                         TriggerEventConstants.Companion.EventClickType.PRIMARY_BUTTON -> {
 
@@ -582,7 +638,8 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
 
                             CastledLogger.getInstance().info("buttonSecondary: $buttonSecondary")
 
-                            val intent = Intent()
+                            val intent = Intent(context, CastledEventListener::class.java)
+                            intent.action = ""
 
                             if(!buttonSecondary.get("url").isJsonNull)
                                 intent.putExtra(Constants.EXTRA_URI, buttonSecondary.get("url").asString)
@@ -594,7 +651,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
                                 intent.putExtra(Constants.EXTRA_LABEL, buttonSecondary.get("label").asString)
 
                             if (!buttonSecondary.get("keyVals").isJsonNull)
-                                intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, buttonSecondary.get("keyVals").asString)
+                                intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, buttonSecondary.get("keyVals").toString())
 
                             context.startActivity(intent)
 
@@ -609,7 +666,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
         )
     }
 
-    private fun launchFullScreenTriggerNotification(context: Context, eventModel: TriggerEventModel) {
+    private fun launchFullScreenTriggerNotification(context: Context, eventModel: CampaignModel) {
         val message: JsonObject = eventModel.message.asJsonObject
         val modal: JsonObject = message.getAsJsonObject("fs")
         val buttons: JsonArray = modal.getAsJsonArray("actionButtons")
@@ -656,7 +713,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
         )
     }
 
-    private fun launchSlideUpTriggerNotification(context: Context, eventModel: TriggerEventModel) {
+    private fun launchSlideUpTriggerNotification(context: Context, eventModel: CampaignModel) {
         CastledLogger.getInstance().debug("$TAG: notification: $eventModel")
         val message: JsonObject = eventModel.message.asJsonObject
         val modal: JsonObject = message.getAsJsonObject("slideUp")
@@ -694,7 +751,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
         )
     }
 
-    private fun prepareEventViewActionBodyData(eventModel: TriggerEventModel): JsonObject {
+    private fun prepareEventViewActionBodyData(eventModel: CampaignModel): JsonObject {
         val eventViewActionBodyData = JsonObject()
         eventViewActionBodyData.addProperty("teamId", eventModel.teamId)
         eventViewActionBodyData.addProperty("eventType", "VIEWED")
@@ -703,7 +760,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
         return eventViewActionBodyData
     }
 
-    private fun prepareEventCloseActionBodyData(eventModel: TriggerEventModel): JsonObject {
+    private fun prepareEventCloseActionBodyData(eventModel: CampaignModel): JsonObject {
         val eventViewActionBodyData = JsonObject()
         eventViewActionBodyData.addProperty("teamId", eventModel.teamId)
         eventViewActionBodyData.addProperty("eventType", "DISCARDED")
@@ -712,7 +769,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
         return eventViewActionBodyData
     }
 
-    fun prepareEventImageClickActionBodyData(eventModel: TriggerEventModel): JsonObject{
+    fun prepareEventImageClickActionBodyData(eventModel: CampaignModel): JsonObject{
         val message: JsonObject = eventModel.message.asJsonObject
         val modal: JsonObject =
             if (message.has("modal"))
@@ -749,28 +806,28 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
         return jsonObjectBody
     }
 
-    internal suspend fun dbFetchTriggerEvents(context: Context): List<TriggerEventModel> =
+    internal suspend fun dbFetchCampaigns(context: Context): List<CampaignModel> =
         withContext(Default) {
-            val db = TriggerEventDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
-            db.getTriggerEventsFromDb()
+            val db = CampaignDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
+            db.getCampaignsFromDb()
         }
 
     private suspend fun dbDeleteTriggerEvents(context: Context): Int =
         withContext(Default) {
-            val db = TriggerEventDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
-            db.deleteDbTriggerEvents()
+            val db = CampaignDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
+            db.deleteDbCampaigns()
         }
 
     private suspend fun dbInsertTriggerEvents(
         context: Context,
-        notifications: List<TriggerEventModel>
+        notifications: List<CampaignModel>
     ) =
         withContext(Default) {
-            val db = TriggerEventDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
-            db.insertTriggerEventsIntoDb(notifications)
+            val db = CampaignDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
+            db.insertCampaignsIntoDb(notifications)
         }
 
-    private fun showApiLog(cloudEventResponse: Response<List<TriggerEventModel>>) {
+    private fun showApiLog(cloudEventResponse: Response<List<CampaignModelApi>>) {
         CastledLogger.getInstance().debug("$TAG: ************* fetchCloudEvents FETCHED *************\n")
         CastledLogger.getInstance().debug("$TAG: 1. isSuccessful: ${cloudEventResponse.isSuccessful}")
 //        CastledLogger.getInstance().debug("$TAG: 2. Body: ${cloudEventResponse.body()}")

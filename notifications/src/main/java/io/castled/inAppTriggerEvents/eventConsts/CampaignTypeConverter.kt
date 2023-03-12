@@ -7,7 +7,7 @@ import com.google.gson.JsonParser
 /**
  * This class will be used by ROOM to convert appropriate data type to save it into database.
  */
-internal class TriggerEventTypeConverter {
+internal class CampaignTypeConverter {
 
     @TypeConverter
     fun fromJsonObject(source: JsonObject?): String {

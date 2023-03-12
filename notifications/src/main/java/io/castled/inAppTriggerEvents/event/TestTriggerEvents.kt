@@ -34,6 +34,7 @@ class TestTriggerEvents private constructor(){
     ) {
         TriggerPopupDialog.showDialog(
             context,
+            10,
             popUpBackgroundColor,
             popUpHeader,
             popupMessage,
@@ -100,7 +101,7 @@ class TestTriggerEvents private constructor(){
 
     fun fetchDbTriggerEvents(context: Context, callback: (JsonArray) -> Unit){
         CoroutineScope(Dispatchers.Default).launch {
-            val dbData = TriggerEvent.getInstance().dbFetchTriggerEvents(context)
+            val dbData = TriggerEvent.getInstance().dbFetchCampaigns(context)
             val jsonArray = JsonArray()
             dbData.forEach {
                 val jsonObject = JsonObject()
@@ -111,6 +112,12 @@ class TestTriggerEvents private constructor(){
                 jsonObject.addProperty("endTs", it.endTs)
                 jsonObject.addProperty("startTs", it.startTs)
                 jsonObject.addProperty("ttl", it.ttl)
+                jsonObject.addProperty("displayLimit", it.displayLimit)
+                jsonObject.addProperty("timesDisplayed", it.timesDisplayed)
+                jsonObject.addProperty("minIntervalBtwDisplays", it.minIntervalBtwDisplays)
+                jsonObject.addProperty("lastDisplayedTime", it.lastDisplayedTime)
+                jsonObject.addProperty("minIntervalBtwDisplaysGlobal", it.minIntervalBtwDisplaysGlobal)
+                jsonObject.addProperty("autoDismissInterval", it.autoDismissInterval)
                 jsonObject.add("message", it.message.asJsonObject)
                 jsonObject.add("trigger", it.trigger.asJsonObject)
 
