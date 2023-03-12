@@ -8,8 +8,8 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import io.castled.inAppTriggerEvents.database.DatabaseBuilder
 import io.castled.inAppTriggerEvents.database.CampaignDatabaseHelperImpl
+import io.castled.inAppTriggerEvents.database.DatabaseBuilder
 import io.castled.inAppTriggerEvents.database.DbOperation
 import io.castled.inAppTriggerEvents.event.EventNotification
 import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
@@ -605,6 +605,14 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
 
 //                            intent.putExtra(Constants.EXTRA_LABEL, "")
 //                            intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, "")
+
+                            //TODO ask gh. does image need a label?
+//                            if (!buttonPrimary.get("label").isJsonNull)
+//                                intent.putExtra(Constants.EXTRA_LABEL, buttonPrimary.get("label").asString)
+//
+                            //TODO ask gh. does image need keyVals
+//                            if (!buttonPrimary.get("keyVals").isJsonNull)
+//                                intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, buttonPrimary.get("keyVals").toString())
 
                             context.startActivity(intent)
 
