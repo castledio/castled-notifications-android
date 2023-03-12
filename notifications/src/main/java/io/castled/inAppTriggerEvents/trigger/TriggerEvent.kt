@@ -239,7 +239,6 @@ internal class TriggerEvent private constructor(){
             val triggerParamsEvaluator = TriggerParamsEvaluator()
 
             //TODO filter the inapps to be looked at here. LATER do this at the db level
-            //TODO test this code for all scenarios
             val eventNameFromParams = eventParam["event"]
             triggerEvent = triggerEvent.filter { triggerObj ->
                 val eventNameFromTrigger = triggerObj.trigger.asJsonObject.get("eventName").asString
@@ -248,7 +247,6 @@ internal class TriggerEvent private constructor(){
                     "app_opened" -> eventNameFromTrigger.equals(eventNameFromParams)
                     //TODO update the page_viewed condition to check for the screen name as well
                     "page_viewed" -> eventNameFromTrigger.equals(eventNameFromParams)
-//                            &&
                     else -> false
                 }
             }
