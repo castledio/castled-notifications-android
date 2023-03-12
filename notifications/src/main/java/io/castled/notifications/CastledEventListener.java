@@ -20,6 +20,7 @@ import io.castled.notifications.logger.CastledLogger;
 import io.castled.notifications.service.models.NotificationEvent;
 import io.castled.notifications.utils.Utils;
 
+//TODO merge reportEvent implementation here with the inapp reportEvent
 public class CastledEventListener extends AppCompatActivity {
 
     @Override
