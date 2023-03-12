@@ -17,6 +17,7 @@ import io.castled.inAppTriggerEvents.models.CampaignModel
 import io.castled.inAppTriggerEvents.models.CampaignModelApi
 import io.castled.inAppTriggerEvents.requests.ServiceGenerator
 import io.castled.notifications.CastledEventListener
+import io.castled.notifications.consts.ClickAction
 import io.castled.notifications.consts.Constants
 import io.castled.notifications.consts.NotificationEventType
 import io.castled.notifications.logger.CastledLogger
@@ -172,6 +173,7 @@ internal class TriggerEvent private constructor(){
         return updateTriggerEventLogToCloudWithCount(eventBody, 0)
     }
 
+    //TODO merge this with push notification reportEvent
     private fun initiateTriggerEventLogToCloud(context: Context, eventBody: JsonObject){
         /*
         * I used Coroutine GlobalScope because it will keep retrying until and unless the app completely closed.
@@ -582,27 +584,41 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
             object : TriggerEventClickAction{
 //                TODO rename to onInappAction
                 override fun onTriggerEventAction(
-    //TODO rename to inappConstants
-                    triggerEventConstants: TriggerEventConstants.Companion.EventClickType
+                    //TODO rename to inappConstants
+                    inappConstants: TriggerEventConstants.Companion.EventClickType
                 ) {
-                    when(triggerEventConstants) {
+
+                    when(inappConstants) {
+
+                        //TODO Dheeraj NOW: make that all EventClickTypes are handled. Image has defaultClickAction
                         TriggerEventConstants.Companion.EventClickType.CLOSE_EVENT -> {
                             initiateTriggerEventLogToCloud(context, prepareEventCloseActionBodyData(campaignModel))
                         }
+//                        TriggerEventConstants.Companion.EventClickType.IMAGE_CLICK -> {
+                        //TODO remove. only for testing
                         TriggerEventConstants.Companion.EventClickType.IMAGE_CLICK -> {
-
-                            //if(modal.get("defaultClickAction").isJsonNull) "" else modal.get("defaultClickAction").asString
-                            // NONE, SEND, CLICKED, DISCARDED, RECEIVED, FOREGROUND
-
                             val intent = Intent(context, CastledEventListener::class.java)
                             intent.action = NotificationEventType.CLICKED.toString()
+
+                            //TODO Dheeraj NOW: set type of action needed in EXTRA_ACTION
+                            //TODO Dheeraj NOW: use the implementation in primary action button
+//                            intent.putExtra(Constants.EXTRA_ACTION, ClickAction.DEEP_LINKING )
 
                             if(!modal.get("url").isJsonNull)
                                 intent.putExtra(Constants.EXTRA_URI, modal.get("url").asString)
 
-                            if (!modal.get("defaultClickAction").isJsonNull)
-                                intent.putExtra(Constants.EXTRA_ACTION, modal.get("defaultClickAction").asString)
+                            // see ClickAction class for all types
+                            //TODO e2e test with all non-null values
+                            //FIXME covering for a backend bug where defaultClickAction is null but url is non-null
+                            when {
+                                modal.get("defaultClickAction").isJsonNull
+                                        && !modal.get("url").isJsonNull ->
+                                    intent.putExtra(Constants.EXTRA_ACTION, ClickAction.DEFAULT.name)
+                                !modal.get("defaultClickAction").isJsonNull ->
+                                    intent.putExtra(Constants.EXTRA_ACTION, modal.get("defaultClickAction").asString)
+                            }
 
+                            //TODO should action label be sent to backend. Tracked in #68
 //                            intent.putExtra(Constants.EXTRA_LABEL, "")
 //                            intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, "")
 
@@ -618,57 +634,60 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
 
                             initiateTriggerEventLogToCloud(context, prepareEventImageClickActionBodyData(campaignModel))
                         }
-                        TriggerEventConstants.Companion.EventClickType.PRIMARY_BUTTON -> {
-
-                            //                            if(modal.get("defaultClickAction").isJsonNull) "" else modal.get("defaultClickAction").asString
-                            // NONE, SEND, CLICKED, DISCARDED, RECEIVED, FOREGROUND
-
-                            CastledLogger.getInstance().info("buttonPrimary: $buttonPrimary")
-                            val intent = Intent(context, CastledEventListener::class.java)
-                            intent.action = ""
-
-                            if(!buttonPrimary.get("url").isJsonNull)
-                                intent.putExtra(Constants.EXTRA_URI, buttonPrimary.get("url").asString)
-
-                            if (!buttonPrimary.get("clickAction").isJsonNull)
-                                intent.putExtra(Constants.EXTRA_ACTION, buttonPrimary.get("clickAction").asString)
-
-                            if (!buttonPrimary.get("label").isJsonNull)
-                                intent.putExtra(Constants.EXTRA_LABEL, buttonPrimary.get("label").asString)
-
-                            if (!buttonPrimary.get("keyVals").isJsonNull)
-                                intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, buttonPrimary.get("keyVals").toString())
-
-                            context.startActivity(intent)
-
-                            //TODO just save the reporting event to db. Push reporting events in heartbeat
-
-                            //TODO rename to reportEvent
-                            initiateTriggerEventLogToCloud(context, prepareEventButtonClickActionBodyData(eventClickActionData, buttonPrimary))
-                        }
-                        TriggerEventConstants.Companion.EventClickType.SECONDARY_BUTTON -> {
-
-                            CastledLogger.getInstance().info("buttonSecondary: $buttonSecondary")
-
-                            val intent = Intent(context, CastledEventListener::class.java)
-                            intent.action = ""
-
-                            if(!buttonSecondary.get("url").isJsonNull)
-                                intent.putExtra(Constants.EXTRA_URI, buttonSecondary.get("url").asString)
-
-                            if (!buttonSecondary.get("clickAction").isJsonNull)
-                                intent.putExtra(Constants.EXTRA_ACTION, buttonSecondary.get("clickAction").asString)
-
-                            if (!buttonSecondary.get("label").isJsonNull)
-                                intent.putExtra(Constants.EXTRA_LABEL, buttonSecondary.get("label").asString)
-
-                            if (!buttonSecondary.get("keyVals").isJsonNull)
-                                intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, buttonSecondary.get("keyVals").toString())
-
-                            context.startActivity(intent)
-
-
-                            initiateTriggerEventLogToCloud(context, prepareEventButtonClickActionBodyData(eventClickActionData, buttonSecondary))
+//                        TriggerEventConstants.Companion.EventClickType.PRIMARY_BUTTON -> {
+//
+//                            //                            if(modal.get("defaultClickAction").isJsonNull) "" else modal.get("defaultClickAction").asString
+//                            // NONE, SEND, CLICKED, DISCARDED, RECEIVED, FOREGROUND
+//
+//                            CastledLogger.getInstance().info("buttonPrimary: $buttonPrimary")
+//                            val intent = Intent(context, CastledEventListener::class.java)
+//                            intent.action = ""
+//
+//                            if(!buttonPrimary.get("url").isJsonNull)
+//                                intent.putExtra(Constants.EXTRA_URI, buttonPrimary.get("url").asString)
+//
+//                            if (!buttonPrimary.get("clickAction").isJsonNull)
+//                                intent.putExtra(Constants.EXTRA_ACTION, buttonPrimary.get("clickAction").asString)
+//
+//                            if (!buttonPrimary.get("label").isJsonNull)
+//                                intent.putExtra(Constants.EXTRA_LABEL, buttonPrimary.get("label").asString)
+//
+//                            if (!buttonPrimary.get("keyVals").isJsonNull)
+//                                intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, buttonPrimary.get("keyVals").toString())
+//
+//                            context.startActivity(intent)
+//
+//                            //TODO just save the reporting event to db. Push reporting events in heartbeat
+//
+//                            //TODO rename to reportEvent
+//                            initiateTriggerEventLogToCloud(prepareEventButtonClickActionBodyData(eventClickActionData, buttonPrimary))
+//                        }
+//                        TriggerEventConstants.Companion.EventClickType.SECONDARY_BUTTON -> {
+//
+//                            CastledLogger.getInstance().info("buttonSecondary: $buttonSecondary")
+//
+//                            val intent = Intent(context, CastledEventListener::class.java)
+//                            intent.action = ""
+//
+//                            if(!buttonSecondary.get("url").isJsonNull)
+//                                intent.putExtra(Constants.EXTRA_URI, buttonSecondary.get("url").asString)
+//
+//                            if (!buttonSecondary.get("clickAction").isJsonNull)
+//                                intent.putExtra(Constants.EXTRA_ACTION, buttonSecondary.get("clickAction").asString)
+//
+//                            if (!buttonSecondary.get("label").isJsonNull)
+//                                intent.putExtra(Constants.EXTRA_LABEL, buttonSecondary.get("label").asString)
+//
+//                            if (!buttonSecondary.get("keyVals").isJsonNull)
+//                                intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, buttonSecondary.get("keyVals").toString())
+//
+//                            context.startActivity(intent)
+//
+//
+//                            initiateTriggerEventLogToCloud(prepareEventButtonClickActionBodyData(eventClickActionData, buttonSecondary))
+//                        }
+                        else -> {
+                            CastledLogger.getInstance().error("Unknown button error")
                         }
                     }
 
@@ -717,6 +736,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
                         TriggerEventConstants.Companion.EventClickType.SECONDARY_BUTTON -> {
                             initiateTriggerEventLogToCloud(context, prepareEventButtonClickActionBodyData(eventClickActionData, buttonSecondary))
                         }
+                        else -> {}
                     }
                 }
             }
