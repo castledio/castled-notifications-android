@@ -17,7 +17,9 @@ import io.castled.inAppTriggerEvents.models.CampaignModel
 import io.castled.inAppTriggerEvents.models.CampaignModelApi
 import io.castled.inAppTriggerEvents.requests.ServiceGenerator
 import io.castled.notifications.CastledEventListener
+import io.castled.notifications.consts.ClickAction
 import io.castled.notifications.consts.Constants
+import io.castled.notifications.consts.NotificationEventType
 import io.castled.notifications.logger.CastledLogger
 import io.castled.notifications.trigger.EventFilterDeserializer
 import io.castled.notifications.trigger.TriggerParamsEvaluator
@@ -570,6 +572,7 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
         DbOperation.dbUpdateCampaignLastDisplayedAndTimesDisplayed(context, campaignModel)
         initiateTriggerEventLogToCloud(prepareEventViewActionBodyData(campaignModel))
 
+        //TODO rename to inappDialog
         TriggerPopupDialog.showDialog(
             context,
             campaignModel.autoDismissInterval,
@@ -579,8 +582,11 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
             if(modal.get("imageUrl").isJsonNull) "" else modal.get("imageUrl").asString,
             preparePopupPrimaryButton(buttonPrimary),
             preparePopupSecondaryButton(buttonSecondary),
+            //TODO rename to InappClickAction
             object : TriggerEventClickAction{
+//                TODO rename to onInappAction
                 override fun onTriggerEventAction(
+    //TODO rename to inappConstants
                     triggerEventConstants: TriggerEventConstants.Companion.EventClickType
                 ) {
                     when(triggerEventConstants) {
@@ -631,7 +637,9 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
 
                             context.startActivity(intent)
 
+                            //TODO just save the reporting event to db. Push reporting events in heartbeat
 
+                            //TODO rename to reportEvent
                             initiateTriggerEventLogToCloud(prepareEventButtonClickActionBodyData(eventClickActionData, buttonPrimary))
                         }
                         TriggerEventConstants.Companion.EventClickType.SECONDARY_BUTTON -> {
