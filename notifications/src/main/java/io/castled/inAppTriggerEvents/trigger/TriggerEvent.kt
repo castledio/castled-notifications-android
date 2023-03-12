@@ -268,6 +268,7 @@ internal class TriggerEvent private constructor(){
 
                     CastledLogger.getInstance().debug("$TAG: timeRightNow: $timeRightNow, Event endTime: ${triggerEventModel.endTs}, startTime: ${triggerEventModel.startTs}")
 
+                    //TODO convert these checks into functional style with filters
                     // TODO: close gitHub-> https://github.com/dheerajbhaskar/castled-notifications-android/issues/54
                     if (triggerEventModel.endTs > timeRightNow
                         && triggerEventModel.displayLimit > triggerEventModel.timesDisplayed
