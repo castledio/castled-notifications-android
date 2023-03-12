@@ -634,61 +634,60 @@ internal fun findAndLaunchTriggerEventForTest(context: Context, eventType: Int) 
 
                             initiateTriggerEventLogToCloud(context, prepareEventImageClickActionBodyData(campaignModel))
                         }
-//                        TriggerEventConstants.Companion.EventClickType.PRIMARY_BUTTON -> {
-//
-//                            //                            if(modal.get("defaultClickAction").isJsonNull) "" else modal.get("defaultClickAction").asString
-//                            // NONE, SEND, CLICKED, DISCARDED, RECEIVED, FOREGROUND
-//
-//                            CastledLogger.getInstance().info("buttonPrimary: $buttonPrimary")
-//                            val intent = Intent(context, CastledEventListener::class.java)
-//                            intent.action = ""
-//
-//                            if(!buttonPrimary.get("url").isJsonNull)
-//                                intent.putExtra(Constants.EXTRA_URI, buttonPrimary.get("url").asString)
-//
-//                            if (!buttonPrimary.get("clickAction").isJsonNull)
-//                                intent.putExtra(Constants.EXTRA_ACTION, buttonPrimary.get("clickAction").asString)
-//
-//                            if (!buttonPrimary.get("label").isJsonNull)
-//                                intent.putExtra(Constants.EXTRA_LABEL, buttonPrimary.get("label").asString)
-//
-//                            if (!buttonPrimary.get("keyVals").isJsonNull)
-//                                intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, buttonPrimary.get("keyVals").toString())
-//
-//                            context.startActivity(intent)
-//
-//                            //TODO just save the reporting event to db. Push reporting events in heartbeat
-//
-//                            //TODO rename to reportEvent
-//                            initiateTriggerEventLogToCloud(prepareEventButtonClickActionBodyData(eventClickActionData, buttonPrimary))
-//                        }
-//                        TriggerEventConstants.Companion.EventClickType.SECONDARY_BUTTON -> {
-//
-//                            CastledLogger.getInstance().info("buttonSecondary: $buttonSecondary")
-//
-//                            val intent = Intent(context, CastledEventListener::class.java)
-//                            intent.action = ""
-//
-//                            if(!buttonSecondary.get("url").isJsonNull)
-//                                intent.putExtra(Constants.EXTRA_URI, buttonSecondary.get("url").asString)
-//
-//                            if (!buttonSecondary.get("clickAction").isJsonNull)
-//                                intent.putExtra(Constants.EXTRA_ACTION, buttonSecondary.get("clickAction").asString)
-//
-//                            if (!buttonSecondary.get("label").isJsonNull)
-//                                intent.putExtra(Constants.EXTRA_LABEL, buttonSecondary.get("label").asString)
-//
-//                            if (!buttonSecondary.get("keyVals").isJsonNull)
-//                                intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, buttonSecondary.get("keyVals").toString())
-//
-//                            context.startActivity(intent)
-//
-//
-//                            initiateTriggerEventLogToCloud(prepareEventButtonClickActionBodyData(eventClickActionData, buttonSecondary))
-//                        }
-                        else -> {
-                            CastledLogger.getInstance().error("Unknown button error")
+                        TriggerEventConstants.Companion.EventClickType.PRIMARY_BUTTON -> {
+
+                            CastledLogger.getInstance().info("buttonPrimary: $buttonPrimary")
+                            val intent = Intent(context, CastledEventListener::class.java)
+                            intent.action = NotificationEventType.CLICKED.toString()
+
+                            if(!buttonPrimary.get("url").isJsonNull)
+                                intent.putExtra(Constants.EXTRA_URI, buttonPrimary.get("url").asString)
+
+                            if (!buttonPrimary.get("clickAction").isJsonNull)
+                                intent.putExtra(Constants.EXTRA_ACTION, buttonPrimary.get("clickAction").asString)
+
+                            if (!buttonPrimary.get("label").isJsonNull)
+                                intent.putExtra(Constants.EXTRA_LABEL, buttonPrimary.get("label").asString)
+
+                            if (!buttonPrimary.get("keyVals").isJsonNull)
+                                intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, buttonPrimary.get("keyVals").toString())
+
+                            context.startActivity(intent)
+
+                            //TODO just save the reporting event to db. Push reporting events in heartbeat
+
+                            //TODO rename to reportEvent
+                            initiateTriggerEventLogToCloud(context, prepareEventButtonClickActionBodyData(eventClickActionData, buttonPrimary))
                         }
+                        TriggerEventConstants.Companion.EventClickType.SECONDARY_BUTTON -> {
+
+                            CastledLogger.getInstance().info("buttonSecondary: $buttonSecondary")
+
+                            val intent = Intent(context, CastledEventListener::class.java)
+                            intent.action = NotificationEventType.CLICKED.toString()
+
+                            if(!buttonSecondary.get("url").isJsonNull)
+                                intent.putExtra(Constants.EXTRA_URI, buttonSecondary.get("url").asString)
+
+                            if (!buttonSecondary.get("clickAction").isJsonNull)
+                                intent.putExtra(Constants.EXTRA_ACTION, buttonSecondary.get("clickAction").asString)
+
+                            if (!buttonSecondary.get("label").isJsonNull)
+                                intent.putExtra(Constants.EXTRA_LABEL, buttonSecondary.get("label").asString)
+
+                            if (!buttonSecondary.get("keyVals").isJsonNull)
+                                intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, buttonSecondary.get("keyVals").toString())
+
+                            context.startActivity(intent)
+
+                            //TODO just save the reporting event to db. Push reporting events in heartbeat
+
+                            //TODO rename to reportEvent
+                            initiateTriggerEventLogToCloud(context, prepareEventButtonClickActionBodyData(eventClickActionData, buttonSecondary))
+                        }
+//                        else -> {
+//                            CastledLogger.getInstance().error("Unknown button error")
+//                        }
                     }
 
                 }
