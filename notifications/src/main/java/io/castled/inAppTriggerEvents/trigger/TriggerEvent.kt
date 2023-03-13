@@ -15,6 +15,7 @@ import io.castled.inAppTriggerEvents.event.EventNotification
 import io.castled.inAppTriggerEvents.eventConsts.TriggerEventConstants
 import io.castled.inAppTriggerEvents.models.CampaignModel
 import io.castled.inAppTriggerEvents.models.CampaignModelApi
+import io.castled.inAppTriggerEvents.models.LogCampaignModel
 import io.castled.inAppTriggerEvents.requests.ServiceGenerator
 import io.castled.notifications.CastledEventListener
 import io.castled.notifications.consts.ClickAction
@@ -134,43 +135,88 @@ internal class TriggerEvent private constructor(){
         }
     }
 
-    private suspend fun updateTriggerEventLogToCloudWithCount(eventBody: JsonObject, tryCount: Int): String {
+    private suspend fun reportEvent(context: Context, eventBody: JsonObject, tryCount: Int, logCampaign : LogCampaignModel): String {
+        withContext(IO) {
+            //TODO is this field missed out of the payload in the db?
+//            eventBody.addProperty("ts", System.currentTimeMillis())
+//            eventBody.addProperty("tz", TimeZone.getDefault().displayName)
+
+            logCampaign.jsonObject.addProperty("ts", System.currentTimeMillis())
+            logCampaign.jsonObject.addProperty("tz", TimeZone.getDefault().displayName)
+
+            val response = ServiceGenerator.requestApi()
+                .logEventView(EventNotification.getInstance.instanceIdKey, logCampaign.jsonObject)
+
+            if (response.isSuccessful){
+                response.raw().toString()
+                //TODO delete the respective row from the db
+                deleteLogCampaignFromDb(context, eventBody, logCampaign)
+            }
+        CastledLogger.getInstance().debug("$context, $eventBody, $logCampaign")
+        }
+        return ""
+    }
+
+    private suspend fun deleteLogCampaignFromDb(context: Context, eventBody: JsonObject, logCampaign: LogCampaignModel) {
+        CoroutineScope(Dispatchers.Default).launch {
+            val db = CampaignDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
+            db.deleteLogCampaign(logCampaign)
+        }
+
+    }
+
+    private suspend fun updateTriggerEventLogToCloudWithCount(context: Context, eventBody: JsonObject, tryCount: Int): String {
         if (!EventNotification.getInstance.hasInternet) {
             CastledLogger.getInstance().debug("$TAG: Error: No Internet.")
             return "Error: No Internet."
         }
-        return withContext(IO) {
-            eventBody.addProperty("ts", System.currentTimeMillis())
-            eventBody.addProperty("tz", TimeZone.getDefault().displayName)
-            val response = ServiceGenerator.requestApi()
-                .logEventView(EventNotification.getInstance.instanceIdKey, eventBody)
 
-            /*CastledLogger.getInstance().debug("$TAG: \n\n\n** START ******* ## Log Trigger Event to Cloud(Try: $tryCount) ## *********\n" +
-                    "Body(raw):1:: $eventBody\n" +
-                    "Response isSuccess:2:: ${response.isSuccessful}\n" +
-                    "Response Header:3:: ${response.headers()}\n" +
-                    "Response Body:4:: ${response.body()}\n" +
-                    "Response Message:5:: ${response.message()}\n" +
-                    "Response errorBody:6:: ${response.errorBody()}\n" +
-                    "Response raw:7:: ${response.raw()}\n" +
-                    "Response Code:8:: ${response.code()}\n" +
-                    "*********  *********  *********  ******* END **\n"
-            )*/
+        CoroutineScope(Dispatchers.Default).launch {
+            val db = CampaignDatabaseHelperImpl(DatabaseBuilder.getInstance(context))
+            val logCampaignModels = db.getLogCampaignFromDb()
 
-            if (response.isSuccessful){
-                response.raw().toString()
-            } else if (!response.isSuccessful && tryCount < 99){
-                //TODO: close gitHub-> do retries 100x pausing 100ms every time #13
-                delay(100)
-                updateTriggerEventLogToCloudWithCount(eventBody, (tryCount + 1))
-            } else ""
+            for (logCampaign in logCampaignModels){
+                reportEvent(context, eventBody, 0, logCampaign)
+            }
+
         }
+
+        //FIXME not returning this method removes the recursive nature, ie disable retries.
+//        return withContext(IO) {
+//            //TODO is this field missed out of the payload in the db?
+//            eventBody.addProperty("ts", System.currentTimeMillis())
+//            eventBody.addProperty("tz", TimeZone.getDefault().displayName)
+//            val response = ServiceGenerator.requestApi()
+//                .logEventView(EventNotification.getInstance.instanceIdKey, eventBody)
+//
+//            /*CastledLogger.getInstance().debug("$TAG: \n\n\n** START ******* ## Log Trigger Event to Cloud(Try: $tryCount) ## *********\n" +
+//                    "Body(raw):1:: $eventBody\n" +
+//                    "Response isSuccess:2:: ${response.isSuccessful}\n" +
+//                    "Response Header:3:: ${response.headers()}\n" +
+//                    "Response Body:4:: ${response.body()}\n" +
+//                    "Response Message:5:: ${response.message()}\n" +
+//                    "Response errorBody:6:: ${response.errorBody()}\n" +
+//                    "Response raw:7:: ${response.raw()}\n" +
+//                    "Response Code:8:: ${response.code()}\n" +
+//                    "*********  *********  *********  ******* END **\n"
+//            )*/
+//
+//            if (response.isSuccessful){
+//                response.raw().toString()
+//            } else if (!response.isSuccessful && tryCount < 99){
+//                //TODO: close gitHub-> do retries 100x pausing 100ms every time #13
+//                delay(100)
+//                updateTriggerEventLogToCloudWithCount(context, eventBody, (tryCount + 1))
+//            } else ""
+//        }
+        return ""
     }
 
     private suspend fun updateTriggerEventLogToCloud(context: Context, eventBody: JsonObject): String {
         DbOperation.dbInsertLogCampaign(context, eventBody)
 
-        return updateTriggerEventLogToCloudWithCount(eventBody, 0)
+        //TODO make this method upload all reporting events not just one
+        return updateTriggerEventLogToCloudWithCount(context, eventBody, 0)
     }
 
     //TODO merge this with push notification reportEvent

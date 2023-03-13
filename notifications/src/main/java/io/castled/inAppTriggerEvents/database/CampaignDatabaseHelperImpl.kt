@@ -41,5 +41,8 @@ internal class CampaignDatabaseHelperImpl(private val campaignDatabase: Campaign
     override suspend fun insertLogCampaign(logCampaign: LogCampaignModel): Long =
             campaignDatabase.logCampaignDao().dbInsertLogCampaign(logCampaign)
 
+    override suspend fun deleteLogCampaign (logCampaign: LogCampaignModel) =
+        campaignDatabase.logCampaignDao().dbDeleteLogCampaign(logCampaign)
+
 
 }

@@ -26,4 +26,5 @@ internal interface CampaignDatabaseHelper {
 
     suspend fun insertLogCampaign(logCampaign: LogCampaignModel): Long
 
+    suspend fun deleteLogCampaign(logCampaign: LogCampaignModel): Any
 }

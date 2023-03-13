@@ -1,9 +1,6 @@
 package io.castled.inAppTriggerEvents.database.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import io.castled.inAppTriggerEvents.models.CampaignModel
 import io.castled.inAppTriggerEvents.models.LogCampaignModel
 
@@ -19,6 +16,9 @@ internal interface LogCampaignDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun dbInsertLogCampaign(logCampaignDao: LogCampaignModel): Long
+
+    @Delete
+    suspend fun dbDeleteLogCampaign(logCampaign: LogCampaignModel)
 
 //    val logEventDate = System.currentTimeMillis()
 }
