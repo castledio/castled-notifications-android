@@ -11,6 +11,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import io.castled.notifications.logger.CastledLogger;
+import io.castled.notifications.logger.LogTags;
 import io.castled.notifications.tasks.models.CastledServerTask;
 import io.castled.notifications.tasks.models.CastledServerTaskType;
 import io.castled.notifications.tasks.models.NotificationEventServerTask;
@@ -19,15 +20,12 @@ import io.castled.notifications.tasks.models.UserIdSetTask;
 
 public class ServerTaskQueue implements TaskQueue<CastledServerTask> {
 
-    private final CastledLogger logger;
+    private static final CastledLogger logger = CastledLogger.getInstance(LogTags.PUSH);
     private final ObjectQueue<CastledServerTask> queue;
     private TaskQueueListener<CastledServerTask> queueListener;
 
     @Inject
     public ServerTaskQueue(File taskFile) {
-
-        logger = CastledLogger.getInstance();
-
         try {
 
             QueueFile queueFile = new QueueFile.Builder(taskFile).build();

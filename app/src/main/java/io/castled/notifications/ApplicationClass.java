@@ -5,17 +5,26 @@ import android.content.Context;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
-public class ApplicationClass extends MultiDexApplication {
+import java.util.List;
 
+import io.castled.CastledNotifications;
+import io.castled.inAppTriggerEvents.InAppChannelConfig;
+
+public class ApplicationClass extends MultiDexApplication {
     @Override
     public void onCreate() {
 
         super.onCreate();
-        CastledNotifications.initialize(this, "app-8316f859-e552-4fed-a103-7957597a093c");
-        CastledNotifications.setUserId("arun@castled.io");
-        // app-06b7d631-8c99-4622-87dc-8ebf0ae02c86
-        // CastledNotifications.initialize(this, "test-3b229735-04ae-455f-a5d4-20a89c092927");
-        // CastledNotifications.setUserId("frank@castled.io");
+
+        InAppChannelConfig inAppConfig = InAppChannelConfig.builder()
+                .enable(true)
+                .fetchFromCloudInterval(30)
+                .build();
+
+        CastledNotifications.initialize(ApplicationClass.this, "829c38e2e359d94372a2e0d35e1f74df", List.of(inAppConfig));
+
+        //TODO: close gitHub-> V1 pr bugs - set 1 #45(13. setUserId call happens after init and not before. Also userId should be stored in pref store. You can refer the push code)
+        CastledNotifications.setUserId("1987frank@gmail.com");
     }
 
     @Override

@@ -9,6 +9,7 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import java.io.File;
 
 import io.castled.notifications.logger.CastledLogger;
+import io.castled.notifications.logger.LogTags;
 import io.castled.notifications.service.models.NotificationEvent;
 import io.castled.notifications.store.CastledInstancePrefStore;
 import io.castled.notifications.tasks.ServerTaskHandler;
@@ -22,8 +23,8 @@ public class CastledNotificationInstance {
 
     private static final String CASTLED_SERVER_TASK_DIR = "castled-notifications";
     private static final String CASTLED_PUSH_TASK_FILE = "push";
+    private static final CastledLogger logger = CastledLogger.getInstance(LogTags.PUSH);
 
-    private final CastledLogger logger;
     private final String instanceId;
     private final ServerTaskQueue serverTaskQueue;
 
@@ -35,7 +36,6 @@ public class CastledNotificationInstance {
 
     CastledNotificationInstance(Context context, String instanceId) {
 
-        this.logger = CastledLogger.getInstance();
         this.instanceId = instanceId;
 
         CastledInstancePrefStore.init(context, instanceId);

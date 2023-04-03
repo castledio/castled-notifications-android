@@ -4,7 +4,6 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 
 import io.castled.notifications.exceptions.CastledRuntimeException;
-import io.castled.notifications.logger.CastledLogger;
 import io.castled.notifications.trigger.models.BetweenOperation;
 import io.castled.notifications.trigger.models.PropertyOperation;
 import io.castled.notifications.trigger.models.SingleValueOperation;
@@ -49,7 +48,6 @@ public class NumberConditionEvaluator implements ParamsConditionEvaluator {
         try {
             return NumberFormat.getInstance().parse(value);
         } catch (ParseException e) {
-            CastledLogger.getInstance().error(String.format("Unable to parse %s as a number", value));
             throw new CastledRuntimeException(e);
         }
     }

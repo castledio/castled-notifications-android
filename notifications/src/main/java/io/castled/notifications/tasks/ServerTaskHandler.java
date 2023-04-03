@@ -12,6 +12,7 @@ import java.io.IOException;
 
 import io.castled.notifications.exceptions.CastledApiException;
 import io.castled.notifications.logger.CastledLogger;
+import io.castled.notifications.logger.LogTags;
 import io.castled.notifications.service.CastledNotificationApi;
 import io.castled.notifications.service.CastledNotificationService;
 import io.castled.notifications.service.models.ErrorResponse;
@@ -28,13 +29,12 @@ import retrofit2.Response;
 public class ServerTaskHandler extends Handler {
 
     private final CastledInstancePrefStore prefStore;
-    private final CastledLogger logger;
+    private static final CastledLogger logger = CastledLogger.getInstance(LogTags.PUSH);
     private final ServerTaskQueue taskQueue;
 
     private ServerTaskHandler(Looper looper, ServerTaskQueue taskQueue) {
         super(looper);
         this.prefStore = CastledInstancePrefStore.getInstance();
-        this.logger = CastledLogger.getInstance();
         this.taskQueue = taskQueue;
     }
 

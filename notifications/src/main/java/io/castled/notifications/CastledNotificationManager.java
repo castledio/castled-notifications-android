@@ -1,11 +1,14 @@
 package io.castled.notifications;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Build;
 
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.google.firebase.messaging.RemoteMessage;
@@ -15,16 +18,19 @@ import java.util.Map;
 import io.castled.notifications.consts.NotificationEventType;
 import io.castled.notifications.consts.NotificationFields;
 import io.castled.notifications.logger.CastledLogger;
+import io.castled.notifications.logger.LogTags;
 import io.castled.notifications.service.models.NotificationEvent;
 
 public class CastledNotificationManager {
+
+    private static final CastledLogger logger = CastledLogger.getInstance(LogTags.PUSH);
 
     public static boolean isCastledNotification(RemoteMessage remoteMessage) {
         Map<String, String> data = remoteMessage.getData();
         if (data.containsKey(NotificationFields.CASTLED_KEY)) {
             return true;
         }
-        CastledLogger.getInstance().debug("Push message not from Castled!");
+        logger.debug("Push message not from Castled!");
         return false;
     }
 
@@ -34,12 +40,12 @@ public class CastledNotificationManager {
             return false;
         }
         // Payload from Castled server
-        CastledLogger.getInstance().debug("handling castled notification...");
+        logger.debug("handling castled notification...");
 
         CastledNotificationEventBuilder eventBuilder = new CastledNotificationEventBuilder(context);
         NotificationEvent event = eventBuilder.buildEvent(remoteMessage.getData());
 
-        if(CastledNotifications.getInstance().isAppInForeground()) {
+        if (CastledNotifications.getInstance().isAppInForeground()) {
             //Ignore the notification, mark event as foreground and report!
             event.setEventType(NotificationEventType.FOREGROUND);
         } else {
@@ -47,6 +53,16 @@ public class CastledNotificationManager {
             Notification notification = notificationBuilder.buildNotification(remoteMessage.getData(), event.clickEvent());
 
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return false;
+            }
             notificationManager.notify(event.notificationId, notification);
         }
         reportNotificationEvent(event);

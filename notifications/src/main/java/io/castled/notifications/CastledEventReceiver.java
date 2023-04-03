@@ -7,9 +7,12 @@ import android.content.Intent;
 import io.castled.notifications.consts.Constants;
 import io.castled.notifications.consts.NotificationEventType;
 import io.castled.notifications.logger.CastledLogger;
+import io.castled.notifications.logger.LogTags;
 import io.castled.notifications.service.models.NotificationEvent;
 
 public class CastledEventReceiver extends BroadcastReceiver {
+
+    private static final CastledLogger logger = CastledLogger.getInstance(LogTags.PUSH);
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -23,7 +26,7 @@ public class CastledEventReceiver extends BroadcastReceiver {
 
             String action = intent.getAction(); // see NotificationEventType class
             if (action == null || action.trim().isEmpty()) {
-                CastledLogger.getInstance().error("Triggered event listener without action!");
+                logger.error("Triggered event listener without action!");
                 return;
             }
 
@@ -33,7 +36,7 @@ public class CastledEventReceiver extends BroadcastReceiver {
             String eventAction = event != null && event.actionType != null ? event.actionType :
                     NotificationEventType.NONE.name();
 
-            CastledLogger.getInstance().debug("onReceive: action - " + action + ", eventAction - " + eventAction);
+            logger.debug("onReceive: action - " + action + ", eventAction - " + eventAction);
 
             if(event != null) {
                 event.setEventTime();

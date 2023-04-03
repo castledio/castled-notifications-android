@@ -17,10 +17,14 @@ import io.castled.notifications.consts.ClickAction;
 import io.castled.notifications.consts.Constants;
 import io.castled.notifications.consts.NotificationEventType;
 import io.castled.notifications.logger.CastledLogger;
+import io.castled.notifications.logger.LogTags;
 import io.castled.notifications.service.models.NotificationEvent;
 import io.castled.notifications.utils.Utils;
 
+//TODO merge reportEvent implementation here with the inapp reportEvent
 public class CastledEventListener extends AppCompatActivity {
+
+    private static final CastledLogger logger = CastledLogger.getInstance(LogTags.PUSH);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,11 +39,11 @@ public class CastledEventListener extends AppCompatActivity {
 
             String action = intent.getAction(); // see NotificationEventType class
             if (action == null || action.trim().isEmpty()) {
-                CastledLogger.getInstance().error("Triggered event listener without action!");
+                logger.error("Triggered event listener without action!");
                 return;
             }
 
-            CastledLogger.getInstance().debug("onReceive: action - " + action);
+            logger.debug("onReceive: action - " + action);
 
             NotificationEvent event = intent.hasExtra(Constants.EXTRA_EVENT) ?
                     (NotificationEvent) intent.getSerializableExtra(Constants.EXTRA_EVENT) : null;
@@ -49,7 +53,7 @@ public class CastledEventListener extends AppCompatActivity {
                 String clickedAction = intent.hasExtra(Constants.EXTRA_ACTION) ?
                         intent.getStringExtra(Constants.EXTRA_ACTION) : null;
 
-                CastledLogger.getInstance().debug("Click action - " + clickedAction);
+                logger.debug("Click action - " + clickedAction);
 
                 if(clickedAction != null) {
 
@@ -58,6 +62,7 @@ public class CastledEventListener extends AppCompatActivity {
                     String clickUri = intent.hasExtra(Constants.EXTRA_URI) ?
                             intent.getStringExtra(Constants.EXTRA_URI) : null;
 
+                    //TODO should action label be sent to backend. Tracked in #68
                     String actionLabel = intent.hasExtra(Constants.EXTRA_LABEL) ?
                             intent.getStringExtra(Constants.EXTRA_LABEL) : null;
 
@@ -82,7 +87,10 @@ public class CastledEventListener extends AppCompatActivity {
                     }
                     else if(clickedAction.equals(ClickAction.RICH_LANDING.name())) {
 
-                        clientIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+                        clientIntent = new Intent();
+                        clientIntent.setAction(Intent.ACTION_VIEW);
+                        clientIntent.setData(Uri.parse(keyValuesMap != null ? Utils.addQueryParams(clickUri, keyValuesMap) : clickUri));
+//                        clientIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
                     }
                     else if(clickedAction.equals(ClickAction.DEFAULT.name())) { //Default click action
 

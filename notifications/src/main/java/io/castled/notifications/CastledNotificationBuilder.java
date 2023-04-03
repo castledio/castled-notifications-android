@@ -30,6 +30,7 @@ import io.castled.notifications.consts.Constants;
 import io.castled.notifications.consts.NotificationEventType;
 import io.castled.notifications.consts.NotificationFields;
 import io.castled.notifications.logger.CastledLogger;
+import io.castled.notifications.logger.LogTags;
 import io.castled.notifications.service.models.NotificationEvent;
 import io.castled.notifications.store.CastledInstancePrefStore;
 import io.castled.notifications.utils.CastledUtils;
@@ -37,6 +38,7 @@ import io.castled.notifications.utils.NotificationId;
 
 public class CastledNotificationBuilder {
 
+    private static final CastledLogger logger = CastledLogger.getInstance(LogTags.PUSH);
     private final Context context;
     private final CastledInstancePrefStore prefStore;
 
@@ -325,7 +327,7 @@ public class CastledNotificationBuilder {
             URL url = new URL(imageUrl);
             return BitmapFactory.decodeStream(url.openConnection().getInputStream());
         } catch(IOException e) {
-            CastledLogger.getInstance().error(e.getMessage());
+            logger.error(e.getMessage());
         }
         return null;
     }

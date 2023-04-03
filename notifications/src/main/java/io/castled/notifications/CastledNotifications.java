@@ -4,8 +4,6 @@ import android.content.Context;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import io.castled.notifications.logger.CastledLogger;
-
 public class CastledNotifications {
 
     private static CastledNotificationInstance instance;
@@ -15,8 +13,7 @@ public class CastledNotifications {
         if (instance == null) {
 
             instance = new CastledNotificationInstance(context, instanceId);
-        }
-        else if (!instance.getInstanceId().equals(instanceId)) {
+        } else if (!instance.getInstanceId().equals(instanceId)) {
 
             String errorMessage =
                     "CastledNotifications.start has been called before with a different instanceId! (before: "

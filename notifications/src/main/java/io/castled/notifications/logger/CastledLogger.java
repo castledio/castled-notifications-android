@@ -8,40 +8,43 @@ import io.castled.notifications.Logger;
 
 public class CastledLogger implements Logger {
 
-    public static final String TAG = "CastledNotification";
-    private static final CastledLogger logger = new CastledLogger();
+    private final String tag;
+
+    private CastledLogger(String tag) {
+        this.tag = tag;
+    }
 
     @Override
     public void verbose(@NonNull String message) {
-        Log.v(TAG, message);
+        Log.v(tag, message);
     }
 
     @Override
     public void debug(@NonNull String message) {
-        Log.d(TAG, message);
+        Log.d(tag, message);
     }
 
     @Override
     public void info(@NonNull String message) {
-        Log.i(TAG, message);
+        Log.i(tag, message);
     }
 
     @Override
     public void warning(@NonNull String message) {
-        Log.w(TAG, message);
+        Log.w(tag, message);
     }
 
     @Override
     public void error(@NonNull String message) {
-        Log.e(TAG, message);
+        Log.e(tag, message);
     }
 
     @Override
     public void error(@NonNull String message, @NonNull Throwable throwable) {
-        Log.v(TAG, message, throwable);
+        Log.v(tag, message, throwable);
     }
 
-    public static CastledLogger getInstance() {
-        return logger;
+    public static CastledLogger getInstance(String tag) {
+        return new CastledLogger(tag);
     }
 }
