@@ -5,9 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import io.castled.notifications.logger.CastledLogger;
-import io.castled.notifications.trigger.enums.JoinType;
 import io.castled.notifications.trigger.models.NestedEventFilter;
+import io.castled.notifications.trigger.enums.JoinType;
 import io.castled.notifications.trigger.models.PropertyFilter;
 import io.castled.notifications.trigger.enums.PropertyType;
 

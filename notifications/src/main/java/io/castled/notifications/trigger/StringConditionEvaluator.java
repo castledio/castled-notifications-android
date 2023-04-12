@@ -1,9 +1,9 @@
 package io.castled.notifications.trigger;
 
 import io.castled.notifications.exceptions.CastledRuntimeException;
-import io.castled.notifications.trigger.models.BetweenOperation;
 import io.castled.notifications.trigger.models.PropertyOperation;
 import io.castled.notifications.trigger.models.SingleValueOperation;
+import io.castled.notifications.trigger.models.BetweenOperation;
 
 public class StringConditionEvaluator implements ParamsConditionEvaluator {
 

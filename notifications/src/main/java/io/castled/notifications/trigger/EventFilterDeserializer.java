@@ -11,16 +11,16 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.castled.notifications.trigger.models.NestedEventFilter;
+import io.castled.notifications.trigger.models.PropertyOperation;
+import io.castled.notifications.trigger.models.SingleValueOperation;
 import io.castled.notifications.trigger.enums.FilterType;
 import io.castled.notifications.trigger.enums.JoinType;
 import io.castled.notifications.trigger.enums.OperationType;
 import io.castled.notifications.trigger.enums.PropertyType;
 import io.castled.notifications.trigger.models.BetweenOperation;
 import io.castled.notifications.trigger.models.EventFilter;
-import io.castled.notifications.trigger.models.NestedEventFilter;
 import io.castled.notifications.trigger.models.PropertyFilter;
-import io.castled.notifications.trigger.models.PropertyOperation;
-import io.castled.notifications.trigger.models.SingleValueOperation;
 
 public class EventFilterDeserializer implements JsonDeserializer<EventFilter> {
 

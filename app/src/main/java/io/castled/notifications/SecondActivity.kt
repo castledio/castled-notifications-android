@@ -7,9 +7,8 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import io.castled.CastledNotifications
-import io.castled.inAppTriggerEvents.event.TestTriggerEvents
 import io.castled.notifications.databinding.ActivitySecondBinding
+import io.castled.notifications.inapp.test.TestTriggerEvents
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -25,7 +24,7 @@ class SecondActivity : AppCompatActivity() {
         binding = ActivitySecondBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        TestTriggerEvents.getInstance().fetchDbTriggerEvents(this) { jsonArray ->
+        TestTriggerEvents.getInstance(this).fetchDbTriggerEvents(this) { jsonArray ->
 
             jsonArray.forEach { json ->
                 events[json.asJsonObject["id"].asLong] = json.asJsonObject
@@ -73,7 +72,7 @@ class SecondActivity : AppCompatActivity() {
                             events[JsonParser.parseString(entries[position]).asJsonObject.get("id").asLong]
 
                         event?.let {
-                            TestTriggerEvents.getInstance()
+                            TestTriggerEvents.getInstance(this@SecondActivity)
                                 .showDbTriggerEventDialog(this@SecondActivity, event)
                         }
                     }
@@ -87,7 +86,7 @@ class SecondActivity : AppCompatActivity() {
 
             val text: String = binding.editText.text.toString()
 
-            TestTriggerEvents.getInstance()
+            TestTriggerEvents.getInstance(this)
                 .showDbTriggerEventDialog(this, if (text.isNotEmpty()) text.toInt() else 0)
         }
 

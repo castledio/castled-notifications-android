@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import io.castled.CastledNotifications;
 import io.castled.notifications.databinding.FragmentSecondBinding;
 
 public class SecondFragment extends Fragment {

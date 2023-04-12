@@ -4,9 +4,9 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 
 import io.castled.notifications.exceptions.CastledRuntimeException;
+import io.castled.notifications.trigger.models.SingleValueOperation;
 import io.castled.notifications.trigger.models.BetweenOperation;
 import io.castled.notifications.trigger.models.PropertyOperation;
-import io.castled.notifications.trigger.models.SingleValueOperation;
 
 public class NumberConditionEvaluator implements ParamsConditionEvaluator {
     @Override

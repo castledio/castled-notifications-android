@@ -15,7 +15,6 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import io.castled.CastledNotifications;
 import io.castled.notifications.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {

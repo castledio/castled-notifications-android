@@ -9,7 +9,7 @@
     <application>
 
         <service
-            android:name=".CastledMessagingService"
+            android:name=".push.CastledMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"></action>
@@ -17,11 +17,11 @@
         </service>
 
         <activity
-            android:name=".CastledEventListener"
+            android:name=".push.CastledEventListener"
             android:exported="true" />
 
         <receiver
-            android:name=".CastledEventReceiver"
+            android:name=".push.CastledEventReceiver"
             android:exported="true" />
     </application>
 
