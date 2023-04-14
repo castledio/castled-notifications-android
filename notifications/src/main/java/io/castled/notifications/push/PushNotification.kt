@@ -25,7 +25,7 @@ internal object PushNotification {
     internal fun init(externalScope: CoroutineScope) {
 
         this.externalScope = externalScope
-        this.pushRepository = PushRepository(CastledSharedStore.apiKey!!)
+        this.pushRepository = PushRepository(CastledSharedStore.getApiKey()!!)
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(LifecycleEventObserver { _: LifecycleOwner?, event: Lifecycle.Event ->
             if (event == Lifecycle.Event.ON_START) {

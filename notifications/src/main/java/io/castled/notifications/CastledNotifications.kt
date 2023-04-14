@@ -5,7 +5,6 @@ import android.content.Context
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
 import io.castled.notifications.commons.CastledRetrofitClient
-import io.castled.notifications.inapp.InAppChannelConfig
 import io.castled.notifications.inapp.InAppNotification
 import io.castled.notifications.inapp.models.consts.AppEvents
 import io.castled.notifications.push.PushNotification
@@ -27,11 +26,7 @@ object CastledNotifications {
     private val castledScope = CoroutineScope(castledCoroutineContext)
 
     @JvmStatic
-    fun initialize(
-        application: Application,
-        apiKey: String,
-        configs: List<io.castled.notifications.inapp.ChannelConfig>,
-    ) {
+    fun initialize(application: Application, apiKey: String, configs: CastledConfigs) {
         if (this::apiKey.isInitialized) {
             logger.error("Sdk already initialized!")
             return
@@ -41,19 +36,17 @@ object CastledNotifications {
             return
         }
         CastledRetrofitClient.init()
-        CastledSharedStore.init(application, apiKey)
+        CastledSharedStore.init(application, apiKey, configs)
 
-        PushNotification.init(castledScope)
-        InAppNotification.init(application, castledScope, getInAppConfig(configs))
-        refreshFcmToken(application)
-
+        if (configs.enablePush) {
+            PushNotification.init(castledScope)
+            refreshFcmToken(application)
+        }
+        if (configs.enableInApp) {
+            InAppNotification.init(application, castledScope)
+        }
         this.apiKey = apiKey
         logger.info("Sdk initialized successfully")
-    }
-
-    private fun getInAppConfig(configs: List<io.castled.notifications.inapp.ChannelConfig>): InAppChannelConfig {
-        return configs.find { it.type == io.castled.notifications.inapp.ChannelType.IN_APP } as? InAppChannelConfig
-            ?: InAppChannelConfig(false, 0)
     }
 
     @JvmStatic
@@ -81,10 +74,10 @@ object CastledNotifications {
             throw IllegalStateException("UserId is empty!")
 
         } else {
-            if (CastledSharedStore.userId != userId) {
+            if (CastledSharedStore.getUserId() != userId) {
                 // New user-id
-                CastledSharedStore.fcmToken?.let { PushNotification.registerUser(userId, it) }
-                CastledSharedStore.userId = userId
+                CastledSharedStore.getFcmToken()?.let { PushNotification.registerUser(userId, it) }
+                CastledSharedStore.setUserId(userId)
             }
             InAppNotification.startCampaignJob()
         }
@@ -95,15 +88,18 @@ object CastledNotifications {
         if (!isInited()) {
             logger.debug("Sdk not yet initialized!")
             return@launch
+        } else if (!CastledSharedStore.configs.enablePush) {
+            logger.debug("Push not enabled!")
+            return@launch
         }
         onFcmTokenFetch(token)
     }
 
     private suspend fun onFcmTokenFetch(token: String?) {
-        if (CastledSharedStore.fcmToken != token) {
+        if (CastledSharedStore.getFcmToken() != token) {
             // New token
-            CastledSharedStore.userId?.let { PushNotification.registerUser(it, token) }
-            CastledSharedStore.fcmToken = token
+            CastledSharedStore.getUserId()?.let { PushNotification.registerUser(it, token) }
+            CastledSharedStore.setFcmToken(token)
         }
     }
 

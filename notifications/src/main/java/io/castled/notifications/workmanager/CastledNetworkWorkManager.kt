@@ -2,10 +2,10 @@ package io.castled.notifications.workmanager
 
 import android.content.Context
 import androidx.work.*
-import io.castled.notifications.inapp.ChannelType
 import io.castled.notifications.store.CastledDbBuilder
 import io.castled.notifications.store.models.NetworkRetryLog
 import io.castled.notifications.workmanager.models.CastledNetworkRequest
+import io.castled.notifications.workmanager.models.CastledNetworkRequestType
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
@@ -29,7 +29,7 @@ internal class CastledNetworkWorkManager(context: Context) {
         )
         .build()
 
-    suspend fun enqueueRequest(type : ChannelType, request: CastledNetworkRequest) {
+    suspend fun enqueueRequest(type : CastledNetworkRequestType, request: CastledNetworkRequest) {
         networkRetryRepository.putRetryLog(NetworkRetryLog(channel = type.toString(), request = request))
         workManager.enqueue(workRequest)
     }

@@ -10,7 +10,7 @@ internal interface InAppApi {
     @GET("v1/inapp/{api-key}/android/campaigns")
     suspend fun fetchLiveCampaigns(
         @Path("api-key") apikey: String,
-        @Query("user") customers: String
+        @Query("user") user: String?
     ): Response<List<CampaignResponse>>
 
     @POST("v1/inapp/{api-key}/android/event")

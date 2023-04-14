@@ -14,7 +14,6 @@ import io.castled.notifications.workmanager.models.CastledInAppEventRequest
 internal class InAppRepository(context: Context) {
 
     private val campaignDao = CastledDbBuilder.getDbInstance(context).campaignDao()
-    private val apiKey = CastledSharedStore.apiKey!!
     private val logger = CastledLogger.getInstance(
         LogTags.IN_APP_SERVICE)
     private val inAppApi = CastledRetrofitClient.create(InAppApi::class.java)
@@ -50,7 +49,7 @@ internal class InAppRepository(context: Context) {
 
     suspend fun fetchLiveCampaigns(): List<CampaignResponse>? {
         try {
-            val response = inAppApi.fetchLiveCampaigns(apiKey, CastledSharedStore.userId!!)
+            val response = inAppApi.fetchLiveCampaigns(CastledSharedStore.getApiKey()!!, CastledSharedStore.getUserId())
             return if (response.isSuccessful) {
                 response.body()
             } else {
@@ -67,7 +66,7 @@ internal class InAppRepository(context: Context) {
 
     suspend fun reportEvent(request: CastledInAppEventRequest) {
         try {
-            val response = inAppApi.reportEvent(apiKey, request)
+            val response = inAppApi.reportEvent(CastledSharedStore.getApiKey()!!, request)
             if (!response.isSuccessful) {
                 // Handle API errors (e.g., 4xx or 5xx status codes)
                 val errorMessage = response.errorBody()?.string() ?: "Unknown error"
