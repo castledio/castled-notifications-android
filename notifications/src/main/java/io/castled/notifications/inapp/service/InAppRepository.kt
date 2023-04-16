@@ -10,12 +10,13 @@ import io.castled.notifications.store.CastledDbBuilder
 import io.castled.notifications.store.CastledSharedStore
 import io.castled.notifications.store.models.Campaign
 import io.castled.notifications.workmanager.models.CastledInAppEventRequest
+import retrofit2.Response
 
 internal class InAppRepository(context: Context) {
 
     private val campaignDao = CastledDbBuilder.getDbInstance(context).campaignDao()
     private val logger = CastledLogger.getInstance(
-        LogTags.IN_APP_SERVICE)
+        LogTags.IN_APP_REPOSITORY)
     private val inAppApi = CastledRetrofitClient.create(InAppApi::class.java)
 
     // TODO: Use call adapter for error handling to avoid boilerplate code
@@ -49,7 +50,7 @@ internal class InAppRepository(context: Context) {
 
     suspend fun fetchLiveCampaigns(): List<CampaignResponse>? {
         try {
-            val response = inAppApi.fetchLiveCampaigns(CastledSharedStore.getApiKey()!!, CastledSharedStore.getUserId())
+            val response = inAppApi.fetchLiveCampaigns(CastledSharedStore.getApiKey(), CastledSharedStore.getUserId())
             return if (response.isSuccessful) {
                 response.body()
             } else {
@@ -66,7 +67,7 @@ internal class InAppRepository(context: Context) {
 
     suspend fun reportEvent(request: CastledInAppEventRequest) {
         try {
-            val response = inAppApi.reportEvent(CastledSharedStore.getApiKey()!!, request)
+            val response = inAppApi.reportEvent(CastledSharedStore.getApiKey(), request)
             if (!response.isSuccessful) {
                 // Handle API errors (e.g., 4xx or 5xx status codes)
                 val errorMessage = response.errorBody()?.string() ?: "Unknown error"
@@ -79,7 +80,8 @@ internal class InAppRepository(context: Context) {
         }
     }
 
-
-
+    suspend fun reportEventNoRetry(request: CastledInAppEventRequest) : Response<Void?> {
+        return inAppApi.reportEvent(CastledSharedStore.getApiKey(), request)
+    }
 
 }

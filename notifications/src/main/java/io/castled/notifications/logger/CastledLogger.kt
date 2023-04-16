@@ -24,7 +24,7 @@ class CastledLogger private constructor(private val tag: String) : Logger {
     }
 
     override fun error(message: String, throwable: Throwable) {
-        Log.v(tag, message, throwable)
+        Log.e(tag, message, throwable)
     }
 
     companion object {

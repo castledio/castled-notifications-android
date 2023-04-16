@@ -13,17 +13,18 @@ internal object CastledSharedStore {
 
     lateinit var configs: CastledConfigs
 
-    private var apiKey: String? = null
+    private lateinit var apiKey: String
     private var userId: String? = null
     private var fcmToken: String? = null
 
     fun init(context: Context, apiKey: String, configs : CastledConfigs) {
         this.configs = configs
         this.sharedPreferences = context.getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE)
-        this.apiKey = sharedPreferences.getString(PrefStoreKeys.API_KEY, null)
-        if (this.apiKey != apiKey) {
+        if (this.sharedPreferences.getString(PrefStoreKeys.API_KEY, null) != apiKey) {
             clearPreferences()
             setApiKey(apiKey)
+        } else {
+            this.apiKey = sharedPreferences.getString(PrefStoreKeys.API_KEY, null)!!
         }
         this.userId = sharedPreferences.getString(PrefStoreKeys.USER_ID, null)
         this.fcmToken = sharedPreferences.getString(PrefStoreKeys.FCM_TOKEN, null)
@@ -31,7 +32,7 @@ internal object CastledSharedStore {
 
     fun setApiKey(apiKey : String) {
         this.apiKey = apiKey
-        sharedPreferences.edit().putString(PrefStoreKeys.API_KEY, userId).apply()
+        sharedPreferences.edit().putString(PrefStoreKeys.API_KEY, apiKey).apply()
     }
 
     fun setUserId(userId : String?) {
@@ -41,7 +42,7 @@ internal object CastledSharedStore {
 
     fun setFcmToken(fcmToken : String?) {
         this.fcmToken = fcmToken
-        sharedPreferences.edit().putString(PrefStoreKeys.FCM_TOKEN, userId).apply()
+        sharedPreferences.edit().putString(PrefStoreKeys.FCM_TOKEN, fcmToken).apply()
     }
 
     fun getApiKey() = apiKey

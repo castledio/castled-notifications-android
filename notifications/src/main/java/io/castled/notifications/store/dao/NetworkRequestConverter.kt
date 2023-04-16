@@ -20,7 +20,6 @@ internal class NetworkRequestConverter {
                 subclass(CastledInAppEventRequest::class)
             }
         }
-        classDiscriminator = "requestType"
     }
 
     @TypeConverter

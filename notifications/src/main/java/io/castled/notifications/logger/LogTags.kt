@@ -9,5 +9,8 @@ object LogTags {
     const val FLC_OBS = "CastledNotifications-FgtLcObs"
     const val IN_APP_TRIGGER = "CastledNotifications-InAppTrigger"
     const val IN_APP_POP_UP = "CastledNotifications-InAppPopUp"
-    const val IN_APP_SERVICE = "CastledNotifications-InAppService"
+    const val IN_APP_REPOSITORY = "CastledNotifications-InAppRepository"
+    const val PUSH_REPOSITORY = "CastledNotifications-PushRepository"
+    const val WORK_MANAGER = "CastledNotifications-WorkManager"
+    const val RETRY_WORKER = "CastledNotifications-RetryWorker"
 }

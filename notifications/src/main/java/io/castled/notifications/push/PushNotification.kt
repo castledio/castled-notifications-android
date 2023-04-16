@@ -1,5 +1,6 @@
 package io.castled.notifications.push
 
+import android.content.Context
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -8,7 +9,6 @@ import io.castled.notifications.logger.CastledLogger
 import io.castled.notifications.logger.LogTags
 import io.castled.notifications.push.models.NotificationEvent
 import io.castled.notifications.push.service.PushRepository
-import io.castled.notifications.store.CastledSharedStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,10 +22,10 @@ internal object PushNotification {
 
     var isAppInForeground = true
 
-    internal fun init(externalScope: CoroutineScope) {
+    internal fun init(context : Context, externalScope: CoroutineScope) {
 
         this.externalScope = externalScope
-        this.pushRepository = PushRepository(CastledSharedStore.getApiKey()!!)
+        this.pushRepository = PushRepository(context)
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(LifecycleEventObserver { _: LifecycleOwner?, event: Lifecycle.Event ->
             if (event == Lifecycle.Event.ON_START) {

@@ -39,7 +39,7 @@ object CastledNotifications {
         CastledSharedStore.init(application, apiKey, configs)
 
         if (configs.enablePush) {
-            PushNotification.init(castledScope)
+            PushNotification.init(application, castledScope)
             refreshFcmToken(application)
         }
         if (configs.enableInApp) {

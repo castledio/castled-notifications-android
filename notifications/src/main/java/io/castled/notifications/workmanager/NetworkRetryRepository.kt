@@ -5,7 +5,11 @@ import io.castled.notifications.store.models.NetworkRetryLog
 
 internal class NetworkRetryRepository(private val networkRetryLogDao: NetworkRetryLogDao) {
 
-    suspend fun getRetryLogs(): List<NetworkRetryLog> = networkRetryLogDao.getAllRetryLogs()
+    suspend fun getRetryRequests(): List<NetworkRetryLog> = networkRetryLogDao.getAllRetryLogs()
 
-    suspend fun putRetryLog(log: NetworkRetryLog) = networkRetryLogDao.insertRetryLog(log)
+    suspend fun insertRetryRequest(log: NetworkRetryLog) = networkRetryLogDao.insertRetryLog(log)
+
+    suspend fun deleteRetryRequests(logs: List<NetworkRetryLog>) =
+        networkRetryLogDao.deleteRetryLogs(logs)
+
 }

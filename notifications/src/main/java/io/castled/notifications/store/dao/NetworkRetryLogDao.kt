@@ -16,5 +16,5 @@ internal interface NetworkRetryLogDao {
     suspend fun insertRetryLog(retryLog: NetworkRetryLog): Long
 
     @Delete
-    suspend fun deleteRetryLog(retryLog: NetworkRetryLog)
+    suspend fun deleteRetryLogs(retryLog: List<NetworkRetryLog>)
 }

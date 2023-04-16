@@ -17,5 +17,5 @@ internal interface InAppApi {
     suspend fun reportEvent(
         @Path("api-key") apikey: String,
         @Body request: CastledInAppEventRequest
-    ): Response<Unit>
+    ): Response<Void?>
 }
