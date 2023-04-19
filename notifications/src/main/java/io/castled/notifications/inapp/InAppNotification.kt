@@ -52,7 +52,7 @@ internal object InAppNotification {
         if (fetchJob == null || !fetchJob!!.isActive) {
             externalScope.launch(Default) {
                 do {
-                    inAppController.fetchAndSaveLiveCampaigns()
+                    inAppController.refreshLiveCampaigns()
                     delay(TimeUnit.SECONDS.toMillis(CastledSharedStore.configs.inAppFetchIntervalSec))
                 } while (true)
             }
@@ -88,11 +88,8 @@ internal object InAppNotification {
         eventParams: Map<String, Any>?
     ) {
         if (!enabled) {
-            logger.debug("Ignoring app event. In-app disabled")
+            logger.debug("Ignoring app event, In-App disabled")
         }
-        val e = mutableMapOf<String, Any?>()
-        e["event"] = eventName
-        e["params"] = eventParams
-        inAppController.findAndLaunchInApp(context, e)
+        inAppController.findAndLaunchInApp(context, eventName, eventParams)
     }
 }

@@ -11,6 +11,7 @@ import io.castled.notifications.store.CastledSharedStore
 import io.castled.notifications.store.models.Campaign
 import io.castled.notifications.workmanager.models.CastledInAppEventRequest
 import retrofit2.Response
+import java.io.IOException
 
 internal class InAppRepository(context: Context) {
 
@@ -29,8 +30,8 @@ internal class InAppRepository(context: Context) {
         return campaignDao.dbInsertCampaigns(campaigns)
     }
 
-    suspend fun deleteDbCampaigns(): Int {
-        return campaignDao.dbDeleteAllCampaigns()
+    suspend fun deleteDbCampaigns(campaigns: List<Campaign>): Int {
+        return campaignDao.dbDeleteAllCampaigns(campaigns)
     }
 
     suspend fun updateCampaignDisplayStats(campaign: Campaign) {
@@ -59,8 +60,10 @@ internal class InAppRepository(context: Context) {
                 logger.error(errorMessage)
                 null
             }
-        } catch (e: Exception) {
-            logger.error(e.message ?: "unknown error")
+        } catch (e: IOException) {
+            logger.error("Network error!", e)
+        } catch (e : Exception) {
+            logger.error("Unknown error!", e)
         }
         return null
     }

@@ -5,7 +5,6 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import io.castled.notifications.store.dao.*
 import io.castled.notifications.store.dao.CampaignDao
-import io.castled.notifications.store.dao.CampaignTypeConverter
 import io.castled.notifications.store.dao.NetworkRequestConverter
 import io.castled.notifications.store.dao.NetworkRetryLogDao
 import io.castled.notifications.store.models.Campaign
@@ -19,7 +18,9 @@ import io.castled.notifications.store.models.NetworkRetryLog
 @TypeConverters(
     CampaignTypeConverter::class,
     NetworkRequestConverter::class,
-    DateTimeConverter::class
+    DateTimeConverter::class,
+    DisplayConfigConverter::class,
+    JsonObjectConverter::class
 )
 internal abstract class CastledDb : RoomDatabase() {
 

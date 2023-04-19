@@ -13,7 +13,7 @@ internal data class NetworkRetryLog(
     var id: Long = 0,
 
     @ColumnInfo(name = "created_at", defaultValue = "CURRENT_TIMESTAMP")
-    var createdAt: Date= Date(),
+    var createdAt: Date = Date(),
 
     @ColumnInfo(name = "request")
     val request: CastledNetworkRequest

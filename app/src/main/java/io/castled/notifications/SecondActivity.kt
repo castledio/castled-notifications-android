@@ -6,7 +6,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import io.castled.notifications.databinding.ActivitySecondBinding
 import io.castled.notifications.inapp.test.TestTriggerEvents
 import java.util.*
@@ -24,11 +23,8 @@ class SecondActivity : AppCompatActivity() {
         binding = ActivitySecondBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        TestTriggerEvents.getInstance(this).fetchDbTriggerEvents(this) { jsonArray ->
+        TestTriggerEvents.getInstance(this).fetchDbTriggerEvents(this) { _ ->
 
-            jsonArray.forEach { json ->
-                events[json.asJsonObject["id"].asLong] = json.asJsonObject
-            }
 
             entries = events.map {
                 val jsonObject = JsonObject()
@@ -67,15 +63,7 @@ class SecondActivity : AppCompatActivity() {
                     position: Int,
                     id: Long
                 ) {
-                    if (position != 0) {
-                        val event =
-                            events[JsonParser.parseString(entries[position]).asJsonObject.get("id").asLong]
 
-                        event?.let {
-                            TestTriggerEvents.getInstance(this@SecondActivity)
-                                .showDbTriggerEventDialog(this@SecondActivity, event)
-                        }
-                    }
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}

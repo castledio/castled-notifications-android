@@ -1,18 +1,19 @@
 package io.castled.notifications.inapp.test
 
 import android.content.Context
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import io.castled.notifications.inapp.InAppController
 import io.castled.notifications.inapp.models.consts.InAppConstants
 import io.castled.notifications.inapp.service.InAppRepository
 import io.castled.notifications.inapp.trigger.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 
 class TestTriggerEvents private constructor(context: Context){
 
@@ -52,7 +53,7 @@ class TestTriggerEvents private constructor(context: Context){
             popupSecondaryButton,
             object : InAppClickAction {
                 override fun onTrigger(
-                    inAppConstants: InAppConstants.Companion.EventClickType
+                    clickType: InAppConstants.Companion.EventClickType
                 ) { }
 
             }
@@ -80,7 +81,7 @@ class TestTriggerEvents private constructor(context: Context){
             popupSecondaryButton,
             object : InAppClickAction {
                 override fun onTrigger(
-                    inAppConstants: InAppConstants.Companion.EventClickType
+                    clickType: InAppConstants.Companion.EventClickType
                 ) {}
 
             }
@@ -101,7 +102,7 @@ class TestTriggerEvents private constructor(context: Context){
             urlForOnClickOnImage,
             object : InAppClickAction {
                 override fun onTrigger(
-                    inAppConstants: InAppConstants.Companion.EventClickType
+                    clickType: InAppConstants.Companion.EventClickType
                 ) {}
 
             }
@@ -109,31 +110,30 @@ class TestTriggerEvents private constructor(context: Context){
     }
 
     fun fetchDbTriggerEvents(context: Context, callback: (JsonArray) -> Unit){
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Default).launch {
             val dbData = inAppRepository.getCampaigns()
-            val jsonArray = JsonArray()
+            val jsonArray = mutableListOf<JsonElement>()
             dbData.forEach {
-                val jsonObject = JsonObject()
-                jsonObject.addProperty("id", it.id)
-                jsonObject.addProperty("sourceContext", it.sourceContext)
-                jsonObject.addProperty("notificationId", it.notificationId)
-                jsonObject.addProperty("teamId", it.teamId)
-                jsonObject.addProperty("endTs", it.endTs)
-                jsonObject.addProperty("startTs", it.startTs)
-                jsonObject.addProperty("ttl", it.ttl)
-                jsonObject.addProperty("displayLimit", it.displayLimit)
-                jsonObject.addProperty("timesDisplayed", it.timesDisplayed)
-                jsonObject.addProperty("minIntervalBtwDisplays", it.minIntervalBtwDisplays)
-                jsonObject.addProperty("lastDisplayedTime", it.lastDisplayedTime)
-                jsonObject.addProperty("minIntervalBtwDisplaysGlobal", it.minIntervalBtwDisplaysGlobal)
-                jsonObject.addProperty("autoDismissInterval", it.autoDismissInterval)
-                jsonObject.add("message", it.message.asJsonObject)
-                jsonObject.add("trigger", it.trigger.asJsonObject)
-
-                jsonArray.add(jsonObject)
+                val jsonMap = mutableMapOf<String, JsonElement>()
+                jsonMap["id"] = JsonPrimitive(it.id)
+                jsonMap["sourceContext"] = JsonPrimitive(it.sourceContext)
+                jsonMap["notificationId"] = JsonPrimitive(it.notificationId)
+                jsonMap["teamId"] = JsonPrimitive(it.teamId)
+                jsonMap["endTs"] = JsonPrimitive(it.endTs)
+                jsonMap["startTs"] = JsonPrimitive(it.startTs)
+                jsonMap["ttl"] = JsonPrimitive(it.ttl)
+                jsonMap["displayLimit"] = JsonPrimitive(it.displayConfig.displayLimit)
+                jsonMap["timesDisplayed"] = JsonPrimitive(it.timesDisplayed)
+                jsonMap["minIntervalBtwDisplays"] = JsonPrimitive(it.displayConfig.minIntervalBtwDisplays)
+                jsonMap["lastDisplayedTime"] = JsonPrimitive(it.lastDisplayedTime)
+                jsonMap["minIntervalBtwDisplaysGlobal"] = JsonPrimitive(it.displayConfig.minIntervalBtwDisplaysGlobal)
+                jsonMap["autoDismissInterval"] = JsonPrimitive(it.displayConfig.autoDismissInterval)
+                jsonMap["message"] = it.message
+                jsonMap["trigger"] = it.trigger
+                jsonArray.add(JsonObject(jsonMap))
             }
             withContext(Main){
-                callback.invoke(jsonArray)
+                callback.invoke(JsonArray(jsonArray))
             }
 
         }
@@ -144,12 +144,12 @@ class TestTriggerEvents private constructor(context: Context){
     }
 
     fun showDbTriggerEventDialog(context: Context, eventType: JsonObject){
-        inAppController.findAndLaunchInAppForTest(context, eventType)
+        // inAppController.findAndLaunchInAppForTest(context, eventType)
     }
 
     fun fetchAndSaveTriggerEvents(context: Context){
         CoroutineScope(Default).launch {
-            inAppController.fetchAndSaveLiveCampaigns()
+            inAppController.refreshLiveCampaigns()
         }
     }
 

@@ -12,8 +12,8 @@ internal interface CampaignDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun dbInsertCampaigns(campaignList: List<Campaign>) : LongArray
 
-    @Query("DELETE FROM campaigns")
-    suspend fun dbDeleteAllCampaigns(): Int
+    @Delete
+    suspend fun dbDeleteAllCampaigns(campaigns: List<Campaign>): Int
 
     @Query("UPDATE campaigns SET times_displayed=:timeDisplayed, last_displayed_time=:lastDisplayedTime WHERE id = :id AND notification_id = :notificationId")
     suspend fun dbUpdateCampaignLastDisplayed(timeDisplayed: Long, lastDisplayedTime: Long, id: Int, notificationId: Int): Int

@@ -13,4 +13,5 @@ object LogTags {
     const val PUSH_REPOSITORY = "CastledNotifications-PushRepository"
     const val WORK_MANAGER = "CastledNotifications-WorkManager"
     const val RETRY_WORKER = "CastledNotifications-RetryWorker"
+    const val TRIGGER_EVAL = "CastledNotifications-TriggerEvaluator"
 }

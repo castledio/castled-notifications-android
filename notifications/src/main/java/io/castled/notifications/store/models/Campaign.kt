@@ -2,14 +2,18 @@ package io.castled.notifications.store.models
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.google.gson.JsonObject
+import kotlinx.serialization.json.JsonObject
 
-@Entity(tableName = "campaigns")
+@Entity(
+    tableName = "campaigns",
+    indices = [Index(value = ["notification_id"], unique = true)]
+)
 internal data class Campaign(
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)
-    var id: Int,
+    var id: Int = 0,
 
     @ColumnInfo(name = "notification_id")
     val notificationId: Int,
@@ -23,33 +27,30 @@ internal data class Campaign(
     @ColumnInfo(name = "start_ts")
     val startTs: Long,
 
+    @ColumnInfo(name = "ttl")
+    val ttl: Long,
+
     @ColumnInfo(name = "end_ts")
     val endTs: Long,
 
-    @ColumnInfo(name = "ttl")
-    val ttl: Int,
-
-    @ColumnInfo(name = "display_limit")
-    val displayLimit: Long,
+    @ColumnInfo(name = "display_config")
+    val displayConfig: DisplayConfig,
 
     @ColumnInfo(name = "times_displayed")
     var timesDisplayed: Long,
 
-    @ColumnInfo(name = "min_interval_btw_displays")
-    val minIntervalBtwDisplays: Long,
-
     @ColumnInfo(name = "last_displayed_time")
     var lastDisplayedTime: Long,
-
-    @ColumnInfo(name = "min_interval_btw_displays_global")
-    val minIntervalBtwDisplaysGlobal: Long,
-
-    @ColumnInfo(name = "auto_dismiss_interval")
-    val autoDismissInterval: Long,
 
     @ColumnInfo(name = "trigger")
     val trigger: JsonObject,
 
     @ColumnInfo(name = "message_json")
-    val message: JsonObject
+    val message: JsonObject,
+
+    @ColumnInfo(name = "priority")
+    val priority: InAppPriority,
+
+    @ColumnInfo(name = "expired")
+    val expired: Boolean
 )

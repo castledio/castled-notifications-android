@@ -15,13 +15,13 @@ import android.view.*
 import android.widget.*
 import androidx.appcompat.widget.AppCompatImageView
 import com.bumptech.glide.Glide
-import com.google.gson.JsonObject
 import io.castled.notifications.inapp.models.consts.InAppConstants
 import io.castled.notifications.store.models.Campaign
 import io.castled.notifications.R
 import io.castled.notifications.logger.CastledLogger
 import io.castled.notifications.logger.LogTags
 import kotlinx.coroutines.*
+import kotlinx.serialization.json.JsonPrimitive
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
@@ -30,12 +30,13 @@ internal class InAppPopupDialog {
     companion object {
 
         private val logger = CastledLogger.getInstance(
-            LogTags.IN_APP_POP_UP)
+            LogTags.IN_APP_POP_UP
+        )
 
         internal fun showDialog(
             context: Context,
             autoDismissInterval: Long,
-            popUpBackgroundColor: String,
+            popUpBackgroundColor: String?,
             popUpHeader: PopupHeader,
             popupMessage: PopupMessage,
             imageUrl: String,
@@ -564,12 +565,12 @@ internal class InAppPopupDialog {
             hexColor: String,
             defaultHexColor: String
         ): String {
-            if (hexColor.length == 7) {
+            return if (hexColor.length == 7) {
                 val colorPattern: Pattern = Pattern.compile("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$")
-                return if (colorPattern.matcher(hexColor).matches()) hexColor
+                if (colorPattern.matcher(hexColor).matches()) hexColor
                 else if (colorPattern.matcher(defaultHexColor).matches()) defaultHexColor
                 else throw Exception()
-            } else return defaultHexColor
+            } else defaultHexColor
         }
 
         internal fun showFullscreenDialog(
@@ -751,18 +752,9 @@ internal class InAppPopupDialog {
 
         internal fun getTriggerEventType(notificationModel: Campaign?): InAppConstants.Companion.InAppTemplateType {
             if (notificationModel == null) return InAppConstants.Companion.InAppTemplateType.NONE
-
-            val message: JsonObject = notificationModel.message.asJsonObject
-
-            if (message.has("type")) {
-                when (message.get("type").asString) {
-                    "MODAL" -> return InAppConstants.Companion.InAppTemplateType.MODAL
-                    "FULL_SCREEN" -> return InAppConstants.Companion.InAppTemplateType.FULL_SCREEN
-                    "SLIDE_UP" -> return InAppConstants.Companion.InAppTemplateType.SLIDE_UP
-                }
-            }
-
-            return InAppConstants.Companion.InAppTemplateType.NONE
+            return (notificationModel.message["type"] as JsonPrimitive?)
+                ?.let { InAppConstants.Companion.InAppTemplateType.valueOf(it.content) }
+                ?: InAppConstants.Companion.InAppTemplateType.NONE
         }
     }
 }
