@@ -11,7 +11,7 @@ internal data class CastledPushEventRequest(
     val actionUri: String?,
     val eventType: String,
     val tz: String,
-    val ts: Long
+    val ts: Long?
 ) : CastledNetworkRequest() {
     override val requestType = CastledNetworkRequestType.PUSH_EVENT
 }

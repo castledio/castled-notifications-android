@@ -4,18 +4,15 @@ import android.content.Context
 import androidx.work.*
 import io.castled.notifications.logger.CastledLogger
 import io.castled.notifications.logger.LogTags
-import io.castled.notifications.store.CastledDbBuilder
 import io.castled.notifications.store.models.NetworkRetryLog
 import io.castled.notifications.workmanager.models.CastledNetworkRequest
 import retrofit2.Response
-import java.io.IOException
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
 internal class CastledNetworkWorkManager(context: Context) {
 
-    private val networkRetryRepository =
-        NetworkRetryRepository(CastledDbBuilder.getDbInstance(context).networkRetryLogDao())
+    private val networkRetryRepository = NetworkRetryRepository(context)
 
     private val workManager = WorkManager.getInstance(context)
 
@@ -25,12 +22,12 @@ internal class CastledNetworkWorkManager(context: Context) {
 
     private suspend fun enqueueRequest(request: CastledNetworkRequest) {
         networkRetryRepository.insertRetryRequest(NetworkRetryLog(request = request))
-        val workRequest = OneTimeWorkRequestBuilder<CastledRequestWorker>()
+        val workRequest = OneTimeWorkRequestBuilder<CastledRequestRetryWorker>()
             .addTag(CASTLED_RETRY_WORK)
             .setConstraints(constraints)
             .setInitialDelay(Random.nextLong(1, 10), TimeUnit.SECONDS)
             .setBackoffCriteria(
-                BackoffPolicy.LINEAR,
+                BackoffPolicy.EXPONENTIAL,
                 OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
                 TimeUnit.MILLISECONDS
             )
@@ -49,11 +46,8 @@ internal class CastledNetworkWorkManager(context: Context) {
                 logger.error("error code:${response.code()} message: ${response.message()}")
                 enqueueRequest(request)
             }
-        } catch (e: IOException) {
-            logger.error("Network error!", e)
-            enqueueRequest(request)
         } catch (e: Exception) {
-            logger.error("Unknown error!", e)
+            logger.error("Error making API call!", e)
             enqueueRequest(request)
         }
     }

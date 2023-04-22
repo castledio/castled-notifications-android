@@ -17,12 +17,12 @@
         </service>
 
         <activity
-            android:name=".push.CastledEventListener"
-            android:exported="true" />
+            android:name=".push.CastledNotificationReceiverAct"
+            android:exported="false" />
 
         <receiver
-            android:name=".push.CastledEventReceiver"
-            android:exported="true" />
+            android:name=".push.CastledNotificationReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>

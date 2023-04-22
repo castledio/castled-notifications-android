@@ -1,10 +1,8 @@
 package io.castled.notifications.push.service
 
 import android.content.Context
-import io.castled.notifications.commons.CastledRetrofitClient.Companion.create
-import io.castled.notifications.logger.CastledLogger
-import io.castled.notifications.logger.LogTags
-import io.castled.notifications.push.models.NotificationEvent
+import io.castled.notifications.network.CastledRetrofitClient.Companion.create
+import io.castled.notifications.push.models.NotificationActionContext
 import io.castled.notifications.store.CastledSharedStore
 import io.castled.notifications.workmanager.CastledNetworkWorkManager
 import io.castled.notifications.workmanager.CastledRequestConverters.toCastledPushEventRequest
@@ -14,7 +12,6 @@ import retrofit2.Response
 
 internal class PushRepository(context: Context) {
 
-    private val logger = CastledLogger.getInstance(LogTags.PUSH_REPOSITORY)
     private val networkWorkManager = CastledNetworkWorkManager.getInstance(context)
     private val pushApi by lazy { create(PushApi::class.java) }
 
@@ -30,7 +27,7 @@ internal class PushRepository(context: Context) {
         )
     }
 
-    suspend fun reportEvent(event: NotificationEvent) {
+    suspend fun reportEvent(event: NotificationActionContext) {
         networkWorkManager.apiCallWithRetry(
             request = event.toCastledPushEventRequest(),
             apiCall = {
@@ -42,7 +39,6 @@ internal class PushRepository(context: Context) {
         )
     }
 
-    // TODO: Intercept and throw exceptions for 4xx and 5xx errors
     suspend fun registerNoRetry(userId: String, token: String?): Response<Void?> {
         return pushApi.register(
             CastledSharedStore.getApiKey(),
@@ -50,9 +46,9 @@ internal class PushRepository(context: Context) {
         )
     }
 
-    suspend fun reportEventNoRetry(event: NotificationEvent): Response<Void?> {
+    suspend fun reportEventNoRetry(eventRequest: CastledPushEventRequest): Response<Void?> {
         return pushApi.reportEvent(
-            CastledSharedStore.getApiKey(), event.toCastledPushEventRequest()
+            CastledSharedStore.getApiKey(), eventRequest
         )
     }
 

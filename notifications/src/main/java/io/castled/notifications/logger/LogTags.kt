@@ -11,6 +11,7 @@ object LogTags {
     const val IN_APP_POP_UP = "CastledNotifications-InAppPopUp"
     const val IN_APP_REPOSITORY = "CastledNotifications-InAppRepository"
     const val PUSH_REPOSITORY = "CastledNotifications-PushRepository"
+    const val PUSH_RECEIVER = "CastledNotifications-Receiver"
     const val WORK_MANAGER = "CastledNotifications-WorkManager"
     const val RETRY_WORKER = "CastledNotifications-RetryWorker"
     const val TRIGGER_EVAL = "CastledNotifications-TriggerEvaluator"

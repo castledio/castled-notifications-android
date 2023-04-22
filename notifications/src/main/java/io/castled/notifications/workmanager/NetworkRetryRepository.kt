@@ -1,9 +1,12 @@
 package io.castled.notifications.workmanager
 
-import io.castled.notifications.store.dao.NetworkRetryLogDao
+import android.content.Context
+import io.castled.notifications.store.CastledDbBuilder
 import io.castled.notifications.store.models.NetworkRetryLog
 
-internal class NetworkRetryRepository(private val networkRetryLogDao: NetworkRetryLogDao) {
+internal class NetworkRetryRepository(val context: Context) {
+
+    private val networkRetryLogDao = CastledDbBuilder.getDbInstance(context).networkRetryLogDao()
 
     suspend fun getRetryRequests(): List<NetworkRetryLog> = networkRetryLogDao.getAllRetryLogs()
 

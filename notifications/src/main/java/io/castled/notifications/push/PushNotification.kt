@@ -7,7 +7,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import io.castled.notifications.logger.CastledLogger
 import io.castled.notifications.logger.LogTags
-import io.castled.notifications.push.models.NotificationEvent
+import io.castled.notifications.push.models.NotificationActionContext
 import io.castled.notifications.push.service.PushRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,8 +42,8 @@ internal object PushNotification {
         pushRepository.register(userId, token)
     }
 
-    fun reportPushEvent(event: NotificationEvent) = externalScope.launch(Dispatchers.Default) {
-        pushRepository.reportEvent(event)
+    fun reportPushEvent(actionContext: NotificationActionContext) = externalScope.launch(Dispatchers.Default) {
+        pushRepository.reportEvent(actionContext)
     }
 
 }

@@ -18,7 +18,8 @@ public class ApplicationClass extends MultiDexApplication {
         super.onCreate();
 
         // SDK initialization
-        CastledNotifications.initialize(this, "829c38e2e359d94372a2e0d35e1f74df", new CastledConfigs.Builder()
+        CastledNotifications.initialize(this, "qwertyasdfg", new CastledConfigs.Builder()
+                .location(CastledConfigs.ClusterLocation.TEST)
                 .enablePush(true)
                 .enableInApp(true)
                 .inAppFetchIntervalSec(300)

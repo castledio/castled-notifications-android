@@ -4,7 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
-import io.castled.notifications.commons.CastledRetrofitClient
+import io.castled.notifications.network.CastledRetrofitClient
 import io.castled.notifications.inapp.InAppNotification
 import io.castled.notifications.inapp.models.consts.AppEvents
 import io.castled.notifications.push.PushNotification
@@ -35,8 +35,8 @@ object CastledNotifications {
             logger.error("Api key is not set!")
             return
         }
-        CastledRetrofitClient.init()
         CastledSharedStore.init(application, apiKey, configs)
+        CastledRetrofitClient.init(configs)
 
         if (configs.enablePush) {
             PushNotification.init(application, castledScope)

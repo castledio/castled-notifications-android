@@ -8,16 +8,13 @@ import io.castled.notifications.inapp.service.InAppRepository
 import io.castled.notifications.logger.CastledLogger
 import io.castled.notifications.logger.LogTags
 import io.castled.notifications.push.service.PushRepository
-import io.castled.notifications.store.CastledDbBuilder
 import io.castled.notifications.store.models.NetworkRetryLog
-import io.castled.notifications.workmanager.CastledRequestConverters.toNotificationEvent
 import io.castled.notifications.workmanager.models.*
 import io.castled.notifications.workmanager.models.CastledPushEventRequest
 import io.castled.notifications.workmanager.models.CastledPushRegisterRequest
 import kotlinx.coroutines.sync.withLock
-import retrofit2.Response
 
-internal class CastledRequestWorker(appContext: Context, workerParams: WorkerParameters) :
+internal class CastledRequestRetryWorker(appContext: Context, workerParams: WorkerParameters) :
     CoroutineWorker(appContext, workerParams) {
 
     private val logger = CastledLogger.getInstance(LogTags.RETRY_WORKER)
@@ -26,8 +23,7 @@ internal class CastledRequestWorker(appContext: Context, workerParams: WorkerPar
 
     private val inAppRepository by lazy { InAppRepository(appContext) }
 
-    private val networkRetryRepository =
-        NetworkRetryRepository(CastledDbBuilder.getDbInstance(appContext).networkRetryLogDao())
+    private val networkRetryRepository = NetworkRetryRepository(appContext)
 
     override suspend fun doWork(): Result {
         val failedRequests = mutableListOf<NetworkRetryLog>()
@@ -67,19 +63,16 @@ internal class CastledRequestWorker(appContext: Context, workerParams: WorkerPar
         onError: (entry: NetworkRetryLog) -> Unit
     ) {
         val request = entry.request
-        var response = Response.success<Void?>(204, null)
         try {
-            when (entry.request.requestType) {
+            val response = when (entry.request.requestType) {
                 CastledNetworkRequestType.PUSH_REGISTER -> {
-                    response = pushRepository.registerNoRetry(
+                    pushRepository.registerNoRetry(
                         (request as CastledPushRegisterRequest).userId,
                         request.fcmToken
                     )
                 }
                 CastledNetworkRequestType.PUSH_EVENT -> {
-                    response = pushRepository.reportEventNoRetry(
-                        (request as CastledPushEventRequest).toNotificationEvent()
-                    )
+                    pushRepository.reportEventNoRetry(request as CastledPushEventRequest)
                 }
                 CastledNetworkRequestType.IN_APP_EVENT -> {
                     inAppRepository.reportEventNoRetry(
@@ -91,6 +84,7 @@ internal class CastledRequestWorker(appContext: Context, workerParams: WorkerPar
                 onSuccess(entry)
             } else {
                 onError(entry)
+                logger.error("error body:${response.errorBody()?.string()}")
             }
         } catch (e: Exception) {
             onError(entry)

@@ -10,8 +10,8 @@ import io.castled.notifications.inapp.service.InAppRepository
 import io.castled.notifications.inapp.trigger.*
 import io.castled.notifications.inapp.trigger.InAppClickAction
 import io.castled.notifications.inapp.trigger.InAppPopupDialog
-import io.castled.notifications.push.CastledEventListener
-import io.castled.notifications.push.models.Constants
+import io.castled.notifications.push.CastledNotificationReceiverAct
+import io.castled.notifications.push.models.PushConstants
 import io.castled.notifications.push.models.NotificationEventType
 import io.castled.notifications.logger.CastledLogger
 import io.castled.notifications.logger.LogTags
@@ -266,13 +266,13 @@ internal class InAppController(context: Context) {
                             )
                         }
                         InAppConstants.Companion.EventClickType.IMAGE_CLICK -> {
-                            val intent = Intent(context, CastledEventListener::class.java)
+                            val intent = Intent(context, CastledNotificationReceiverAct::class.java)
                             intent.action = NotificationEventType.CLICKED.toString()
                             modal["url"]?.jsonPrimitive?.content?.let {
-                                intent.putExtra(Constants.EXTRA_URI, it)
+                                intent.putExtra(PushConstants.CASTLED_EXTRA_URI, it)
                             }
                             modal["defaultClickAction"]?.jsonPrimitive?.content.let {
-                                intent.putExtra(Constants.EXTRA_ACTION, it)
+                                intent.putExtra(PushConstants.CASTLED_EXTRA_CLICK_ACTION, it)
                             }
                             context.startActivity(intent)
                             reportEvent(prepareEventImageClickActionBodyData(campaign))
@@ -280,20 +280,20 @@ internal class InAppController(context: Context) {
                         InAppConstants.Companion.EventClickType.PRIMARY_BUTTON -> {
 
                             logger.info("buttonPrimary: $buttonPrimary")
-                            val intent = Intent(context, CastledEventListener::class.java)
+                            val intent = Intent(context, CastledNotificationReceiverAct::class.java)
                             intent.action = NotificationEventType.CLICKED.toString()
 
                             (buttonPrimary["url"] as String?)?.let {
-                                intent.putExtra(Constants.EXTRA_URI, it)
+                                intent.putExtra(PushConstants.CASTLED_EXTRA_URI, it)
                             }
                             (buttonPrimary["clickAction"] as String?)?.let {
-                                intent.putExtra(Constants.EXTRA_ACTION, it)
+                                intent.putExtra(PushConstants.CASTLED_EXTRA_CLICK_ACTION, it)
                             }
                             (buttonPrimary["label"] as String?)?.let {
-                                intent.putExtra(Constants.EXTRA_LABEL, it)
+                                intent.putExtra(PushConstants.CASTLED_EXTRA_LABEL, it)
                             }
                             (buttonPrimary["keyVals"] as String?)?.let {
-                                intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, it)
+                                intent.putExtra(PushConstants.CASTLED_EXTRA_KEY_VAL_PARAMS, it)
                             }
                             context.startActivity(intent)
                             reportEvent(
@@ -307,20 +307,20 @@ internal class InAppController(context: Context) {
 
                             logger.info("buttonSecondary: $buttonSecondary")
 
-                            val intent = Intent(context, CastledEventListener::class.java)
+                            val intent = Intent(context, CastledNotificationReceiverAct::class.java)
                             intent.action = NotificationEventType.CLICKED.toString()
 
                             (buttonSecondary["url"] as String?)?.let {
-                                intent.putExtra(Constants.EXTRA_URI, it)
+                                intent.putExtra(PushConstants.CASTLED_EXTRA_URI, it)
                             }
                             (buttonSecondary["clickAction"] as String?)?.let {
-                                intent.putExtra(Constants.EXTRA_ACTION, it)
+                                intent.putExtra(PushConstants.CASTLED_EXTRA_CLICK_ACTION, it)
                             }
                             (buttonSecondary["label"] as String?)?.let {
-                                intent.putExtra(Constants.EXTRA_LABEL, it)
+                                intent.putExtra(PushConstants.CASTLED_EXTRA_LABEL, it)
                             }
                             (buttonSecondary["keyVals"] as String?)?.let {
-                                intent.putExtra(Constants.EXTRA_KEY_VAL_PARAMS, it)
+                                intent.putExtra(PushConstants.CASTLED_EXTRA_KEY_VAL_PARAMS, it)
                             }
                             context.startActivity(intent)
                             reportEvent(
