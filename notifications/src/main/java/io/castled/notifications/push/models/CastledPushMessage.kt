@@ -7,7 +7,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 @Serializable
-internal data class CastledPushPayload(
+data class CastledPushMessage(
     val notificationId: Int,
     val sourceContext: String,
     val teamId: Long,
@@ -16,17 +16,16 @@ internal data class CastledPushPayload(
     val summary: String?,
     val imageUrl: String?,
     val sound: String?,
-    val tag: String?,
-    val priority: PushPriority?,
-    val clickAction: ClickAction?,
-    val clickActionUrl: String?,
+    val priority: CastledPushPriority?,
+    val clickAction: CastledClickAction?,
+    val clickActionUri: String?,
     val keyVals: Map<String, String>?,
     val channelId: String?,
     val channelName: String?,
     val channelDescription: String?,
     val smallIconResourceId: String?,
-    val largeIconUrl: String?,
-    val actionButtons: List<ActionButton>?,
+    val largeIconUri: String?,
+    val castledActionButtons: List<CastledActionButton>?,
     val ttl: Long?
 ) {
 
@@ -34,32 +33,31 @@ internal data class CastledPushPayload(
 
         val logger = CastledLogger.getInstance(LogTags.PUSH)
 
-        fun createPushPayloadFromMap(map: Map<String, Any?>): CastledPushPayload? {
+        fun extractCastledPushMessage(map: Map<String, Any?>): CastledPushMessage? {
             try {
-                return CastledPushPayload(
-                    notificationId = (map["notificationId"] as String).toInt(),
-                    sourceContext = map["sourceContext"] as String,
-                    teamId = (map["teamId"] as String).toLong(),
+                return CastledPushMessage(
+                    notificationId = (map["nId"] as String).toInt(),
+                    sourceContext = map["srcCtx"] as String,
+                    teamId = (map["tId"] as String).toLong(),
                     title = map["title"] as? String,
                     body = map["body"] as? String,
                     summary = map["summary"] as? String,
                     imageUrl = map["imageUrl"] as? String,
                     sound = map["sound"] as? String,
-                    tag = map["tag"] as? String,
-                    priority = (map["priority"] as? String)?.let { PushPriority.valueOf(it) },
-                    clickAction = (map["clickAction"] as? String)?.let { ClickAction.valueOf(it) },
-                    clickActionUrl = map["clickActionUrl"] as? String,
+                    priority = (map["priority"] as? String)?.let { CastledPushPriority.valueOf(it) },
+                    clickAction = (map["clickAction"] as? String)?.let { CastledClickAction.valueOf(it) },
+                    clickActionUri = map["clickActionUri"] as? String,
                     keyVals = (map["keyVals"] as? String)?.let { Json.decodeFromString(it) },
                     channelId = map["channelId"] as? String,
                     channelName = map["channelName"] as? String,
                     channelDescription = map["channelDescription"] as? String,
                     smallIconResourceId = map["smallIconResourceId"] as? String,
-                    largeIconUrl = map["largeIconUrl"] as? String,
-                    actionButtons = (map["actionButtons"] as? String)?.let { Json.decodeFromString(it) },
+                    largeIconUri = map["largeIconUri"] as? String,
+                    castledActionButtons = (map["actionButtons"] as? String)?.let { Json.decodeFromString(it) },
                     ttl = (map["ttl"] as? String)?.toLong()
                 )
             } catch (e: Exception) {
-                logger.error("Parsing push payload failed!", e)
+                logger.error("Parsing fcm push payload failed!", e)
                 return null
             }
         }

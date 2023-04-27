@@ -9,15 +9,16 @@
     <application>
 
         <service
-            android:name=".push.CastledMessagingService"
+            android:name=".push.CastledFcmMessagingService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"></action>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
 
         <activity
             android:name=".push.CastledNotificationReceiverAct"
+            android:noHistory="true"
             android:exported="false" />
 
         <receiver

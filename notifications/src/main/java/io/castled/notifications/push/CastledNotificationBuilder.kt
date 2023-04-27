@@ -14,9 +14,10 @@ import androidx.core.graphics.drawable.IconCompat
 import io.castled.notifications.R
 import io.castled.notifications.logger.CastledLogger.Companion.getInstance
 import io.castled.notifications.logger.LogTags
-import io.castled.notifications.push.PushNotificationManager.getOrCreateNotificationChannel
 import io.castled.notifications.push.models.*
 import io.castled.notifications.commons.CastledIdUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.IOException
@@ -24,48 +25,48 @@ import java.net.URL
 
 internal class CastledNotificationBuilder(private val context: Context) {
 
-    fun buildNotification(pushPayload: CastledPushPayload): Notification {
+    suspend fun buildNotification(pushMessage: CastledPushMessage): Notification {
         val notificationBuilder = NotificationCompat.Builder(
-            context, getChannelId(pushPayload)
+            context, getChannelId(pushMessage)
         )
 
-        notificationBuilder.setContentTitle(pushPayload.title)
+        notificationBuilder.setContentTitle(pushMessage.title)
 
         // Priority
-        setPriority(notificationBuilder, pushPayload)
+        setPriority(notificationBuilder, pushMessage)
 
         // Small Icon
-        setSmallIcon(notificationBuilder, pushPayload)
+        setSmallIcon(notificationBuilder, pushMessage)
 
         // Large icon
-        setLargeIcon(notificationBuilder, pushPayload)
+        setLargeIcon(notificationBuilder, pushMessage)
 
         // Image
-        setImage(notificationBuilder, pushPayload)
+        setImage(notificationBuilder, pushMessage)
 
         // Channel
-        setChannel(notificationBuilder, pushPayload)
+        setChannel(notificationBuilder, pushMessage)
 
         // notificationBuilder.setStyle(new NotificationCompat.BigTextStyle()
         // notificationBuilder.bigText(emailObject.getSubjectAndSnippet()))
-        setSummaryAndBody(notificationBuilder, pushPayload)
-        setTimeout(notificationBuilder, pushPayload)
+        setSummaryAndBody(notificationBuilder, pushMessage)
+        setTimeout(notificationBuilder, pushMessage)
 
         // Notification click action
-        addNotificationAction(notificationBuilder, pushPayload)
+        addNotificationAction(notificationBuilder, pushMessage)
 
         // Action buttons
-        addActionButtons(notificationBuilder, pushPayload)
+        addActionButtons(notificationBuilder, pushMessage)
 
         // Dismiss action
-        addDiscardAction(notificationBuilder, pushPayload)
+        addDiscardAction(notificationBuilder, pushMessage)
         notificationBuilder.setAutoCancel(true)
         return notificationBuilder.build()
     }
 
     private fun setSummaryAndBody(
         notificationBuilder: NotificationCompat.Builder,
-        payload: CastledPushPayload
+        payload: CastledPushMessage
     ) {
         val summary = payload.summary
         val body = payload.body
@@ -90,18 +91,18 @@ internal class CastledNotificationBuilder(private val context: Context) {
 
     private fun setPriority(
         notificationBuilder: NotificationCompat.Builder,
-        payload: CastledPushPayload
+        payload: CastledPushMessage
     ) {
         notificationBuilder.priority = when (payload.priority) {
-            PushPriority.HIGH -> NotificationCompat.PRIORITY_HIGH
+            CastledPushPriority.HIGH -> NotificationCompat.PRIORITY_HIGH
             else -> NotificationCompat.PRIORITY_DEFAULT
         }
     }
 
-    private fun setSmallIcon(
+    private suspend fun setSmallIcon(
         notificationBuilder: NotificationCompat.Builder,
-        payload: CastledPushPayload
-    ) {
+        payload: CastledPushMessage
+    ) = withContext(Dispatchers.IO) {
         val resources = context.resources
         val smallIcon = payload.smallIconResourceId
         val resourceId = smallIcon?.let {
@@ -126,11 +127,11 @@ internal class CastledNotificationBuilder(private val context: Context) {
         }
     }
 
-    private fun setLargeIcon(
+    private suspend fun setLargeIcon(
         notificationBuilder: NotificationCompat.Builder,
-        payload: CastledPushPayload
-    ) {
-        val largeIconUrl = payload.largeIconUrl
+        payload: CastledPushMessage
+    ) = withContext(Dispatchers.IO) {
+        val largeIconUrl = payload.largeIconUri
         val largeIconResourceId = R.drawable.io_castled_push_notification_large_icon
 
         when {
@@ -144,12 +145,15 @@ internal class CastledNotificationBuilder(private val context: Context) {
                 )
                 notificationBuilder.setLargeIcon(image)
             }
+            else -> {
+                // Nothing to do
+            }
         }
     }
 
     private fun addNotificationAction(
         notificationBuilder: NotificationCompat.Builder,
-        payload: CastledPushPayload
+        payload: CastledPushMessage
     ) {
         val pendingIntent = createNotificationIntent(
             NotificationActionContext(
@@ -157,7 +161,7 @@ internal class CastledNotificationBuilder(private val context: Context) {
                 teamId = payload.teamId,
                 sourceContext = payload.sourceContext,
                 eventType = NotificationEventType.CLICKED.toString(),
-                actionUri = payload.clickActionUrl,
+                actionUri = payload.clickActionUri,
                 actionType = payload.clickAction.toString(),
                 actionLabel = null,
                 keyVals = payload.keyVals
@@ -168,28 +172,29 @@ internal class CastledNotificationBuilder(private val context: Context) {
 
     private fun addActionButtons(
         notificationBuilder: NotificationCompat.Builder,
-        payload: CastledPushPayload
+        payload: CastledPushMessage
     ) {
-        payload.actionButtons?.forEach { actionButton ->
+        payload.castledActionButtons?.forEach { actionButton ->
             val event = NotificationActionContext(
                 notificationId = payload.notificationId,
                 teamId = payload.teamId,
                 sourceContext = payload.sourceContext,
-                eventType = if (actionButton.clickAction == ClickAction.DISMISS_NOTIFICATION) {
+                eventType = if (actionButton.castledClickAction == CastledClickAction.DISMISS_NOTIFICATION) {
                     NotificationEventType.DISCARDED.toString()
                 } else {
                     NotificationEventType.CLICKED.toString()
                 },
                 actionUri = actionButton.url,
-                actionType = actionButton.clickAction.toString(),
+                actionType = actionButton.castledClickAction.toString(),
                 actionLabel = actionButton.label,
                 keyVals = actionButton.keyVals
             )
-            val pendingIntent = if (actionButton.clickAction == ClickAction.DISMISS_NOTIFICATION) {
-                createDiscardIntent(event)
-            } else {
-                createNotificationIntent(event)
-            }
+            val pendingIntent =
+                if (actionButton.castledClickAction == CastledClickAction.DISMISS_NOTIFICATION) {
+                    createDiscardIntent(event)
+                } else {
+                    createNotificationIntent(event)
+                }
 
             val action = NotificationCompat.Action(0, actionButton.label, pendingIntent)
             notificationBuilder.addAction(action)
@@ -198,7 +203,7 @@ internal class CastledNotificationBuilder(private val context: Context) {
 
     private fun addDiscardAction(
         notificationBuilder: NotificationCompat.Builder,
-        payload: CastledPushPayload
+        payload: CastledPushMessage
     ) {
         val pendingIntent = createDiscardIntent(
             NotificationActionContext(
@@ -251,7 +256,7 @@ internal class CastledNotificationBuilder(private val context: Context) {
 
     private fun setChannel(
         notificationBuilder: NotificationCompat.Builder,
-        payload: CastledPushPayload
+        payload: CastledPushMessage
     ) {
         val channelId = payload.channelId.takeUnless { it.isNullOrBlank() }
             ?: context.getString(R.string.io_castled_push_default_channel_id)
@@ -260,25 +265,30 @@ internal class CastledNotificationBuilder(private val context: Context) {
             ?: context.getString(R.string.io_castled_push_default_channel_desc)
 
         notificationBuilder.setChannelId(
-            getOrCreateNotificationChannel(context, channelId, channelName, channelDesc)
+            PushNotificationManager.getOrCreateNotificationChannel(
+                context,
+                channelId,
+                channelName,
+                channelDesc
+            )
         )
     }
 
-    private fun getChannelId(payload: CastledPushPayload): String {
+    private fun getChannelId(payload: CastledPushMessage): String {
         return payload.channelId.takeUnless { it.isNullOrBlank() }
             ?: context.getString(R.string.io_castled_push_default_channel_id)
     }
 
     private fun setTimeout(
         notificationBuilder: NotificationCompat.Builder,
-        payload: CastledPushPayload
+        payload: CastledPushMessage
     ) {
         payload.ttl?.let { notificationBuilder.setTimeoutAfter(it) }
     }
 
-    private fun setImage(
+    private suspend fun setImage(
         notificationBuilder: NotificationCompat.Builder,
-        payload: CastledPushPayload
+        payload: CastledPushMessage
     ) {
         payload.imageUrl?.let { imageUrl ->
             val bitmap = getBitmapFromUrl(imageUrl)
@@ -290,14 +300,14 @@ internal class CastledNotificationBuilder(private val context: Context) {
         }
     }
 
-    private fun getBitmapFromUrl(imageUrl: String?): Bitmap? {
+    private suspend fun getBitmapFromUrl(imageUrl: String?): Bitmap? = withContext(Dispatchers.IO) {
         try {
             val url = URL(imageUrl)
-            return BitmapFactory.decodeStream(url.openConnection().getInputStream())
+            return@withContext BitmapFactory.decodeStream(url.openConnection().getInputStream())
         } catch (e: IOException) {
             logger.error(e.message ?: "Bitmap fetch failed!", e)
         }
-        return null
+        return@withContext null
     }
 
     companion object {

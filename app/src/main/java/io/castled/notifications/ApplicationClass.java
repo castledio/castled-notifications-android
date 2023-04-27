@@ -19,14 +19,14 @@ public class ApplicationClass extends MultiDexApplication {
 
         // SDK initialization
         CastledNotifications.initialize(this, "qwertyasdfg", new CastledConfigs.Builder()
-                .location(CastledConfigs.ClusterLocation.TEST)
+                .location(CastledConfigs.CastledLocation.TEST)
                 .enablePush(true)
                 .enableInApp(true)
                 .inAppFetchIntervalSec(300)
                 .build());
 
         // User identification
-        CastledNotifications.setUserId(this, "1987frank@gmail.com", () -> {
+        CastledNotifications.setUserId(this, "frank@castled.io", () -> {
                     onSuccess();
                     return Unit.INSTANCE;
                 },

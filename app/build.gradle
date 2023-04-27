@@ -41,6 +41,7 @@ dependencies {
 
     // Core Lib import
     implementation project(':notifications')
+    implementation project(':castled-mipush')
 
     // Default implementations
     implementation 'androidx.multidex:multidex:2.0.1'

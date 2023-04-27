@@ -1,5 +1,5 @@
 package io.castled.notifications.push.models
 
-internal enum class PushPriority {
+enum class CastledPushPriority {
     NORMAL, HIGH
 }

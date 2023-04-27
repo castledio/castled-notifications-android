@@ -9,9 +9,10 @@ internal class CastledRetrofitClient {
     companion object {
         private const val BASE_URL = "https://%s.castled.io/backend/"
         private val clusterMap = mapOf(
-            CastledConfigs.ClusterLocation.US to "app",
-            CastledConfigs.ClusterLocation.AP to "in",
-            CastledConfigs.ClusterLocation.TEST to "test"
+            CastledConfigs.CastledLocation.US to "app",
+            CastledConfigs.CastledLocation.AP to "in",
+            CastledConfigs.CastledLocation.INDIA to "in",
+            CastledConfigs.CastledLocation.TEST to "test"
         )
         private var retrofit: Retrofit? = null
 

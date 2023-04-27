@@ -9,8 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import io.castled.notifications.commons.CastledMapUtils
 import io.castled.notifications.logger.CastledLogger.Companion.getInstance
 import io.castled.notifications.logger.LogTags
-import io.castled.notifications.push.PushNotification.reportPushEvent
-import io.castled.notifications.push.models.ClickAction
+import io.castled.notifications.push.models.CastledClickAction
 import io.castled.notifications.push.models.NotificationActionContext
 import io.castled.notifications.push.models.PushConstants
 import kotlinx.serialization.decodeFromString
@@ -31,7 +30,7 @@ class CastledNotificationReceiverAct : AppCompatActivity() {
                 intent.extras?.getString(PushConstants.CASTLED_EXTRA_NOTIF_CONTEXT) ?: return
             val notificationContext: NotificationActionContext = Json.decodeFromString(contextJson)
             val clickedAction =
-                notificationContext.actionType?.let { ClickAction.valueOf(it) } ?: ClickAction.NONE
+                notificationContext.actionType?.let { CastledClickAction.valueOf(it) } ?: CastledClickAction.NONE
 
             // Cancel the notification
             val notificationManager =
@@ -39,7 +38,7 @@ class CastledNotificationReceiverAct : AppCompatActivity() {
             notificationManager.cancel(notificationContext.notificationId)
 
             val clientIntent = when (clickedAction) {
-                ClickAction.DEEP_LINKING, ClickAction.RICH_LANDING -> {
+                CastledClickAction.DEEP_LINKING, CastledClickAction.RICH_LANDING -> {
                     val uri = notificationContext.actionUri?.let { actionUri ->
                         notificationContext.keyVals?.let { keyVals ->
                             CastledMapUtils.mapToQueryParams(actionUri, keyVals)
@@ -47,7 +46,7 @@ class CastledNotificationReceiverAct : AppCompatActivity() {
                     }
                     Intent(Intent.ACTION_VIEW, Uri.parse(uri))
                 }
-                ClickAction.NAVIGATE_TO_SCREEN -> {
+                CastledClickAction.NAVIGATE_TO_SCREEN -> {
                     val className = notificationContext.actionUri ?: return
                     Intent(context, Class.forName(className)).apply {
                         notificationContext.keyVals?.let { keyVals ->
@@ -55,7 +54,7 @@ class CastledNotificationReceiverAct : AppCompatActivity() {
                         }
                     }
                 }
-                ClickAction.DEFAULT -> {
+                CastledClickAction.DEFAULT -> {
                     context.packageManager.getLaunchIntentForPackage(context.packageName)
                 }
                 else -> {
@@ -70,15 +69,10 @@ class CastledNotificationReceiverAct : AppCompatActivity() {
                         Intent.FLAG_ACTIVITY_CLEAR_TOP
                 context.startActivity(this)
             }
-            reportEvent(notificationContext)
-            finish()
+            PushNotification.reportPushEvent(notificationContext)
         } catch (e: Exception) {
             logger.error("Push notification receiver activity failed!", e)
         }
-    }
-
-    private fun reportEvent(event: NotificationActionContext) {
-        reportPushEvent(event)
     }
 
     companion object {

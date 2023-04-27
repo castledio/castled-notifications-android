@@ -68,7 +68,7 @@ internal class CastledRequestRetryWorker(appContext: Context, workerParams: Work
                 CastledNetworkRequestType.PUSH_REGISTER -> {
                     pushRepository.registerNoRetry(
                         (request as CastledPushRegisterRequest).userId,
-                        request.fcmToken
+                        request.tokens
                     )
                 }
                 CastledNetworkRequestType.PUSH_EVENT -> {

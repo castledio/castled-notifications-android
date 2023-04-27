@@ -11,32 +11,25 @@ import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.RemoteMessage
 import io.castled.notifications.logger.CastledLogger.Companion.getInstance
 import io.castled.notifications.logger.LogTags
-import io.castled.notifications.push.models.CastledPushPayload
+import io.castled.notifications.push.models.CastledPushMessage
 import io.castled.notifications.push.models.NotificationActionContext
 import io.castled.notifications.push.models.NotificationEventType
-import io.castled.notifications.push.models.NotificationFieldConsts
+import io.castled.notifications.push.models.CastledNotificationFieldConsts
 
-object PushNotificationManager {
+internal object PushNotificationManager {
     private val logger = getInstance(LogTags.PUSH)
 
     fun isCastledNotification(remoteMessage: RemoteMessage): Boolean {
-        val data = remoteMessage.data
-        if (data.containsKey(NotificationFieldConsts.CASTLED_KEY)) {
+        if (remoteMessage.data.containsKey(CastledNotificationFieldConsts.CASTLED_KEY)) {
             return true
         }
         logger.debug("Push message not from Castled!")
         return false
     }
 
-    fun handleNotification(context: Context, remoteMessage: RemoteMessage): Boolean {
-        if (!isCastledNotification(remoteMessage)) {
-            return false
-        }
+    suspend fun handleNotification(context: Context, pushPayload: CastledPushMessage) {
         // Payload from Castled server
         logger.debug("Building castled notification...")
-        // Return if failed to extract payload
-        val pushPayload = CastledPushPayload.createPushPayloadFromMap(remoteMessage.data)
-            ?: return false
 
         if (PushNotification.isAppInForeground) {
             // Not displaying notification if foreground.
@@ -59,10 +52,12 @@ object PushNotificationManager {
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 logger.debug("Do not have push permission!")
-                return false
+                return
             }
-            val notification = CastledNotificationBuilder(context).buildNotification(pushPayload)
-            NotificationManagerCompat.from(context).notify(pushPayload.notificationId, notification)
+            val notification =
+                CastledNotificationBuilder(context).buildNotification(pushPayload)
+            NotificationManagerCompat.from(context)
+                .notify(pushPayload.notificationId, notification)
 
             PushNotification.reportPushEvent(
                 NotificationActionContext(
@@ -77,7 +72,6 @@ object PushNotificationManager {
                 )
             )
         }
-        return true
     }
 
     fun getOrCreateNotificationChannel(

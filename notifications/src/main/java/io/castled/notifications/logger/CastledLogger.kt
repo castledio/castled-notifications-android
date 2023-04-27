@@ -2,7 +2,7 @@ package io.castled.notifications.logger
 
 import android.util.Log
 
-internal class CastledLogger private constructor(private val tag: String) : Logger {
+class CastledLogger private constructor(private val tag: String) : Logger {
     override fun verbose(message: String) {
         Log.v(tag, message)
     }
@@ -28,8 +28,14 @@ internal class CastledLogger private constructor(private val tag: String) : Logg
     }
 
     companion object {
+
+        private val loggersByTag = mutableMapOf<String, CastledLogger>()
+
+        @Synchronized
         fun getInstance(tag: String): CastledLogger {
-            return CastledLogger(tag)
+            return loggersByTag.getOrPut(tag) {
+                CastledLogger(tag)
+            }
         }
     }
 }

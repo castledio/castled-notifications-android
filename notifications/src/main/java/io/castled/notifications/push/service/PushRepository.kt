@@ -3,6 +3,7 @@ package io.castled.notifications.push.service
 import android.content.Context
 import io.castled.notifications.network.CastledRetrofitClient.Companion.create
 import io.castled.notifications.push.models.NotificationActionContext
+import io.castled.notifications.push.models.PushTokenInfo
 import io.castled.notifications.store.CastledSharedStore
 import io.castled.notifications.workmanager.CastledNetworkWorkManager
 import io.castled.notifications.workmanager.CastledRequestConverters.toCastledPushEventRequest
@@ -15,9 +16,9 @@ internal class PushRepository(context: Context) {
     private val networkWorkManager = CastledNetworkWorkManager.getInstance(context)
     private val pushApi by lazy { create(PushApi::class.java) }
 
-    suspend fun register(userId: String, token: String?) {
+    suspend fun register(userId: String, tokens: List<PushTokenInfo>) {
         networkWorkManager.apiCallWithRetry(
-            request = CastledPushRegisterRequest(userId, token),
+            request = CastledPushRegisterRequest(userId, tokens),
             apiCall = {
                 return@apiCallWithRetry pushApi.register(
                     CastledSharedStore.getApiKey(),
@@ -39,10 +40,10 @@ internal class PushRepository(context: Context) {
         )
     }
 
-    suspend fun registerNoRetry(userId: String, token: String?): Response<Void?> {
+    suspend fun registerNoRetry(userId: String, tokens: List<PushTokenInfo>): Response<Void?> {
         return pushApi.register(
             CastledSharedStore.getApiKey(),
-            CastledPushRegisterRequest(userId, token)
+            CastledPushRegisterRequest(userId, tokens)
         )
     }
 

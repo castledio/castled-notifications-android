@@ -4,6 +4,7 @@ object LogTags {
     const val GENERIC = "CastledNotifications"
     const val IN_APP = "CastledNotifications-InApp"
     const val PUSH = "CastledNotifications-Push"
+    const val PUSH_TOKEN_PROVIDER = "CastledNotifications-PushTokenProvider"
     const val DB_OPS = "CastledNotifications-DbOps"
     const val ALC_OBS = "CastledNotifications-ActLcObs"
     const val FLC_OBS = "CastledNotifications-FgtLcObs"
