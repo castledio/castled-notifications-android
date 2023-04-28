@@ -41,15 +41,14 @@ internal class CastledNotificationBuilder(private val context: Context) {
         // Large icon
         setLargeIcon(notificationBuilder, pushMessage)
 
+        setSummaryAndBody(notificationBuilder, pushMessage)
+
         // Image
         setImage(notificationBuilder, pushMessage)
 
         // Channel
         setChannel(notificationBuilder, pushMessage)
 
-        // notificationBuilder.setStyle(new NotificationCompat.BigTextStyle()
-        // notificationBuilder.bigText(emailObject.getSubjectAndSnippet()))
-        setSummaryAndBody(notificationBuilder, pushMessage)
         setTimeout(notificationBuilder, pushMessage)
 
         // Notification click action
@@ -68,25 +67,10 @@ internal class CastledNotificationBuilder(private val context: Context) {
         notificationBuilder: NotificationCompat.Builder,
         payload: CastledPushMessage
     ) {
-        val summary = payload.summary
-        val body = payload.body
-        val image = payload.imageUrl
-        if (image.isNullOrBlank()) {
-            if (!summary.isNullOrBlank()) {
-                notificationBuilder.setContentText(summary)
-            }
-        } else {
-            if (!summary.isNullOrBlank()) {
-                val summaryAndBody = String.format("%s\n%s", summary, body)
-                notificationBuilder.setContentText(summary)
-                notificationBuilder.setStyle(
-                    NotificationCompat.BigTextStyle()
-                        .bigText(summaryAndBody)
-                )
-            } else {
-                notificationBuilder.setContentText(body)
-            }
+        if (!payload.summary.isNullOrBlank()) {
+            notificationBuilder.setSubText(payload.summary)
         }
+        notificationBuilder.setContentText(payload.body)
     }
 
     private fun setPriority(
@@ -105,9 +89,10 @@ internal class CastledNotificationBuilder(private val context: Context) {
     ) = withContext(Dispatchers.IO) {
         val resources = context.resources
         val smallIcon = payload.smallIconResourceId
-        val resourceId = smallIcon?.let {
-            resources.getIdentifier(it, "drawable", context.packageName)
-        } ?: 0
+        var resourceId = 0
+        if (!smallIcon.isNullOrBlank()) {
+            resourceId = resources.getIdentifier(smallIcon, "drawable", context.packageName)
+        }
 
         when {
             resourceId > 0 -> {
@@ -125,6 +110,18 @@ internal class CastledNotificationBuilder(private val context: Context) {
                 )
             }
         }
+    }
+
+    private fun getBitmapFromDrawable(drawable: Drawable): Bitmap {
+        val bmp = Bitmap.createBitmap(
+            drawable.intrinsicWidth,
+            drawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bmp)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+        return bmp
     }
 
     private suspend fun setLargeIcon(
@@ -149,6 +146,35 @@ internal class CastledNotificationBuilder(private val context: Context) {
                 // Nothing to do
             }
         }
+    }
+
+    private suspend fun setImage(
+        notificationBuilder: NotificationCompat.Builder,
+        payload: CastledPushMessage
+    ) {
+        if (!payload.imageUrl.isNullOrBlank()) {
+            val bitmap = getBitmapFromUrl(payload.imageUrl)
+            val style = NotificationCompat.BigPictureStyle()
+                .bigPicture(bitmap)
+                .setSummaryText(payload.body)
+                .setBigContentTitle(payload.title)
+
+            notificationBuilder.setStyle(style)
+            if (payload.imageUrl == payload.largeIconUri) {
+                // If both are same, user intends to show only 1 image whether it is expanded or collapsed
+                notificationBuilder.setLargeIcon(null)
+            }
+        }
+    }
+
+    private suspend fun getBitmapFromUrl(imageUrl: String?): Bitmap? = withContext(Dispatchers.IO) {
+        try {
+            val url = URL(imageUrl)
+            return@withContext BitmapFactory.decodeStream(url.openConnection().getInputStream())
+        } catch (e: IOException) {
+            logger.error(e.message ?: "Bitmap fetch failed!", e)
+        }
+        return@withContext null
     }
 
     private fun addNotificationAction(
@@ -240,7 +266,7 @@ internal class CastledNotificationBuilder(private val context: Context) {
         val intent = Intent(context, CastledNotificationReceiverAct::class.java).apply {
             putExtra(PushConstants.CASTLED_EXTRA_NOTIF_CONTEXT, Json.encodeToString(actionContext))
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_SINGLE_TOP or
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK or
                     Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
 
@@ -286,43 +312,7 @@ internal class CastledNotificationBuilder(private val context: Context) {
         payload.ttl?.let { notificationBuilder.setTimeoutAfter(it) }
     }
 
-    private suspend fun setImage(
-        notificationBuilder: NotificationCompat.Builder,
-        payload: CastledPushMessage
-    ) {
-        payload.imageUrl?.let { imageUrl ->
-            val bitmap = getBitmapFromUrl(imageUrl)
-            val style = NotificationCompat.BigPictureStyle()
-                .bigPicture(bitmap)
-                .setSummaryText(payload.body)
-
-            notificationBuilder.setStyle(style)
-        }
-    }
-
-    private suspend fun getBitmapFromUrl(imageUrl: String?): Bitmap? = withContext(Dispatchers.IO) {
-        try {
-            val url = URL(imageUrl)
-            return@withContext BitmapFactory.decodeStream(url.openConnection().getInputStream())
-        } catch (e: IOException) {
-            logger.error(e.message ?: "Bitmap fetch failed!", e)
-        }
-        return@withContext null
-    }
-
     companion object {
         private val logger = getInstance(LogTags.PUSH)
-
-        private fun getBitmapFromDrawable(drawable: Drawable): Bitmap {
-            val bmp = Bitmap.createBitmap(
-                drawable.intrinsicWidth,
-                drawable.intrinsicHeight,
-                Bitmap.Config.ARGB_8888
-            )
-            val canvas = Canvas(bmp)
-            drawable.setBounds(0, 0, canvas.width, canvas.height)
-            drawable.draw(canvas)
-            return bmp
-        }
     }
 }

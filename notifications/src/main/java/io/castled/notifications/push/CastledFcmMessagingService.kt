@@ -19,7 +19,7 @@ class CastledFcmMessagingService : FirebaseMessagingService() {
 
         if (CastledNotifications.isCastledPushMessage(remoteMessage)) {
             // Return if failed to extract payload
-            val pushMessage = CastledPushMessage.extractCastledPushMessage(remoteMessage.data)
+            val pushMessage = CastledPushMessage.getPushMessageFromMap(remoteMessage.data)
                 ?: return
             // Handle message payload
             CastledNotifications.handlePushNotification(this, pushMessage)

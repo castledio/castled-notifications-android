@@ -33,7 +33,7 @@ data class CastledPushMessage(
 
         val logger = CastledLogger.getInstance(LogTags.PUSH)
 
-        fun extractCastledPushMessage(map: Map<String, Any?>): CastledPushMessage? {
+        fun getPushMessageFromMap(map: Map<String, Any?>): CastledPushMessage? {
             try {
                 return CastledPushMessage(
                     notificationId = (map["nId"] as String).toInt(),
