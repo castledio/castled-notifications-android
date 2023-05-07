@@ -1,8 +1,11 @@
 package io.castled.notifications.network
 
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import io.castled.notifications.CastledConfigs
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 internal class CastledRetrofitClient {
 
@@ -15,15 +18,19 @@ internal class CastledRetrofitClient {
             CastledConfigs.CastledLocation.TEST to "test"
         )
         private var retrofit: Retrofit? = null
+        private val json = Json { ignoreUnknownKeys = true }
+        private val contentType = MediaType.get("application/json")
 
         fun <T : Any> create(service: Class<T>): T = retrofit!!.create(service)
 
+        @OptIn(ExperimentalSerializationApi::class)
         @Synchronized
         fun init(configs: CastledConfigs) {
             if (retrofit == null) {
+
                 retrofit = Retrofit.Builder()
                     .baseUrl(String.format(BASE_URL, clusterMap[configs.location]))
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(json.asConverterFactory(contentType))
                     .build()
             }
         }

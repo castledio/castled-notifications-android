@@ -1,6 +1,6 @@
 package io.castled.notifications.store.models
 
-internal enum class InAppPriority {
+enum class InAppPriority {
 
     URGENT,
     HIGH,

@@ -10,7 +10,7 @@ import kotlinx.serialization.json.JsonObject
     tableName = "campaigns",
     indices = [Index(value = ["notification_id"], unique = true)]
 )
-internal data class Campaign(
+data class Campaign(
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,

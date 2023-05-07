@@ -7,25 +7,66 @@ import io.castled.notifications.trigger.enums.OperationType
 import io.castled.notifications.trigger.enums.PropertyType
 import io.castled.notifications.trigger.models.*
 import io.castled.notifications.trigger.models.BetweenOperation
-import io.castled.notifications.trigger.models.PropertyFilter
 import io.castled.notifications.trigger.models.PropertyOperation
 import io.castled.notifications.trigger.models.SingleValueOperation
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.Serializer
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.descriptors.element
+import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.encoding.decodeStructure
 import kotlinx.serialization.json.*
 
-@OptIn(ExperimentalSerializationApi::class)
 @Serializer(forClass = EventFilter::class)
 internal object EventFilterDeserializer : KSerializer<EventFilter> {
 
+
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("EventFilter") {
+        element<String>("type")
+        element("GroupFilter", buildClassSerialDescriptor("GroupFilter") {
+            element<JoinType>("joinType")
+            element<List<EventFilter>>("filters")
+        })
+        element("PropertyFilter", buildClassSerialDescriptor("PropertyFilter") {
+            element<String>("name")
+            element<PropertyOperation>("operation")
+        })
+    }
+
+    override fun deserialize(decoder: Decoder): EventFilter {
+        return decoder.decodeStructure(descriptor) {
+            lateinit var eventFilter: EventFilter
+            while (true) {
+                when (val index = decodeElementIndex(descriptor)) {
+                    CompositeDecoder.DECODE_DONE -> break
+                    0 -> {
+                        when (decodeStringElement(descriptor, index)) {
+                            FilterType.GROUP.name -> eventFilter = decodeSerializableElement(descriptor, 1, GroupFilter.serializer())
+                            FilterType.HAVING_PROPERTY.name -> eventFilter = decodeSerializableElement(descriptor, 2, PropertyFilter.serializer())
+                        }
+                    }
+                    else -> error("Unexpected index: $index")
+                }
+            }
+            eventFilter
+        }
+    }
+
+    /*
     override fun deserialize(decoder: Decoder): EventFilter {
         val jsonDecoder = decoder as? JsonDecoder
             ?: throw SerializationException("This serializer can only be used with JSON format")
         val json = jsonDecoder.decodeJsonElement()
         return deserializeEventFilter(json)
+    }
+    */
+
+
+    override fun serialize(encoder: Encoder, value: EventFilter) {
+        TODO("Not yet implemented")
     }
 
     private fun deserializeEventFilter(json: JsonElement): EventFilter {

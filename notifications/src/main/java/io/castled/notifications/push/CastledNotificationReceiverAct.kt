@@ -3,10 +3,9 @@ package io.castled.notifications.push
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import io.castled.notifications.commons.CastledMapUtils
+import io.castled.notifications.commons.CastledClickActionUtils
 import io.castled.notifications.logger.CastledLogger.Companion.getInstance
 import io.castled.notifications.logger.LogTags
 import io.castled.notifications.push.models.CastledClickAction
@@ -37,37 +36,21 @@ class CastledNotificationReceiverAct : AppCompatActivity() {
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.cancel(notificationContext.notificationId)
 
-            val clientIntent = when (clickedAction) {
+            when (clickedAction) {
                 CastledClickAction.DEEP_LINKING, CastledClickAction.RICH_LANDING -> {
-                    val uri = notificationContext.actionUri?.let { actionUri ->
-                        notificationContext.keyVals?.let { keyVals ->
-                            CastledMapUtils.mapToQueryParams(actionUri, keyVals)
-                        } ?: actionUri
-                    }
-                    Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+                    val uri = notificationContext.actionUri ?: return
+                    CastledClickActionUtils.handleDeeplinkAction(context, uri, notificationContext.keyVals)
                 }
                 CastledClickAction.NAVIGATE_TO_SCREEN -> {
                     val className = notificationContext.actionUri ?: return
-                    Intent(context, Class.forName(className)).apply {
-                        notificationContext.keyVals?.let { keyVals ->
-                            putExtras(CastledMapUtils.mapToBundle(keyVals))
-                        }
-                    }
+                    CastledClickActionUtils.handleNavigationAction(context, className, notificationContext.keyVals)
                 }
                 CastledClickAction.DEFAULT -> {
-                    context.packageManager.getLaunchIntentForPackage(context.packageName)
+                    CastledClickActionUtils.handleDefaultAction(context)
                 }
                 else -> {
                     logger.debug("Undefined click action: $clickedAction")
-                    null
                 }
-            }
-
-            clientIntent?.apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                        Intent.FLAG_ACTIVITY_SINGLE_TOP or
-                        Intent.FLAG_ACTIVITY_CLEAR_TOP
-                context.startActivity(this)
             }
             PushNotification.reportPushEvent(notificationContext)
         } catch (e: Exception) {

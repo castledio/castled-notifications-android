@@ -7,8 +7,10 @@ internal object CastledMapUtils {
     fun mapToQueryParams(baseUrl: String, queryParams: Map<String, String>): String {
         val queryString = buildString {
             queryParams.forEach { (key, value) ->
-                append(if (isEmpty()) "?" else "&")
-                append("${key}=${value}")
+                if (key.isNotBlank() && value.isNotBlank()) {
+                    append(if (isEmpty()) "?" else "&")
+                    append("${key}=${value}")
+                }
             }
         }
         return "$baseUrl$queryString"

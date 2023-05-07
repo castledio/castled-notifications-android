@@ -82,6 +82,12 @@ object CastledNotifications {
     }
 
     private suspend fun setUserId(context: Context, userId: String?) {
+        if (!isMainProcess(context)) {
+            // In case there are services that are not run from main process, skip init
+            // for such processes
+            logger.verbose("skipping user-id set. Not main process!")
+            return
+        }
         if (!isInited()) {
             throw IllegalStateException("Sdk not yet initialized!")
 

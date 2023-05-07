@@ -6,6 +6,7 @@ import io.castled.notifications.inapp.observer.AppActivityLifecycleObserver
 import io.castled.notifications.logger.CastledLogger
 import io.castled.notifications.logger.LogTags
 import io.castled.notifications.store.CastledSharedStore
+import io.castled.notifications.workmanager.models.CastledInAppEventRequest
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Default
 import java.util.concurrent.TimeUnit
@@ -18,7 +19,7 @@ internal object InAppNotification {
     private var enabled = false
     private var fetchJob: Job? = null
 
-    internal fun init(application: Application, externalScope: CoroutineScope) {
+    fun init(application: Application, externalScope: CoroutineScope) {
         this.externalScope = externalScope
         this.inAppController = InAppController(application)
         application.registerActivityLifecycleCallbacks(AppActivityLifecycleObserver())
@@ -26,10 +27,11 @@ internal object InAppNotification {
         this.enabled = true
     }
 
-    internal fun startCampaignJob() {
+    fun startCampaignJob() {
         if (fetchJob == null || !fetchJob!!.isActive) {
             externalScope.launch(Default) {
                 do {
+                    logger.verbose("Syncing in-apps...")
                     inAppController.refreshLiveCampaigns()
                     delay(TimeUnit.SECONDS.toMillis(CastledSharedStore.configs.inAppFetchIntervalSec))
                 } while (true)
@@ -46,5 +48,9 @@ internal object InAppNotification {
             logger.debug("Ignoring app event, In-App disabled")
         }
         inAppController.findAndLaunchInApp(context, eventName, eventParams)
+    }
+
+    fun reportInAppEvent(request: CastledInAppEventRequest) = externalScope.launch(Default) {
+        inAppController.reportEvent(request)
     }
 }

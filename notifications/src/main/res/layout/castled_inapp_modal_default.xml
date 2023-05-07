@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<io.castled.notifications.inapp.views.InAppModalViewLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/castled_inapp_modal_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="0dp">
+
+    <io.castled.notifications.inapp.views.InAppConstrainedLayout
+        android:id="@+id/castled_inapp_modal_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/castled_inapp_modal_container_light">
+
+        <LinearLayout style="@style/Castled.InApp.Modal.Layout">
+
+            <ImageView
+                android:id="@+id/castled_inapp_modal_img"
+                style="@style/Castled.InApp.Image" />
+
+            <TextView
+                android:id="@+id/castled_inapp_modal_title"
+                style="@style/Castled.InApp.Title"
+                tools:text="Title Text" />
+
+            <TextView
+                android:id="@+id/castled_inapp_modal_message"
+                style="@style/Castled.InApp.Message"
+                tools:text="Message Text" />
+
+            <LinearLayout
+                android:id="@+id/castled_inapp_modal_btn_container"
+                style="@style/Castled.InApp.Modal.Layout.Buttons">
+
+                <Button
+                    android:id="@+id/castled_inapp_modal_btn_secondary"
+                    style="@style/Castled.InApp.Buttons"
+                    tools:text="Second Button" />
+
+                <Button
+                    android:id="@+id/castled_inapp_modal_btn_primary"
+                    style="@style/Castled.InApp.Buttons"
+                    tools:text="Primary Button" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/castled_inapp_modal_close_btn"
+            style="@style/Castled.InApp.CloseImageButton" />
+
+    </io.castled.notifications.inapp.views.InAppConstrainedLayout>
+
+</io.castled.notifications.inapp.views.InAppModalViewLayout>

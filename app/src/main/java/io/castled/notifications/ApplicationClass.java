@@ -22,7 +22,9 @@ public class ApplicationClass extends MultiDexApplication {
                 .location(CastledConfigs.CastledLocation.TEST)
                 .enablePush(true)
                 .enableInApp(true)
-                .inAppFetchIntervalSec(300)
+                .inAppFetchIntervalSec(10)
+                .xiaomiAppId("2882303761521565034")
+                .xiaomiAppKey("5382156577034")
                 .build());
 
         // User identification
@@ -41,7 +43,7 @@ public class ApplicationClass extends MultiDexApplication {
     }
 
     private static void onError(Exception e) {
-        Log.e(TAG, e.getMessage());
+        Log.e(TAG, "user-id set failed!", e);
     }
 
     @Override

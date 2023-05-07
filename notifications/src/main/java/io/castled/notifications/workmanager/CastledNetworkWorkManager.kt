@@ -10,7 +10,7 @@ import retrofit2.Response
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
-internal class CastledNetworkWorkManager(context: Context) {
+internal class CastledNetworkWorkManager private constructor(context: Context) {
 
     private val networkRetryRepository = NetworkRetryRepository(context)
 
@@ -18,12 +18,12 @@ internal class CastledNetworkWorkManager(context: Context) {
 
     private val constraints = Constraints.Builder()
         .setRequiredNetworkType(NetworkType.CONNECTED)
+        .setRequiresBatteryNotLow(true)
         .build()
 
     private suspend fun enqueueRequest(request: CastledNetworkRequest) {
         networkRetryRepository.insertRetryRequest(NetworkRetryLog(request = request))
         val workRequest = OneTimeWorkRequestBuilder<CastledRequestRetryWorker>()
-            .addTag(CASTLED_RETRY_WORK)
             .setConstraints(constraints)
             .setInitialDelay(Random.nextLong(1, 10), TimeUnit.SECONDS)
             .setBackoffCriteria(
@@ -33,7 +33,11 @@ internal class CastledNetworkWorkManager(context: Context) {
             )
             .build()
         logger.debug("enqueuing work-id: ${workRequest.id}")
-        workManager.enqueue(workRequest)
+        workManager.beginUniqueWork(
+            CASTLED_NETWORK_RETRY_WORK,
+            ExistingWorkPolicy.REPLACE,
+            workRequest
+        ).enqueue()
     }
 
     suspend fun <T> apiCallWithRetry(
@@ -54,7 +58,7 @@ internal class CastledNetworkWorkManager(context: Context) {
 
     companion object {
 
-        private const val CASTLED_RETRY_WORK = "castled_network_retry_work"
+        private const val CASTLED_NETWORK_RETRY_WORK = "castled_network_retry_work"
 
         private val logger = CastledLogger.getInstance(LogTags.WORK_MANAGER)
 

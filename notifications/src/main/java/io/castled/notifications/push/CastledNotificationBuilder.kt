@@ -158,12 +158,11 @@ internal class CastledNotificationBuilder(private val context: Context) {
                 .bigPicture(bitmap)
                 .setSummaryText(payload.body)
                 .setBigContentTitle(payload.title)
-
-            notificationBuilder.setStyle(style)
             if (payload.imageUrl == payload.largeIconUri) {
                 // If both are same, user intends to show only 1 image whether it is expanded or collapsed
-                notificationBuilder.setLargeIcon(null)
+                style.bigLargeIcon(null)
             }
+            notificationBuilder.setStyle(style)
         }
     }
 
@@ -205,18 +204,18 @@ internal class CastledNotificationBuilder(private val context: Context) {
                 notificationId = payload.notificationId,
                 teamId = payload.teamId,
                 sourceContext = payload.sourceContext,
-                eventType = if (actionButton.castledClickAction == CastledClickAction.DISMISS_NOTIFICATION) {
+                eventType = if (actionButton.clickAction == CastledClickAction.DISMISS_NOTIFICATION) {
                     NotificationEventType.DISCARDED.toString()
                 } else {
                     NotificationEventType.CLICKED.toString()
                 },
                 actionUri = actionButton.url,
-                actionType = actionButton.castledClickAction.toString(),
+                actionType = actionButton.clickAction.toString(),
                 actionLabel = actionButton.label,
                 keyVals = actionButton.keyVals
             )
             val pendingIntent =
-                if (actionButton.castledClickAction == CastledClickAction.DISMISS_NOTIFICATION) {
+                if (actionButton.clickAction == CastledClickAction.DISMISS_NOTIFICATION) {
                     createDiscardIntent(event)
                 } else {
                     createNotificationIntent(event)

@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 data class CastledActionButton(
     val label: String,
     val url: String?,
-    val castledClickAction: CastledClickAction,
+    val clickAction: CastledClickAction,
     val keyVals: HashMap<String, String>?,
 )
