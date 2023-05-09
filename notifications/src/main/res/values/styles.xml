@@ -131,7 +131,7 @@
         </item>
         <item name="android:layout_width">60dp</item>
         <item name="android:layout_height">60dp</item>
-        <item name="android:layout_marginLeft">6.0dp</item>
+        <item name="android:layout_marginLeft">8.0dp</item>
         <item name="android:scaleType">fitXY</item>
         <item name="android:layout_centerVertical">true</item>
     </style>
@@ -139,10 +139,20 @@
     <style name="Castled.InApp.Message.Banner">
         <item name="android:gravity">left</item>
         <item name="android:layout_centerVertical">true</item>
-        <item name="android:paddingLeft">6.0dp</item>
+        <item name="android:paddingLeft">8.0dp</item>
         <item name="android:paddingRight">18.0dp</item>
-        <item name="android:paddingTop">6.0dp</item>
-        <item name="android:paddingBottom">6.0dp</item>
+        <item name="android:paddingTop">8.0dp</item>
+        <item name="android:paddingBottom">8.0dp</item>
+    </style>
+
+    <style name="Castled.InApp.RightIcon">
+        <item name="android:src">@drawable/castled_right_icon</item>
+        <item name="android:layout_height">14dp</item>
+        <item name="android:layout_width">8dp</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentEnd">true</item>
     </style>
 
     <style name="Castled.InApp.CloseImageButton.Banner">

@@ -4,7 +4,6 @@
     android:id="@+id/castled_inapp_banner_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="0dp"
     android:padding="16.0dp">
 
     <RelativeLayout
@@ -12,11 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/castled_inapp_container_light"
-        android:padding="0.0dp">
+        android:minHeight="80dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/castled_inapp_banner_img"
@@ -25,8 +25,12 @@
             <TextView
                 android:id="@+id/castled_inapp_banner_message"
                 style="@style/Castled.InApp.Message.Banner"
-                android:layout_toRightOf="@+id/castled_inapp_banner_img"
+                android:layout_toRightOf="@id/castled_inapp_banner_img"
                 tools:text="Message Text" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/castled_inapp_banner_right_icon"
+                style="@style/Castled.InApp.RightIcon" />
 
         </RelativeLayout>
 
