@@ -8,7 +8,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import java.util.*
 
-internal object InAppSystemEventUtils {
+internal object InAppEventUtils {
 
     fun getViewedEvent(campaign: Campaign): CastledInAppEventRequest {
         val event = CastledInAppEvent(

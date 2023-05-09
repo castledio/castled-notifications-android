@@ -10,13 +10,14 @@
         android:id="@+id/castled_inapp_modal_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/castled_inapp_modal_container_light">
+        android:padding="0.0dp"
+        android:background="@color/castled_inapp_container_light">
 
         <LinearLayout style="@style/Castled.InApp.Modal.Layout">
 
             <ImageView
                 android:id="@+id/castled_inapp_modal_img"
-                style="@style/Castled.InApp.Image" />
+                style="@style/Castled.InApp.Image.Modal" />
 
             <TextView
                 android:id="@+id/castled_inapp_modal_title"
@@ -25,7 +26,7 @@
 
             <TextView
                 android:id="@+id/castled_inapp_modal_message"
-                style="@style/Castled.InApp.Message"
+                style="@style/Castled.InApp.Message.Modal"
                 tools:text="Message Text" />
 
             <LinearLayout
@@ -34,12 +35,12 @@
 
                 <Button
                     android:id="@+id/castled_inapp_modal_btn_secondary"
-                    style="@style/Castled.InApp.Buttons"
+                    style="@style/Castled.InApp.Buttons.DualButtons.Secondary"
                     tools:text="Second Button" />
 
                 <Button
                     android:id="@+id/castled_inapp_modal_btn_primary"
-                    style="@style/Castled.InApp.Buttons"
+                    style="@style/Castled.InApp.Buttons.DualButtons.Primary"
                     tools:text="Primary Button" />
 
             </LinearLayout>

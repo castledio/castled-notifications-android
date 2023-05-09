@@ -5,10 +5,7 @@ import android.graphics.Color
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import io.castled.notifications.R
@@ -17,30 +14,32 @@ import io.castled.notifications.logger.LogTags
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 
-class InAppModalViewLayout(context: Context, attrs: AttributeSet) : InAppBaseViewLayout(context, attrs) {
+class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) : InAppBaseViewLayout(context, attrs) {
 
     override val viewContainer: View?
-        get() = findViewById(R.id.castled_inapp_modal_container)
+        get() = findViewById(R.id.castled_inapp_fs_container)
     override val headerView: TextView?
-        get() = findViewById(R.id.castled_inapp_modal_title)
+        get() = findViewById(R.id.castled_inapp_fs_title)
     override val messageView: TextView?
-        get() = findViewById(R.id.castled_inapp_modal_message)
+        get() = findViewById(R.id.castled_inapp_fs_message)
     override val imageView: ImageView?
-        get() = findViewById(R.id.castled_inapp_modal_img)
+        get() = findViewById(R.id.castled_inapp_fs_img)
     override val buttonViewContainer: View?
-        get() = findViewById(R.id.castled_inapp_modal_btn_container)
+        get() = findViewById(R.id.castled_inapp_fs_btn_container)
     override val primaryButton: Button?
-        get() = findViewById(R.id.castled_inapp_modal_btn_primary)
+        get() = findViewById(R.id.castled_inapp_fs_btn_primary)
     override val secondaryButton: Button?
-        get() = findViewById(R.id.castled_inapp_modal_btn_secondary)
+        get() = findViewById(R.id.castled_inapp_fs_btn_secondary)
     override val closeButton: ImageButton?
-        get() = findViewById(R.id.castled_inapp_modal_close_btn)
+        get() = findViewById(R.id.castled_inapp_fs_close_btn)
 
     override fun updateViewParams(message: JsonObject) {
-        val modalParams = message["modal"]?.jsonObject ?: run {
-            logger.debug("Model object not present in in-app message!")
+        // TODO: testing with modal payload
+        val modalParams = message["fs"]?.jsonObject ?: run {
+            InAppModalViewLayout.logger.debug("fs object not present in in-app message!")
             return
         }
+
         updateImageView(modalParams)
         updateHeaderView(modalParams)
         updateMessageView(modalParams)
@@ -114,4 +113,5 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) : InAppBaseVie
     companion object {
         val logger = CastledLogger.getInstance(LogTags.IN_APP)
     }
+
 }

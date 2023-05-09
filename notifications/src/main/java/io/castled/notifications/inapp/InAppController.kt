@@ -5,8 +5,6 @@ import com.google.gson.JsonSyntaxException
 import io.castled.notifications.inapp.CampaignResponseConverter.toCampaign
 import io.castled.notifications.store.models.Campaign
 import io.castled.notifications.inapp.service.InAppRepository
-import io.castled.notifications.inapp.views.InAppModalViewLayout
-import io.castled.notifications.inapp.views.InAppViewFactory
 import io.castled.notifications.logger.CastledLogger
 import io.castled.notifications.logger.LogTags
 import io.castled.notifications.trigger.EventFilterDeserializer
@@ -100,23 +98,14 @@ internal class InAppController(context: Context) {
         return triggeredInApps
     }
 
-    private fun launchInApp(
+    private suspend fun launchInApp(
         context: Context, triggeredInApps: List<Campaign>
     ) {
         if (triggeredInApps.isNotEmpty()) {
             val inAppSelectedForDisplay = triggeredInApps.maxBy { it.priority }
-            val inAppView = InAppViewFactory.createView(
-                context,
-                InAppMessageUtils.getMessageType(inAppSelectedForDisplay.message)
-            ) as InAppModalViewLayout
-            CoroutineScope(Main).launch {
+            withContext(Main) {
                 try {
-                    inAppView.updateViewParams(inAppSelectedForDisplay.message)
-                    InAppModalViewDecorator(
-                        context,
-                        inAppView,
-                        inAppSelectedForDisplay
-                    ).show()
+                    InAppViewDecorator(context, inAppSelectedForDisplay).show()
                 } catch (e: Exception) {
                     logger.error("In-app display failed!", e)
                 }

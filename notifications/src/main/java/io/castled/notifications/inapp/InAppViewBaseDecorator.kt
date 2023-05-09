@@ -1,6 +1,6 @@
 package io.castled.notifications.inapp
 
-interface InAppViewDecorator {
+interface InAppViewBaseDecorator {
 
     fun show()
 

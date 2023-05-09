@@ -16,7 +16,7 @@ internal object InAppMessageUtils {
         return when (getMessageType(message)) {
             InAppMessageType.MODAL -> message["modal"]?.jsonObject!!
             InAppMessageType.FULL_SCREEN -> message["fs"]?.jsonObject!!
-            InAppMessageType.SLIDE_UP -> message["slideUp"]?.jsonObject!!
+            InAppMessageType.BANNER -> message["slideUp"]?.jsonObject!!
         }
     }
 

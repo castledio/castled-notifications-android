@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<io.castled.notifications.inapp.views.InAppBannerViewLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/castled_inapp_banner_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="0dp"
+    android:padding="16.0dp">
+
+    <RelativeLayout
+        android:id="@+id/castled_inapp_banner_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/castled_inapp_container_light"
+        android:padding="0.0dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/castled_inapp_banner_img"
+                style="@style/Castled.InApp.Image.Banner" />
+
+            <TextView
+                android:id="@+id/castled_inapp_banner_message"
+                style="@style/Castled.InApp.Message.Banner"
+                android:layout_toRightOf="@+id/castled_inapp_banner_img"
+                tools:text="Message Text" />
+
+        </RelativeLayout>
+
+        <ImageButton
+            android:id="@+id/castled_inapp_banner_close_btn"
+            style="@style/Castled.InApp.CloseImageButton.Banner" />
+
+    </RelativeLayout>
+
+</io.castled.notifications.inapp.views.InAppBannerViewLayout>

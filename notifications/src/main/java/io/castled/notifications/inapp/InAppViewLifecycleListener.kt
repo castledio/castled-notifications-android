@@ -9,9 +9,9 @@ internal interface InAppViewLifecycleListener {
 
     fun onClicked(inAppMessage: Campaign)
 
-    fun onButtonClicked(inAppViewDecorator: InAppViewDecorator, inAppMessage: Campaign, btnParams: ButtonViewParams?)
+    fun onButtonClicked(inAppViewBaseDecorator: InAppViewBaseDecorator, inAppMessage: Campaign, btnParams: ButtonViewParams?)
 
-    fun onCloseButtonClicked(inAppViewDecorator: InAppViewDecorator, inAppMessage: Campaign)
+    fun onCloseButtonClicked(inAppViewBaseDecorator: InAppViewBaseDecorator, inAppMessage: Campaign)
 
-    fun onDismissed(inAppMessage: Campaign)
+    fun onClosed(inAppMessage: Campaign)
 }
