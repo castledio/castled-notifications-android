@@ -1,3 +1,4 @@
+
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
@@ -7,12 +8,12 @@ plugins {
 
 android {
 
-    compileSdk 33
+    compileSdk Configurations.compileSdk
 
     defaultConfig {
 
-        minSdk 24
-        targetSdk 33
+        minSdk Configurations.minSdk
+        targetSdk Configurations.targetSdk
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -23,74 +24,58 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-
-            buildConfigField "String", "BASE_URL", "\"https://app.castled.io/\""
-            buildConfigField "String", "BASE_URL_TEST", "\"https://test.castled.io/\""
         }
 
         debug {
             minifyEnabled false
-
-            buildConfigField "String", "BASE_URL", "\"https://app.castled.io/\""
-            buildConfigField "String", "BASE_URL_TEST", "\"https://test.castled.io/\""
         }
     }
 
     compileOptions {
-
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
     
-    namespace 'io.castled.notifications'
+    // namespace 'io.castled.notifications'
 }
 
 ext {
 
-    PUBLISH_GROUP_ID = 'io.castled'
-    PUBLISH_VERSION = '1.0.3'
+    PUBLISH_GROUP_ID = Configurations.artifactGroup
     PUBLISH_ARTIFACT_ID = 'notifications'
+    DESCRIPTION = 'Castled Notifications Android SDK'
+    PUBLISH_VERSION = '1.0.3'
 }
 
 dependencies {
-    def room_version = '2.5.0'
-
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-
-    // Test Dependencies
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
 
     // Default Android Dependencies
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
-    implementation 'androidx.lifecycle:lifecycle-process:2.5.1'
-
-    // Network Layer
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-
-    //Firebase Dependencies
-    compileOnly "com.google.firebase:firebase-messaging:23.1.1"
-
-    // https://github.com/bumptech/glide
-    implementation 'com.github.bumptech.glide:glide:4.14.2'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
-
-    implementation "androidx.core:core-ktx:1.9.0"
-
+    implementation Libs.appCompat
+    implementation Libs.lifecycleProcess
+    implementation Libs.constraintLayout
+    // Retrofit
+    implementation Libs.converterGson
+    implementation Libs.retrofit
+    // Firebase Dependencies
+    compileOnly Libs.firebaseMessaging
+    // Glide
+    implementation Libs.glide
+    kapt Libs.glideCompiler
     // Room
-    implementation "androidx.room:room-runtime:$room_version"
-    kapt "androidx.room:room-compiler:$room_version"
-    implementation "androidx.room:room-ktx:$room_version"
-
+    implementation Libs.roomRuntime
+    kapt Libs.roomCompiler
+    implementation Libs.roomKtx
     // Kotlin
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
-    implementation 'androidx.work:work-runtime-ktx:2.7.1'
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2'
-    implementation 'com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0'
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.7.0")
+    implementation Libs.coreKtx
+    implementation Libs.kotlinxCoroutinesAndroid
+    implementation Libs.workRuntimeKtx
+    implementation Libs.kotlinxSerializationJson
+    implementation Libs.kotlinxSerializationConverter
+    implementation Libs.kotlinReflect
+    // Test Dependencies
+    testImplementation Libs.jUnit
+    androidTestImplementation Libs.extJUnit
+
 }
 
 apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"

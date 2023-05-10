@@ -5,12 +5,11 @@ plugins {
 }
 
 android {
-    namespace 'io.castled.notifications.mipush'
-    compileSdk 33
+    compileSdk Configurations.compileSdk
 
     defaultConfig {
-        minSdk 24
-        targetSdk 33
+        minSdk Configurations.minSdk
+        targetSdk Configurations.targetSdk
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -38,18 +37,25 @@ android {
 
 }
 
+ext {
+
+    PUBLISH_GROUP_ID = Configurations.artifactGroup
+    PUBLISH_ARTIFACT_ID = 'castled-mipush'
+    DESCRIPTION = 'Castled SDK for using MiPush on Xiaomi Devices'
+    PUBLISH_VERSION = '1.0.3'
+}
+
 dependencies {
 
-    implementation project(':notifications')
-    implementation fileTree(dir: 'libs', include: ['*.aar'])
+    compileOnly project(':notifications')
+    compileOnly fileTree(dir: 'libs', include: ['*.aar'])
 
-    implementation 'androidx.core:core-ktx:1.8.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
-    implementation project(path: ':notifications')
-    implementation project(path: ':notifications')
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    implementation Libs.coreKtx
+    implementation Libs.kotlinxSerializationJson
+    implementation Libs.appCompat
+
+    testImplementation Libs.jUnit
+    androidTestImplementation Libs.extJUnit
 }
+
+apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"

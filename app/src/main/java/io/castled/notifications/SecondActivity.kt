@@ -4,15 +4,12 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.gson.JsonObject
 import io.castled.notifications.databinding.ActivitySecondBinding
 import java.util.*
-import kotlin.collections.HashMap
 
 class SecondActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySecondBinding
-    private var events = HashMap<Long, JsonObject>()
     private var entries = emptyList<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {

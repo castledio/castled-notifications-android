@@ -43,7 +43,7 @@ afterEvaluate {
                 // Mostly self-explanatory metadata
                 pom {
                     name = PUBLISH_ARTIFACT_ID
-                    description = 'Castled Notifications Android SDK'
+                    description = DESCRIPTION
                     url = 'https://github.com/castledio/castled-notifications-android'
                     licenses {
                         license {
