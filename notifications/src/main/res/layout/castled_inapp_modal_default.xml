@@ -15,7 +15,7 @@
 
         <LinearLayout style="@style/Castled.InApp.Modal.Layout">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/castled_inapp_modal_img"
                 style="@style/Castled.InApp.Image.Modal" />
 
@@ -48,7 +48,7 @@
 
         <ImageButton
             android:id="@+id/castled_inapp_modal_close_btn"
-            style="@style/Castled.InApp.CloseImageButton" />
+            style="@style/Castled.InApp.CloseImageButton.Modal" />
 
     </io.castled.notifications.inapp.views.InAppConstrainedLayout>
 

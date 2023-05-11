@@ -10,7 +10,7 @@ import java.text.ParseException
 internal class NumberConditionEvaluator : ParamsConditionEvaluator() {
     override fun evaluateCondition(value: Any?, propertyOperation: PropertyOperation): Boolean {
         val paramValue = value as Number? ?: return false
-        when (propertyOperation.operationType) {
+        when (propertyOperation.type) {
             OperationType.EQ -> {
                 val conditionValue =
                     getConditionValue((propertyOperation as SingleValueOperation).value)

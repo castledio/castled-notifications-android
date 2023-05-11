@@ -1,5 +1,6 @@
 package io.castled.notifications.inapp
 
+import io.castled.notifications.commons.ClickActionParams
 import io.castled.notifications.inapp.views.ButtonViewParams
 import io.castled.notifications.store.models.Campaign
 import io.castled.notifications.workmanager.models.CastledInAppEvent
@@ -32,37 +33,16 @@ internal object InAppEventUtils {
         return CastledInAppEventRequest(listOf(event))
     }
 
-    fun getClickedEvent(campaign: Campaign): CastledInAppEventRequest {
-        val message: JsonObject = campaign.message
-        val msgBody: JsonObject = message["modal"] as JsonObject?
-            ?: message["fs"] as JsonObject?
-            ?: message["slideUp"] as JsonObject
-
-        val actionType = (msgBody["defaultClickAction"] as JsonPrimitive?)?.content
-        val actionUri = (msgBody["url"] as JsonPrimitive?)?.content
-
-        val event = CastledInAppEvent(
-            teamId = campaign.teamId.toString(),
-            sourceContext = campaign.sourceContext,
-            eventType = "CLICKED",
-            actionType = actionType,
-            actionUri = actionUri,
-            ts = System.currentTimeMillis() / 1000,
-            tz = TimeZone.getDefault().displayName
-        )
-        return CastledInAppEventRequest(listOf(event))
-    }
-
-    fun getButtonClickedEvent(
-        campaign: Campaign, btnParams: ButtonViewParams
+    fun getClickedEvent(
+        campaign: Campaign, actionParams: ClickActionParams
     ): CastledInAppEventRequest {
         val event = CastledInAppEvent(
             teamId = campaign.teamId.toString(),
             sourceContext = campaign.sourceContext,
             eventType = "CLICKED",
-            btnLabel = btnParams.buttonText,
-            actionType = btnParams.action.toString(),
-            actionUri = btnParams.uri,
+            btnLabel = actionParams.actionLabel,
+            actionType = actionParams.action.toString(),
+            actionUri = actionParams.uri,
             ts = System.currentTimeMillis() / 1000,
             tz = TimeZone.getDefault().displayName
         )

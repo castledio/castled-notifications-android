@@ -8,7 +8,6 @@ import io.castled.notifications.trigger.enums.PropertyType
 import io.castled.notifications.trigger.models.*
 import io.castled.notifications.trigger.models.BetweenOperation
 import io.castled.notifications.trigger.models.PropertyOperation
-import io.castled.notifications.trigger.models.SingleValueOperation
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -20,9 +19,7 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.decodeStructure
 import kotlinx.serialization.json.*
 
-@Serializer(forClass = EventFilter::class)
 internal object EventFilterDeserializer : KSerializer<EventFilter> {
-
 
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("EventFilter") {
         element<String>("type")

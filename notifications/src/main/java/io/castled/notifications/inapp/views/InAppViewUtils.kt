@@ -1,5 +1,6 @@
 package io.castled.notifications.inapp.views
 
+import io.castled.notifications.commons.ClickActionParams
 import io.castled.notifications.push.models.CastledClickAction
 import kotlinx.serialization.json.*
 
@@ -47,6 +48,32 @@ object InAppViewUtils {
             CastledClickAction.valueOf(primaryButtonJson["clickAction"]?.jsonPrimitive?.content!!),
             primaryButtonJson["url"]?.jsonPrimitive?.content ?: "",
             keyVals?.entries?.associate { (key, value) ->
+                key to (value as JsonPrimitive).content
+            }
+        )
+    }
+
+    fun getInAppRootActionParams(modal: JsonObject) : ClickActionParams {
+        return ClickActionParams(
+            actionLabel = null,
+            action = CastledClickAction.valueOf(modal["defaultClickAction"]?.jsonPrimitive?.content!!),
+            uri = modal["url"]?.jsonPrimitive?.content ?: "",
+            keyVals = modal["keyVals"]?.jsonObject?.entries?.associate { (key, value) ->
+                key to (value as JsonPrimitive).content
+            }
+        )
+    }
+
+    fun getPrimaryButtonActionParams(modal: JsonObject): ClickActionParams? {
+        val btnViewParams =  getPrimaryButtonViewParams(modal)
+        val buttons = modal["actionButtons"]?.jsonArray ?: return null
+        val primaryButtonJson = buttons.last().jsonObject
+        val keyVals = primaryButtonJson["keyVals"]?.jsonObject
+        return ClickActionParams(
+            actionLabel = primaryButtonJson["label"]?.jsonPrimitive?.content!!,
+            action = CastledClickAction.valueOf(primaryButtonJson["clickAction"]?.jsonPrimitive?.content!!),
+            uri = primaryButtonJson["url"]?.jsonPrimitive?.content ?: "",
+            keyVals = keyVals?.entries?.associate { (key, value) ->
                 key to (value as JsonPrimitive).content
             }
         )

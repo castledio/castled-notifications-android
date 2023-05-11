@@ -10,7 +10,7 @@ internal class DateConditionEvaluator : ParamsConditionEvaluator() {
     // TODO: Need to fix the date evaluation
     override fun evaluateCondition(value: Any?, propertyOperation: PropertyOperation): Boolean {
         val dateText = value as String?
-        return when (propertyOperation.operationType) {
+        return when (propertyOperation.type) {
             OperationType.BETWEEN -> {
                 val dateInterval = propertyOperation as BetweenOperation
                 dateText != null && dateInterval.from < dateText && dateInterval.to > dateText

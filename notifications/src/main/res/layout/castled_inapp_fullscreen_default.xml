@@ -57,7 +57,7 @@
 
         <ImageButton
             android:id="@+id/castled_inapp_fs_close_btn"
-            style="@style/Castled.InApp.CloseImageButton" />
+            style="@style/Castled.InApp.CloseImageButton.FullScreen" />
 
     </RelativeLayout>
 

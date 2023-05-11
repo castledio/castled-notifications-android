@@ -2,7 +2,7 @@ package io.castled.notifications.inapp
 
 import android.content.Context
 import io.castled.notifications.commons.CastledClickActionUtils
-import io.castled.notifications.inapp.views.ButtonViewParams
+import io.castled.notifications.commons.ClickActionParams
 import io.castled.notifications.logger.CastledLogger
 import io.castled.notifications.logger.LogTags
 import io.castled.notifications.push.models.CastledClickAction
@@ -15,21 +15,74 @@ class InAppLifeCycleListenerImpl(private val context: Context) : InAppViewLifecy
         logger.debug("In-App with notification id:${inAppMessage.notificationId} displayed!")
     }
 
-    override fun onClicked(inAppMessage: Campaign) {
-        InAppNotification.reportInAppEvent(InAppEventUtils.getClickedEvent(inAppMessage))
+    override fun onClicked(
+        inAppViewBaseDecorator: InAppViewBaseDecorator,
+        inAppMessage: Campaign,
+        actionParams: ClickActionParams
+    ) {
+        when (actionParams.action) {
+            CastledClickAction.NONE -> {
+                // Do nothing
+            }
+            CastledClickAction.DEEP_LINKING, CastledClickAction.RICH_LANDING -> {
+                CastledClickActionUtils.handleDeeplinkAction(
+                    context,
+                    actionParams.uri!!,
+                    actionParams.keyVals
+                )
+                InAppNotification.reportInAppEvent(
+                    InAppEventUtils.getClickedEvent(
+                        inAppMessage,
+                        actionParams
+                    )
+                )
+                inAppViewBaseDecorator.close()
+            }
+            CastledClickAction.DISMISS_NOTIFICATION -> {
+                InAppNotification.reportInAppEvent(InAppEventUtils.getDismissedEvent(inAppMessage))
+                inAppViewBaseDecorator.close()
+                logger.debug("In-App with notification id:${inAppMessage.notificationId} dismissed!")
+            }
+            CastledClickAction.NAVIGATE_TO_SCREEN -> {
+                CastledClickActionUtils.handleNavigationAction(
+                    context,
+                    actionParams.uri!!,
+                    actionParams.keyVals
+                )
+                InAppNotification.reportInAppEvent(
+                    InAppEventUtils.getClickedEvent(
+                        inAppMessage,
+                        actionParams
+                    )
+                )
+                inAppViewBaseDecorator.close()
+            }
+            else -> {
+                logger.debug("Unexpected action:${actionParams.action} for notification:${inAppMessage.notificationId}, button:${actionParams.actionLabel}")
+            }
+        }
         logger.debug("In-App with notification id:${inAppMessage.notificationId} clicked!")
     }
 
     override fun onButtonClicked(
         inAppViewBaseDecorator: InAppViewBaseDecorator,
         inAppMessage: Campaign,
-        btnParams: ButtonViewParams?
+        actionParams: ClickActionParams?
     ) {
-        val params = btnParams ?: return
-        when (params.action) {
+        actionParams ?: return
+        when (actionParams.action) {
             CastledClickAction.DEEP_LINKING, CastledClickAction.RICH_LANDING -> {
-                CastledClickActionUtils.handleDeeplinkAction(context, params.uri!!, params.keyVals)
-                InAppNotification.reportInAppEvent(InAppEventUtils.getButtonClickedEvent(inAppMessage, btnParams))
+                CastledClickActionUtils.handleDeeplinkAction(
+                    context,
+                    actionParams.uri!!,
+                    actionParams.keyVals
+                )
+                InAppNotification.reportInAppEvent(
+                    InAppEventUtils.getClickedEvent(
+                        inAppMessage,
+                        actionParams
+                    )
+                )
             }
             CastledClickAction.DISMISS_NOTIFICATION -> {
                 InAppNotification.reportInAppEvent(InAppEventUtils.getDismissedEvent(inAppMessage))
@@ -38,16 +91,21 @@ class InAppLifeCycleListenerImpl(private val context: Context) : InAppViewLifecy
             CastledClickAction.NAVIGATE_TO_SCREEN -> {
                 CastledClickActionUtils.handleNavigationAction(
                     context,
-                    params.uri!!,
-                    params.keyVals
+                    actionParams.uri!!,
+                    actionParams.keyVals
                 )
-                InAppNotification.reportInAppEvent(InAppEventUtils.getButtonClickedEvent(inAppMessage, btnParams))
+                InAppNotification.reportInAppEvent(
+                    InAppEventUtils.getClickedEvent(
+                        inAppMessage,
+                        actionParams
+                    )
+                )
             }
             CastledClickAction.PUSH_PERMISSION_REQUEST -> {
                 TODO("Not implemented!")
             }
             else -> {
-                logger.debug("Unexpected action:${params.action} for notification:${inAppMessage.notificationId}, button:${params.buttonText}")
+                logger.debug("Unexpected action:${actionParams.action} for notification:${inAppMessage.notificationId}, button:${actionParams.actionLabel}")
             }
         }
         // Close in-app irrespective of the click action

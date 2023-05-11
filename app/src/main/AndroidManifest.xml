@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
-        android:name=".ApplicationClass"
+        android:name="io.castled.android.demoapp.ApplicationClass"
         android:allowBackup="false"
         android:backupInForeground="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -17,10 +17,10 @@
         android:theme="@style/Theme.Castlednotificationsandroid"
         tools:targetApi="33">
         <activity
-            android:name=".SecondActivity"
+            android:name="io.castled.android.demoapp.SecondActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name="io.castled.android.demoapp.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Castlednotificationsandroid.NoActionBar">
             <intent-filter>
@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DeepLinkingActivity"
+            android:name="io.castled.android.demoapp.DeepLinkingActivity"
             android:exported="true"
             android:theme="@style/Theme.Castlednotificationsandroid.NoActionBar">
             <intent-filter>
@@ -45,7 +45,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".NavigationActivity"
+            android:name="io.castled.android.demoapp.NavigationActivity"
             android:exported="true"
             android:theme="@style/Theme.Castlednotificationsandroid.NoActionBar" />
     </application>

@@ -9,7 +9,7 @@ internal class BooleanConditionEvaluator : ParamsConditionEvaluator() {
         val paramVal = value as Boolean?
         val conditionValue = ((propertyOperation as SingleValueOperation).value).toBoolean()
 
-        return when (propertyOperation.operationType) {
+        return when (propertyOperation.type) {
             OperationType.EQ -> paramVal != null && paramVal == conditionValue
             else -> {
                 logger.error("Operations type ${propertyOperation.propertyType} not supported for boolean operand")

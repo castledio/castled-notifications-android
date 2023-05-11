@@ -1,4 +1,4 @@
-package io.castled.notifications;
+package io.castled.android.demoapp;
 
 import android.content.Context;
 import android.util.Log;
@@ -6,6 +6,8 @@ import android.util.Log;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
+import io.castled.notifications.CastledConfigs;
+import io.castled.notifications.CastledNotifications;
 import kotlin.Unit;
 
 public class ApplicationClass extends MultiDexApplication {

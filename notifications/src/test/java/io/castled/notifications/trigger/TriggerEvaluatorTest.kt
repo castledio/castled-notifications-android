@@ -1,12 +1,17 @@
 package io.castled.notifications.trigger
 
 import io.castled.notifications.trigger.EventFilterEvaluator.evaluate
-import io.castled.notifications.trigger.models.EventFilter
-import io.castled.notifications.trigger.models.GroupFilter
+import io.castled.notifications.trigger.models.*
+import io.castled.notifications.workmanager.models.CastledInAppEventRequest
+import io.castled.notifications.workmanager.models.CastledNetworkRequest
+import io.castled.notifications.workmanager.models.CastledPushEventRequest
+import io.castled.notifications.workmanager.models.CastledPushRegisterRequest
 import junit.framework.TestCase
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 import org.junit.Test
 
 class TriggerEvaluatorTest {
@@ -18,9 +23,9 @@ class TriggerEvaluatorTest {
         val falseParams: MutableMap<String, Any> = HashMap()
         falseParams["name"] = "ScreenB"
         val triggerExpr = """{
-    "type": "NESTED",
+    "type": "GROUP",
     "joinType": "OR",
-    "nestedFilters": [
+    "filters": [
       {
         "type": "HAVING_PROPERTY",
         "name": "name",
@@ -32,13 +37,8 @@ class TriggerEvaluatorTest {
       }
     ]
   }"""
-        val json = Json {
-            ignoreUnknownKeys = true
-            serializersModule = SerializersModule {
-                contextual(EventFilter::class, EventFilterDeserializer)
-            }
-        }
-        val eventFilter: EventFilter = json.decodeFromString(triggerExpr)
+
+        val eventFilter: EventFilter = Json.decodeFromString(triggerExpr)
         TestCase.assertTrue(evaluate(eventFilter as GroupFilter, trueParams))
         TestCase.assertFalse(evaluate(eventFilter, falseParams))
     }

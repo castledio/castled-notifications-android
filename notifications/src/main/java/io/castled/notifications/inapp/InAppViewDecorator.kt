@@ -11,6 +11,7 @@ import io.castled.notifications.inapp.models.InAppMessageType
 import io.castled.notifications.inapp.views.InAppBaseViewLayout
 import io.castled.notifications.inapp.views.InAppViewFactory
 import io.castled.notifications.inapp.views.InAppViewUtils
+import io.castled.notifications.inapp.views.toActionParams
 import io.castled.notifications.store.models.Campaign
 
 // TODO: Convert Campaign to InAppMessage
@@ -21,7 +22,7 @@ internal class InAppViewDecorator(
 ) : InAppViewBaseDecorator {
 
     private var dialog = Dialog(context)
-    private val inAppViewLayout : InAppBaseViewLayout =
+    private val inAppViewLayout: InAppBaseViewLayout =
         InAppViewFactory.createView(context, InAppMessageUtils.getMessageType(inAppMessage.message))
     private val inAppViewLifecycleListener = InAppLifeCycleListenerImpl(context)
 
@@ -34,21 +35,25 @@ internal class InAppViewDecorator(
         val msgBody = InAppMessageUtils.getMessageBody(inAppMessage.message)
 
         inAppViewLayout.viewContainer?.setOnClickListener {
-            inAppViewLifecycleListener.onClicked(inAppMessage)
+            inAppViewLifecycleListener.onClicked(
+                this,
+                inAppMessage,
+                InAppViewUtils.getInAppRootActionParams(msgBody)
+            )
         }
 
         inAppViewLayout.primaryButton?.setOnClickListener {
             inAppViewLifecycleListener.onButtonClicked(
                 this,
                 inAppMessage,
-                InAppViewUtils.getPrimaryButtonViewParams(msgBody)
+                InAppViewUtils.getPrimaryButtonViewParams(msgBody)?.toActionParams()
             )
         }
         inAppViewLayout.secondaryButton?.setOnClickListener {
             inAppViewLifecycleListener.onButtonClicked(
                 this,
                 inAppMessage,
-                InAppViewUtils.getSecondaryButtonViewParams(msgBody)
+                InAppViewUtils.getSecondaryButtonViewParams(msgBody)?.toActionParams()
             )
         }
         inAppViewLayout.closeButton?.setOnClickListener {

@@ -35,7 +35,7 @@ class InAppBannerViewLayout(context: Context, attrs: AttributeSet) :
 
     override fun updateViewParams(message: JsonObject) {
         // TODO: testing with modal payload
-        val modalParams = message["slideUp"]?.jsonObject ?: run {
+        val modalParams = message["banner"]?.jsonObject ?: run {
             InAppModalViewLayout.logger.debug("banner object not present in in-app message!")
             return
         }

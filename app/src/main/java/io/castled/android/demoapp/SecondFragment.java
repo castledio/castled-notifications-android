@@ -1,4 +1,4 @@
-package io.castled.notifications;
+package io.castled.android.demoapp;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,7 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import io.castled.notifications.databinding.FragmentSecondBinding;
+import io.castled.android.demoapp.databinding.FragmentSecondBinding;
+import io.castled.notifications.CastledNotifications;
 
 public class SecondFragment extends Fragment {
 

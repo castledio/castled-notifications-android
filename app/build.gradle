@@ -7,11 +7,13 @@ plugins {
 
 android {
 
+    namespace 'io.castled.android.demoapp'
+
     compileSdk Configurations.compileSdk
 
     defaultConfig {
 
-        applicationId "io.castled.notifications"
+        applicationId "io.castled.android.demoapp"
         minSdk Configurations.minSdk
         targetSdk Configurations.targetSdk
         versionCode 1
@@ -37,7 +39,6 @@ android {
         viewBinding true
     }
 
-    namespace 'io.castled.notifications'
 }
 
 dependencies {

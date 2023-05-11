@@ -1,7 +1,6 @@
-package io.castled.notifications;
+package io.castled.android.demoapp;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -11,16 +10,16 @@ import androidx.appcompat.widget.Toolbar;
 
 import java.text.MessageFormat;
 
-public class DeepLinkingActivity extends AppCompatActivity {
+public class NavigationActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_deep_linking);
+        setContentView(R.layout.activity_navigation);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(DeepLinkingActivity.class.getSimpleName());
+        toolbar.setTitle(NavigationActivity.class.getSimpleName());
 
         loadParamsToLayout();
     }
@@ -30,16 +29,27 @@ public class DeepLinkingActivity extends AppCompatActivity {
         try {
 
             Intent intent = getIntent();
-            String action = intent.getAction();
-            Uri data = intent.getData();
+            Bundle bundle = intent.getExtras();
 
             TextView paramsTv = findViewById(R.id.params_tv);
-            paramsTv.setText(MessageFormat.format("Action: {0}\n\nHost: {1}\n\nData: {2}",
-                    action, (data.getScheme() + "://" +  data.getHost()), data.getEncodedQuery()));
+            paramsTv.setText(MessageFormat.format("Bundle: {0}", bundle2string(bundle)));
         }
         catch (Exception e) {
 
             e.printStackTrace();
         }
+    }
+
+    public static String bundle2string(Bundle bundle) {
+
+        if (bundle == null) {
+            return null;
+        }
+        String string = "{";
+        for (String key : bundle.keySet()) {
+            string += "\t\t" + key + ": " + bundle.get(key) + ",\n";
+        }
+        string += "\t}";
+        return string;
     }
 }

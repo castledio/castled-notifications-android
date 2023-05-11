@@ -1,4 +1,4 @@
-package io.castled.notifications;
+package io.castled.android.demoapp;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,7 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import io.castled.notifications.databinding.FragmentFirstBinding;
+import io.castled.android.demoapp.databinding.FragmentFirstBinding;
+import io.castled.notifications.CastledNotifications;
 
 public class FirstFragment extends Fragment {
 

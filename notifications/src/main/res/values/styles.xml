@@ -43,14 +43,12 @@
     <style name="Castled.InApp.CloseImageButton">
         <item name="android:contentDescription">@string/castled_inapp_close_content_description
         </item>
-        <item name="android:paddingLeft">24dp</item>
-        <item name="android:paddingBottom">24dp</item>
         <item name="android:layout_height">48dp</item>
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_alignParentEnd">true</item>
         <item name="android:scaleType">fitXY</item>
         <item name="android:background">@android:color/transparent</item>
-        <item name="android:src">@drawable/castled_close_icon</item>
+        <item name="android:src">@drawable/castled_close_icon_inverted</item>
         <item name="android:foreground">?android:attr/selectableItemBackgroundBorderless</item>
     </style>
 
@@ -73,7 +71,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_centerInParent">true</item>
-        <item name="android:scaleType">fitXY</item>
+
     </style>
 
     <style name="Castled.InApp.Message.Modal">
@@ -82,6 +80,12 @@
 
     <style name="Castled.InApp.Modal.Layout.Buttons">
         <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="Castled.InApp.CloseImageButton.Modal">
+        <item name="android:padding">8dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_width">40dp</item>
     </style>
 
     <!-- Castled fullscreen in-app -->
@@ -103,7 +107,7 @@
         <item name="android:minWidth">0dp</item>
         <item name="android:minHeight">0dp</item>
         <item name="android:layout_centerInParent">true</item>
-        <item name="android:scaleType">fitXY</item>
+        <item name="android:scaleType">centerCrop</item>
         <item name="android:padding">0.0dp</item>
     </style>
 
@@ -113,6 +117,10 @@
 
     <style name="Castled.InApp.FullScreen.Layout.Buttons">
         <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="Castled.InApp.CloseImageButton.FullScreen">
+        <item name="android:padding">12dp</item>
     </style>
 
     <!-- Castled banner in-app -->
@@ -132,7 +140,7 @@
         <item name="android:layout_width">60dp</item>
         <item name="android:layout_height">60dp</item>
         <item name="android:layout_marginLeft">8.0dp</item>
-        <item name="android:scaleType">fitXY</item>
+        <item name="android:scaleType">centerCrop</item>
         <item name="android:layout_centerVertical">true</item>
     </style>
 
@@ -156,10 +164,9 @@
     </style>
 
     <style name="Castled.InApp.CloseImageButton.Banner">
-        <item name="android:paddingLeft">12dp</item>
-        <item name="android:paddingBottom">12dp</item>
-        <item name="android:layout_height">36dp</item>
-        <item name="android:layout_width">36dp</item>
+        <item name="android:padding">4.0dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:layout_width">24dp</item>
     </style>
 
     <!-- TODO: cleanup -->

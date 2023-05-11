@@ -58,13 +58,7 @@ internal class InAppController(context: Context) {
 
     private fun getEventFilter(campaign: Campaign): GroupFilter {
         return try {
-            val json = Json {
-                ignoreUnknownKeys = true
-                serializersModule = SerializersModule {
-                    contextual(EventFilter::class, EventFilterDeserializer)
-                }
-            }
-            return json.decodeFromJsonElement(campaign.trigger["eventFilter"] as JsonElement)
+            return Json.decodeFromJsonElement(campaign.trigger["eventFilter"] as JsonElement)
         } catch (e: JsonSyntaxException) {
             logger.error("Couldn't deserialize event filter!", e)
             GroupFilter(JoinType.AND, null)

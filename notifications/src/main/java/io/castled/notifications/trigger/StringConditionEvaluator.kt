@@ -8,7 +8,7 @@ internal class StringConditionEvaluator : ParamsConditionEvaluator() {
 
     override fun evaluateCondition(value: Any?, propertyOperation: PropertyOperation): Boolean {
         val textValue = value as String? ?: return false
-        return when (propertyOperation.operationType) {
+        return when (propertyOperation.type) {
             OperationType.EQ -> (propertyOperation as SingleValueOperation).value == textValue
             OperationType.NEQ -> (propertyOperation as SingleValueOperation).value != textValue
             else -> {
