@@ -66,9 +66,7 @@ class InAppBannerViewLayout(context: Context, attrs: AttributeSet) :
         // Same color as message bg
         viewContainer?.apply {
             val drawable = background as GradientDrawable
-            // drawable.setColor(parseColor(messageViewParams.backgroundColor, Color.WHITE))
             drawable.setColor(parseColor(messageViewParams.backgroundColor, Color.WHITE))
-            // setBackgroundColor(parseColor(messageViewParams.backgroundColor, Color.WHITE))
         }
     }
 

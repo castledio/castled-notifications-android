@@ -2,6 +2,7 @@ package io.castled.android.notifications.inapp.views
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
@@ -10,14 +11,14 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import io.castled.android.notifications.R
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 
-class InAppModalViewLayout(context: Context, attrs: AttributeSet) : InAppBaseViewLayout(context, attrs) {
+class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
+    InAppBaseViewLayout(context, attrs) {
 
     override val viewContainer: View?
         get() = findViewById(R.id.castled_inapp_modal_container)
@@ -51,11 +52,9 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) : InAppBaseVie
     private fun updateImageView(modalParams: JsonObject) {
         val imageViewParams = InAppViewUtils.getImageViewParams(modalParams)
         if (imageViewParams != null && imageView != null) {
-            Glide.with(imageView!!.context).load(imageViewParams.imageUrl).apply(
-                RequestOptions()
-                    .placeholder(0)
-                    .error(0)
-            ).into(imageView!!)
+            Glide.with(imageView!!.context)
+                .load(imageViewParams.imageUrl)
+                .into(imageView!!)
         }
     }
 
@@ -72,14 +71,14 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) : InAppBaseVie
     private fun updateMessageView(modalParams: JsonObject) {
         val messageViewParams = InAppViewUtils.getMessageViewParams(modalParams)
         messageView?.apply {
-            setBackgroundColor(parseColor(messageViewParams.backgroundColor, Color.WHITE))
             setTextColor(parseColor(messageViewParams.fontColor, Color.BLACK))
             setTextSize(TypedValue.COMPLEX_UNIT_SP, messageViewParams.fontSize)
             text = messageViewParams.message
         }
-        // Btn panel also have same color as the message section
-        buttonViewContainer?.apply {
-            setBackgroundColor(parseColor(messageViewParams.backgroundColor, Color.WHITE))
+        // Message area and button area color will be covered with this
+        viewContainer?.apply {
+            val drawable = background as GradientDrawable
+            drawable.setColor(parseColor(messageViewParams.backgroundColor, Color.WHITE))
         }
     }
 

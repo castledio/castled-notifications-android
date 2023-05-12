@@ -71,7 +71,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_centerInParent">true</item>
-
+        <item name="cornerRadius">8dp</item>
     </style>
 
     <style name="Castled.InApp.Message.Modal">

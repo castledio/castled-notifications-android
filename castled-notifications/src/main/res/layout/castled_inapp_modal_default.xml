@@ -15,7 +15,7 @@
 
         <LinearLayout style="@style/Castled.InApp.Modal.Layout">
 
-            <androidx.appcompat.widget.AppCompatImageView
+            <io.castled.android.notifications.inapp.views.RounderCornerImageView
                 android:id="@+id/castled_inapp_modal_img"
                 style="@style/Castled.InApp.Image.Modal" />
 
