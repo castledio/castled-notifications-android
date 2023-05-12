@@ -1,0 +1,79 @@
+
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'kotlinx-serialization'
+}
+
+android {
+
+    compileSdk Configurations.compileSdk
+
+    defaultConfig {
+
+        minSdk Configurations.minSdk
+        targetSdk Configurations.targetSdk
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+        multiDexEnabled true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+ext {
+
+    PUBLISH_GROUP_ID = Configurations.artifactGroup
+    PUBLISH_ARTIFACT_ID = 'castled-notifications'
+    DESCRIPTION = 'Castled Notifications Android SDK'
+    PUBLISH_VERSION = '1.0.3'
+}
+
+dependencies {
+
+    // Default Android Dependencies
+    implementation Libs.appCompat
+    implementation Libs.lifecycleProcess
+    implementation Libs.constraintLayout
+    // Retrofit
+    implementation Libs.converterGson
+    implementation Libs.retrofit
+    // Firebase Dependencies
+    compileOnly Libs.firebaseMessaging
+    // Glide
+    implementation Libs.glide
+    kapt Libs.glideCompiler
+    // Room
+    implementation Libs.roomRuntime
+    kapt Libs.roomCompiler
+    implementation Libs.roomKtx
+    // Kotlin
+    implementation Libs.coreKtx
+    implementation Libs.kotlinxCoroutinesAndroid
+    implementation Libs.workRuntimeKtx
+    implementation Libs.kotlinxSerializationJson
+    implementation Libs.kotlinxSerializationConverter
+    implementation Libs.kotlinReflect
+    // Test Dependencies
+    testImplementation Libs.jUnit
+    androidTestImplementation Libs.extJUnit
+
+}
+
+apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"

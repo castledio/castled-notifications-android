@@ -47,7 +47,7 @@ ext {
 
 dependencies {
 
-    compileOnly project(':notifications')
+    compileOnly project(':castled-notifications')
     compileOnly fileTree(dir: 'libs', include: ['*.aar'])
 
     implementation Libs.coreKtx

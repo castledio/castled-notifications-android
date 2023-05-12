@@ -1,4 +1,4 @@
-package io.castled.notifications.mipush
+package io.castled.android.notifications.mipush
 
 import org.junit.Test
 

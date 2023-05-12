@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
-import io.castled.notifications.CastledNotifications
+import io.castled.android.notifications.CastledNotifications
 import io.castled.android.demoapp.databinding.ActivitySecondBinding
 import java.util.*
 

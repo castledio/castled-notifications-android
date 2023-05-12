@@ -14,7 +14,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/castled-mipush" />
-            <option value="$PROJECT_DIR$/notifications" />
+            <option value="$PROJECT_DIR$/castled-notifications" />
           </set>
         </option>
       </GradleProjectSettings>

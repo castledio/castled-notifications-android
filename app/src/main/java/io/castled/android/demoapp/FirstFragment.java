@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import io.castled.android.demoapp.databinding.FragmentFirstBinding;
-import io.castled.notifications.CastledNotifications;
+import io.castled.android.notifications.CastledNotifications;
 
 public class FirstFragment extends Fragment {
 

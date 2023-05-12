@@ -6,8 +6,8 @@ import android.util.Log;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
-import io.castled.notifications.CastledConfigs;
-import io.castled.notifications.CastledNotifications;
+import io.castled.android.notifications.CastledConfigs;
+import io.castled.android.notifications.CastledNotifications;
 import kotlin.Unit;
 
 public class ApplicationClass extends MultiDexApplication {

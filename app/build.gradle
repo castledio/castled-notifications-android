@@ -44,7 +44,7 @@ android {
 dependencies {
 
     // Core Lib import
-    implementation project(':notifications')
+    implementation project(':castled-notifications')
     // implementation project(':castled-mipush')
 
     // Default implementations

@@ -16,5 +16,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "castled-notifications-android"
 include ':app'
-include ':notifications'
+include ':castled-notifications'
 include ':castled-mipush'
