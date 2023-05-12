@@ -1,0 +1,61 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlinx-serialization'
+}
+
+android {
+    compileSdk Configurations.compileSdk
+
+    defaultConfig {
+        minSdk Configurations.minSdk
+        targetSdk Configurations.targetSdk
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+}
+
+ext {
+
+    PUBLISH_GROUP_ID = Configurations.artifactGroup
+    PUBLISH_ARTIFACT_ID = 'castled-mipush'
+    DESCRIPTION = 'Castled SDK for using MiPush on Xiaomi Devices'
+    PUBLISH_VERSION = '1.0.3'
+}
+
+dependencies {
+
+    compileOnly project(':castled-notifications')
+    compileOnly fileTree(dir: 'libs', include: ['*.aar'])
+
+    implementation Libs.coreKtx
+    implementation Libs.kotlinxSerializationJson
+    implementation Libs.appCompat
+
+    testImplementation Libs.jUnit
+    androidTestImplementation Libs.extJUnit
+}
+
+apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"
