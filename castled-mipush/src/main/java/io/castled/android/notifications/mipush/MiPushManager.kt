@@ -17,7 +17,7 @@ internal object MiPushManager {
         val configs = CastledNotifications.getCastledConfigs()
         val region = when (configs.location) {
             CastledConfigs.CastledLocation.AP -> Region.Global
-            CastledConfigs.CastledLocation.INDIA -> Region.India
+            CastledConfigs.CastledLocation.IN -> Region.India
             CastledConfigs.CastledLocation.EU -> Region.Europe
             CastledConfigs.CastledLocation.TEST -> Region.India
             else -> null

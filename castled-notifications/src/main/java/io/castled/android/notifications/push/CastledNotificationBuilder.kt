@@ -10,6 +10,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.IconCompat
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.NotificationEventType
@@ -93,27 +94,44 @@ internal class CastledNotificationBuilder(private val context: Context) {
     ) = withContext(Dispatchers.IO) {
         val resources = context.resources
         val smallIcon = payload.smallIconResourceId
-        var resourceId = 0
-        if (!smallIcon.isNullOrBlank()) {
-            resourceId = resources.getIdentifier(smallIcon, "drawable", context.packageName)
+        val resourceId = if (!smallIcon.isNullOrBlank()) {
+            resources.getIdentifier(smallIcon, "drawable", context.packageName)
+        } else if (drawableExistsAndDefined(
+                context,
+                R.drawable.io_castled_push_default_small_icon
+            )
+        ) {
+            R.drawable.io_castled_push_default_small_icon
+        } else {
+            0
         }
-
         when {
             resourceId > 0 -> {
                 notificationBuilder.setSmallIcon(resourceId)
             }
             else -> {
-                notificationBuilder.setSmallIcon(
-                    IconCompat.createWithBitmap(
-                        getBitmapFromDrawable(
-                            context.applicationInfo.loadIcon(
-                                context.packageManager
-                            )
+                val appIcon = IconCompat.createWithBitmap(
+                    getBitmapFromDrawable(
+                        context.applicationInfo.loadIcon(
+                            context.packageManager
                         )
                     )
                 )
+                notificationBuilder.setSmallIcon(appIcon)
             }
         }
+    }
+
+    private fun drawableExistsAndDefined(context: Context, resourceId: Int): Boolean {
+        if (resourceId != 0) {
+            return try {
+                val drawable = ContextCompat.getDrawable(context, resourceId)
+                drawable != null
+            } catch (e: Exception) {
+                false
+            }
+        }
+        return false
     }
 
     private fun getBitmapFromDrawable(drawable: Drawable): Bitmap {
@@ -133,7 +151,12 @@ internal class CastledNotificationBuilder(private val context: Context) {
         payload: CastledPushMessage
     ) = withContext(Dispatchers.IO) {
         val largeIconUrl = payload.largeIconUri
-        val largeIconResourceId = R.drawable.io_castled_push_notification_large_icon
+        val largeIconResourceId =
+            if (drawableExistsAndDefined(context, R.drawable.io_castled_push_default_large_icon)) {
+                R.drawable.io_castled_push_default_large_icon
+            } else {
+                0
+            }
 
         when {
             !largeIconUrl.isNullOrBlank() -> {

@@ -58,6 +58,11 @@ class CastledNotificationReceiverAct : AppCompatActivity() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        finish()
+    }
+
     companion object {
         private val logger = getInstance(LogTags.PUSH)
     }

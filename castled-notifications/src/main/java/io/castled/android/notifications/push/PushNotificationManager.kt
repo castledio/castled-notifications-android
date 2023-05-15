@@ -1,6 +1,7 @@
 package io.castled.android.notifications.push
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -27,8 +28,21 @@ internal object PushNotificationManager {
         return false
     }
 
-    suspend fun handleNotification(context: Context, pushPayload: CastledPushMessage) {
+    @SuppressLint("MissingPermission")
+    suspend fun handleNotification(context: Context, pushPayload: CastledPushMessage?) {
         // Payload from Castled server
+        pushPayload ?: run {
+            logger.debug("Castled push notification empty! skipping notification handling...")
+            return
+        }
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            logger.debug("Do not have push permission!")
+            return
+        }
         logger.debug("Building castled notification...")
 
         if (PushNotification.isAppInForeground) {
@@ -46,14 +60,6 @@ internal object PushNotificationManager {
                 )
             )
         } else {
-            if (ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                logger.debug("Do not have push permission!")
-                return
-            }
             val notification =
                 CastledNotificationBuilder(context).buildNotification(pushPayload)
             NotificationManagerCompat.from(context)

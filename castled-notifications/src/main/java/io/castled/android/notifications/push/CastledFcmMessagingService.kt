@@ -5,7 +5,6 @@ import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.CastledNotifications
 import io.castled.android.notifications.logger.CastledLogger.Companion.getInstance
 import io.castled.android.notifications.logger.LogTags
-import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.PushTokenType
 
 class CastledFcmMessagingService : FirebaseMessagingService() {
@@ -18,11 +17,8 @@ class CastledFcmMessagingService : FirebaseMessagingService() {
         logger.debug("From: " + remoteMessage.from)
 
         if (CastledNotifications.isCastledPushMessage(remoteMessage)) {
-            // Return if failed to extract payload
-            val pushMessage = CastledPushMessage.getPushMessageFromMap(remoteMessage.data)
-                ?: return
-            // Handle message payload
-            CastledNotifications.handlePushNotification(this, pushMessage)
+            // Notification initiated from Castled server. Handle message payload
+            CastledNotifications.handlePushNotification(this, remoteMessage.toCastledPushMessage())
         } else {
             logger.debug("Push message not from Castled")
         }

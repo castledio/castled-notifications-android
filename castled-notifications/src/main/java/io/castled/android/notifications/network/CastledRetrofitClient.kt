@@ -14,7 +14,7 @@ internal class CastledRetrofitClient {
         private val clusterMap = mapOf(
             CastledConfigs.CastledLocation.US to "app",
             CastledConfigs.CastledLocation.AP to "in",
-            CastledConfigs.CastledLocation.INDIA to "in",
+            CastledConfigs.CastledLocation.IN to "in",
             CastledConfigs.CastledLocation.TEST to "test"
         )
         private var retrofit: Retrofit? = null

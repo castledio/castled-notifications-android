@@ -2,8 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
-        android:name="io.castled.android.demoapp.ApplicationClass"
+        android:name="io.castled.android.demoapp.MyApplicationClass"
         android:allowBackup="false"
         android:backupInForeground="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
