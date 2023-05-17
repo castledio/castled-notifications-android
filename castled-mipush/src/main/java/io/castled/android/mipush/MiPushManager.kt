@@ -1,4 +1,4 @@
-package io.castled.android.notifications.mipush
+package io.castled.android.mipush
 
 import android.content.Context
 import com.xiaomi.channel.commonutils.android.Region
@@ -6,7 +6,7 @@ import com.xiaomi.mipush.sdk.MiPushClient
 import io.castled.android.notifications.CastledConfigs
 import io.castled.android.notifications.CastledNotifications
 import io.castled.android.notifications.logger.CastledLogger
-import io.castled.android.notifications.mipush.consts.MiLogTags
+import io.castled.android.mipush.consts.MiLogTags
 import io.castled.android.notifications.push.models.PushTokenType
 
 internal object MiPushManager {

@@ -1,4 +1,4 @@
-package io.castled.android.notifications.mipush.consts
+package io.castled.android.mipush.consts
 
 object MiLogTags {
 

@@ -1,10 +1,10 @@
-package io.castled.android.notifications.mipush
+package io.castled.android.mipush
 
 import android.content.Context
 import com.xiaomi.mipush.sdk.*
 import io.castled.android.notifications.CastledNotifications
 import io.castled.android.notifications.logger.CastledLogger
-import io.castled.android.notifications.mipush.consts.MiLogTags
+import io.castled.android.mipush.consts.MiLogTags
 
 class MiPushMessageReceiver : PushMessageReceiver() {
 
