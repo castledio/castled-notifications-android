@@ -7,11 +7,12 @@
     <p align="center">Customer Engagement Platform for the Modern Data Stack</p>
   </a>
 </p>
+
+---
+
 ![min Android SDK version is 24](https://img.shields.io/badge/min%20Android%20SDK-24-green)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.castled.android/castled-notifications/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.castled.android/castled-notifications)
 [![publish artifacts](https://github.com/castledio/castled-notifications-android/actions/workflows/publish.yaml/badge.svg)](https://github.com/castledio/castled-notifications-android/actions/workflows/publish.yaml)
-
----
 
 # Castled Android SDK
 
