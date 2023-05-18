@@ -1,4 +1,4 @@
-package io.castled.android.notifications.mipush
+package io.castled.android.mipush
 
 import android.content.Context
 import io.castled.android.notifications.push.CastledPushTokenProvider

@@ -27,7 +27,7 @@ object CastledNotifications {
     private val castledScope = CoroutineScope(castledCoroutineContext)
 
     @JvmStatic
-    fun initialize(application: Application, apiKey: String, configs: CastledConfigs) {
+    fun initialize(application: Application, configs: CastledConfigs) {
         if (!isMainProcess(application)) {
             // In case there are services that are not run from main process, skip init
             // for such processes
@@ -38,12 +38,12 @@ object CastledNotifications {
             logger.error("Sdk already initialized!")
             return
         }
-        if (apiKey.isBlank()) {
+        if (configs.apiKey.isBlank()) {
             logger.error("Api key is not set!")
             return
         }
 
-        CastledSharedStore.init(application, apiKey, configs)
+        CastledSharedStore.init(application, configs)
         CastledRetrofitClient.init(configs)
 
         if (configs.enablePush) {
@@ -52,7 +52,7 @@ object CastledNotifications {
         if (configs.enableInApp) {
             InAppNotification.init(application, castledScope)
         }
-        CastledNotifications.apiKey = apiKey
+        apiKey = configs.apiKey
         logger.info("Sdk initialized successfully")
     }
 
@@ -71,7 +71,10 @@ object CastledNotifications {
 
     @JvmStatic
     fun setUserId(
-        context: Context, userId: String?, onSuccess: () -> Unit, onError: (Exception) -> Unit
+        context: Context,
+        userId: String?,
+        onSuccess: () -> Unit = { },
+        onError: (Exception) -> Unit = { }
     ) = castledScope.launch(Dispatchers.Default) {
         try {
             setUserId(context, userId)
@@ -144,7 +147,7 @@ object CastledNotifications {
             }
         }
 
-    fun handlePushNotification(context: Context, pushMessage: CastledPushMessage) =
+    fun handlePushNotification(context: Context, pushMessage: CastledPushMessage?) =
         castledScope.launch(Dispatchers.Default) {
             PushNotification.handlePushNotification(context, pushMessage)
         }

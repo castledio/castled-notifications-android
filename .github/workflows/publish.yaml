@@ -19,8 +19,11 @@ jobs:
           java-version: 11
 
         # Builds the release artifacts of the library
-      - name: Release build
-        run: ./gradlew :notifications:assembleRelease
+      - name: Build castled-notifications release build
+        run: ./gradlew :castled-notifications:assembleRelease
+
+      - name: Build castled-mipush release build
+        run: ./gradlew :castled-mipush:assembleRelease
 
         # Generates other artifacts (javadocJar is optional)
       - name: Source jar

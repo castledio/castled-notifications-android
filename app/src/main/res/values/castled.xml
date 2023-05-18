@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Castled push configuration -->
-    <drawable name="io_castled_push_notification_small_icon">@drawable/castle_icon</drawable>
-    <drawable name="io_castled_push_notification_large_icon">@drawable/castle_icon</drawable>
+    <!-- Castled default small and large icons -->
+    <drawable name="io_castled_push_default_small_icon">@drawable/demoapp_notif_icon</drawable>
+    <drawable name="io_castled_push_default_large_icon"></drawable>
+
+    <!-- Castled default channel config -->
+    <string name="io_castled_push_default_channel_id">test-channel</string>
+    <string name="io_castled_push_default_channel_name">Test Channel</string>
+    <string name="io_castled_push_default_channel_desc">Test Channel for Castled Notifications</string>
+    <integer name="io_castled_push_default_channel_importance">3</integer>
 
 </resources>

@@ -35,6 +35,8 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    namespace 'io.castled.android.notifications'
 }
 
 ext {
@@ -42,7 +44,7 @@ ext {
     PUBLISH_GROUP_ID = Configurations.artifactGroup
     PUBLISH_ARTIFACT_ID = 'castled-notifications'
     DESCRIPTION = 'Castled Notifications Android SDK'
-    PUBLISH_VERSION = '1.0.3'
+    PUBLISH_VERSION = Configurations.sdkVersion
 }
 
 dependencies {

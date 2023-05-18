@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="io_castled_push_default_channel_id">__castled_notifications</string>
-    <string name="io_castled_push_default_channel_name">Castle Notifications</string>
-    <string name="io_castled_push_default_channel_desc">Default Channel for Castled Notifications.</string>
-    <drawable name="io_castled_push_notification_small_icon"></drawable>
-    <drawable name="io_castled_push_notification_large_icon"></drawable>
+    <string name="io_castled_push_default_channel_id"></string>
+    <string name="io_castled_push_default_channel_name"></string>
+    <string name="io_castled_push_default_channel_desc"></string>
+    <integer name="io_castled_push_default_channel_importance">0</integer>
+
+
+    <drawable name="io_castled_push_default_small_icon"></drawable>
+    <drawable name="io_castled_push_default_large_icon"></drawable>
 </resources>
 

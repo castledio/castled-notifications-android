@@ -18,15 +18,15 @@ internal object CastledSharedStore {
     private var userId: String? = null
     private val tokens = mutableMapOf<PushTokenType, String?>()
 
-    fun init(context: Context, apiKey: String, configs: CastledConfigs) {
+    fun init(context: Context, configs: CastledConfigs) {
         CastledSharedStore.configs = configs
         sharedPreferences =
             context.getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE)
-        if (sharedPreferences.getString(PrefStoreKeys.API_KEY, null) != apiKey) {
+        if (sharedPreferences.getString(PrefStoreKeys.API_KEY, null) != configs.apiKey) {
             clearPreferences()
-            setApiKey(apiKey)
+            setApiKey(configs.apiKey)
         } else {
-            CastledSharedStore.apiKey = sharedPreferences.getString(PrefStoreKeys.API_KEY, null)!!
+            apiKey = sharedPreferences.getString(PrefStoreKeys.API_KEY, null)!!
         }
         userId = sharedPreferences.getString(PrefStoreKeys.USER_ID, null)
         tokens[PushTokenType.FCM] = sharedPreferences.getString(PrefStoreKeys.FCM_TOKEN, null)

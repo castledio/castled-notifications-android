@@ -97,7 +97,7 @@ internal object PushNotification {
         }
     }
 
-    suspend fun handlePushNotification(context: Context, pushMessage: CastledPushMessage) {
+    suspend fun handlePushNotification(context: Context, pushMessage: CastledPushMessage?) {
         PushNotificationManager.handleNotification(context, pushMessage)
     }
 

@@ -1,4 +1,4 @@
-package io.castled.android.notifications.mipush
+package io.castled.android.mipush
 
 import com.xiaomi.mipush.sdk.MiPushMessage
 import io.castled.android.notifications.push.models.CastledClickAction
