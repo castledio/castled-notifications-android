@@ -43,7 +43,7 @@ ext {
     PUBLISH_GROUP_ID = Configurations.artifactGroup
     PUBLISH_ARTIFACT_ID = 'castled-mipush'
     DESCRIPTION = 'Castled SDK for using MiPush on Xiaomi Devices'
-    PUBLISH_VERSION = '1.0.3'
+    PUBLISH_VERSION = Configurations.sdkVersion
 }
 
 dependencies {

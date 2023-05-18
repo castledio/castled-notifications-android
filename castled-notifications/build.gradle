@@ -44,7 +44,7 @@ ext {
     PUBLISH_GROUP_ID = Configurations.artifactGroup
     PUBLISH_ARTIFACT_ID = 'castled-notifications'
     DESCRIPTION = 'Castled Notifications Android SDK'
-    PUBLISH_VERSION = '1.0.3'
+    PUBLISH_VERSION = Configurations.sdkVersion
 }
 
 dependencies {
