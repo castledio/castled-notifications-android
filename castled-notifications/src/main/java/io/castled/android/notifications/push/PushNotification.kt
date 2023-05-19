@@ -9,7 +9,6 @@ import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.CastledPushMessage
-import io.castled.android.notifications.push.models.NotificationActionContext
 import io.castled.android.notifications.push.models.PushTokenInfo
 import io.castled.android.notifications.push.models.PushTokenType
 import io.castled.android.notifications.push.service.PushRepository

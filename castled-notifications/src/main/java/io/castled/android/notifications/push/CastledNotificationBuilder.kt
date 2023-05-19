@@ -19,13 +19,11 @@ import io.castled.android.notifications.logger.CastledLogger.Companion.getInstan
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.*
 import io.castled.android.notifications.commons.CastledIdUtils
-import io.castled.android.notifications.push.models.NotificationActionContext
 import io.castled.android.notifications.push.models.PushConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.io.IOException
 import java.net.URL
 
 internal class CastledNotificationBuilder(private val context: Context) {
@@ -196,9 +194,14 @@ internal class CastledNotificationBuilder(private val context: Context) {
     private suspend fun getBitmapFromUrl(imageUrl: String?): Bitmap? = withContext(Dispatchers.IO) {
         try {
             val url = URL(imageUrl)
-            return@withContext BitmapFactory.decodeStream(url.openConnection().getInputStream())
-        } catch (e: IOException) {
-            logger.error(e.message ?: "Bitmap fetch failed!", e)
+            val connection = url.openConnection()
+            connection.connectTimeout = 10000 // 10 seconds
+            connection.readTimeout = 15000 // 15 seconds
+            connection.getInputStream().use { inputStream ->
+                return@withContext BitmapFactory.decodeStream(inputStream)
+            }
+        } catch (e: Exception) { // Catch general exceptions
+            logger.debug("Bitmap fetch failed, reason: ${e.message}")
         }
         return@withContext null
     }
@@ -292,7 +295,7 @@ internal class CastledNotificationBuilder(private val context: Context) {
         val intent = Intent(context, CastledNotificationReceiverAct::class.java).apply {
             putExtra(PushConstants.CASTLED_EXTRA_NOTIF_CONTEXT, Json.encodeToString(actionContext))
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP or
                     Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
 

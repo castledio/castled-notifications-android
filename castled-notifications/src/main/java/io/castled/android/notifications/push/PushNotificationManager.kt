@@ -13,7 +13,6 @@ import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.logger.CastledLogger.Companion.getInstance
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.CastledPushMessage
-import io.castled.android.notifications.push.models.NotificationActionContext
 import io.castled.android.notifications.push.models.NotificationEventType
 import io.castled.android.notifications.push.models.CastledNotificationFieldConsts
 
@@ -45,39 +44,23 @@ internal object PushNotificationManager {
         }
         logger.debug("Building castled notification...")
 
-        if (PushNotification.isAppInForeground) {
-            // Not displaying notification if foreground.
-            PushNotification.reportPushEvent(
-                NotificationActionContext(
-                    notificationId = pushPayload.notificationId,
-                    teamId = pushPayload.teamId,
-                    sourceContext = pushPayload.sourceContext,
-                    eventType = NotificationEventType.FOREGROUND.toString(),
-                    actionLabel = null,
-                    actionType = null,
-                    actionUri = null,
-                    keyVals = null
-                )
-            )
-        } else {
-            val notification =
-                CastledNotificationBuilder(context).buildNotification(pushPayload)
-            NotificationManagerCompat.from(context)
-                .notify(pushPayload.notificationId, notification)
+        val notification =
+            CastledNotificationBuilder(context).buildNotification(pushPayload)
+        NotificationManagerCompat.from(context)
+            .notify(pushPayload.notificationId, notification)
 
-            PushNotification.reportPushEvent(
-                NotificationActionContext(
-                    notificationId = pushPayload.notificationId,
-                    teamId = pushPayload.teamId,
-                    sourceContext = pushPayload.sourceContext,
-                    eventType = NotificationEventType.RECEIVED.toString(),
-                    actionLabel = null,
-                    actionType = null,
-                    actionUri = null,
-                    keyVals = null
-                )
+        PushNotification.reportPushEvent(
+            NotificationActionContext(
+                notificationId = pushPayload.notificationId,
+                teamId = pushPayload.teamId,
+                sourceContext = pushPayload.sourceContext,
+                eventType = NotificationEventType.RECEIVED.toString(),
+                actionLabel = null,
+                actionType = null,
+                actionUri = null,
+                keyVals = null
             )
-        }
+        )
     }
 
     fun getOrCreateNotificationChannel(

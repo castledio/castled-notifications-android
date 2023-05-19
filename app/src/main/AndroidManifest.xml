@@ -43,7 +43,7 @@
 
                 <data
                     android:host="open.my.app"
-                    android:scheme="app" />
+                    android:scheme="demoapp" />
             </intent-filter>
         </activity>
         <activity

@@ -1,4 +1,4 @@
-package io.castled.android.notifications.push
+package io.castled.android.notifications.push.extensions
 
 import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.push.models.CastledClickAction

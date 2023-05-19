@@ -2,11 +2,11 @@ package io.castled.android.notifications.push.service
 
 import android.content.Context
 import io.castled.android.notifications.network.CastledRetrofitClient.Companion.create
-import io.castled.android.notifications.push.models.NotificationActionContext
+import io.castled.android.notifications.push.NotificationActionContext
+import io.castled.android.notifications.push.extensions.toCastledPushEventRequest
 import io.castled.android.notifications.push.models.PushTokenInfo
 import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.workmanager.CastledNetworkWorkManager
-import io.castled.android.notifications.workmanager.CastledRequestConverters.toCastledPushEventRequest
 import io.castled.android.notifications.workmanager.models.CastledPushEventRequest
 import io.castled.android.notifications.workmanager.models.CastledPushRegisterRequest
 import retrofit2.Response
