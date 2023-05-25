@@ -19,12 +19,12 @@ import io.castled.android.notifications.store.models.Campaign
 internal class InAppViewDecorator(
     val context: Context,
     private val inAppMessage: Campaign,
+    private val inAppViewLifecycleListener: InAppViewLifecycleListener
 ) : InAppViewBaseDecorator {
 
     private var dialog = Dialog(context)
     private val inAppViewLayout: InAppBaseViewLayout =
         InAppViewFactory.createView(context, InAppMessageUtils.getMessageType(inAppMessage.message))
-    private val inAppViewLifecycleListener = InAppLifeCycleListenerImpl(context)
 
     init {
         inAppViewLayout.updateViewParams(inAppMessage.message)
@@ -36,6 +36,7 @@ internal class InAppViewDecorator(
 
         inAppViewLayout.viewContainer?.setOnClickListener {
             inAppViewLifecycleListener.onClicked(
+                it.context,
                 this,
                 inAppMessage,
                 InAppViewUtils.getInAppRootActionParams(msgBody)
@@ -44,6 +45,7 @@ internal class InAppViewDecorator(
 
         inAppViewLayout.primaryButton?.setOnClickListener {
             inAppViewLifecycleListener.onButtonClicked(
+                it.context,
                 this,
                 inAppMessage,
                 InAppViewUtils.getPrimaryButtonViewParams(msgBody)?.toActionParams()
@@ -51,13 +53,14 @@ internal class InAppViewDecorator(
         }
         inAppViewLayout.secondaryButton?.setOnClickListener {
             inAppViewLifecycleListener.onButtonClicked(
+                it.context,
                 this,
                 inAppMessage,
                 InAppViewUtils.getSecondaryButtonViewParams(msgBody)?.toActionParams()
             )
         }
         inAppViewLayout.closeButton?.setOnClickListener {
-            inAppViewLifecycleListener.onCloseButtonClicked(this, inAppMessage)
+            inAppViewLifecycleListener.onCloseButtonClicked(it.context, this, inAppMessage)
         }
     }
 

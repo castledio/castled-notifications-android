@@ -42,7 +42,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="open.my.app"
+                    android:host="bookings.page"
                     android:scheme="demoapp" />
             </intent-filter>
         </activity>

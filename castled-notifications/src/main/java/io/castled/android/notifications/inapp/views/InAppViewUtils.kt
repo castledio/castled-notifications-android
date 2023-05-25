@@ -58,7 +58,7 @@ object InAppViewUtils {
             actionLabel = null,
             action = CastledClickAction.valueOf(modal["defaultClickAction"]?.jsonPrimitive?.content!!),
             uri = modal["url"]?.jsonPrimitive?.content ?: "",
-            keyVals = modal["keyVals"]?.jsonObject?.entries?.associate { (key, value) ->
+            keyVals = (modal["keyVals"] as? JsonObject)?.jsonObject?.entries?.associate { (key, value) ->
                 key to (value as JsonPrimitive).content
             }
         )

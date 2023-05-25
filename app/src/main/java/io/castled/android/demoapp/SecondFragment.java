@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import io.castled.android.demoapp.databinding.FragmentSecondBinding;
-import io.castled.android.notifications.CastledNotifications;
 
 public class SecondFragment extends Fragment {
 
@@ -47,8 +46,6 @@ public class SecondFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        CastledNotifications.logAppPageViewEvent(requireContext(), "SecondFragment");
     }
 
     @Override

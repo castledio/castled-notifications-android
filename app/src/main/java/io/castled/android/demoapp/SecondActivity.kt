@@ -53,7 +53,5 @@ class SecondActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        CastledNotifications.logAppPageViewEvent(this, "SecondActivity")
-
     }
 }

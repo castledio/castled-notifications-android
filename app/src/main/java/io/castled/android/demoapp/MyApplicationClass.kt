@@ -19,8 +19,6 @@ class MyApplicationClass : MultiDexApplication() {
                 .enablePush(true)
                 .enableInApp(true)
                 .inAppFetchIntervalSec(10)
-                .xiaomiAppId("2882303761521565034")
-                .xiaomiAppKey("5382156577034")
                 .build()
         )
 

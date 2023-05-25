@@ -1,10 +1,6 @@
 package io.castled.android.notifications.push
 
 import android.content.Context
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ProcessLifecycleOwner
 import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
@@ -27,22 +23,10 @@ internal object PushNotification {
     private lateinit var externalScope: CoroutineScope
     private lateinit var pushRepository: PushRepository
 
-    var isAppInForeground = true
-
     internal fun init(context: Context, externalScope: CoroutineScope) {
 
         this.externalScope = externalScope
         this.pushRepository = PushRepository(context)
-
-        ProcessLifecycleOwner.get().lifecycle.addObserver(LifecycleEventObserver { _: LifecycleOwner?, event: Lifecycle.Event ->
-            if (event == Lifecycle.Event.ON_START) {
-                logger.verbose("App in foreground")
-                this@PushNotification.isAppInForeground = true
-            } else if (event == Lifecycle.Event.ON_STOP) {
-                logger.verbose("App in background")
-                this@PushNotification.isAppInForeground = false
-            }
-        })
         initTokenProviders(context)
         refreshPushTokens(context)
     }

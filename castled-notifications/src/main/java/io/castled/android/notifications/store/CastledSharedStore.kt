@@ -18,6 +18,8 @@ internal object CastledSharedStore {
     private var userId: String? = null
     private val tokens = mutableMapOf<PushTokenType, String?>()
 
+    var isAppInBackground = true
+
     fun init(context: Context, configs: CastledConfigs) {
         CastledSharedStore.configs = configs
         sharedPreferences =

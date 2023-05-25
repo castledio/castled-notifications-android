@@ -70,10 +70,13 @@ internal class CastledNotificationBuilder(private val context: Context) {
         notificationBuilder: NotificationCompat.Builder,
         payload: CastledPushMessage
     ) {
-        if (!payload.summary.isNullOrBlank()) {
-            notificationBuilder.setSubText(payload.summary)
+        val summary = payload.summary
+        val body = payload.body
+
+        if (!summary.isNullOrBlank()) {
+            notificationBuilder.setSubText(summary)
         }
-        notificationBuilder.setContentText(payload.body)
+        notificationBuilder.setContentText(body)
     }
 
     private fun setPriority(
@@ -177,16 +180,15 @@ internal class CastledNotificationBuilder(private val context: Context) {
         notificationBuilder: NotificationCompat.Builder,
         payload: CastledPushMessage
     ) {
-        if (!payload.imageUrl.isNullOrBlank()) {
-            val bitmap = getBitmapFromUrl(payload.imageUrl)
+        val imageUrl = payload.pushMessageFrames[0].imageUrl
+        val body = payload.body
+        val title = payload.title
+        if (!imageUrl.isNullOrBlank()) {
+            val bitmap = getBitmapFromUrl(imageUrl)
             val style = NotificationCompat.BigPictureStyle()
                 .bigPicture(bitmap)
-                .setSummaryText(payload.body)
-                .setBigContentTitle(payload.title)
-            if (payload.imageUrl == payload.largeIconUri) {
-                // If both are same, user intends to show only 1 image whether it is expanded or collapsed
-                style.bigLargeIcon(null)
-            }
+                .setSummaryText(body)
+                .setBigContentTitle(title)
             notificationBuilder.setStyle(style)
         }
     }
@@ -210,16 +212,20 @@ internal class CastledNotificationBuilder(private val context: Context) {
         notificationBuilder: NotificationCompat.Builder,
         payload: CastledPushMessage
     ) {
+        val actionUri = payload.pushMessageFrames[0].clickActionUrl
+        val action = payload.pushMessageFrames[0].clickAction
+        val keyVals = payload.pushMessageFrames[0].keyVals
+
         val pendingIntent = createNotificationIntent(
             NotificationActionContext(
                 notificationId = payload.notificationId,
                 teamId = payload.teamId,
                 sourceContext = payload.sourceContext,
                 eventType = NotificationEventType.CLICKED.toString(),
-                actionUri = payload.clickActionUri,
-                actionType = payload.clickAction.toString(),
+                actionUri = actionUri,
+                actionType = action.toString(),
                 actionLabel = null,
-                keyVals = payload.keyVals
+                keyVals = keyVals
             )
         )
         notificationBuilder.setContentIntent(pendingIntent)
