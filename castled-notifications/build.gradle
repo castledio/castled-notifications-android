@@ -75,6 +75,7 @@ dependencies {
     // Test Dependencies
     testImplementation Libs.jUnit
     androidTestImplementation Libs.extJUnit
+    implementation "androidx.cardview:cardview:1.0.0"
 
 }
 
