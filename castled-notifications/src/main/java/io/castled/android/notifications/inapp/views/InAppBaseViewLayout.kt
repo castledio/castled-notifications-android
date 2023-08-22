@@ -3,6 +3,7 @@ package io.castled.android.notifications.inapp.views
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.webkit.WebView
 import android.widget.*
 import kotlinx.serialization.json.JsonObject
 
@@ -16,6 +17,7 @@ abstract class InAppBaseViewLayout(context: Context, attrs: AttributeSet) : Rela
     abstract val primaryButton: Button?
     abstract val secondaryButton: Button?
     abstract val closeButton: ImageButton?
+    open val webView: WebView? = null
 
     abstract fun updateViewParams(message: JsonObject)
 }

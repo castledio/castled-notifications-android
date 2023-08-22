@@ -1,4 +1,5 @@
 package io.castled.android.notifications.inapp
+
 import android.content.Context
 import io.castled.android.notifications.inapp.CampaignResponseConverter.toCampaign
 import io.castled.android.notifications.store.models.Campaign

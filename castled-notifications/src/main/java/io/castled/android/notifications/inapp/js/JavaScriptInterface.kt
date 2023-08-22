@@ -3,10 +3,23 @@ package com.example.javascriptsample
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import io.castled.android.notifications.commons.ClickActionParams
+import io.castled.android.notifications.inapp.InAppViewDecorator
+import io.castled.android.notifications.inapp.views.InAppViewUtils
 import io.castled.android.notifications.inapp.views.InAppWebViewLayout
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
 import org.json.JSONObject
+import org.json.JSONObject as KJsonObject
+import kotlinx.serialization.decodeFromString
 
-class JavaScriptInterface(private val layout: InAppWebViewLayout, private val webView: WebView) {
+internal class JavaScriptInterface(
+    private val decorator: InAppViewDecorator,
+    private val webView: WebView
+) {
+    var eventListener: ((eventData: ClickActionParams) -> Unit)? = null
 
     init {
         setupWebView()
@@ -22,7 +35,7 @@ class JavaScriptInterface(private val layout: InAppWebViewLayout, private val we
         webView.addJavascriptInterface(this, "castledBridgeInternal")
     }
 
-    fun setupWebViewClient() {
+    internal fun setupWebViewClient() {
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) {
                 super.onPageFinished(view, url)
@@ -43,7 +56,7 @@ class JavaScriptInterface(private val layout: InAppWebViewLayout, private val we
 
     private fun loadAndExecuteJavaScriptFile(webView: WebView, filePath: String) {
         try {
-            val inputStream = layout.context.assets.open(filePath)
+            val inputStream = decorator.context.assets.open(filePath)
             val buffer = ByteArray(inputStream.available())
             inputStream.read(buffer)
             inputStream.close()
@@ -54,53 +67,17 @@ class JavaScriptInterface(private val layout: InAppWebViewLayout, private val we
         }
     }
 
-    @JavascriptInterface
-    fun dismissMessage(message: String) {
-        val jsonObject = JSONObject(message)
-        println("event captured********* dismissMessage $jsonObject")
+    internal fun setEventListener(listener: (eventData: ClickActionParams) -> Unit) {
+        eventListener = listener
     }
 
     @JavascriptInterface
-    fun openDeepLink(deepLinkURL: String, message: String) {
-        val jsonObject = JSONObject(message)
-//        val value1: String = jsonObject.getString("key1")
-//        val value2: String = jsonObject.getString("key2")
-//        val button_title: String = jsonObject.getString("button_title")
-        println("event captured********* openDeepLink $deepLinkURL  $jsonObject")
-
-
-    }
-
-    @JavascriptInterface
-    fun navigateToScreen(screenName: String, message: String) {
-        val jsonObject = JSONObject(message)
-        println("event captured********* navigateToScreen $screenName  $jsonObject")
+    fun onButtonClicked(message: String) {
+        val jsonObject = Json.parseToJsonElement(message).jsonObject
+        val eventParams = InAppViewUtils.getWebViewButtonActionParams(jsonObject)
+        if (eventParams != null) {
+            eventListener?.invoke(eventParams)
+        }
 
     }
-
-    @JavascriptInterface
-    fun openRichLanding(richLandingURL: String, message: String) {
-        val jsonObject = JSONObject(message)
-//        val value1: String = jsonObject.getString("key1")
-//        val value2: String = jsonObject.getString("key2")
-//        val button_title: String = jsonObject.getString("button_title")
-        println("event captured********* openRichLanding $richLandingURL  $jsonObject")
-
-    }
-
-    @JavascriptInterface
-    fun requestPushPermission(message: String) {
-        val jsonObject = JSONObject(message)
-        println("event captured********* requestPushPermission  $jsonObject")
-
-    }
-
-    @JavascriptInterface
-    fun customAction(message: String) {
-        val jsonObject = JSONObject(message)
-        println("event captured********* customAction  $jsonObject")
-
-    }
-
-
 }
