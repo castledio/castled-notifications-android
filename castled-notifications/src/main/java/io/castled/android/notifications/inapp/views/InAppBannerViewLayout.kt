@@ -15,6 +15,7 @@ import com.bumptech.glide.request.RequestOptions
 import io.castled.android.notifications.R
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
+import io.castled.android.notifications.store.models.Campaign
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 
@@ -34,9 +35,9 @@ class InAppBannerViewLayout(context: Context, attrs: AttributeSet) :
     override val closeButton: ImageButton?
         get() = findViewById(R.id.castled_inapp_banner_close_btn)
 
-    override fun updateViewParams(message: JsonObject) {
+    override fun updateViewParams(inAppMessage: Campaign) {
         // TODO: testing with modal payload
-        val modalParams = message["banner"]?.jsonObject ?: run {
+        val modalParams = inAppMessage.message["banner"]?.jsonObject ?: run {
             InAppModalViewLayout.logger.debug("banner object not present in in-app message!")
             return
         }

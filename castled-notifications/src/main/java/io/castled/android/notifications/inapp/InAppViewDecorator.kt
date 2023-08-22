@@ -32,7 +32,7 @@ internal class InAppViewDecorator(
     private val inAppViewLifecycleListener = InAppLifeCycleListenerImpl(context)
 
     init {
-        inAppViewLayout.updateViewParams(inAppMessage.message)
+        inAppViewLayout.updateViewParams(inAppMessage)
         if (inAppViewLayout.webView == null) {
             addListenerClickCallbacks()
         } else {

@@ -10,6 +10,7 @@ object InAppViewFactory {
 
     @SuppressLint("InflateParams")
     fun createView(context: Context, messageType: InAppMessageType): InAppBaseViewLayout {
+
         return LayoutInflater.from(context)
             .inflate(R.layout.castled_inapp_modal_html, null) as InAppBaseViewLayout
 

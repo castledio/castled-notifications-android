@@ -12,6 +12,7 @@ import android.widget.TextView
 import io.castled.android.notifications.R
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
+import io.castled.android.notifications.store.models.Campaign
 import kotlinx.serialization.json.JsonObject
 
 class InAppWebViewLayout(context: Context, attrs: AttributeSet) :
@@ -30,7 +31,7 @@ class InAppWebViewLayout(context: Context, attrs: AttributeSet) :
         get() = findViewById(R.id.castled_inapp_modal_close_btn)
 
 
-    override fun updateViewParams(message: JsonObject) {
+    override fun updateViewParams(inAppMessage: Campaign) {
 
     }
 
