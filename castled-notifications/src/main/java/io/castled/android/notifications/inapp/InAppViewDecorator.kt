@@ -27,24 +27,27 @@ internal class InAppViewDecorator(
 ) : InAppViewBaseDecorator {
 
     private var dialog = Dialog(context)
-    private val inAppViewLayout: InAppBaseViewLayout =
-        InAppViewFactory.createView(context, InAppMessageUtils.getMessageType(inAppMessage.message))
+    private val inAppViewLayout: InAppBaseViewLayout? =
+        InAppViewFactory.createView(context, inAppMessage)
     private val inAppViewLifecycleListener = InAppLifeCycleListenerImpl(context)
 
     init {
-        inAppViewLayout.updateViewParams(inAppMessage)
-        if (inAppViewLayout.webView == null) {
-            addListenerClickCallbacks()
-        } else {
-            loadJSInterface()
+        if (inAppViewLayout != null) {
+            inAppViewLayout?.updateViewParams(inAppMessage)
+            if (inAppViewLayout?.webView == null) {
+                addListenerClickCallbacks()
+            } else {
+                loadJSInterface()
+            }
         }
+
 
     }
 
     private fun addListenerClickCallbacks() {
         val msgBody = InAppMessageUtils.getMessageBody(inAppMessage.message)
 
-        inAppViewLayout.viewContainer?.setOnClickListener {
+        inAppViewLayout?.viewContainer?.setOnClickListener {
             inAppViewLifecycleListener.onClicked(
                 this,
                 inAppMessage,
@@ -52,21 +55,21 @@ internal class InAppViewDecorator(
             )
         }
 
-        inAppViewLayout.primaryButton?.setOnClickListener {
+        inAppViewLayout?.primaryButton?.setOnClickListener {
             inAppViewLifecycleListener.onButtonClicked(
                 this,
                 inAppMessage,
                 InAppViewUtils.getPrimaryButtonViewParams(msgBody)?.toActionParams()
             )
         }
-        inAppViewLayout.secondaryButton?.setOnClickListener {
+        inAppViewLayout?.secondaryButton?.setOnClickListener {
             inAppViewLifecycleListener.onButtonClicked(
                 this,
                 inAppMessage,
                 InAppViewUtils.getSecondaryButtonViewParams(msgBody)?.toActionParams()
             )
         }
-        inAppViewLayout.closeButton?.setOnClickListener {
+        inAppViewLayout?.closeButton?.setOnClickListener {
             inAppViewLifecycleListener.onCloseButtonClicked(this, inAppMessage)
         }
     }
@@ -85,8 +88,8 @@ internal class InAppViewDecorator(
         } catch (e: IllegalArgumentException) {
             htmlString // Use original encoded string if decoding fails
         }
-        val jsinterface = JavaScriptInterface(this, inAppViewLayout.webView!!)
-        inAppViewLayout.webView?.loadDataWithBaseURL(
+        val jsinterface = JavaScriptInterface(this, inAppViewLayout?.webView!!)
+        inAppViewLayout?.webView?.loadDataWithBaseURL(
             null, decodedHtmlString, "text/html",
             "utf-8", null
         )
@@ -101,20 +104,22 @@ internal class InAppViewDecorator(
             )
         }
 
-        inAppViewLayout.closeButton?.setOnClickListener {
+        inAppViewLayout?.closeButton?.setOnClickListener {
             inAppViewLifecycleListener.onCloseButtonClicked(this, inAppMessage)
         }
     }
 
     override fun show() {
-
+        if (inAppViewLayout == null) {
+            return
+        }
         when (InAppMessageUtils.getMessageType(inAppMessage.message)) {
             InAppMessageType.MODAL -> dialog.apply {
                 window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                 window?.setGravity(Gravity.CENTER)
                 requestWindowFeature(Window.FEATURE_NO_TITLE)
                 setCancelable(false)
-                setContentView(inAppViewLayout)
+                setContentView(inAppViewLayout!!)
                 show()
             }
 
@@ -123,7 +128,7 @@ internal class InAppViewDecorator(
                 window?.setGravity(Gravity.CENTER)
                 requestWindowFeature(Window.FEATURE_NO_TITLE)
                 setCancelable(false)
-                setContentView(inAppViewLayout)
+                setContentView(inAppViewLayout!!)
 
                 window?.setLayout(
                     WindowManager.LayoutParams.MATCH_PARENT,
@@ -137,7 +142,7 @@ internal class InAppViewDecorator(
                 window?.setGravity(Gravity.BOTTOM)
                 requestWindowFeature(Window.FEATURE_NO_TITLE)
                 setCancelable(false)
-                setContentView(inAppViewLayout)
+                setContentView(inAppViewLayout!!)
                 window?.setLayout(
                     WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.WRAP_CONTENT

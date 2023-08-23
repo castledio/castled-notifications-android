@@ -56,7 +56,7 @@ internal class InAppController(context: Context) {
         return try {
             return Json.decodeFromJsonElement(campaign.trigger["eventFilter"] as JsonElement)
         } catch (e: Exception) {
-            logger.error("Couldn't deserialize event filter!", e)
+            //logger.error("Couldn't deserialize event filter!", e)
             GroupFilter(JoinType.AND, null)
         }
     }
@@ -93,7 +93,7 @@ internal class InAppController(context: Context) {
     ) {
         if (triggeredInApps.isNotEmpty()) {
             val inAppSelectedForDisplay =
-                triggeredInApps.last()// triggeredInApps.maxBy { it.priority }
+                triggeredInApps[2]// triggeredInApps.maxBy { it.priority }
             withContext(Main) {
                 try {
                     InAppViewDecorator(context, inAppSelectedForDisplay).show()

@@ -28,7 +28,7 @@ class InAppWebViewLayout(context: Context, attrs: AttributeSet) :
     override val primaryButton: Button? = null
     override val secondaryButton: Button? = null
     override val closeButton: ImageButton?
-        get() = findViewById(R.id.castled_inapp_modal_close_btn)
+        get() = findViewById(R.id.castled_inapp_html_close_btn)
 
 
     override fun updateViewParams(inAppMessage: Campaign) {

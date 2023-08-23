@@ -9,9 +9,7 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginVertical="@dimen/inapp_html_vertical_margin"
-        app:cardCornerRadius="@dimen/inapp_corner_radius">
+        android:layout_height="match_parent">
 
         <io.castled.android.notifications.inapp.views.InAppConstrainedLayout
             android:id="@+id/castled_inapp_html_container"
