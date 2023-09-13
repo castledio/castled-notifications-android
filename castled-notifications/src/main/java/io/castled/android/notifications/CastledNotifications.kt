@@ -3,13 +3,15 @@ package io.castled.android.notifications
 import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.os.Process
 import com.google.firebase.messaging.RemoteMessage
-import io.castled.android.notifications.network.CastledRetrofitClient
 import io.castled.android.notifications.inapp.InAppNotification
 import io.castled.android.notifications.inapp.models.consts.AppEvents
+import io.castled.android.notifications.inbox.views.CastledInboxActivity
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
+import io.castled.android.notifications.network.CastledRetrofitClient
 import io.castled.android.notifications.push.PushNotification
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.PushTokenType
@@ -155,7 +157,14 @@ object CastledNotifications {
     fun isCastledPushMessage(remoteMessage: RemoteMessage): Boolean {
         return PushNotification.isCastledPushMessage(remoteMessage)
     }
+    @JvmStatic
+    fun showAppInbox(context: Context) = castledScope.launch(Dispatchers.Default) {
+        if (isInited()) {
+            val intent = Intent(context, CastledInboxActivity::class.java)
+            context.startActivity(intent)
 
+        }
+    }
     fun getCastledConfigs() = CastledSharedStore.configs
 
     private fun isInited(): Boolean = this::apiKey.isInitialized

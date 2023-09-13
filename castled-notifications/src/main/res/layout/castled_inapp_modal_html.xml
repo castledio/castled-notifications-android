@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<io.castled.android.notifications.inapp.views.InAppWebViewLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<io.castled.android.notifications.inapp.views.InAppWebViewLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/castled_inapp_modal_root"

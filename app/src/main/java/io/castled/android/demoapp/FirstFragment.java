@@ -33,6 +33,10 @@ public class FirstFragment extends Fragment {
 
         binding.buttonFirst.setOnClickListener(view1 -> NavHostFragment.findNavController(FirstFragment.this)
                 .navigate(R.id.action_FirstFragment_to_SecondFragment));
+        binding.btnInbox.setOnClickListener(btnInbox -> {
+           CastledNotifications.showAppInbox(view.getContext());
+        });
+
         
         /*
 

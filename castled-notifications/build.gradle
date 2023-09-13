@@ -30,7 +30,9 @@ android {
             minifyEnabled false
         }
     }
-
+    buildFeatures {
+        viewBinding = true
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -56,6 +58,7 @@ dependencies {
     // Retrofit
     implementation Libs.converterGson
     implementation Libs.retrofit
+    implementation 'com.google.android.material:material:1.9.0'
     // Firebase Dependencies
     compileOnly Libs.firebaseMessaging
     // Glide
@@ -75,7 +78,15 @@ dependencies {
     // Test Dependencies
     testImplementation Libs.jUnit
     androidTestImplementation Libs.extJUnit
+    //Cardview
     implementation "androidx.cardview:cardview:1.0.0"
+    //Recycle view
+    implementation 'androidx.recyclerview:recyclerview:1.3.1'
+    //MVVM
+    implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0")
+    implementation ("androidx.lifecycle:lifecycle-common-java8:2.5.1")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+    implementation ("androidx.activity:activity-ktx:1.6.1")
 
 }
 

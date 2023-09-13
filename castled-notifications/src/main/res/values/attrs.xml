@@ -3,4 +3,7 @@
     <declare-styleable name="RounderCornerImageView">
         <attr name="cornerRadius" format="dimension" />
     </declare-styleable>
+    <declare-styleable name="CustomConstriants"> <!--aasas-->
+        <attr name="ignoreDimensions" format="boolean" />
+    </declare-styleable>
 </resources>
