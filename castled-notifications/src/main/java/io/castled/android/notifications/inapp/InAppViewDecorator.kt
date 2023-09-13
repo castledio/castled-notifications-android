@@ -151,7 +151,7 @@ internal class InAppViewDecorator(
             }
         }
         // TODO: Handle auto dismiss
-        // inAppViewLifecycleListener.onDisplayed(inAppMessage)
+         inAppViewLifecycleListener.onDisplayed(inAppMessage)
     }
 
     override fun close() {

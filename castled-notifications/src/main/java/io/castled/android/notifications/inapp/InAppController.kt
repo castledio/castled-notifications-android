@@ -93,7 +93,7 @@ internal class InAppController(context: Context) {
     ) {
         if (triggeredInApps.isNotEmpty()) {
             val inAppSelectedForDisplay =
-                triggeredInApps[2]// triggeredInApps.maxBy { it.priority }
+                triggeredInApps.maxBy { it.priority }
             withContext(Main) {
                 try {
                     InAppViewDecorator(context, inAppSelectedForDisplay).show()
