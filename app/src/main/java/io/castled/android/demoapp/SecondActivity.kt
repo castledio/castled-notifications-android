@@ -1,17 +1,20 @@
 package io.castled.android.demoapp
 
 import android.os.Bundle
+import android.text.format.DateUtils
 import android.view.View
 import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
 import io.castled.android.notifications.CastledNotifications
 import io.castled.android.demoapp.databinding.ActivitySecondBinding
+import java.text.SimpleDateFormat
 import java.util.*
 
 class SecondActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySecondBinding
     private var entries = emptyList<String>()
+    private  val defaultPattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +41,7 @@ class SecondActivity : AppCompatActivity() {
         }
 
         binding.btnLogCustomEvent.setOnClickListener {
-            CastledNotifications.logCustomAppEvent(this, "event_name", null)
+            CastledNotifications.logCustomAppEvent(this, "wo_params_android", null)
         }
 
         binding.btnLogCustomEventWithParam.setOnClickListener {
@@ -47,10 +50,15 @@ class SecondActivity : AppCompatActivity() {
             eventParams["pass"] = false
             eventParams["orNumbers"] = 42
             eventParams["orDates"] = Date()
-            CastledNotifications.logCustomAppEvent(this, "event_name", eventParams)
+            CastledNotifications.logCustomAppEvent(this, "android event - ${getCurrentTimeFormatted("dd- MM HH:mm:ss")}", eventParams)
         }
-    }
 
+    }
+    private fun getCurrentTimeFormatted(customPattern: String? = null): String {
+        val patternToUse = customPattern ?: defaultPattern
+        val dateFormat = SimpleDateFormat(patternToUse, Locale.US)
+        return dateFormat.format(Date())
+    }
     override fun onResume() {
         super.onResume()
         CastledNotifications.logAppPageViewEvent(this, "SecondActivity")

@@ -18,6 +18,7 @@ class MyApplicationClass : MultiDexApplication() {
                 .location(CastledConfigs.CastledLocation.US)
                 .enablePush(true)
                 .enableInApp(true)
+                .enableTracking(true)
                 .inAppFetchIntervalSec(10)
                 .xiaomiAppId("2882303761521565034")
                 .xiaomiAppKey("5382156577034")

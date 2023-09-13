@@ -18,7 +18,9 @@ internal class CastledRequestRetryWorker(appContext: Context, workerParams: Work
     private val requestHandlerRegistry = mapOf(
         CastledNetworkRequestType.PUSH_REGISTER to PushRegisterRequestHandler(appContext),
         CastledNetworkRequestType.PUSH_EVENT to PushEventRequestHandler(appContext),
-        CastledNetworkRequestType.IN_APP_EVENT to InAppEventRequestHandler(appContext)
+        CastledNetworkRequestType.IN_APP_EVENT to InAppEventRequestHandler(appContext),
+        CastledNetworkRequestType.TRACK_EVENT to TrackEventRequestHandler(appContext)
+
     )
 
     private val networkRetryRepository = NetworkRetryRepository(appContext)

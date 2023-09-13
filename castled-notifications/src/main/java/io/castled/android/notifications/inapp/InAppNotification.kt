@@ -16,6 +16,7 @@ internal object InAppNotification {
     private val logger: CastledLogger = CastledLogger.getInstance(LogTags.IN_APP)
     private lateinit var externalScope: CoroutineScope
     private lateinit var inAppController: InAppController
+
     private var enabled = false
     private var fetchJob: Job? = null
 
