@@ -4,6 +4,6 @@ object Configurations {
     const val targetSdk = 33
     const val minSdk = 24
     const val artifactGroup = "io.castled.android"
-    const val sdkVersion = "1.0.4-beta"
+    const val sdkVersion = "1.0.5"
 
 }
