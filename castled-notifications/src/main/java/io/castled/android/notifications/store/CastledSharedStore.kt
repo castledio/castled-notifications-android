@@ -16,7 +16,7 @@ internal object CastledSharedStore {
 
     private lateinit var apiKey: String
     private var userId: String? = null
-    private var userToken: String? = null
+    private var secureUserId: String? = null
     private val tokens = mutableMapOf<PushTokenType, String?>()
 
     fun init(context: Context, configs: CastledConfigs) {
@@ -30,21 +30,24 @@ internal object CastledSharedStore {
             apiKey = sharedPreferences.getString(PrefStoreKeys.API_KEY, null)!!
         }
         userId = sharedPreferences.getString(PrefStoreKeys.USER_ID, null)
-        userToken = sharedPreferences.getString(PrefStoreKeys.USER_TOKEN, null)
+        secureUserId = sharedPreferences.getString(PrefStoreKeys.SECURE_USER_ID, null)
         tokens[PushTokenType.FCM] = sharedPreferences.getString(PrefStoreKeys.FCM_TOKEN, null)
         tokens[PushTokenType.MI_PUSH] = sharedPreferences.getString(PrefStoreKeys.MI_TOKEN, null)
     }
 
-    fun setApiKey(apiKey: String) {
+    private fun setApiKey(apiKey: String) {
         CastledSharedStore.apiKey = apiKey
         sharedPreferences.edit().putString(PrefStoreKeys.API_KEY, apiKey).apply()
     }
 
-    fun setUserId(userId: String?,userToken: String?) {
+    fun setUserId(userId: String?) {
         CastledSharedStore.userId = userId
-        CastledSharedStore.userToken = userToken
         sharedPreferences.edit().putString(PrefStoreKeys.USER_ID, userId).apply()
-        sharedPreferences.edit().putString(PrefStoreKeys.USER_TOKEN, userToken).apply()
+
+    }
+    fun setSecureUserId(secureUserId: String?) {
+        CastledSharedStore.secureUserId = secureUserId
+        sharedPreferences.edit().putString(PrefStoreKeys.SECURE_USER_ID, secureUserId).apply()
 
     }
     fun setToken(fcmToken: String?, tokenType: PushTokenType) {
@@ -61,7 +64,7 @@ internal object CastledSharedStore {
 
     fun getUserId() = userId
 
-    fun getUserToken() = userToken
+    fun getSecureUserId() = secureUserId
 
     fun getToken(tokenType: PushTokenType) = tokens[tokenType]
 

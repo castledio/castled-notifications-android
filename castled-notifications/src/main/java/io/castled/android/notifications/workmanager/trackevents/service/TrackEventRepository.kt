@@ -27,9 +27,12 @@ internal class TrackEventRepository(context: Context) {
     }
 
     private fun getHeaders(): HashMap<String, String> {
-        return HashMap<String, String>().apply {
-            put("Api-Key", CastledSharedStore.getApiKey())
-            put("Auth-Key", CastledSharedStore.getUserToken() ?: "")
-        }
+
+        val hashMap = HashMap<String, String>()
+        val secureUserId: String? = CastledSharedStore.getSecureUserId()
+        hashMap["Api-Key"] = CastledSharedStore.getApiKey()
+        secureUserId?.let { hashMap["Auth-Key"] = it }
+        return  hashMap
+
     }
 }

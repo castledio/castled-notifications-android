@@ -77,23 +77,38 @@ object CastledNotifications {
     fun setUserId(
         context: Context,
         userId: String,
-        userToken: String,
         onSuccess: () -> Unit = { },
         onError: (Exception) -> Unit = { }
     ) = castledScope.launch(Dispatchers.Default) {
         try {
-            setUserId(context, userId, userToken)
+            saveSecureUserId(context, userId, null)
             onSuccess()
         } catch (e: Exception) {
             onError(e)
         }
     }
 
-    private suspend fun setUserId(context: Context, userId: String, userToken: String) {
+    @JvmStatic
+    fun setSecureUserId(
+        context: Context,
+        userId: String,
+        userToken: String,
+        onSuccess: () -> Unit = { },
+        onError: (Exception) -> Unit = { }
+    ) = castledScope.launch(Dispatchers.Default) {
+        try {
+            saveSecureUserId(context, userId, userToken)
+            onSuccess()
+        } catch (e: Exception) {
+            onError(e)
+        }
+    }
+
+    private suspend fun saveSecureUserId(context: Context, userId: String, userToken: String?) {
         if (!isMainProcess(context)) {
             // In case there are services that are not run from main process, skip init
             // for such processes
-            logger.verbose("skipping user-id set. Not main process!")
+            logger.verbose("skipping userId/userToken set. Not main process!")
             return
         }
         if (!isInited()) {
@@ -106,9 +121,17 @@ object CastledNotifications {
             if (CastledSharedStore.getUserId() != userId) {
                 // New user-id
                 PushNotification.registerUser(userId)
-                CastledSharedStore.setUserId(userId, userToken)
+                CastledSharedStore.setUserId(userId)
             }
             InAppNotification.startCampaignJob()
+            userToken?.let {
+                if (userToken.isBlank()) {
+                    throw IllegalStateException("userToken is empty!")
+                }
+                if (CastledSharedStore.getSecureUserId() != userToken) {
+                    CastledSharedStore.setSecureUserId(userToken)
+                }
+            }
         }
     }
 
