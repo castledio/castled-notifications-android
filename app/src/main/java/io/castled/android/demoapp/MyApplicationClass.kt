@@ -20,16 +20,17 @@ class MyApplicationClass : MultiDexApplication() {
                 .xiaomiAppKey("5382156577034").build()
         )
 
-        // User identification
+//        // User identification
         CastledNotifications.setUserId(
             this, "antony@castled.io", this::onSuccess, this::onError
         )
-        CastledNotifications.setSecureUserId(
-            this,
-            "90bf526ec70e570e16e82c8c788bc39aadbde7013a5ad85cfbfeaf0774ee0fdf",
-            this::onSuccess,
-            this::onError
-        )
+//        CastledNotifications.setSecureUserId(
+//            this,
+//            "antony@castled.io",
+//            "90bf526ec70e570e16e82c8c788bc39aadbde7013a5ad85cfbfeaf0774ee0fdf",
+//            this::onSuccess,
+//            this::onError
+//        )
 
     }
 

@@ -81,18 +81,34 @@ object CastledNotifications {
         onError: (Exception) -> Unit = { }
     ) = castledScope.launch(Dispatchers.Default) {
         try {
-            setUserId(context, userId)
+            saveSecureUserId(context, userId, null)
             onSuccess()
         } catch (e: Exception) {
             onError(e)
         }
     }
 
-    private suspend fun setUserId(context: Context, userId: String) {
+    @JvmStatic
+    fun setSecureUserId(
+        context: Context,
+        userId: String,
+        userToken: String,
+        onSuccess: () -> Unit = { },
+        onError: (Exception) -> Unit = { }
+    ) = castledScope.launch(Dispatchers.Default) {
+        try {
+            saveSecureUserId(context, userId, userToken)
+            onSuccess()
+        } catch (e: Exception) {
+            onError(e)
+        }
+    }
+
+    private suspend fun saveSecureUserId(context: Context, userId: String, userToken: String?) {
         if (!isMainProcess(context)) {
             // In case there are services that are not run from main process, skip init
             // for such processes
-            logger.verbose("skipping user-id set. Not main process!")
+            logger.verbose("skipping userId/userToken set. Not main process!")
             return
         }
         if (!isInited()) {
@@ -108,42 +124,17 @@ object CastledNotifications {
                 CastledSharedStore.setUserId(userId)
             }
             InAppNotification.startCampaignJob()
-        }
-    }
-    @JvmStatic
-    fun setSecureUserId(
-        context: Context,
-        secureUserId: String,
-        onSuccess: () -> Unit = { },
-        onError: (Exception) -> Unit = { }
-    ) = castledScope.launch(Dispatchers.Default) {
-        try {
-            setSecureUserId(context, secureUserId)
-            onSuccess()
-        } catch (e: Exception) {
-            onError(e)
-        }
-    }
-
-    private fun setSecureUserId(context: Context, secureUserId: String) {
-        if (!isMainProcess(context)) {
-            // In case there are services that are not run from main process, skip init
-            // for such processes
-            logger.verbose("skipping secure user-id set. Not main process!")
-            return
-        }
-        if (!isInited()) {
-            throw IllegalStateException("Sdk not yet initialized!")
-
-        } else if (secureUserId.isBlank()) {
-            throw IllegalStateException("secureUserId is empty!")
-
-        } else {
-            if (CastledSharedStore.getSecureUserId() != secureUserId) {
-                CastledSharedStore.setSecureUserId(secureUserId)
+            userToken?.let {
+                if (userToken.isBlank()) {
+                    throw IllegalStateException("userToken is empty!")
+                }
+                if (CastledSharedStore.getSecureUserId() != userToken) {
+                    CastledSharedStore.setSecureUserId(userToken)
+                }
             }
         }
     }
+
     @JvmStatic
     fun onTokenFetch(token: String?, pushTokenType: PushTokenType) =
         castledScope.launch(Dispatchers.Default) {
