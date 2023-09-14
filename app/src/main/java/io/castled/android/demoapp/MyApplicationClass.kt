@@ -14,10 +14,11 @@ class MyApplicationClass : MultiDexApplication() {
         // SDK initialization
         CastledNotifications.initialize(
             this, CastledConfigs.Builder()
-                .apiKey("qwertyasdfg")
-                .location(CastledConfigs.CastledLocation.TEST)
+                .apiKey("718c38e2e359d94367a2e0d35e1fd4df")
+                .location(CastledConfigs.CastledLocation.US)
                 .enablePush(true)
                 .enableInApp(true)
+                .enableTracking(true)
                 .inAppFetchIntervalSec(10)
                 .xiaomiAppId("2882303761521565034")
                 .xiaomiAppKey("5382156577034")
@@ -25,7 +26,7 @@ class MyApplicationClass : MultiDexApplication() {
         )
 
         // User identification
-        CastledNotifications.setUserId(this, "frank@castled.io", this::onSuccess, this::onError)
+        CastledNotifications.setUserId(this, "antony@castled.io", this::onSuccess, this::onError)
     }
 
     private fun onSuccess() {

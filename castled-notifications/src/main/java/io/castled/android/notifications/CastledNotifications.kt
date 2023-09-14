@@ -14,6 +14,7 @@ import io.castled.android.notifications.push.PushNotification
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.PushTokenType
 import io.castled.android.notifications.store.CastledSharedStore
+import io.castled.android.notifications.workmanager.trackevents.TrackEvents
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -51,6 +52,9 @@ object CastledNotifications {
         }
         if (configs.enableInApp) {
             InAppNotification.init(application, castledScope)
+        }
+        if (configs.enableTracking) {
+            TrackEvents.init(application)
         }
         apiKey = configs.apiKey
         logger.info("Sdk initialized successfully")
@@ -125,9 +129,7 @@ object CastledNotifications {
         castledScope.launch(Dispatchers.Default) {
             if (isInited()) {
                 InAppNotification.logAppEvent(
-                    context,
-                    AppEvents.APP_PAGE_VIEWED,
-                    mapOf("name" to screenName)
+                    context, AppEvents.APP_PAGE_VIEWED, mapOf("name" to screenName)
                 )
             }
         }
@@ -144,6 +146,7 @@ object CastledNotifications {
         castledScope.launch(Dispatchers.Default) {
             if (isInited()) {
                 InAppNotification.logAppEvent(context, eventName, eventParams)
+                TrackEvents.reportEventWith(context, eventName, eventParams)
             }
         }
 

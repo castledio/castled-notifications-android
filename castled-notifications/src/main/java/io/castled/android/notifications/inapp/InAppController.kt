@@ -1,22 +1,18 @@
 package io.castled.android.notifications.inapp
 
 import android.content.Context
-import com.google.gson.JsonSyntaxException
 import io.castled.android.notifications.inapp.CampaignResponseConverter.toCampaign
 import io.castled.android.notifications.store.models.Campaign
 import io.castled.android.notifications.inapp.service.InAppRepository
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
-import io.castled.android.notifications.trigger.EventFilterDeserializer
 import io.castled.android.notifications.trigger.EventFilterEvaluator
 import io.castled.android.notifications.trigger.enums.JoinType
-import io.castled.android.notifications.trigger.models.EventFilter
 import io.castled.android.notifications.trigger.models.GroupFilter
 import io.castled.android.notifications.workmanager.models.CastledInAppEventRequest
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.serialization.json.*
-import kotlinx.serialization.modules.SerializersModule
 
 internal class InAppController(context: Context) {
 
@@ -59,8 +55,8 @@ internal class InAppController(context: Context) {
     private fun getEventFilter(campaign: Campaign): GroupFilter {
         return try {
             return Json.decodeFromJsonElement(campaign.trigger["eventFilter"] as JsonElement)
-        } catch (e: JsonSyntaxException) {
-            logger.error("Couldn't deserialize event filter!", e)
+        } catch (e: Exception) {
+            //logger.error("Couldn't deserialize event filter!", e)
             GroupFilter(JoinType.AND, null)
         }
     }
@@ -96,7 +92,8 @@ internal class InAppController(context: Context) {
         context: Context, triggeredInApps: List<Campaign>
     ) {
         if (triggeredInApps.isNotEmpty()) {
-            val inAppSelectedForDisplay = triggeredInApps.maxBy { it.priority }
+            val inAppSelectedForDisplay =
+                triggeredInApps.maxBy { it.priority }
             withContext(Main) {
                 try {
                     InAppViewDecorator(context, inAppSelectedForDisplay).show()

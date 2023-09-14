@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import io.castled.android.notifications.R
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
+import io.castled.android.notifications.store.models.Campaign
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 
@@ -37,8 +38,8 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
     override val closeButton: ImageButton?
         get() = findViewById(R.id.castled_inapp_modal_close_btn)
 
-    override fun updateViewParams(message: JsonObject) {
-        val modalParams = message["modal"]?.jsonObject ?: run {
+    override fun updateViewParams(inAppMessage: Campaign) {
+        val modalParams = inAppMessage.message["modal"]?.jsonObject ?: run {
             logger.debug("Model object not present in in-app message!")
             return
         }

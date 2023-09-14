@@ -11,10 +11,12 @@ import com.bumptech.glide.request.RequestOptions
 import io.castled.android.notifications.R
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
+import io.castled.android.notifications.store.models.Campaign
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 
-class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) : InAppBaseViewLayout(context, attrs) {
+class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) :
+    InAppBaseViewLayout(context, attrs) {
 
     override val viewContainer: View?
         get() = findViewById(R.id.castled_inapp_fs_container)
@@ -33,9 +35,9 @@ class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) : InAppBa
     override val closeButton: ImageButton?
         get() = findViewById(R.id.castled_inapp_fs_close_btn)
 
-    override fun updateViewParams(message: JsonObject) {
+    override fun updateViewParams(inAppMessage: Campaign) {
         // TODO: testing with modal payload
-        val modalParams = message["fs"]?.jsonObject ?: run {
+        val modalParams = inAppMessage.message["fs"]?.jsonObject ?: run {
             InAppModalViewLayout.logger.debug("fs object not present in in-app message!")
             return
         }

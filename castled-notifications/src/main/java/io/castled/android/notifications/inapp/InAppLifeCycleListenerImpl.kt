@@ -101,9 +101,29 @@ class InAppLifeCycleListenerImpl(private val context: Context) : InAppViewLifecy
                     )
                 )
             }
-            CastledClickAction.PUSH_PERMISSION_REQUEST -> {
-                TODO("Not implemented!")
+
+            CastledClickAction.REQUEST_PUSH_PERMISSION -> {
+                InAppNotification.reportInAppEvent(
+                    InAppEventUtils.getClickedEvent(
+                        inAppMessage,
+                        actionParams
+                    )
+                )
+
+                // TODO:  Not implemented!
             }
+
+            CastledClickAction.CUSTOM -> {
+                InAppNotification.reportInAppEvent(
+                    InAppEventUtils.getClickedEvent(
+                        inAppMessage,
+                        actionParams
+                    )
+                )
+
+                // TODO:  Not implemented!
+            }
+
             else -> {
                 logger.debug("Unexpected action:${actionParams.action} for notification:${inAppMessage.notificationId}, button:${actionParams.actionLabel}")
             }
