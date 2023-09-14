@@ -76,19 +76,20 @@ object CastledNotifications {
     @JvmStatic
     fun setUserId(
         context: Context,
-        userId: String?,
+        userId: String,
+        userToken: String,
         onSuccess: () -> Unit = { },
         onError: (Exception) -> Unit = { }
     ) = castledScope.launch(Dispatchers.Default) {
         try {
-            setUserId(context, userId)
+            setUserId(context, userId, userToken)
             onSuccess()
         } catch (e: Exception) {
             onError(e)
         }
     }
 
-    private suspend fun setUserId(context: Context, userId: String?) {
+    private suspend fun setUserId(context: Context, userId: String, userToken: String) {
         if (!isMainProcess(context)) {
             // In case there are services that are not run from main process, skip init
             // for such processes
@@ -98,14 +99,14 @@ object CastledNotifications {
         if (!isInited()) {
             throw IllegalStateException("Sdk not yet initialized!")
 
-        } else if (userId.isNullOrBlank()) {
+        } else if (userId.isBlank()) {
             throw IllegalStateException("UserId is empty!")
 
         } else {
             if (CastledSharedStore.getUserId() != userId) {
                 // New user-id
                 PushNotification.registerUser(userId)
-                CastledSharedStore.setUserId(userId)
+                CastledSharedStore.setUserId(userId, userToken)
             }
             InAppNotification.startCampaignJob()
         }
@@ -146,7 +147,7 @@ object CastledNotifications {
         castledScope.launch(Dispatchers.Default) {
             if (isInited()) {
                 InAppNotification.logAppEvent(context, eventName, eventParams)
-                TrackEvents.reportEventWith(context, eventName, eventParams)
+                TrackEvents.reportEventWith(eventName, eventParams)
             }
         }
 

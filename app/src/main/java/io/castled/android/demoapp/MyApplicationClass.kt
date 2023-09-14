@@ -26,7 +26,9 @@ class MyApplicationClass : MultiDexApplication() {
         )
 
         // User identification
-        CastledNotifications.setUserId(this, "antony@castled.io", this::onSuccess, this::onError)
+        CastledNotifications.setUserId(this, "antony@castled.io",
+            "90bf526ec70e570e16e82c8c788bc39aadbde7013a5ad85cfbfeaf0774ee0fdf",
+            this::onSuccess, this::onError)
     }
 
     private fun onSuccess() {

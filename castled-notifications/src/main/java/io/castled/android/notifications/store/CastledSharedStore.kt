@@ -16,6 +16,7 @@ internal object CastledSharedStore {
 
     private lateinit var apiKey: String
     private var userId: String? = null
+    private var userToken: String? = null
     private val tokens = mutableMapOf<PushTokenType, String?>()
 
     fun init(context: Context, configs: CastledConfigs) {
@@ -29,6 +30,7 @@ internal object CastledSharedStore {
             apiKey = sharedPreferences.getString(PrefStoreKeys.API_KEY, null)!!
         }
         userId = sharedPreferences.getString(PrefStoreKeys.USER_ID, null)
+        userToken = sharedPreferences.getString(PrefStoreKeys.USER_TOKEN, null)
         tokens[PushTokenType.FCM] = sharedPreferences.getString(PrefStoreKeys.FCM_TOKEN, null)
         tokens[PushTokenType.MI_PUSH] = sharedPreferences.getString(PrefStoreKeys.MI_TOKEN, null)
     }
@@ -38,11 +40,13 @@ internal object CastledSharedStore {
         sharedPreferences.edit().putString(PrefStoreKeys.API_KEY, apiKey).apply()
     }
 
-    fun setUserId(userId: String?) {
+    fun setUserId(userId: String?,userToken: String?) {
         CastledSharedStore.userId = userId
+        CastledSharedStore.userToken = userToken
         sharedPreferences.edit().putString(PrefStoreKeys.USER_ID, userId).apply()
-    }
+        sharedPreferences.edit().putString(PrefStoreKeys.USER_TOKEN, userToken).apply()
 
+    }
     fun setToken(fcmToken: String?, tokenType: PushTokenType) {
         tokens[tokenType] = fcmToken
         when (tokenType) {
@@ -56,6 +60,8 @@ internal object CastledSharedStore {
     fun getApiKey() = apiKey
 
     fun getUserId() = userId
+
+    fun getUserToken() = userToken
 
     fun getToken(tokenType: PushTokenType) = tokens[tokenType]
 

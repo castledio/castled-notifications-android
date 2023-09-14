@@ -52,8 +52,7 @@ internal class CastledRequestRetryWorker(appContext: Context, workerParams: Work
             Result.failure()
         }
         logger.verbose(
-            "total requests to retry: ${retryRequests.size}, " +
-                    "processed: ${processedRequests.size}, failed: ${failedRequests.size}"
+            "total requests to retry: ${retryRequests.size}, " + "processed: ${processedRequests.size}, failed: ${failedRequests.size}"
         )
         return if (failedRequests.size > 0) Result.retry() else Result.success()
     }

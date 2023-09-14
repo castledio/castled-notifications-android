@@ -1,4 +1,5 @@
 package io.castled.android.notifications.workmanager.trackevents
+
 import io.castled.android.notifications.commons.DateTimeUtils
 import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.workmanager.models.CastledTrackEvent
@@ -8,7 +9,7 @@ import kotlinx.serialization.json.JsonPrimitive
 
 internal object TrackEventUtils {
 
- fun getTrackEvent(
+    fun getTrackEvent(
         eventName: String, properties: Map<String, Any>
     ): CastledTrackEventRequest {
 
@@ -18,11 +19,10 @@ internal object TrackEventUtils {
             event = eventName,
             properties = JsonObject(properties.map { (key, value) ->
                 key to JsonPrimitive(value.toString())
-            }.toMap())
-            ,
+            }.toMap()),
             timestamp = DateTimeUtils.getCurrentTimeFormatted()
         )
-        return CastledTrackEventRequest(event)
+        return CastledTrackEventRequest(listOf(event))
     }
 
 }
