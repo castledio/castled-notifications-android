@@ -21,10 +21,11 @@ internal class PushEventRequestHandler(appContext: Context) : NetworkRequestHand
             val response = pushRepository.reportEventNoRetry(CastledPushEventRequest(batchedEvents))
             if (!response.isSuccessful) {
                 onError(requests)
+            } else {
+                onSuccess(requests)
             }
         } catch (e: Exception) {
             onError(requests)
         }
-        onSuccess(requests)
     }
 }

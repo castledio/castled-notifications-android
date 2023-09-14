@@ -1,10 +1,7 @@
 package io.castled.android.notifications.workmanager
 
 import android.content.Context
-import io.castled.android.notifications.inapp.service.InAppRepository
 import io.castled.android.notifications.store.models.NetworkRetryLog
-import io.castled.android.notifications.workmanager.models.CastledInAppEvent
-import io.castled.android.notifications.workmanager.models.CastledInAppEventRequest
 import io.castled.android.notifications.workmanager.models.CastledTrackEvent
 import io.castled.android.notifications.workmanager.models.CastledTrackEventRequest
 import io.castled.android.notifications.workmanager.trackevents.service.TrackEventRepository
@@ -25,10 +22,11 @@ internal class TrackEventRequestHandler(appContext: Context) : NetworkRequestHan
                 trackEventRepository.reportEventNoRetry(CastledTrackEventRequest(batchedEvents))
             if (!response.isSuccessful) {
                 onError(requests)
+            } else {
+                onSuccess(requests)
             }
         } catch (e: Exception) {
             onError(requests)
         }
-        onSuccess(requests)
     }
 }

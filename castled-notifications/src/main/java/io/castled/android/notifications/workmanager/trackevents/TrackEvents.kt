@@ -1,7 +1,6 @@
 package io.castled.android.notifications.workmanager.trackevents
 
 import android.app.Application
-import android.content.Context
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.store.CastledSharedStore
@@ -19,12 +18,12 @@ internal object TrackEvents {
         enabled = true
     }
 
-    suspend fun reportEventWith(context: Context, event: String, properties: Map<String, Any>?) {
+    suspend fun reportEventWith(event: String, properties: Map<String, Any>?) {
         if (!enabled || CastledSharedStore.getUserId() == null) {
             logger.debug("Ignoring app event, Castled tracking disabled/ UserId not configured")
             return
         }
-        reportEvent(TrackEventUtils.getTrackEvent(event, properties ?: mapOf<String, Any>()))
+        reportEvent(TrackEventUtils.getTrackEvent(event, properties ?: mapOf()))
     }
 
     private suspend fun reportEvent(request: CastledTrackEventRequest) =

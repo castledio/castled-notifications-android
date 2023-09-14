@@ -22,10 +22,11 @@ internal class InAppEventRequestHandler(appContext: Context) : NetworkRequestHan
                 inAppRepository.reportEventNoRetry(CastledInAppEventRequest(batchedEvents))
             if (!response.isSuccessful) {
                 onError(requests)
+            } else {
+                onSuccess(requests)
             }
         } catch (e: Exception) {
             onError(requests)
         }
-        onSuccess(requests)
     }
 }
