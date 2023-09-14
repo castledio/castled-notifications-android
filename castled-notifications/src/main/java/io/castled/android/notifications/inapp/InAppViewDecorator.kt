@@ -8,7 +8,7 @@ import android.util.Base64
 import android.view.Gravity
 import android.view.Window
 import android.view.WindowManager
-import com.example.javascriptsample.JavaScriptInterface
+import io.castled.android.notifications.inapp.js.JavaScriptInterface
 import io.castled.android.notifications.inapp.models.InAppMessageType
 import io.castled.android.notifications.inapp.views.InAppBaseViewLayout
 import io.castled.android.notifications.inapp.views.InAppViewFactory
@@ -16,7 +16,6 @@ import io.castled.android.notifications.inapp.views.InAppViewUtils
 import io.castled.android.notifications.inapp.views.InAppWebViewLayout
 import io.castled.android.notifications.inapp.views.toActionParams
 import io.castled.android.notifications.store.models.Campaign
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 
 // TODO: Convert Campaign to InAppMessage
@@ -33,8 +32,8 @@ internal class InAppViewDecorator(
 
     init {
         if (inAppViewLayout != null) {
-            inAppViewLayout?.updateViewParams(inAppMessage)
-            if (inAppViewLayout?.webView == null) {
+            inAppViewLayout.updateViewParams(inAppMessage)
+            if (inAppViewLayout.webView == null) {
                 addListenerClickCallbacks()
             } else {
                 loadJSInterface()
@@ -89,7 +88,7 @@ internal class InAppViewDecorator(
             htmlString // Use original encoded string if decoding fails
         }
         val jsinterface = JavaScriptInterface(this, inAppViewLayout?.webView!!)
-        inAppViewLayout?.webView?.loadDataWithBaseURL(
+        inAppViewLayout.webView?.loadDataWithBaseURL(
             null, decodedHtmlString, "text/html",
             "utf-8", null
         )
@@ -104,7 +103,7 @@ internal class InAppViewDecorator(
             )
         }
 
-        inAppViewLayout?.closeButton?.setOnClickListener {
+        inAppViewLayout.closeButton?.setOnClickListener {
             inAppViewLifecycleListener.onCloseButtonClicked(this, inAppMessage)
         }
     }
@@ -119,7 +118,7 @@ internal class InAppViewDecorator(
                 window?.setGravity(Gravity.CENTER)
                 requestWindowFeature(Window.FEATURE_NO_TITLE)
                 setCancelable(false)
-                setContentView(inAppViewLayout!!)
+                setContentView(inAppViewLayout)
                 show()
             }
 
@@ -128,7 +127,7 @@ internal class InAppViewDecorator(
                 window?.setGravity(Gravity.CENTER)
                 requestWindowFeature(Window.FEATURE_NO_TITLE)
                 setCancelable(false)
-                setContentView(inAppViewLayout!!)
+                setContentView(inAppViewLayout)
 
                 window?.setLayout(
                     WindowManager.LayoutParams.MATCH_PARENT,
@@ -142,7 +141,7 @@ internal class InAppViewDecorator(
                 window?.setGravity(Gravity.BOTTOM)
                 requestWindowFeature(Window.FEATURE_NO_TITLE)
                 setCancelable(false)
-                setContentView(inAppViewLayout!!)
+                setContentView(inAppViewLayout)
                 window?.setLayout(
                     WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.WRAP_CONTENT

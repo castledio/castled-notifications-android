@@ -1,8 +1,7 @@
 package io.castled.android.notifications.workmanager.models
-
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
-
-@kotlinx.serialization.Serializable
+@Serializable
 internal data class CastledTrackEvent(
     val type: String,
     val userId: String,

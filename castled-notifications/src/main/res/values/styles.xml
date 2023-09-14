@@ -64,7 +64,14 @@
         <item name="android:gravity">center</item>
         <item name="android:orientation">vertical</item>
     </style>
-
+    <style name="Castled.InApp.WebView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+    <style name="Castled.InApp.WebView.FullScreen"/>
+    <style name="Castled.InApp.WebView.Modal"/>
     <style name="Castled.InApp.Image.Modal">
         <item name="android:contentDescription">@string/castled_inapp_image_content_description
         </item>

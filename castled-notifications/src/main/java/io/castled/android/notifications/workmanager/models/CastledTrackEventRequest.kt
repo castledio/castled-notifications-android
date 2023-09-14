@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class CastledTrackEventRequest(
-    //val events : List<CastledTrackEvent>
     val event: CastledTrackEvent
 
 ) : CastledNetworkRequest() {

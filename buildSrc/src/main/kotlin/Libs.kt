@@ -31,6 +31,9 @@ object Versions {
 
     // Google play
     const val google = "4.3.14"
+
+    //Card View
+    const val cardView = "1.0.0"
 }
 
 object Libs {
@@ -75,4 +78,7 @@ object Libs {
 
     // Google
     const val googleServices = "com.google.gms:google-services:${Versions.google}"
+
+    // cardView
+    const val cardView = "androidx.cardview:cardview:${Versions.cardView}"
 }

@@ -72,10 +72,11 @@ dependencies {
     implementation Libs.kotlinxSerializationJson
     implementation Libs.kotlinxSerializationConverter
     implementation Libs.kotlinReflect
+   //CardView
+    implementation Libs.cardView
     // Test Dependencies
     testImplementation Libs.jUnit
     androidTestImplementation Libs.extJUnit
-    implementation "androidx.cardview:cardview:1.0.0"
 
 }
 

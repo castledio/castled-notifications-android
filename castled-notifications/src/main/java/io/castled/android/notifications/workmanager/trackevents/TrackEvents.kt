@@ -14,7 +14,7 @@ internal object TrackEvents {
     private val logger: CastledLogger = CastledLogger.getInstance(LogTags.TRACK_EVENT_REPOSITORY)
     private var enabled = false
 
-    fun init(application: Application, externalScope: CoroutineScope) {
+    fun init(application: Application) {
         trackEventRepository = TrackEventRepository(application)
         enabled = true
     }

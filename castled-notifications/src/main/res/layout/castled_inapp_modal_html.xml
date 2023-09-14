@@ -21,7 +21,7 @@
 
             <WebView
                 android:id="@+id/castled_inapp_webview"
-                style="@style/Castled.InApp.Modal.Layout"
+                style="@style/Castled.InApp.WebView.Modal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerHorizontal="true"

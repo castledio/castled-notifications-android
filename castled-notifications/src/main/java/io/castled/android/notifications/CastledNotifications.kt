@@ -54,7 +54,7 @@ object CastledNotifications {
             InAppNotification.init(application, castledScope)
         }
         if (configs.enableTracking) {
-            TrackEvents.init(application, castledScope)
+            TrackEvents.init(application)
         }
         apiKey = configs.apiKey
         logger.info("Sdk initialized successfully")
