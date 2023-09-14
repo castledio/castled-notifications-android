@@ -1,14 +1,14 @@
 package io.castled.android.notifications.workmanager.trackevents.service
-
-import io.castled.android.notifications.workmanager.models.CastledTrackEvent
+import io.castled.android.notifications.workmanager.models.CastledTrackEventRequest
 import retrofit2.Response
 import retrofit2.http.*
 
 internal interface TrackEventApi {
 
-    @POST("v1/product-events/{api-key}")
+    @POST("v1/product-events/app/lists")
     suspend fun reportEvent(
-        @Path("api-key") apikey: String,
-        @Body request: CastledTrackEvent
+        @HeaderMap headers: Map<String, String>,
+        @Body request: CastledTrackEventRequest,
+
     ): Response<Void?>
 }

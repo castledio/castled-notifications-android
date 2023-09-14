@@ -8,7 +8,7 @@ import kotlinx.serialization.json.JsonPrimitive
 
 internal object TrackEventUtils {
 
- fun getTrackEvent(
+    fun getTrackEvent(
         eventName: String, properties: Map<String, Any>
     ): CastledTrackEventRequest {
 
@@ -22,7 +22,7 @@ internal object TrackEventUtils {
             ,
             timestamp = DateTimeUtils.getCurrentTimeFormatted()
         )
-        return CastledTrackEventRequest(event)
+        return CastledTrackEventRequest(listOf(event))
     }
 
 }

@@ -41,7 +41,7 @@ class SecondActivity : AppCompatActivity() {
         }
 
         binding.btnLogCustomEvent.setOnClickListener {
-            CastledNotifications.logCustomAppEvent(this, "wo_params_android", null)
+            CastledNotifications.logCustomAppEvent(this, "batch wo_params_android ${getCurrentTimeFormatted("dd- MM HH:mm:ss")}", null)
         }
 
         binding.btnLogCustomEventWithParam.setOnClickListener {
@@ -50,7 +50,7 @@ class SecondActivity : AppCompatActivity() {
             eventParams["pass"] = false
             eventParams["orNumbers"] = 42
             eventParams["orDates"] = Date()
-            CastledNotifications.logCustomAppEvent(this, "android event - ${getCurrentTimeFormatted("dd- MM HH:mm:ss")}", eventParams)
+            CastledNotifications.logCustomAppEvent(this, "batch android event - ${getCurrentTimeFormatted("dd- MM HH:mm:ss")}", eventParams)
         }
 
     }

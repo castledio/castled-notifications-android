@@ -18,17 +18,17 @@ internal class TrackEventRequestHandler(appContext: Context) : NetworkRequestHan
         onSuccess: (entries: List<NetworkRetryLog>) -> Unit,
         onError: (entries: List<NetworkRetryLog>) -> Unit
     ) {
-        requests.forEach {
-            try {
-                val response =
-                    trackEventRepository.reportEventNoRetry(it.request as CastledTrackEventRequest)
-                if (!response.isSuccessful) {
-                    onError(requests)
-                }
-            } catch (e: Exception) {
+        val batchedEvents = mutableListOf<CastledTrackEvent>()
+        requests.forEach { batchedEvents.addAll((it.request as CastledTrackEventRequest).events) }
+        try {
+            val response =
+                trackEventRepository.reportEventNoRetry(CastledTrackEventRequest(batchedEvents))
+            if (!response.isSuccessful) {
                 onError(requests)
             }
-            onSuccess(listOf(it))
+        } catch (e: Exception) {
+            onError(requests)
         }
+        onSuccess(requests)
     }
 }

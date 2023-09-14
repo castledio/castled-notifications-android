@@ -18,13 +18,22 @@ internal class TrackEventRepository(context: Context) {
     suspend fun reportEvent(request: CastledTrackEventRequest) {
         networkWorkManager.apiCallWithRetry(request = request, apiCall = {
             return@apiCallWithRetry trackEventApi.reportEvent(
-                CastledSharedStore.getApiKey(), (it as CastledTrackEventRequest).event
+                getHeaders(),
+                (it as CastledTrackEventRequest)
             )
         })
     }
 
     suspend fun reportEventNoRetry(request: CastledTrackEventRequest): Response<Void?> {
-        return trackEventApi.reportEvent(CastledSharedStore.getApiKey(), request.event)
+        return trackEventApi.reportEvent(
+            getHeaders(),
+            request
+        )
     }
-
+private fun  getHeaders():HashMap<String, String>{
+    return  HashMap<String, String>().apply {
+        put("Api-Key", CastledSharedStore.getApiKey())
+        put("Auth-Key", CastledSharedStore.getUserToken() ?: "")
+    }
+}
 }
