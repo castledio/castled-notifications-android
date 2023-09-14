@@ -77,19 +77,18 @@ object CastledNotifications {
     fun setUserId(
         context: Context,
         userId: String,
-        userToken: String,
         onSuccess: () -> Unit = { },
         onError: (Exception) -> Unit = { }
     ) = castledScope.launch(Dispatchers.Default) {
         try {
-            setUserId(context, userId, userToken)
+            setUserId(context, userId)
             onSuccess()
         } catch (e: Exception) {
             onError(e)
         }
     }
 
-    private suspend fun setUserId(context: Context, userId: String, userToken: String) {
+    private suspend fun setUserId(context: Context, userId: String) {
         if (!isMainProcess(context)) {
             // In case there are services that are not run from main process, skip init
             // for such processes
@@ -106,12 +105,45 @@ object CastledNotifications {
             if (CastledSharedStore.getUserId() != userId) {
                 // New user-id
                 PushNotification.registerUser(userId)
-                CastledSharedStore.setUserId(userId, userToken)
+                CastledSharedStore.setUserId(userId)
             }
             InAppNotification.startCampaignJob()
         }
     }
+    @JvmStatic
+    fun setSecureUserId(
+        context: Context,
+        secureUserId: String,
+        onSuccess: () -> Unit = { },
+        onError: (Exception) -> Unit = { }
+    ) = castledScope.launch(Dispatchers.Default) {
+        try {
+            setSecureUserId(context, secureUserId)
+            onSuccess()
+        } catch (e: Exception) {
+            onError(e)
+        }
+    }
 
+    private fun setSecureUserId(context: Context, secureUserId: String) {
+        if (!isMainProcess(context)) {
+            // In case there are services that are not run from main process, skip init
+            // for such processes
+            logger.verbose("skipping secure user-id set. Not main process!")
+            return
+        }
+        if (!isInited()) {
+            throw IllegalStateException("Sdk not yet initialized!")
+
+        } else if (secureUserId.isBlank()) {
+            throw IllegalStateException("secureUserId is empty!")
+
+        } else {
+            if (CastledSharedStore.getSecureUserId() != secureUserId) {
+                CastledSharedStore.setSecureUserId(secureUserId)
+            }
+        }
+    }
     @JvmStatic
     fun onTokenFetch(token: String?, pushTokenType: PushTokenType) =
         castledScope.launch(Dispatchers.Default) {
