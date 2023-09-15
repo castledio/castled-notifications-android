@@ -1,4 +1,3 @@
-
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
@@ -18,6 +17,12 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
         multiDexEnabled true
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas".toString())
+            }
+        }
+
     }
 
     buildTypes {
@@ -75,16 +80,17 @@ dependencies {
     implementation Libs.kotlinxSerializationJson
     implementation Libs.kotlinxSerializationConverter
     implementation Libs.kotlinReflect
-   //CardView
+    //CardView
     implementation Libs.cardView
 
-//Recycle view
-implementation 'androidx.recyclerview:recyclerview:1.3.1'
-//MVVM
-implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0")
-implementation ("androidx.lifecycle:lifecycle-common-java8:2.5.1")
-implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
-implementation ("androidx.activity:activity-ktx:1.6.1")
+    //Recycle view
+    implementation Libs.recycleView
+
+    //MVVM
+    implementation Libs.mvvmLifecycleExtensions
+    implementation Libs.mvvmLifecycleCommon
+    implementation Libs.mvvmLifecycleViewmodel
+    implementation Libs.mvvmActivity
 
     // Test Dependencies
     testImplementation Libs.jUnit

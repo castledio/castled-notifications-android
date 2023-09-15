@@ -10,7 +10,6 @@ import io.castled.android.notifications.store.dao.CampaignTypeConverter
 import io.castled.android.notifications.store.dao.DateTimeConverter
 import io.castled.android.notifications.store.dao.JsonObjectConverter
 import io.castled.android.notifications.store.dao.NetworkRequestConverter
-import io.castled.android.notifications.store.dao.*
 import io.castled.android.notifications.store.dao.NetworkRetryLogDao
 import io.castled.android.notifications.store.models.AppInbox
 import io.castled.android.notifications.store.models.Campaign

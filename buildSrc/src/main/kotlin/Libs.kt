@@ -34,6 +34,15 @@ object Versions {
 
     //Card View
     const val cardView = "1.0.0"
+
+    //Recycle View
+    const val recycleView = "1.3.1"
+
+    //MVVM
+    const val mvvmLifecycleExtensions = "2.2.0"
+    const val mvvmLifecycleCommon = "2.5.1"
+    const val mvvmLifecycleViewmodel = "2.5.1"
+    const val mvvmActivity = "1.6.1"
 }
 
 object Libs {
@@ -81,4 +90,13 @@ object Libs {
 
     // cardView
     const val cardView = "androidx.cardview:cardview:${Versions.cardView}"
+
+    //recycleView
+    const val recycleView = "androidx.recyclerview:recyclerview:${Versions.recycleView}"
+
+    //MVVM
+    const val mvvmLifecycleExtensions = "androidx.lifecycle:lifecycle-extensions:${Versions.mvvmLifecycleExtensions}"
+    const val mvvmLifecycleCommon = "androidx.lifecycle:lifecycle-common-java8:${Versions.mvvmLifecycleCommon}"
+    const val mvvmLifecycleViewmodel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.mvvmLifecycleViewmodel}"
+    const val mvvmActivity = "androidx.activity:activity-ktx:${Versions.mvvmActivity}"
 }
