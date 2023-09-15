@@ -78,10 +78,19 @@ internal object PushNotification {
         }
     }
 
+
     private fun refreshPushTokens(context: Context) = externalScope.launch(Dispatchers.Default) {
         PushTokenType.values().forEach {
-            val token = tokenProviders[it]?.getToken(context)
-            this@PushNotification.onTokenFetch(token, it)
+            try {
+                val token = tokenProviders[it]?.getToken(context)
+                this@PushNotification.onTokenFetch(token, it)
+            } catch (e: NoClassDefFoundError) {
+                logger.debug("Class definition for ${it.providerClassName} not found!")
+            } catch (e: ClassNotFoundException) {
+                logger.debug("Class ${it.providerClassName} not found!")
+            } catch (e: Exception) {
+                logger.debug("$e")
+            }
         }
     }
 
