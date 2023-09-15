@@ -16,14 +16,11 @@ object InAppViewFactory {
     fun createView(context: Context, inAppMessage: Campaign): InAppBaseViewLayout? {
         val messageType: InAppMessageType = InAppMessageUtils.getMessageType(inAppMessage.message)
         val msgBody = InAppMessageUtils.getMessageBody(inAppMessage.message)
-        val messageTemplateType2 = InAppMessageUtils.getMessageTemplateType("hhh")
         val messageTemplateType: InAppMessageTemplateType =
             InAppMessageUtils.getMessageTemplateType(
                 (msgBody["type"]?.jsonPrimitive?.content ?: "")
                     ?: ""
             )
-//        return LayoutInflater.from(context)
-//            .inflate(R.layout.castled_inapp_fs_html, null) as InAppBaseViewLayout
 
         return when (messageType) {
             InAppMessageType.MODAL ->

@@ -16,27 +16,21 @@ internal class CastledNetworkWorkManager private constructor(context: Context) {
 
     private val workManager = WorkManager.getInstance(context)
 
-    private val constraints = Constraints.Builder()
-        .setRequiredNetworkType(NetworkType.CONNECTED)
-        .setRequiresBatteryNotLow(true)
-        .build()
+    private val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED)
+        .setRequiresBatteryNotLow(true).build()
 
     private suspend fun enqueueRequest(request: CastledNetworkRequest) {
         networkRetryRepository.insertRetryRequest(NetworkRetryLog(request = request))
-        val workRequest = OneTimeWorkRequestBuilder<CastledRequestRetryWorker>()
-            .setConstraints(constraints)
-            .setInitialDelay(Random.nextLong(1, 10), TimeUnit.SECONDS)
-            .setBackoffCriteria(
-                BackoffPolicy.EXPONENTIAL,
-                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
-                TimeUnit.MILLISECONDS
-            )
-            .build()
+        val workRequest =
+            OneTimeWorkRequestBuilder<CastledRequestRetryWorker>().setConstraints(constraints)
+                .setInitialDelay(Random.nextLong(1, 10), TimeUnit.SECONDS).setBackoffCriteria(
+                    BackoffPolicy.EXPONENTIAL,
+                    OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                    TimeUnit.MILLISECONDS
+                ).build()
         logger.debug("enqueuing work-id: ${workRequest.id}")
         workManager.beginUniqueWork(
-            CASTLED_NETWORK_RETRY_WORK,
-            ExistingWorkPolicy.REPLACE,
-            workRequest
+            CASTLED_NETWORK_RETRY_WORK, ExistingWorkPolicy.REPLACE, workRequest
         ).enqueue()
     }
 

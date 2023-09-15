@@ -1,19 +1,12 @@
-package com.example.javascriptsample
-
+package io.castled.android.notifications.inapp.js
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import io.castled.android.notifications.commons.ClickActionParams
 import io.castled.android.notifications.inapp.InAppViewDecorator
 import io.castled.android.notifications.inapp.views.InAppViewUtils
-import io.castled.android.notifications.inapp.views.InAppWebViewLayout
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
-import org.json.JSONObject
-import org.json.JSONObject as KJsonObject
-import kotlinx.serialization.decodeFromString
 
 internal class JavaScriptInterface(
     private val decorator: InAppViewDecorator,
