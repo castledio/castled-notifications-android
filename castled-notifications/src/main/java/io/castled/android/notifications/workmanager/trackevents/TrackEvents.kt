@@ -27,7 +27,7 @@ internal object TrackEvents {
     }
 
     private suspend fun reportEvent(request: CastledTrackEventRequest) =
-        trackEventRepository.reportEvent(request)
+        trackEventRepository?.reportEvent(request)
 
 
 }

@@ -29,6 +29,10 @@ internal object InAppNotification {
     }
 
     fun startCampaignJob() {
+        if (!enabled) {
+            logger.debug("Ignoring app event, In-App disabled")
+            return
+        }
         if (fetchJob == null || !fetchJob!!.isActive) {
             externalScope.launch(Default) {
                 do {
@@ -47,6 +51,7 @@ internal object InAppNotification {
     ) {
         if (!enabled) {
             logger.debug("Ignoring app event, In-App disabled")
+            return
         }
         inAppController.findAndLaunchInApp(context, eventName, eventParams)
     }
