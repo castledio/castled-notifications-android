@@ -10,12 +10,14 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.RemoteMessage
+import io.castled.android.notifications.R
 import io.castled.android.notifications.logger.CastledLogger.Companion.getInstance
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.NotificationActionContext
 import io.castled.android.notifications.push.models.NotificationEventType
 import io.castled.android.notifications.push.models.CastledNotificationFieldConsts
+import io.castled.android.notifications.push.models.PushConstants
 
 internal object PushNotificationManager {
     private val logger = getInstance(LogTags.PUSH)
@@ -60,10 +62,6 @@ internal object PushNotificationManager {
                 )
             )
         } else {
-            val notification =
-                CastledNotificationBuilder(context).buildNotification(pushPayload)
-            NotificationManagerCompat.from(context)
-                .notify(pushPayload.notificationId, notification)
 
             PushNotification.reportPushEvent(
                 NotificationActionContext(
@@ -78,22 +76,30 @@ internal object PushNotificationManager {
                 )
             )
         }
+        val notification =
+            CastledNotificationBuilder(context).buildNotification(pushPayload)
+        NotificationManagerCompat.from(context)
+            .notify(pushPayload.notificationId, notification)
+
     }
 
     fun getOrCreateNotificationChannel(
         context: Context,
         channelId: String,
-        channelName: String?,
         channelDesc: String?
     ): String {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
+
+            val importance = context.resources.getInteger(R.integer.io_castled_push_default_channel_importance)
             val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             if (notificationManager.getNotificationChannel(channelId) == null) {
-                val channel = NotificationChannel(channelId, channelName, importance)
+                val defaultChannelId = PushConstants.CASTLED_DEFAULT_CHANNEL_ID
+                val channel = NotificationChannel(defaultChannelId,
+                    context.getString(R.string.io_castled_push_default_channel_name), importance)
                 channel.description = channelDesc
                 notificationManager.createNotificationChannel(channel)
+                return  defaultChannelId
             }
         }
         return channelId

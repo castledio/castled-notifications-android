@@ -27,14 +27,14 @@ internal object PushNotification {
 
     private lateinit var externalScope: CoroutineScope
     private lateinit var pushRepository: PushRepository
-
+    private var enabled = false
     var isAppInForeground = true
 
     internal fun init(context: Context, externalScope: CoroutineScope) {
 
         this.externalScope = externalScope
         this.pushRepository = PushRepository(context)
-
+        enabled = true
         ProcessLifecycleOwner.get().lifecycle.addObserver(LifecycleEventObserver { _: LifecycleOwner?, event: Lifecycle.Event ->
             if (event == Lifecycle.Event.ON_START) {
                 logger.verbose("App in foreground")
@@ -60,10 +60,16 @@ internal object PushNotification {
         }
     }
 
-    fun reportPushEvent(actionContext: NotificationActionContext) =
+    fun reportPushEvent(actionContext: NotificationActionContext) {
+        if (!enabled) {
+            logger.debug("Ignoring push event, PushEvent disabled")
+            return
+        }
         externalScope.launch(Dispatchers.Default) {
             pushRepository.reportEvent(actionContext)
         }
+    }
+
 
     private fun initTokenProviders(context: Context) {
         PushTokenType.values().forEach {
@@ -110,7 +116,7 @@ internal object PushNotification {
         PushNotificationManager.handleNotification(context, pushMessage)
     }
 
-    fun isCastledPushMessage(remoteMessage: RemoteMessage) : Boolean =
+    fun isCastledPushMessage(remoteMessage: RemoteMessage): Boolean =
         PushNotificationManager.isCastledNotification(remoteMessage)
 
 
