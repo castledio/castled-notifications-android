@@ -10,12 +10,15 @@ internal object InAppResponseConverter {
             sourceContext = this.sourceContext,
             startTs = this.startTs,
             expiryTs = this.expiryTs,
-            is_read = this.read,
+            isRead = this.read,
             trigger = this.trigger,
             message = this.message,
-            message_type = this.messageType,
+            messageType = this.messageType,
             aspectRatio =  this.aspectRatio,
-            thumbnailUrl = this.thumbnailUrl
+            thumbnailUrl = this.thumbnailUrl,
+            body = this.body,
+            title = this.title,
+            dateAdded = this.date_added
         )
     }
 }

@@ -13,6 +13,10 @@ internal class DateTimeUtils {
             val dateFormat = SimpleDateFormat(patternToUse, Locale.US)
             return dateFormat.format(Date())
         }
+
+        fun  getDateFromEpochTime(timestamp: Long): Date{
+             return Date(timestamp)
+        }
     }
 
 }

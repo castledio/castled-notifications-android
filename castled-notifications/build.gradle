@@ -63,7 +63,7 @@ dependencies {
     // Retrofit
     implementation Libs.converterGson
     implementation Libs.retrofit
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation Libs.material
     // Firebase Dependencies
     compileOnly Libs.firebaseMessaging
     // Glide

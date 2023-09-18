@@ -14,6 +14,8 @@ object Versions {
     // Retrofit
     const val retrofit = "2.9.0"
 
+    const val material = "1.9.0"
+
     // Firebase Messaging
     const val firebase = "23.1.1"
 
@@ -71,6 +73,7 @@ object Libs {
     // Retrofit
     const val converterGson = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
+    const val material = "com.google.android.material:material:${Versions.material}"
 
     // Glide
     const val glide = "com.github.bumptech.glide:glide:${Versions.glide}"

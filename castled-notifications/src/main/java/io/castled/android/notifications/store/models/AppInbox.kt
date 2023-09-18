@@ -6,17 +6,18 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import io.castled.android.notifications.inbox.model.InboxMessageType
 import kotlinx.serialization.json.JsonObject
+import java.util.Date
 
 @Entity(
     tableName = "inbox",
-    indices = [Index(value = ["messageId"], unique = true)]
+    indices = [Index(value = ["message_id"], unique = true)]
 )
 data class AppInbox(
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
 
-    @ColumnInfo(name = "messageId")
+    @ColumnInfo(name = "message_id")
     val messageId: Long,
 
     @ColumnInfo(name = "team_id")
@@ -27,6 +28,15 @@ data class AppInbox(
 
     @ColumnInfo(name = "thumbnail_url")
     val thumbnailUrl: String,
+
+    @ColumnInfo(name = "title")
+    val title: String,
+
+    @ColumnInfo(name = "body")
+    val body: String,
+
+    @ColumnInfo(name = "date_added")
+    val dateAdded: Date,
 
     @ColumnInfo(name = "aspect_ratio")
     val aspectRatio: Number,
@@ -44,8 +54,8 @@ data class AppInbox(
     val message: JsonObject,
 
     @ColumnInfo(name = "is_read")
-    val is_read: Boolean,
+    val isRead: Boolean,
 
-    @ColumnInfo(name = "messageType")
-    val message_type: InboxMessageType
+    @ColumnInfo(name = "message_type")
+    val messageType: InboxMessageType
 )
