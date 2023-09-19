@@ -19,7 +19,8 @@ internal class CastledRequestRetryWorker(appContext: Context, workerParams: Work
         CastledNetworkRequestType.PUSH_REGISTER to PushRegisterRequestHandler(appContext),
         CastledNetworkRequestType.PUSH_EVENT to PushEventRequestHandler(appContext),
         CastledNetworkRequestType.IN_APP_EVENT to InAppEventRequestHandler(appContext),
-        CastledNetworkRequestType.TRACK_EVENT to TrackEventRequestHandler(appContext)
+        CastledNetworkRequestType.TRACK_EVENT to TrackEventRequestHandler(appContext),
+        CastledNetworkRequestType.INBOX_EVENT to InboxEventRequestHandler(appContext)
 
     )
 

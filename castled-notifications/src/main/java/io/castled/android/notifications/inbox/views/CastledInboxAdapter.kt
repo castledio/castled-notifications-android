@@ -20,6 +20,7 @@ import io.castled.android.notifications.store.models.AppInbox
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import org.json.JSONObject
 
 
 class CastledInboxAdapter(val context: Context) :
@@ -45,7 +46,7 @@ class CastledInboxAdapter(val context: Context) :
         holder.binding.txtTitle.text = inbox.title
         holder.binding.txtBody.text = inbox.body
         holder.binding.txtDate.text = DateTimeUtils.timeAgo(inbox.dateAdded)
-        holder.binding.imgUnread.visibility =   if (inbox.isRead) View.GONE else View.VISIBLE
+        holder.binding.imgUnread.visibility = if (inbox.isRead) View.GONE else View.VISIBLE
 
         when (inbox.messageType) {
             InboxMessageType.MESSAGE_WITH_MEDIA -> {
@@ -97,16 +98,26 @@ class CastledInboxAdapter(val context: Context) :
         holder.itemView.setOnClickListener {
 //            val intent = Intent(Intent.ACTION_CALL, Uri.parse("" + list[position].number))
 //            context.startActivity(intent)
+//            "defaultClickAction": "DEEP_LINKING",
+//            "url": "app://home.page",
+            val defaultClickAction =
+                inbox.message["defaultClickAction"]?.jsonPrimitive?.content ?: ""
+            if (defaultClickAction.isNotEmpty()) {
+                val url = inbox.message["url"]?.jsonPrimitive?.content ?: ""
+                val map = mutableMapOf<String, Any>()
+                map["clickAction"] = defaultClickAction
+                map["url"] = url
+                (context as CastledInboxActivity).onClicked(
+                    inbox, map
+                )
+
+            }
             println("setOnClickListener  ${this.inboxItemsList.size}")
 
         }
 
 
         populateButtons(holder, inbox)
-
-
-
-
 
     }
 
@@ -129,6 +140,11 @@ class CastledInboxAdapter(val context: Context) :
                         // Set button click listener (customize this)
                         child.setOnClickListener {
                             // Handle button click action here
+                            buttonDetails?.let {
+                                (context as CastledInboxActivity).onClicked(
+                                    inbox, buttonDetails.toMap()
+                                )
+                            }
                             println("buttonDetailsbuttonDetails $buttonDetails ${this.inboxItemsList.size}")
                         }
                     } else {
@@ -146,7 +162,8 @@ class CastledInboxAdapter(val context: Context) :
     private fun getScreenWidth(): Int {
         val outMetrics = DisplayMetrics()
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val metrics: WindowMetrics = context.getSystemService(WindowManager::class.java).currentWindowMetrics
+            val metrics: WindowMetrics =
+                context.getSystemService(WindowManager::class.java).currentWindowMetrics
             metrics.bounds.width()
 
         } else {
@@ -169,9 +186,15 @@ class CastledInboxAdapter(val context: Context) :
         return inboxItemsList.size
     }
 
-   internal fun deleteItem(position: Int) {
-       inboxItemsList.removeAt(position)
-       notifyItemRemoved(position)
-       (context as CastledInboxActivity).deleteItemAt(position)
+    internal fun deleteItem(position: Int) {
+        try {
+            val itemToDelete = inboxItemsList.get(position)
+            inboxItemsList.removeAt(position)
+            notifyItemRemoved(position)
+            (context as CastledInboxActivity).deleteItem(itemToDelete)
+        } catch (e: Exception) {
+
+        }
     }
+
 }

@@ -16,19 +16,17 @@ class SwipeToDeleteCallback(private var adapter: CastledInboxAdapter) :
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
     ): Boolean {
-        // Not needed for swipe-to-delete
+
         return false
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        val position = viewHolder.adapterPosition
+        val position = viewHolder.bindingAdapterPosition
         when (direction) {
             ItemTouchHelper.LEFT -> {
                 // Handle swipe-to-delete here
                 adapter.deleteItem(position)
             }
-
-
         }
     }
 
@@ -50,7 +48,6 @@ class SwipeToDeleteCallback(private var adapter: CastledInboxAdapter) :
         )
 
         val deleteBackground = ColorDrawable(Color.RED)
-
         val iconMargin = (itemView.height - deleteIcon!!.intrinsicHeight) / 2
         val iconTop = itemView.top + (itemView.height - deleteIcon.intrinsicHeight) / 2
         val iconBottom = iconTop + deleteIcon.intrinsicHeight
@@ -69,8 +66,6 @@ class SwipeToDeleteCallback(private var adapter: CastledInboxAdapter) :
             deleteBackground.draw(c)
             deleteIcon.draw(c)
         }
-
-
 
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
     }

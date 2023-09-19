@@ -3,7 +3,7 @@ package io.castled.android.notifications.inbox.viewmodel
 import android.content.Context
 import androidx.lifecycle.LiveData
 import io.castled.android.notifications.network.CastledRetrofitClient
-import io.castled.android.notifications.inbox.model.InAppResponseConverter.toInbox
+import io.castled.android.notifications.inbox.model.InboxResponseConverter.toInbox
 import io.castled.android.notifications.inbox.model.InboxResponse
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
@@ -11,13 +11,15 @@ import io.castled.android.notifications.store.CastledDbBuilder
 import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.store.models.AppInbox
 import io.castled.android.notifications.workmanager.CastledNetworkWorkManager
+import io.castled.android.notifications.workmanager.models.CastledInboxEventRequest
+import retrofit2.Response
 import java.io.IOException
 
 internal class InboxRepository(context: Context) {
 
     private val inboxDao = CastledDbBuilder.getDbInstance(context).inboxDao()
     private val logger = CastledLogger.getInstance(LogTags.INBOX_REPOSITORY)
-    private val inAppApi = CastledRetrofitClient.create(InboxApi::class.java)
+    private val inboxApi = CastledRetrofitClient.create(InboxApi::class.java)
     private val networkWorkManager = CastledNetworkWorkManager.getInstance(context)
     internal val cachedInboxItems = mutableListOf<AppInbox>()
     internal suspend fun refreshInbox() {
@@ -43,7 +45,7 @@ internal class InboxRepository(context: Context) {
 
     private suspend fun fetchLiveInbox(): List<InboxResponse>? {
         try {
-            val response = inAppApi.fetchInboxItems(
+            val response = inboxApi.fetchInboxItems(
                 CastledSharedStore.getApiKey(), CastledSharedStore.getUserId()
             )
             return if (response.isSuccessful) {
@@ -63,23 +65,19 @@ internal class InboxRepository(context: Context) {
     }
 
     internal fun observeMovieLiveData(): LiveData<List<AppInbox>> {
-          return inboxDao.getInboxitems()
+        return inboxDao.getInboxitems()
     }
 
-//    suspend fun reportEvent(request: CastledInAppEventRequest) {
-//        networkWorkManager.apiCallWithRetry(
-//            request = request,
-//            apiCall = {
-//                return@apiCallWithRetry inAppApi.reportEvent(
-//                    CastledSharedStore.getApiKey(),
-//                    it as CastledInAppEventRequest
-//                )
-//            }
-//        )
-//    }
-//
-//    suspend fun reportEventNoRetry(request: CastledInAppEventRequest): Response<Void?> {
-//        return inAppApi.reportEvent(CastledSharedStore.getApiKey(), request)
-//    }
+    suspend fun reportEvent(request: CastledInboxEventRequest) {
+        networkWorkManager.apiCallWithRetry(request = request, apiCall = {
+            return@apiCallWithRetry inboxApi.reportInboxEvent(
+                CastledSharedStore.getApiKey(), it as CastledInboxEventRequest
+            )
+        })
+    }
+
+    suspend fun reportEventNoRetry(request: CastledInboxEventRequest): Response<Void?> {
+        return inboxApi.reportInboxEvent(CastledSharedStore.getApiKey(), request)
+    }
 
 }

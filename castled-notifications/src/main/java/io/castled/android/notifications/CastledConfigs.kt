@@ -1,11 +1,14 @@
 package io.castled.android.notifications
 
+import io.castled.android.notifications.store.models.AppInbox
+
 data class CastledConfigs(
     val apiKey: String,
     val location: CastledLocation,
     val enablePush: Boolean,
     val enableInApp: Boolean,
     val enableTracking: Boolean,
+    val enableAppInbox: Boolean,
     val inAppFetchIntervalSec: Long,
     val xiaomiAppId: String?,
     val xiaomiAppKey: String?,
@@ -16,6 +19,7 @@ data class CastledConfigs(
         private var enablePush: Boolean = true
         private var enableInApp: Boolean = true
         private var enableTracking: Boolean = true
+        private var enableAppInbox: Boolean = true
 
         private var inAppFetchIntervalSec = 3600L
         private var castledLocation = CastledLocation.US
@@ -45,6 +49,7 @@ data class CastledConfigs(
             enablePush,
             enableInApp,
             enableTracking,
+            enableAppInbox,
             inAppFetchIntervalSec,
             xiaomiAppId,
             xiaomiAppKey,

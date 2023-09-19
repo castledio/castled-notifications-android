@@ -8,26 +8,24 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.castled.android.notifications.databinding.ActivityCastledInboxBinding
+import io.castled.android.notifications.inbox.InboxLifeCycleListenerImpl
 import io.castled.android.notifications.inbox.viewmodel.InboxRepository
 import io.castled.android.notifications.store.models.AppInbox
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.text.FieldPosition
 
 class CastledInboxActivity : AppCompatActivity(),
     CoroutineScope by CoroutineScope(Dispatchers.Main) {
-    // private variable to inflate the layout for the activity
+
+    private val iboxViewLifecycleListener = InboxLifeCycleListenerImpl(this)
     private lateinit var binding: ActivityCastledInboxBinding
     private val inboxRepository = InboxRepository(this)
     private lateinit var inboxListAdapter: CastledInboxAdapter
     val displayedItems = mutableSetOf<AppInbox>()
 
-    // variable to access the ViewModel class
-    //  val viewModel : ContactViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         // inflate the layout
         binding = ActivityCastledInboxBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -45,20 +43,22 @@ class CastledInboxActivity : AppCompatActivity(),
 //            binding.toolbar.visibility = View.GONE
 //        }
 
-
     }
+
     override fun onPause() {
         super.onPause()
         println(displayedItems)
         // Perform actions when the fragment is no longer visible
     }
+
     private fun prepareRecyclerView() {
         inboxListAdapter = CastledInboxAdapter(this)
         binding.inboxRecyclerView.apply {
             layoutManager = LinearLayoutManager(applicationContext)
             adapter = inboxListAdapter
-            val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(adapter as CastledInboxAdapter))
-            itemTouchHelper.attachToRecyclerView(  binding.inboxRecyclerView)
+            val itemTouchHelper =
+                ItemTouchHelper(SwipeToDeleteCallback(adapter as CastledInboxAdapter))
+            itemTouchHelper.attachToRecyclerView(binding.inboxRecyclerView)
             binding.inboxRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
@@ -68,17 +68,24 @@ class CastledInboxActivity : AppCompatActivity(),
                         (layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
 
                     for (i in firstVisibleItemPosition..lastVisibleItemPosition) {
-
-                        val data = inboxListAdapter.inboxItemsList[i]
-                        displayedItems.add(data)
+                        if (i >= 0 && i < inboxListAdapter.inboxItemsList.size) {
+                            val data = inboxListAdapter.inboxItemsList[i]
+                            displayedItems.add(data)
+                        }
                     }
 
                 }
             })
         }
     }
-    internal fun  deleteItemAt(position: Int){
 
+    internal fun deleteItem(item: AppInbox) {
+        displayedItems.remove(item)
     }
 
+    internal fun onClicked(
+        inboxItem: AppInbox, actionParams: Map<String, Any>
+    ) {
+        iboxViewLifecycleListener.onClicked(inboxItem, actionParams)
+    }
 }

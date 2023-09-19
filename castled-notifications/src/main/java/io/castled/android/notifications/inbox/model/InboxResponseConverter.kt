@@ -1,7 +1,7 @@
 package io.castled.android.notifications.inbox.model
 import io.castled.android.notifications.store.models.AppInbox
 
-internal object InAppResponseConverter {
+internal object InboxResponseConverter {
 
     fun InboxResponse.toInbox() : AppInbox {
         return AppInbox(
