@@ -1,9 +1,10 @@
 package io.castled.android.notifications.inbox.views
 
+import SwipeToDeleteCallback
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.castled.android.notifications.databinding.ActivityCastledInboxBinding
@@ -12,6 +13,7 @@ import io.castled.android.notifications.store.models.AppInbox
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.FieldPosition
 
 class CastledInboxActivity : AppCompatActivity(),
     CoroutineScope by CoroutineScope(Dispatchers.Main) {
@@ -31,28 +33,32 @@ class CastledInboxActivity : AppCompatActivity(),
         setContentView(binding.root)
         prepareRecyclerView()
         binding.imgClose.setOnClickListener { finishAfterTransition() }
-        prepareRecyclerView()
-        launch(Dispatchers.IO) {
-            try {
-                inboxRepository.refreshInbox()
-            } catch (e: Exception) {
-            }
-        }
         inboxRepository.observeMovieLiveData().observe(this, Observer { inboxList ->
+            inboxRepository.cachedInboxItems.clear()
+            inboxRepository.cachedInboxItems.addAll(inboxList)
             inboxListAdapter.setInboxItems(inboxList)
         })
+        launch(Dispatchers.IO) {
+            inboxRepository.refreshInbox()
+        }
 //        supportActionBar.let {
 //            binding.toolbar.visibility = View.GONE
 //        }
 
 
     }
-
+    override fun onPause() {
+        super.onPause()
+        println(displayedItems)
+        // Perform actions when the fragment is no longer visible
+    }
     private fun prepareRecyclerView() {
         inboxListAdapter = CastledInboxAdapter(this)
         binding.inboxRecyclerView.apply {
             layoutManager = LinearLayoutManager(applicationContext)
             adapter = inboxListAdapter
+            val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(adapter as CastledInboxAdapter))
+            itemTouchHelper.attachToRecyclerView(  binding.inboxRecyclerView)
             binding.inboxRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
@@ -62,18 +68,17 @@ class CastledInboxActivity : AppCompatActivity(),
                         (layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
 
                     for (i in firstVisibleItemPosition..lastVisibleItemPosition) {
-                        displayedItems.add(inboxListAdapter.inboxItemsList[i])
-                        // Assuming you have a data structure associated with your RecyclerView
-//                        val data = inboxListAdapter.getItem(i) // Replace with your adapter and data structure
-//                        displayedItems.add(data)
+
+                        val data = inboxListAdapter.inboxItemsList[i]
+                        displayedItems.add(data)
                     }
 
-                    // Now, 'displayedItems' contains the data associated with the currently displayed items in the RecyclerView as the user scrolls.
                 }
             })
-
         }
-
+    }
+    internal fun  deleteItemAt(position: Int){
 
     }
+
 }

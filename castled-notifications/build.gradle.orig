@@ -1,0 +1,98 @@
+
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'kotlinx-serialization'
+}
+
+android {
+
+    compileSdk Configurations.compileSdk
+
+    defaultConfig {
+
+        minSdk Configurations.minSdk
+        targetSdk Configurations.targetSdk
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+        multiDexEnabled true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            minifyEnabled false
+        }
+    }
+    buildFeatures {
+        viewBinding = true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    namespace 'io.castled.android.notifications'
+}
+
+ext {
+
+    PUBLISH_GROUP_ID = Configurations.artifactGroup
+    PUBLISH_ARTIFACT_ID = 'castled-notifications'
+    DESCRIPTION = 'Castled Notifications Android SDK'
+    PUBLISH_VERSION = Configurations.sdkVersion
+}
+
+dependencies {
+
+    // Default Android Dependencies
+    implementation Libs.appCompat
+    implementation Libs.lifecycleProcess
+    implementation Libs.constraintLayout
+    // Retrofit
+    implementation Libs.converterGson
+    implementation Libs.retrofit
+    implementation 'com.google.android.material:material:1.9.0'
+    // Firebase Dependencies
+    compileOnly Libs.firebaseMessaging
+    // Glide
+    implementation Libs.glide
+    kapt Libs.glideCompiler
+    // Room
+    implementation Libs.roomRuntime
+    kapt Libs.roomCompiler
+    implementation Libs.roomKtx
+    // Kotlin
+    implementation Libs.coreKtx
+    implementation Libs.kotlinxCoroutinesAndroid
+    implementation Libs.workRuntimeKtx
+    implementation Libs.kotlinxSerializationJson
+    implementation Libs.kotlinxSerializationConverter
+    implementation Libs.kotlinReflect
+   //CardView
+    implementation Libs.cardView
+    // Test Dependencies
+    testImplementation Libs.jUnit
+    androidTestImplementation Libs.extJUnit
+<<<<<<< HEAD
+    //Cardview
+    implementation "androidx.cardview:cardview:1.0.0"
+    //Recycle view
+    implementation 'androidx.recyclerview:recyclerview:1.3.1'
+    //MVVM
+    implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0")
+    implementation ("androidx.lifecycle:lifecycle-common-java8:2.5.1")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+    implementation ("androidx.activity:activity-ktx:1.6.1")
+=======
+>>>>>>> develop
+
+}
+
+apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"

@@ -19,10 +19,10 @@ internal class InboxRepository(context: Context) {
     private val logger = CastledLogger.getInstance(LogTags.INBOX_REPOSITORY)
     private val inAppApi = CastledRetrofitClient.create(InboxApi::class.java)
     private val networkWorkManager = CastledNetworkWorkManager.getInstance(context)
+    internal val cachedInboxItems = mutableListOf<AppInbox>()
     internal suspend fun refreshInbox() {
         val liveInboxResponse = fetchLiveInbox() ?: return
         val liveInboxItems = liveInboxResponse.map { it.toInbox() }
-        val cachedInboxItems = getInboxitems()
         val cachedInboxItemsMapById = cachedInboxItems.associateBy { it.messageId }
         val liveInInboxItemsMapById = liveInboxItems.associateBy { it.messageId }
         val expiredInboxItems =
@@ -33,19 +33,15 @@ internal class InboxRepository(context: Context) {
         deleteDbInbox(expiredInboxItems)
     }
 
-    private fun getInboxitems(): List<AppInbox> {
-        return inboxDao.dbGetInbox().value ?: listOf()
-    }
-
-    suspend fun insertInboxIntoDb(inboxItems: List<AppInbox>): LongArray {
+    private suspend fun insertInboxIntoDb(inboxItems: List<AppInbox>): LongArray {
         return inboxDao.dbInsertInbox(inboxItems)
     }
 
-    suspend fun deleteDbInbox(inboxItems: List<AppInbox>): Int {
+    private suspend fun deleteDbInbox(inboxItems: List<AppInbox>): Int {
         return inboxDao.dbDeleteAllInboxItems(inboxItems)
     }
 
-    suspend fun fetchLiveInbox(): List<InboxResponse>? {
+    private suspend fun fetchLiveInbox(): List<InboxResponse>? {
         try {
             val response = inAppApi.fetchInboxItems(
                 CastledSharedStore.getApiKey(), CastledSharedStore.getUserId()
@@ -67,7 +63,7 @@ internal class InboxRepository(context: Context) {
     }
 
     internal fun observeMovieLiveData(): LiveData<List<AppInbox>> {
-        return inboxDao.dbGetInbox()
+          return inboxDao.getInboxitems()
     }
 
 //    suspend fun reportEvent(request: CastledInAppEventRequest) {

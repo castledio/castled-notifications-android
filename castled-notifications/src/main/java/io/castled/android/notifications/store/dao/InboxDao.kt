@@ -8,7 +8,10 @@ import io.castled.android.notifications.store.models.AppInbox
 internal interface InboxDao {
 
     @Query("SELECT * FROM inbox")
-    fun dbGetInbox(): LiveData<List<AppInbox>>
+    fun dbGetInbox(): List<AppInbox>
+
+    @Query("SELECT * FROM inbox")
+    fun getInboxitems(): LiveData<List<AppInbox>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun dbInsertInbox(inboxList: List<AppInbox>) : LongArray

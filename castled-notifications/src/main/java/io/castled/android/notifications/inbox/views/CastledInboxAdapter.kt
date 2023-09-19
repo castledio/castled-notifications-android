@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import io.castled.android.notifications.R
+import io.castled.android.notifications.commons.DateTimeUtils
 import io.castled.android.notifications.databinding.CastledInboxCellBinding
 import io.castled.android.notifications.inbox.model.InboxMessageType
 import io.castled.android.notifications.store.models.AppInbox
@@ -43,6 +44,9 @@ class CastledInboxAdapter(val context: Context) :
         val inbox = inboxItemsList[position]
         holder.binding.txtTitle.text = inbox.title
         holder.binding.txtBody.text = inbox.body
+        holder.binding.txtDate.text = DateTimeUtils.timeAgo(inbox.dateAdded)
+        holder.binding.imgUnread.visibility =   if (inbox.isRead) View.GONE else View.VISIBLE
+
         when (inbox.messageType) {
             InboxMessageType.MESSAGE_WITH_MEDIA -> {
                 holder.binding.imgCover.visibility = View.VISIBLE
@@ -90,21 +94,20 @@ class CastledInboxAdapter(val context: Context) :
 //        }
 
 
-//        holder.binding.imgCover.post(object : java.lang.Runnable {
-//            override fun run() {
-//                val layoutParams =   holder.binding.imgCover.layoutParams
-//
-//                layoutParams.height =  holder.binding.imgCover.width
-//                holder.binding.imgCover.layoutParams = layoutParams//holder.binding.imgCover.layoutParams.width
-////                holder.binding.imgCover.visibility = View.GONE
-//            }
-//        })
-//        holder.binding.imgCover.visibility = View.GONE
         holder.itemView.setOnClickListener {
 //            val intent = Intent(Intent.ACTION_CALL, Uri.parse("" + list[position].number))
 //            context.startActivity(intent)
+            println("setOnClickListener  ${this.inboxItemsList.size}")
+
         }
+
+
         populateButtons(holder, inbox)
+
+
+
+
+
     }
 
     private fun populateButtons(holder: ViewHolder, inbox: AppInbox) {
@@ -126,7 +129,7 @@ class CastledInboxAdapter(val context: Context) :
                         // Set button click listener (customize this)
                         child.setOnClickListener {
                             // Handle button click action here
-                            println("buttonDetailsbuttonDetails $buttonDetails")
+                            println("buttonDetailsbuttonDetails $buttonDetails ${this.inboxItemsList.size}")
                         }
                     } else {
                         // If there's no corresponding data in actionButtons, hide the button
@@ -140,10 +143,9 @@ class CastledInboxAdapter(val context: Context) :
         }
     }
 
-
     private fun getScreenWidth(): Int {
         val outMetrics = DisplayMetrics()
-        return if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val metrics: WindowMetrics = context.getSystemService(WindowManager::class.java).currentWindowMetrics
             metrics.bounds.width()
 
@@ -156,13 +158,20 @@ class CastledInboxAdapter(val context: Context) :
         }
     }
 
-    internal fun setInboxItems(inboxItemsList: List<AppInbox>) {
-        this.inboxItemsList = ArrayList(inboxItemsList)
+    internal fun setInboxItems(inboxItems: List<AppInbox>) {
+        inboxItemsList.clear()
+        inboxItemsList.addAll(inboxItems)
         notifyDataSetChanged()
     }
 
     // function returns the number of items in the list
     override fun getItemCount(): Int {
         return inboxItemsList.size
+    }
+
+   internal fun deleteItem(position: Int) {
+       inboxItemsList.removeAt(position)
+       notifyItemRemoved(position)
+       (context as CastledInboxActivity).deleteItemAt(position)
     }
 }
