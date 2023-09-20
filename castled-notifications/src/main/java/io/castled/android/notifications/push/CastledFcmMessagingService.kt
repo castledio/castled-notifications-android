@@ -3,8 +3,9 @@ package io.castled.android.notifications.push
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.CastledNotifications
-import io.castled.android.notifications.logger.CastledLogger.Companion.getInstance
+import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
+import io.castled.android.notifications.push.extensions.toCastledPushMessage
 import io.castled.android.notifications.push.models.PushTokenType
 
 class CastledFcmMessagingService : FirebaseMessagingService() {
@@ -25,6 +26,6 @@ class CastledFcmMessagingService : FirebaseMessagingService() {
     }
 
     companion object {
-        private val logger = getInstance(LogTags.PUSH)
+        private val logger = CastledLogger.getInstance(LogTags.PUSH)
     }
 }

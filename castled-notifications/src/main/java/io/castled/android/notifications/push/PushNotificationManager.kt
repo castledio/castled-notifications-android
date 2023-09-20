@@ -14,7 +14,6 @@ import io.castled.android.notifications.R
 import io.castled.android.notifications.logger.CastledLogger.Companion.getInstance
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.CastledPushMessage
-import io.castled.android.notifications.push.models.NotificationActionContext
 import io.castled.android.notifications.push.models.NotificationEventType
 import io.castled.android.notifications.push.models.CastledNotificationFieldConsts
 import io.castled.android.notifications.push.models.PushConstants
@@ -47,40 +46,23 @@ internal object PushNotificationManager {
         }
         logger.debug("Building castled notification...")
 
-        if (PushNotification.isAppInForeground) {
-            // Not displaying notification if foreground.
-            PushNotification.reportPushEvent(
-                NotificationActionContext(
-                    notificationId = pushPayload.notificationId,
-                    teamId = pushPayload.teamId,
-                    sourceContext = pushPayload.sourceContext,
-                    eventType = NotificationEventType.FOREGROUND.toString(),
-                    actionLabel = null,
-                    actionType = null,
-                    actionUri = null,
-                    keyVals = null
-                )
-            )
-        } else {
-
-            PushNotification.reportPushEvent(
-                NotificationActionContext(
-                    notificationId = pushPayload.notificationId,
-                    teamId = pushPayload.teamId,
-                    sourceContext = pushPayload.sourceContext,
-                    eventType = NotificationEventType.RECEIVED.toString(),
-                    actionLabel = null,
-                    actionType = null,
-                    actionUri = null,
-                    keyVals = null
-                )
-            )
-        }
         val notification =
             CastledNotificationBuilder(context).buildNotification(pushPayload)
         NotificationManagerCompat.from(context)
             .notify(pushPayload.notificationId, notification)
 
+        PushNotification.reportPushEvent(
+            NotificationActionContext(
+                notificationId = pushPayload.notificationId,
+                teamId = pushPayload.teamId,
+                sourceContext = pushPayload.sourceContext,
+                eventType = NotificationEventType.RECEIVED.toString(),
+                actionLabel = null,
+                actionType = null,
+                actionUri = null,
+                keyVals = null
+            )
+        )
     }
 
     fun getOrCreateNotificationChannel(
@@ -90,16 +72,19 @@ internal object PushNotificationManager {
     ): String {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            val importance = context.resources.getInteger(R.integer.io_castled_push_default_channel_importance)
+            val importance =
+                context.resources.getInteger(R.integer.io_castled_push_default_channel_importance)
             val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             if (notificationManager.getNotificationChannel(channelId) == null) {
                 val defaultChannelId = PushConstants.CASTLED_DEFAULT_CHANNEL_ID
-                val channel = NotificationChannel(defaultChannelId,
-                    context.getString(R.string.io_castled_push_default_channel_name), importance)
+                val channel = NotificationChannel(
+                    defaultChannelId,
+                    context.getString(R.string.io_castled_push_default_channel_name), importance
+                )
                 channel.description = channelDesc
                 notificationManager.createNotificationChannel(channel)
-                return  defaultChannelId
+                return defaultChannelId
             }
         }
         return channelId

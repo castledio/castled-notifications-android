@@ -9,7 +9,6 @@ import io.castled.android.notifications.commons.CastledClickActionUtils
 import io.castled.android.notifications.logger.CastledLogger.Companion.getInstance
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.CastledClickAction
-import io.castled.android.notifications.push.models.NotificationActionContext
 import io.castled.android.notifications.push.models.PushConstants
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -19,6 +18,7 @@ class CastledNotificationReceiverAct : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         handleIntent(this, intent)
+        finish()
     }
 
     private fun handleIntent(context: Context, intent: Intent) {
@@ -56,11 +56,6 @@ class CastledNotificationReceiverAct : AppCompatActivity() {
         } catch (e: Exception) {
             logger.error("Push notification receiver activity failed!", e)
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        finish()
     }
 
     companion object {

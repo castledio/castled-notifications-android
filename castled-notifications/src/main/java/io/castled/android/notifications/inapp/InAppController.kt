@@ -18,6 +18,9 @@ internal class InAppController(context: Context) {
 
     private val inAppRepository = InAppRepository(context)
     private val logger = CastledLogger.getInstance(LogTags.IN_APP_TRIGGER)
+    private var currentInAppBeingDisplayed: Campaign? = null
+    private val inAppViewLifecycleListener = InAppLifeCycleListenerImpl(this)
+    private val currentInAppLock = Any()
 
     suspend fun refreshLiveCampaigns() {
         val liveCampaignResponse = inAppRepository.fetchLiveCampaigns() ?: return
@@ -44,12 +47,36 @@ internal class InAppController(context: Context) {
         eventName: String,
         params: Map<String, Any>?
     ) {
-        val triggeredInApps = findTriggeredInApp(eventName, params)
+        if (currentInAppBeingDisplayed != null) {
+            return
+        }
+        val triggeredInApp = findTriggeredInApp(eventName, params) ?: return
         try {
-            launchInApp(context, triggeredInApps)
+            if (updateCurrentInApp(triggeredInApp)) {
+                launchInApp(context, triggeredInApp)
+            } else {
+                logger.debug("Skipping in-app display. Another currently being shown")
+            }
         } catch (e: Exception) {
             logger.error("In-app launch failed!", e)
         }
+    }
+
+    fun clearCurrentInApp() {
+        currentInAppBeingDisplayed = null
+    }
+
+    private fun updateCurrentInApp(inApp: Campaign): Boolean {
+        if (currentInAppBeingDisplayed != null) {
+            return false
+        }
+        synchronized(currentInAppLock) {
+            if (currentInAppBeingDisplayed == null) {
+                currentInAppBeingDisplayed = inApp
+                return true
+            }
+        }
+        return false
     }
 
     private fun getEventFilter(campaign: Campaign): GroupFilter {
@@ -64,13 +91,13 @@ internal class InAppController(context: Context) {
     private suspend fun findTriggeredInApp(
         eventName: String,
         params: Map<String, Any>?
-    ): List<Campaign> {
+    ): Campaign? {
         val inAppCampaigns = inAppRepository.getCampaigns()
         val latestCampaignViewTs =
             inAppCampaigns.maxByOrNull { it.lastDisplayedTime }?.lastDisplayedTime
                 ?: 0
 
-        val triggeredInApps = inAppCampaigns
+        val triggeredInApp = inAppCampaigns
             .filter {
                 // Trigger params filter
                 ((it.trigger["eventName"] as JsonPrimitive?)?.content == eventName) && EventFilterEvaluator.evaluate(
@@ -85,23 +112,23 @@ internal class InAppController(context: Context) {
                         (it.displayConfig.minIntervalBtwDisplaysGlobal == 0L ||
                                 it.displayConfig.minIntervalBtwDisplaysGlobal * 1000 <= System.currentTimeMillis() - latestCampaignViewTs)
             }
-        return triggeredInApps
+            .takeUnless { it.isNullOrEmpty() }
+            ?.maxBy { it.priority }
+        return triggeredInApp
     }
 
     private suspend fun launchInApp(
-        context: Context, triggeredInApps: List<Campaign>
-    ) {
-        if (triggeredInApps.isNotEmpty()) {
-            val inAppSelectedForDisplay =
-                triggeredInApps.maxBy { it.priority }
-            withContext(Main) {
-                try {
-                    InAppViewDecorator(context, inAppSelectedForDisplay).show()
-                } catch (e: Exception) {
-                    logger.error("In-app display failed!", e)
-                }
-            }
+        context: Context, inAppSelectedForDisplay: Campaign
+    ) = withContext(Main) {
+        try {
+            InAppViewDecorator(context, inAppSelectedForDisplay, inAppViewLifecycleListener).show()
+        } catch (e: Exception) {
+            logger.error("In-app display failed!", e)
         }
+    }
+
+    suspend fun updateInAppDisplayStats(inApp: Campaign) {
+        inAppRepository.updateCampaignDisplayStats(inApp)
     }
 
 }

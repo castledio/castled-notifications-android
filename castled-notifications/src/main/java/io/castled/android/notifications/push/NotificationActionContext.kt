@@ -1,4 +1,4 @@
-package io.castled.android.notifications.push.models
+package io.castled.android.notifications.push
 
 import kotlinx.serialization.Serializable
 

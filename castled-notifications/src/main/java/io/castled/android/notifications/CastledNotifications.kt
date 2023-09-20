@@ -149,17 +149,18 @@ object CastledNotifications {
         }
 
     @JvmStatic
-    fun logAppPageViewEvent(context: Context, screenName: String) =
-        castledScope.launch(Dispatchers.Default) {
-            if (isInited()) {
-                InAppNotification.logAppEvent(
-                    context, AppEvents.APP_PAGE_VIEWED, mapOf("name" to screenName)
-                )
-            }
+    fun logAppPageViewedEvent(context: Context, screenName: String) {
+        if (isInited()) {
+            InAppNotification.logAppEvent(
+                context,
+                AppEvents.APP_PAGE_VIEWED,
+                mapOf("name" to screenName)
+            )
         }
+    }
 
     @JvmStatic
-    fun logAppOpenedEvent(context: Context) = castledScope.launch(Dispatchers.Default) {
+    fun logAppOpenedEvent(context: Context) {
         if (isInited()) {
             InAppNotification.logAppEvent(context, AppEvents.APP_OPENED, null)
         }
@@ -178,6 +179,7 @@ object CastledNotifications {
         castledScope.launch(Dispatchers.Default) {
             PushNotification.handlePushNotification(context, pushMessage)
         }
+
 
     fun isCastledPushMessage(remoteMessage: RemoteMessage): Boolean {
         return PushNotification.isCastledPushMessage(remoteMessage)

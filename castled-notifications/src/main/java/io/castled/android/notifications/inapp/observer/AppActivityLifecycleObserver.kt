@@ -2,62 +2,46 @@ package io.castled.android.notifications.inapp.observer
 
 import android.app.Activity
 import android.app.Application
-import android.os.Build
 import android.os.Bundle
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 
-internal class AppActivityLifecycleObserver : Application.ActivityLifecycleCallbacks {
+internal class AppActivityLifecycleObserver(private val appEventCallbacks: AppEventCallbacks) :
+    Application.ActivityLifecycleCallbacks {
+
+    var activityReferences = 0
+    var isActivityChangingConfigurations = false
 
     private val logger = CastledLogger.getInstance(
-        LogTags.ALC_OBS)
+        LogTags.ALC_OBS
+    )
 
-    override fun onActivityPreCreated(activity: Activity, savedInstanceState: Bundle?) {
-        logger.debug("onActivityPreCreated: ${activity.componentName.shortClassName}")
-    }
-
-    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-        logger.debug("onActivityCreated: ${activity.componentName.shortClassName}")
-    }
-
-    override fun onActivityPostCreated(activity: Activity, savedInstanceState: Bundle?) {
-        logger.debug("onActivityPostCreated: ${activity.componentName.shortClassName}")
-    }
+    override fun onActivityCreated(p0: Activity, p1: Bundle?) {}
 
     override fun onActivityStarted(activity: Activity) {
         logger.debug("onActivityStarted: ${activity.componentName.shortClassName}")
+        if (++activityReferences == 1 && !isActivityChangingConfigurations) {
+            // App enters foreground
+            logger.debug("App in foreground")
+            appEventCallbacks.onAppMovedToForeground(activity)
+        }
+        appEventCallbacks.onActivityStarted(activity)
     }
 
-    override fun onActivityResumed(activity: Activity) {
-        logger.debug("onActivityResumed: ${activity.componentName.shortClassName}")
-    }
+    override fun onActivityResumed(activity: Activity) {}
 
-    override fun onActivityPreResumed(activity: Activity) {
-        logger.debug("onActivityPreResumed: ${activity.componentName.shortClassName}")
-    }
-
-    override fun onActivityPostResumed(activity: Activity) {
-        logger.debug("onActivityPostResumed: ${activity.componentName.shortClassName}")
-    }
-
-    override fun onActivityPaused(activity: Activity) {
-        logger.debug("onActivityPaused: ${activity.componentName.shortClassName}")
-    }
+    override fun onActivityPaused(activity: Activity) {}
 
     override fun onActivityStopped(activity: Activity) {
         logger.debug("onActivityStopped: ${activity.componentName.shortClassName}")
-    }
-
-    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
-        logger.debug("onActivitySaveInstanceState: ${activity.componentName.shortClassName}")
-    }
-
-    override fun onActivityDestroyed(activity: Activity) {
-        logger.debug("onActivityDestroyed: ${activity.componentName.shortClassName}")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            activity.unregisterActivityLifecycleCallbacks(this)
+        isActivityChangingConfigurations = activity.isChangingConfigurations
+        if (--activityReferences == 0 && !isActivityChangingConfigurations) {
+            logger.debug("App goes background")
+            appEventCallbacks.onAppMovedToBackground(activity)
         }
     }
 
+    override fun onActivitySaveInstanceState(p0: Activity, p1: Bundle) {}
 
+    override fun onActivityDestroyed(p0: Activity) {}
 }

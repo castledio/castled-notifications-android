@@ -23,12 +23,12 @@ import kotlinx.serialization.json.jsonObject
 internal class InAppViewDecorator(
     val context: Context,
     private val inAppMessage: Campaign,
+    private val inAppViewLifecycleListener: InAppViewLifecycleListener
 ) : InAppViewBaseDecorator {
 
     private var dialog = Dialog(context)
     private val inAppViewLayout: InAppBaseViewLayout? =
         InAppViewFactory.createView(context, inAppMessage)
-    private val inAppViewLifecycleListener = InAppLifeCycleListenerImpl(context)
 
     init {
         if (inAppViewLayout != null) {
@@ -40,7 +40,6 @@ internal class InAppViewDecorator(
             }
         }
 
-
     }
 
     private fun addListenerClickCallbacks() {
@@ -48,6 +47,7 @@ internal class InAppViewDecorator(
 
         inAppViewLayout?.viewContainer?.setOnClickListener {
             inAppViewLifecycleListener.onClicked(
+                it.context,
                 this,
                 inAppMessage,
                 InAppViewUtils.getInAppRootActionParams(msgBody)
@@ -56,6 +56,7 @@ internal class InAppViewDecorator(
 
         inAppViewLayout?.primaryButton?.setOnClickListener {
             inAppViewLifecycleListener.onButtonClicked(
+                it.context,
                 this,
                 inAppMessage,
                 InAppViewUtils.getPrimaryButtonViewParams(msgBody)?.toActionParams()
@@ -63,13 +64,14 @@ internal class InAppViewDecorator(
         }
         inAppViewLayout?.secondaryButton?.setOnClickListener {
             inAppViewLifecycleListener.onButtonClicked(
+                it.context,
                 this,
                 inAppMessage,
                 InAppViewUtils.getSecondaryButtonViewParams(msgBody)?.toActionParams()
             )
         }
         inAppViewLayout?.closeButton?.setOnClickListener {
-            inAppViewLifecycleListener.onCloseButtonClicked(this, inAppMessage)
+            inAppViewLifecycleListener.onCloseButtonClicked(it.context, this, inAppMessage)
         }
     }
 
@@ -87,24 +89,24 @@ internal class InAppViewDecorator(
         } catch (e: IllegalArgumentException) {
             htmlString // Use original encoded string if decoding fails
         }
-        val jsinterface = JavaScriptInterface(this, inAppViewLayout?.webView!!)
+        val jsInterface = JavaScriptInterface(this, inAppViewLayout?.webView!!)
         inAppViewLayout.webView?.loadDataWithBaseURL(
             null, decodedHtmlString, "text/html",
             "utf-8", null
         )
-        jsinterface.setupWebViewClient()
+        jsInterface.setupWebViewClient()
 
-        jsinterface.setEventListener { eventData ->
+        jsInterface.setEventListener { eventData ->
             // Handle the event data here in ClassB
             println("Event occurred with data in ClassB: $eventData")
             inAppViewLifecycleListener.onButtonClicked(
-                this,
+                context, this,
                 inAppMessage, eventData
             )
         }
 
         inAppViewLayout.closeButton?.setOnClickListener {
-            inAppViewLifecycleListener.onCloseButtonClicked(this, inAppMessage)
+            inAppViewLifecycleListener.onCloseButtonClicked(it.context, this, inAppMessage)
         }
     }
 
@@ -150,7 +152,7 @@ internal class InAppViewDecorator(
             }
         }
         // TODO: Handle auto dismiss
-         inAppViewLifecycleListener.onDisplayed(inAppMessage)
+        inAppViewLifecycleListener.onDisplayed(inAppMessage)
     }
 
     override fun close() {
