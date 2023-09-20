@@ -8,7 +8,7 @@ import android.os.Process
 import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.inapp.InAppNotification
 import io.castled.android.notifications.inapp.models.consts.AppEvents
-import io.castled.android.notifications.inbox.model.AppInboxHelper
+import io.castled.android.notifications.inbox.AppInboxHelper
 import io.castled.android.notifications.inbox.views.CastledInboxActivity
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags

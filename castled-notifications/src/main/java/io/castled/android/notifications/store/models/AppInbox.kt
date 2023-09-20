@@ -54,7 +54,7 @@ data class AppInbox(
     val message: JsonObject,
 
     @ColumnInfo(name = "is_read")
-    val isRead: Boolean,
+    var isRead: Boolean,
 
     @ColumnInfo(name = "message_type")
     val messageType: InboxMessageType

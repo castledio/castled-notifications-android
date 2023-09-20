@@ -1,7 +1,6 @@
-package io.castled.android.notifications.inbox.model
+package io.castled.android.notifications.inbox
 
 import android.app.Application
-import io.castled.android.notifications.inbox.InboxEventUtils
 import io.castled.android.notifications.inbox.viewmodel.InboxRepository
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
@@ -17,7 +16,6 @@ internal object AppInboxHelper {
 
     private lateinit var inboxRepository: InboxRepository
     private val logger: CastledLogger = CastledLogger.getInstance(LogTags.INBOX_REPOSITORY)
-
     private lateinit var externalScope: CoroutineScope
 
     private var enabled = false
@@ -26,6 +24,17 @@ internal object AppInboxHelper {
         AppInboxHelper.externalScope = externalScope
         inboxRepository = InboxRepository(application)
         enabled = true
+    }
+
+    fun reportReadEventsWith(inboxItems: Set<AppInbox>) {
+        if (!enabled || CastledSharedStore.getUserId() == null) {
+            logger.debug("Ignoring inbox event, Castled inbox disabled/ UserId not configured")
+            return
+        }
+
+        reportInboxEvent(
+            InboxEventUtils.getReadInboxEventRequest(inboxItems)
+        )
     }
 
     fun reportEventWith(inbox: AppInbox, btnLabel: String, eventType: String) {
@@ -41,14 +50,10 @@ internal object AppInboxHelper {
 
     }
 
-    private suspend fun reportEvent(request: CastledInboxEventRequest) =
-        inboxRepository?.reportEvent(request)
-
-    private fun reportInboxEvent(request: CastledInboxEventRequest) =
-        AppInboxHelper.externalScope.launch(
-            Dispatchers.Default
-        ) {
-            inboxRepository.reportEvent(request)
-        }
+    private fun reportInboxEvent(request: CastledInboxEventRequest) = externalScope.launch(
+        Dispatchers.Default
+    ) {
+        inboxRepository.reportEvent(request)
+    }
 
 }

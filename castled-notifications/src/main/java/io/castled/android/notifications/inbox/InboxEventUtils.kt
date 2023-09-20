@@ -1,12 +1,9 @@
 package io.castled.android.notifications.inbox
 
 import io.castled.android.notifications.store.models.AppInbox
-import io.castled.android.notifications.store.models.Campaign
-import io.castled.android.notifications.workmanager.models.CastledInAppEvent
-import io.castled.android.notifications.workmanager.models.CastledInAppEventRequest
 import io.castled.android.notifications.workmanager.models.CastledInboxEvent
 import io.castled.android.notifications.workmanager.models.CastledInboxEventRequest
-import java.util.*
+import java.util.TimeZone
 
 internal object InboxEventUtils {
 
@@ -24,4 +21,23 @@ internal object InboxEventUtils {
         return CastledInboxEventRequest(listOf(event))
     }
 
+    fun getReadInboxEventRequest(
+        inboxItems: Set<AppInbox>
+    ): CastledInboxEventRequest {
+        val batchedEvents = mutableListOf<CastledInboxEvent>()
+
+        inboxItems.forEach { inbox ->
+            batchedEvents.add(
+                CastledInboxEvent(
+                    teamId = inbox.teamId.toString(),
+                    sourceContext = inbox.sourceContext,
+                    eventType = "READ",
+                    btnLabel = "",
+                    ts = System.currentTimeMillis() / 1000,
+                    tz = TimeZone.getDefault().displayName
+                )
+            )
+        }
+        return CastledInboxEventRequest(batchedEvents)
+    }
 }

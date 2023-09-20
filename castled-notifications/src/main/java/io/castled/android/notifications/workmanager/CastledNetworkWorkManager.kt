@@ -43,6 +43,8 @@ internal class CastledNetworkWorkManager private constructor(context: Context) {
             if (!response.isSuccessful) {
                 logger.error("error code:${response.code()} message: ${response.message()}")
                 enqueueRequest(request)
+            }else{
+                logger.debug("api success ${request.requestType}")
             }
         } catch (e: Exception) {
             logger.error("Error making API call!", e)

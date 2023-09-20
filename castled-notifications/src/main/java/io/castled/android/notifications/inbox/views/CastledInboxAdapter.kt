@@ -1,6 +1,7 @@
 package io.castled.android.notifications.inbox.views
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Build
 import android.util.DisplayMetrics
 import android.view.Display
@@ -19,8 +20,8 @@ import io.castled.android.notifications.inbox.model.InboxMessageType
 import io.castled.android.notifications.store.models.AppInbox
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import org.json.JSONObject
 
 
 class CastledInboxAdapter(val context: Context) :
@@ -47,7 +48,6 @@ class CastledInboxAdapter(val context: Context) :
         holder.binding.txtBody.text = inbox.body
         holder.binding.txtDate.text = DateTimeUtils.timeAgo(inbox.dateAdded)
         holder.binding.imgUnread.visibility = if (inbox.isRead) View.GONE else View.VISIBLE
-
         when (inbox.messageType) {
             InboxMessageType.MESSAGE_WITH_MEDIA -> {
                 holder.binding.imgCover.visibility = View.VISIBLE
@@ -86,20 +86,7 @@ class CastledInboxAdapter(val context: Context) :
                 holder.binding.cardLogoParent.visibility = View.GONE
             }
         }
-        // delete button onClickListener to delete the
-        // contact from the database and notify the
-        // adapter of the change
-//        holder.binding.deleteButton.setOnClickListener{
-//            dao.delete(list[position])
-//            notifyItemRemoved(position)
-//        }
-
-
         holder.itemView.setOnClickListener {
-//            val intent = Intent(Intent.ACTION_CALL, Uri.parse("" + list[position].number))
-//            context.startActivity(intent)
-//            "defaultClickAction": "DEEP_LINKING",
-//            "url": "app://home.page",
             val defaultClickAction =
                 inbox.message["defaultClickAction"]?.jsonPrimitive?.content ?: ""
             if (defaultClickAction.isNotEmpty()) {
@@ -107,56 +94,22 @@ class CastledInboxAdapter(val context: Context) :
                 val map = mutableMapOf<String, Any>()
                 map["clickAction"] = defaultClickAction
                 map["url"] = url
+                val keyVals =
+                    inbox.message["keyVals"]?.jsonObject?.entries?.associate { (key, value) ->
+                        key to value
+                    }
+                keyVals?.let {
+                    map["keyVals"] = JsonObject(keyVals)
+                }
                 (context as CastledInboxActivity).onClicked(
                     inbox, map
                 )
 
             }
-            println("setOnClickListener  ${this.inboxItemsList.size}")
 
         }
-
-
-        populateButtons(holder, inbox)
-
-    }
-
-    private fun populateButtons(holder: ViewHolder, inbox: AppInbox) {
-        val actionButtons = inbox.message["actionButtons"] as? JsonArray
-        val buttonsLayout = holder.binding.buttonContainer
-        actionButtons?.let {
-            // Loop through each child view (buttons) in the LinearLayout
-            for (i in 0 until buttonsLayout.childCount) {
-                val child = buttonsLayout.getChildAt(i)
-                if (child is TextView) {
-                    // Determine if there's a corresponding button data in actionButtons
-                    if (i < it.size) {
-                        val buttonDetails = actionButtons[i] as? JsonObject
-                        buttonDetails?.let {
-                            child.text = buttonDetails["label"]?.jsonPrimitive?.content ?: ""
-                        }
-                        // Set button visibility based on button text (customize this logic)
-                        child.visibility = if (child.text.isNotEmpty()) View.VISIBLE else View.GONE
-                        // Set button click listener (customize this)
-                        child.setOnClickListener {
-                            // Handle button click action here
-                            buttonDetails?.let {
-                                (context as CastledInboxActivity).onClicked(
-                                    inbox, buttonDetails.toMap()
-                                )
-                            }
-                            println("buttonDetailsbuttonDetails $buttonDetails ${this.inboxItemsList.size}")
-                        }
-                    } else {
-                        // If there's no corresponding data in actionButtons, hide the button
-                        child.visibility = View.GONE
-                    }
-                }
-            }
-            buttonsLayout.visibility = holder.binding.button1.visibility
-        } ?: run {
-            buttonsLayout.visibility = View.GONE
-        }
+        populateLinks(holder, inbox)
+        customizeViews(holder, inbox)
     }
 
     private fun getScreenWidth(): Int {
@@ -178,6 +131,10 @@ class CastledInboxAdapter(val context: Context) :
     internal fun setInboxItems(inboxItems: List<AppInbox>) {
         inboxItemsList.clear()
         inboxItemsList.addAll(inboxItems)
+        reloadRecyclerView()
+    }
+
+    internal fun reloadRecyclerView() {
         notifyDataSetChanged()
     }
 
@@ -191,10 +148,85 @@ class CastledInboxAdapter(val context: Context) :
             val itemToDelete = inboxItemsList.get(position)
             inboxItemsList.removeAt(position)
             notifyItemRemoved(position)
-            (context as CastledInboxActivity).deleteItem(itemToDelete)
+            (context as CastledInboxActivity).deleteItem(position, itemToDelete)
         } catch (e: Exception) {
 
         }
     }
 
+    private fun populateLinks(holder: ViewHolder, inbox: AppInbox) {
+        val actionButtons = inbox.message["actionButtons"] as? JsonArray
+        val linksLayout = holder.binding.linkContainer
+        actionButtons?.let {
+            // Loop through each child view (buttons) in the LinearLayout
+            for (i in 0 until linksLayout.childCount) {
+                val child = linksLayout.getChildAt(i)
+                if (child is TextView) {
+                    // Determine if there's a corresponding button data in actionButtons
+                    if (i < it.size) {
+                        val buttonDetails = actionButtons[i] as? JsonObject
+                        buttonDetails?.let {
+                            child.text = buttonDetails["label"]?.jsonPrimitive?.content ?: ""
+                        }
+                        child.setTextColor(
+                            parseColor(
+                                buttonDetails?.get("fontColor")?.jsonPrimitive?.content ?: "",
+                                Color.BLUE
+                            )
+                        )
+                        child.setBackgroundColor(
+                            parseColor(
+                                buttonDetails?.get("buttonColor")?.jsonPrimitive?.content ?: "",
+                                Color.TRANSPARENT
+                            )
+                        )
+                        // Set button visibility based on button text (customize this logic)
+                        child.visibility = if (child.text.isNotEmpty()) View.VISIBLE else View.GONE
+                        // Set button click listener (customize this)
+                        child.setOnClickListener {
+                            // Handle button click action here
+                            buttonDetails?.let {
+                                (context as CastledInboxActivity).onClicked(
+                                    inbox, buttonDetails.toMap()
+                                )
+                            }
+                        }
+                    } else {
+                        // If there's no corresponding data in actionButtons, hide the button
+                        child.visibility = View.GONE
+                    }
+                }
+            }
+            linksLayout.visibility = holder.binding.link1.visibility
+        } ?: run {
+            linksLayout.visibility = View.GONE
+        }
+    }
+
+    private fun customizeViews(holder: ViewHolder, inbox: AppInbox) {
+        holder.binding.cardContainer.setCardBackgroundColor(
+            parseColor(
+                inbox.message["bgColor"]?.jsonPrimitive?.content ?: "", Color.WHITE
+            )
+        )
+        holder.binding.txtTitle.setTextColor(
+            parseColor(
+                inbox.message["titleFontColor"]?.jsonPrimitive?.content ?: "", Color.BLACK
+            )
+        )
+        holder.binding.txtBody.setTextColor(
+            parseColor(
+                inbox.message["bodyFontColor"]?.jsonPrimitive?.content ?: "", Color.BLACK
+            )
+        )
+        holder.binding.txtDate.setTextColor(holder.binding.txtBody.currentTextColor)
+    }
+
+    private fun parseColor(colorStr: String, defaultColor: Int): Int {
+        return try {
+            Color.parseColor(colorStr)
+        } catch (e: IllegalArgumentException) {
+            defaultColor
+        }
+    }
 }

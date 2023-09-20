@@ -1,8 +1,11 @@
 package io.castled.android.notifications.inbox.views
 
 import SwipeToDeleteCallback
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.ProgressBar
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,25 +32,35 @@ class CastledInboxActivity : AppCompatActivity(),
         // inflate the layout
         binding = ActivityCastledInboxBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.txtEmptyView.text = "We have no updates. Please check again later."
         prepareRecyclerView()
         binding.imgClose.setOnClickListener { finishAfterTransition() }
         inboxRepository.observeMovieLiveData().observe(this, Observer { inboxList ->
             inboxRepository.cachedInboxItems.clear()
             inboxRepository.cachedInboxItems.addAll(inboxList)
             inboxListAdapter.setInboxItems(inboxList)
+            binding.inboxRecyclerView.visibility =
+                if (inboxList.isEmpty()) View.GONE else View.VISIBLE
+            binding.txtEmptyView.visibility =
+                if (inboxList.isEmpty()) View.VISIBLE else View.GONE
+
+
         })
         launch(Dispatchers.IO) {
             inboxRepository.refreshInbox()
         }
-//        supportActionBar.let {
-//            binding.toolbar.visibility = View.GONE
-//        }
+        supportActionBar.let {
+            binding.toolbar.visibility = View.GONE
+        }
 
     }
 
     override fun onPause() {
         super.onPause()
-        println(displayedItems)
+        if (displayedItems.size > 0) {
+            iboxViewLifecycleListener.registerReadEvents(displayedItems)
+            inboxRepository.changeTheStatusToread(displayedItems)
+        }
         // Perform actions when the fragment is no longer visible
     }
 
@@ -66,11 +79,12 @@ class CastledInboxActivity : AppCompatActivity(),
                         (layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
                     val lastVisibleItemPosition =
                         (layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
-
                     for (i in firstVisibleItemPosition..lastVisibleItemPosition) {
                         if (i >= 0 && i < inboxListAdapter.inboxItemsList.size) {
                             val data = inboxListAdapter.inboxItemsList[i]
-                            displayedItems.add(data)
+                            if (!data.isRead) {
+                                displayedItems.add(data)
+                            }
                         }
                     }
 
@@ -79,8 +93,27 @@ class CastledInboxActivity : AppCompatActivity(),
         }
     }
 
-    internal fun deleteItem(item: AppInbox) {
-        displayedItems.remove(item)
+    internal fun deleteItem(position: Int, item: AppInbox) {
+        binding.progressBar.visibility = ProgressBar.VISIBLE
+        this@CastledInboxActivity.launch(Dispatchers.Main) {
+            inboxRepository.deleteInboxItem(item) { success, message ->
+                if (success) {
+                    displayedItems.remove(item)
+                    this@CastledInboxActivity.launch(Dispatchers.IO) {
+                        inboxRepository.deleteInboxItem(item)
+                    }
+                } else {
+                    val toast = Toast.makeText(
+                        this@CastledInboxActivity, message, Toast.LENGTH_LONG
+                    )
+                    toast.show()
+                    inboxListAdapter.inboxItemsList.add(position, item)
+                    inboxListAdapter.reloadRecyclerView()
+                }
+                binding.progressBar.visibility = ProgressBar.GONE
+
+            }
+        }
     }
 
     internal fun onClicked(

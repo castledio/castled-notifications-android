@@ -2,11 +2,13 @@ package io.castled.android.notifications.inbox
 
 import android.content.Context
 import io.castled.android.notifications.commons.CastledClickActionUtils
-import io.castled.android.notifications.inbox.model.AppInboxHelper
+import io.castled.android.notifications.commons.toMapString
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.CastledClickAction
 import io.castled.android.notifications.store.models.AppInbox
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 
 class InboxLifeCycleListenerImpl(private val context: Context) {
 
@@ -18,12 +20,25 @@ class InboxLifeCycleListenerImpl(private val context: Context) {
         }
     }
 
+    fun registerReadEvents(
+        inboxItems: Set<AppInbox>
+    ) {
+        AppInboxHelper.reportReadEventsWith(inboxItems)
+
+    }
+
     fun onClicked(
         inboxItem: AppInbox, actionParams: Map<String, Any>
     ) {
-        val clickAction = getClickAction((actionParams["clickAction"] as? String) ?: "NONE")
-        val uri = (actionParams["url"] as? String) ?: ""
-        val keyVals = actionParams["keyVals"] as? Map<String, String>
+
+        val clickAction = getClickAction(
+            (actionParams["clickAction"] as? JsonPrimitive?)?.content
+                ?: (actionParams["clickAction"] as? String) ?: "NONE"
+        )
+        val uri =
+            (actionParams["url"] as? JsonPrimitive?)?.content ?: (actionParams["url"] as? String)
+            ?: ""
+        val keyVals = ((actionParams["keyVals"] as? JsonObject)?.toMapString())
         AppInboxHelper.reportEventWith(
             inboxItem, (actionParams["label"] as? String) ?: "", "CLICKED"
         )

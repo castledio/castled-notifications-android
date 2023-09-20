@@ -2,6 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="10dp"
@@ -29,17 +30,20 @@
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
             android:orientation="horizontal">
+
             <androidx.cardview.widget.CardView
                 android:layout_width="wrap_content"
                 android:id="@+id/card_logo_parent"
                 android:layout_marginStart="10dp"
                 app:cardCornerRadius="5dp"
                 android:layout_height="wrap_content">
+
                 <ImageView
                     android:id="@+id/img_logo"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:scaleType="centerCrop"
+                    android:contentDescription="@string/default_content_description"
                     android:src="@android:drawable/ic_menu_gallery"></ImageView>
             </androidx.cardview.widget.CardView>
 
@@ -64,17 +68,17 @@
                     android:id="@+id/txt_body"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="2.5dp"
                     android:maxLines="3"
-                    android:minHeight="16dp"
+                    android:minHeight="13dp"
                     android:textColor="@android:color/black"
-                    android:textSize="16sp"
+                    android:textSize="13sp"
                     android:textStyle="normal"></TextView>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="2.5dp"
                     android:gravity="end|center_vertical"
                     android:orientation="horizontal">
 
@@ -83,7 +87,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@android:color/black"
-                        android:textSize="14sp"
+                        android:textSize="13sp"
                         android:textStyle="normal"></TextView>
 
                     <ImageView
@@ -91,6 +95,7 @@
                         android:layout_width="10dp"
                         android:layout_height="10dp"
                         android:layout_marginStart="10dp"
+                        android:contentDescription="@string/default_content_description"
                         android:src="@drawable/castled_circle_view">
 
                     </ImageView>
@@ -100,58 +105,48 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/button_container"
+            android:id="@+id/link_container"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/button1"
+            <TextView
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:id="@+id/link1"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:lines="1"
-                android:text="Button 1"
-                android:paddingHorizontal="2.5dp"
-                android:textAllCaps="false"
+                android:paddingHorizontal="@dimen/inbox_buttons_padding"
+                android:gravity="center"
+                android:textSize="13sp"
                 android:textColor="@android:color/holo_blue_dark"
-                android:textSize="16sp"
-                android:textStyle="bold"></Button>
+                android:textStyle="normal"></TextView>
 
-            <Button
-                android:id="@+id/button2"
+            <TextView
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
+                android:id="@+id/link2"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:lines="1"
-                android:text="Button 2"
-                android:paddingHorizontal="2.5dp"
-                android:textAllCaps="false"
+                android:paddingHorizontal="@dimen/inbox_buttons_padding"
+                android:gravity="center"
+                android:textSize="13sp"
                 android:textColor="@android:color/holo_blue_dark"
-                android:textSize="16sp"
-                android:textStyle="bold"></Button>
+                android:textStyle="normal"></TextView>
 
-            <Button
-                android:id="@+id/button3"
+            <TextView
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
+                android:id="@+id/link3"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:lines="1"
-                android:text="Button 3"
-                android:textAllCaps="false"
-                android:paddingHorizontal="2.5dp"
+                android:paddingHorizontal="@dimen/inbox_buttons_padding"
+                android:gravity="center"
+                android:textSize="13sp"
                 android:textColor="@android:color/holo_blue_dark"
-                android:textSize="16sp"
-                android:textStyle="bold"></Button>
+                android:textStyle="normal"></TextView>
 
         </LinearLayout>
     </LinearLayout>
-
-
 </androidx.cardview.widget.CardView>
