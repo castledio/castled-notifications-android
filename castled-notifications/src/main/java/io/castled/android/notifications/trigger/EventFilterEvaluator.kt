@@ -13,18 +13,17 @@ internal object EventFilterEvaluator {
         PropertyType.date to DateConditionEvaluator(),
         PropertyType.string to StringConditionEvaluator()
     )
-
-    fun evaluate(eventFilter: GroupFilter, params: Map<String, Any>?): Boolean {
-        if (eventFilter.filters == null || eventFilter.filters.isEmpty()) {
-            return true
-        }
-        if (params == null) {
-            return false
-        }
-        val propertyFilters = eventFilter.filters.map { it as PropertyFilter }
-        return if (eventFilter.joinType === JoinType.AND) {
-            evaluateAnd(propertyFilters, params)
-        } else {
+     fun evaluate(eventFilter: GroupFilter, params: Map<String, Any>?): Boolean {
+         if (eventFilter.filters == null || eventFilter.filters.isEmpty()) {
+             return true
+         }
+         if (params == null) {
+             return false
+         }
+         val propertyFilters = eventFilter.filters.map { it as PropertyFilter }
+         return if (eventFilter.joinType === JoinType.AND) {
+             evaluateAnd(propertyFilters, params)
+         } else {
             evaluateOr(propertyFilters, params)
         }
     }

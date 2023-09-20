@@ -6,9 +6,8 @@
     <drawable name="io_castled_push_default_large_icon"></drawable>
 
     <!-- Castled default channel config -->
-    <string name="io_castled_push_default_channel_id">test-channel</string>
-    <string name="io_castled_push_default_channel_name">Test Channel</string>
+    <string name="io_castled_push_default_channel_name">Sample App Channel </string>
     <string name="io_castled_push_default_channel_desc">Test Channel for Castled Notifications</string>
-    <integer name="io_castled_push_default_channel_importance">3</integer>
+    <integer name="io_castled_push_default_channel_importance">5</integer>
 
 </resources>

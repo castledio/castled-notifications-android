@@ -14,6 +14,7 @@ import io.castled.android.notifications.push.PushNotification
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.PushTokenType
 import io.castled.android.notifications.store.CastledSharedStore
+import io.castled.android.notifications.workmanager.trackevents.TrackEvents
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -52,6 +53,9 @@ object CastledNotifications {
         if (configs.enableInApp) {
             InAppNotification.init(application, castledScope)
         }
+        if (configs.enableTracking) {
+            TrackEvents.init(application)
+        }
         apiKey = configs.apiKey
         logger.info("Sdk initialized successfully")
     }
@@ -72,29 +76,45 @@ object CastledNotifications {
     @JvmStatic
     fun setUserId(
         context: Context,
-        userId: String?,
+        userId: String,
         onSuccess: () -> Unit = { },
         onError: (Exception) -> Unit = { }
     ) = castledScope.launch(Dispatchers.Default) {
         try {
-            setUserId(context, userId)
+            saveSecureUserId(context, userId, null)
             onSuccess()
         } catch (e: Exception) {
             onError(e)
         }
     }
 
-    private suspend fun setUserId(context: Context, userId: String?) {
+    @JvmStatic
+    fun setSecureUserId(
+        context: Context,
+        userId: String,
+        userToken: String,
+        onSuccess: () -> Unit = { },
+        onError: (Exception) -> Unit = { }
+    ) = castledScope.launch(Dispatchers.Default) {
+        try {
+            saveSecureUserId(context, userId, userToken)
+            onSuccess()
+        } catch (e: Exception) {
+            onError(e)
+        }
+    }
+
+    private suspend fun saveSecureUserId(context: Context, userId: String, userToken: String?) {
         if (!isMainProcess(context)) {
             // In case there are services that are not run from main process, skip init
             // for such processes
-            logger.verbose("skipping user-id set. Not main process!")
+            logger.verbose("skipping userId/userToken set. Not main process!")
             return
         }
         if (!isInited()) {
             throw IllegalStateException("Sdk not yet initialized!")
 
-        } else if (userId.isNullOrBlank()) {
+        } else if (userId.isBlank()) {
             throw IllegalStateException("UserId is empty!")
 
         } else {
@@ -104,6 +124,14 @@ object CastledNotifications {
                 CastledSharedStore.setUserId(userId)
             }
             InAppNotification.startCampaignJob()
+            userToken?.let {
+                if (userToken.isBlank()) {
+                    throw IllegalStateException("userToken is empty!")
+                }
+                if (CastledSharedStore.getSecureUserId() != userToken) {
+                    CastledSharedStore.setSecureUserId(userToken)
+                }
+            }
         }
     }
 
@@ -139,16 +167,19 @@ object CastledNotifications {
     }
 
     @JvmStatic
-    fun logCustomAppEvent(context: Context, eventName: String, eventParams: Map<String, Any>?) {
-        if (isInited()) {
-            InAppNotification.logAppEvent(context, eventName, eventParams)
+    fun logCustomAppEvent(context: Context, eventName: String, eventParams: Map<String, Any>?) =
+        castledScope.launch(Dispatchers.Default) {
+            if (isInited()) {
+                InAppNotification.logAppEvent(context, eventName, eventParams)
+                TrackEvents.reportEventWith(eventName, eventParams)
+            }
         }
-    }
 
     fun handlePushNotification(context: Context, pushMessage: CastledPushMessage?) =
         castledScope.launch(Dispatchers.Default) {
             PushNotification.handlePushNotification(context, pushMessage)
         }
+
 
     fun isCastledPushMessage(remoteMessage: RemoteMessage): Boolean {
         return PushNotification.isCastledPushMessage(remoteMessage)

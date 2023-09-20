@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 @Polymorphic
 internal sealed class CastledNetworkRequest {
-    abstract val requestType : CastledNetworkRequestType
+    abstract val requestType: CastledNetworkRequestType
 }

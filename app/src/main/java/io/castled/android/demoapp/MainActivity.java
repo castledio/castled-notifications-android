@@ -1,7 +1,11 @@
 package io.castled.android.demoapp;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +22,6 @@ import com.google.android.material.snackbar.Snackbar;
 import io.castled.android.demoapp.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
         }
+        createNotificationChannels();
     }
 
     @Override
@@ -80,5 +84,31 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    private void createNotificationChannels() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String channelId1 = "castled_demo_id";
+            String channelName1 = "Castled Demo App Channel 1";
+            String channelDescription1 = "This is Castled Demo App Channel ";
+            createNotificationChannel(channelId1, channelName1, channelDescription1);
+
+
+            // Add more channels as needed
+        }
+    }
+
+    private void createNotificationChannel(String channelId, String channelName, String channelDescription) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription(channelDescription);
+
+            // Optionally configure additional channel settings here
+
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }

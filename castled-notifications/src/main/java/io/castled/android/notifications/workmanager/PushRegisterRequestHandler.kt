@@ -17,16 +17,16 @@ internal class PushRegisterRequestHandler(appContext: Context) : NetworkRequestH
         for (entry in requests) {
             try {
                 val response = pushRepository.registerNoRetry(
-                    (entry.request as CastledPushRegisterRequest).userId,
-                    entry.request.tokens
+                    (entry.request as CastledPushRegisterRequest).userId, entry.request.tokens
                 )
                 if (!response.isSuccessful) {
                     onError(listOf(entry))
+                } else {
+                    onSuccess(listOf(entry))
                 }
             } catch (e: Exception) {
                 onError(listOf(entry))
             }
-            onSuccess(listOf(entry))
         }
     }
 }

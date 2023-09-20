@@ -5,6 +5,7 @@ data class CastledConfigs(
     val location: CastledLocation,
     val enablePush: Boolean,
     val enableInApp: Boolean,
+    val enableTracking: Boolean,
     val inAppFetchIntervalSec: Long,
     val xiaomiAppId: String?,
     val xiaomiAppKey: String?,
@@ -12,8 +13,10 @@ data class CastledConfigs(
 ) {
     class Builder {
         private lateinit var apiKey: String
-        private var enablePush: Boolean = false
-        private var enableInApp: Boolean = false
+        private var enablePush: Boolean = true
+        private var enableInApp: Boolean = true
+        private var enableTracking: Boolean = true
+
         private var inAppFetchIntervalSec = 3600L
         private var castledLocation = CastledLocation.US
         private var xiaomiAppId: String? = null
@@ -22,6 +25,8 @@ data class CastledConfigs(
 
         fun apiKey(apiKey: String) = apply { this.apiKey = apiKey }
         fun enablePush(enablePush: Boolean) = apply { this.enablePush = enablePush }
+        fun enableTracking(enableTracking: Boolean) = apply { this.enableTracking = enableTracking }
+
         fun enableInApp(enableInApp: Boolean) = apply { this.enableInApp = enableInApp }
         fun inAppFetchIntervalSec(inAppFetchIntervalSec: Long) =
             apply { this.inAppFetchIntervalSec = inAppFetchIntervalSec }
@@ -39,6 +44,7 @@ data class CastledConfigs(
             castledLocation,
             enablePush,
             enableInApp,
+            enableTracking,
             inAppFetchIntervalSec,
             xiaomiAppId,
             xiaomiAppKey,

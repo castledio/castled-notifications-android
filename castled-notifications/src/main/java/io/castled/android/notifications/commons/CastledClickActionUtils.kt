@@ -3,18 +3,26 @@ package io.castled.android.notifications.commons
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import io.castled.android.notifications.logger.CastledLogger
+import io.castled.android.notifications.logger.LogTags
 
 object CastledClickActionUtils {
+    private val logger = CastledLogger.getInstance(LogTags.IN_APP_TRIGGER)
 
     fun handleDeeplinkAction(context: Context, actionUri: String, keyVals: Map<String, String>?) {
-        val uri = keyVals?.let { CastledMapUtils.mapToQueryParams(actionUri, it) } ?: actionUri
-        Intent(Intent.ACTION_VIEW, Uri.parse(uri))
-            .apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                        Intent.FLAG_ACTIVITY_SINGLE_TOP or
-                        Intent.FLAG_ACTIVITY_CLEAR_TOP
-                context.startActivity(this)
-            }
+        try {
+            val uri = keyVals?.let { CastledMapUtils.mapToQueryParams(actionUri, it) } ?: actionUri
+            Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+                .apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                            Intent.FLAG_ACTIVITY_SINGLE_TOP or
+                            Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    context.startActivity(this)
+                }
+        } catch (e: Exception) {
+            logger.error("Couldn't load  the  Activity!", e)
+        }
+
     }
 
     fun handleNavigationAction(
@@ -22,21 +30,32 @@ object CastledClickActionUtils {
         actionClassName: String,
         keyVals: Map<String, String>?
     ) {
-        Intent(context, Class.forName(actionClassName)).apply {
-            keyVals?.let { keyVals ->
-                putExtras(CastledMapUtils.mapToBundle(keyVals))
+        try {
+            Intent(context, Class.forName(actionClassName)).apply {
+                keyVals?.let { keyVals ->
+                    putExtras(CastledMapUtils.mapToBundle(keyVals))
+                }
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP or
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP
+                context.startActivity(this)
             }
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_SINGLE_TOP or
-                    Intent.FLAG_ACTIVITY_CLEAR_TOP
-            context.startActivity(this)
+        } catch (e: Exception) {
+            logger.error("Couldn't load  the  Activity!", e)
         }
+
     }
 
     fun handleDefaultAction(context: Context) {
-        val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
-        intent?.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        context.startActivity(intent)
+        try {
+            val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+            intent?.flags =
+                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            logger.error("Couldn't load  the  Activity!", e)
+        }
+
     }
 
 }

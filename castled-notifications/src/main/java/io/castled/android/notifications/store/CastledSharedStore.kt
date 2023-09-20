@@ -16,6 +16,7 @@ internal object CastledSharedStore {
 
     private lateinit var apiKey: String
     private var userId: String? = null
+    private var secureUserId: String? = null
     private val tokens = mutableMapOf<PushTokenType, String?>()
 
     var isAppInBackground = true
@@ -31,11 +32,12 @@ internal object CastledSharedStore {
             apiKey = sharedPreferences.getString(PrefStoreKeys.API_KEY, null)!!
         }
         userId = sharedPreferences.getString(PrefStoreKeys.USER_ID, null)
+        secureUserId = sharedPreferences.getString(PrefStoreKeys.SECURE_USER_ID, null)
         tokens[PushTokenType.FCM] = sharedPreferences.getString(PrefStoreKeys.FCM_TOKEN, null)
         tokens[PushTokenType.MI_PUSH] = sharedPreferences.getString(PrefStoreKeys.MI_TOKEN, null)
     }
 
-    fun setApiKey(apiKey: String) {
+    private fun setApiKey(apiKey: String) {
         CastledSharedStore.apiKey = apiKey
         sharedPreferences.edit().putString(PrefStoreKeys.API_KEY, apiKey).apply()
     }
@@ -43,8 +45,13 @@ internal object CastledSharedStore {
     fun setUserId(userId: String?) {
         CastledSharedStore.userId = userId
         sharedPreferences.edit().putString(PrefStoreKeys.USER_ID, userId).apply()
-    }
 
+    }
+    fun setSecureUserId(secureUserId: String?) {
+        CastledSharedStore.secureUserId = secureUserId
+        sharedPreferences.edit().putString(PrefStoreKeys.SECURE_USER_ID, secureUserId).apply()
+
+    }
     fun setToken(fcmToken: String?, tokenType: PushTokenType) {
         tokens[tokenType] = fcmToken
         when (tokenType) {
@@ -58,6 +65,8 @@ internal object CastledSharedStore {
     fun getApiKey() = apiKey
 
     fun getUserId() = userId
+
+    fun getSecureUserId() = secureUserId
 
     fun getToken(tokenType: PushTokenType) = tokens[tokenType]
 

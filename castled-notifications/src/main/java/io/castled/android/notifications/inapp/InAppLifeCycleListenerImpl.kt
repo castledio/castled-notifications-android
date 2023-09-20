@@ -28,6 +28,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                 CastledClickAction.NONE -> {
                     // Do nothing
                 }
+
                 CastledClickAction.DEEP_LINKING, CastledClickAction.RICH_LANDING -> {
                     CastledClickActionUtils.handleDeeplinkAction(
                         context,
@@ -42,6 +43,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                     )
                     inAppViewBaseDecorator.close()
                 }
+
                 CastledClickAction.DISMISS_NOTIFICATION -> {
                     InAppNotification.reportInAppEvent(
                         InAppEventUtils.getDismissedEvent(
@@ -51,6 +53,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                     inAppViewBaseDecorator.close()
                     logger.debug("In-App with notification id:${inAppMessage.notificationId} dismissed!")
                 }
+
                 CastledClickAction.NAVIGATE_TO_SCREEN -> {
                     CastledClickActionUtils.handleNavigationAction(
                         context,
@@ -65,6 +68,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                     )
                     inAppViewBaseDecorator.close()
                 }
+
                 else -> {
                     logger.debug("Unexpected action:${actionParams.action} for notification:${inAppMessage.notificationId}, button:${actionParams.actionLabel}")
                 }
@@ -98,6 +102,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                         )
                     )
                 }
+
                 CastledClickAction.DISMISS_NOTIFICATION -> {
                     InAppNotification.reportInAppEvent(
                         InAppEventUtils.getDismissedEvent(
@@ -106,6 +111,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                     )
                     logger.debug("In-App with notification id:${inAppMessage.notificationId} dismissed!")
                 }
+
                 CastledClickAction.NAVIGATE_TO_SCREEN -> {
                     CastledClickActionUtils.handleNavigationAction(
                         context,
@@ -119,9 +125,29 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                         )
                     )
                 }
-                CastledClickAction.PUSH_PERMISSION_REQUEST -> {
-                    TODO("Not implemented!")
+
+                CastledClickAction.REQUEST_PUSH_PERMISSION -> {
+                    InAppNotification.reportInAppEvent(
+                        InAppEventUtils.getClickedEvent(
+                            inAppMessage,
+                            actionParams
+                        )
+                    )
+
+                    // TODO:  Not implemented!
                 }
+
+                CastledClickAction.CUSTOM -> {
+                    InAppNotification.reportInAppEvent(
+                        InAppEventUtils.getClickedEvent(
+                            inAppMessage,
+                            actionParams
+                        )
+                    )
+
+                    // TODO:  Not implemented!
+                }
+
                 else -> {
                     logger.debug("Unexpected action:${actionParams.action} for notification:${inAppMessage.notificationId}, button:${actionParams.actionLabel}")
                 }
@@ -132,6 +158,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
         // Close in-app irrespective of the click action
         inAppViewBaseDecorator.close()
     }
+
 
     override fun onCloseButtonClicked(
         context: Context,

@@ -1,7 +1,6 @@
 package io.castled.android.notifications.inapp
 
 import android.content.Context
-import com.google.gson.JsonSyntaxException
 import io.castled.android.notifications.inapp.CampaignResponseConverter.toCampaign
 import io.castled.android.notifications.store.models.Campaign
 import io.castled.android.notifications.inapp.service.InAppRepository
@@ -67,7 +66,7 @@ internal class InAppController(context: Context) {
         currentInAppBeingDisplayed = null
     }
 
-    private fun updateCurrentInApp(inApp: Campaign) : Boolean {
+    private fun updateCurrentInApp(inApp: Campaign): Boolean {
         if (currentInAppBeingDisplayed != null) {
             return false
         }
@@ -83,8 +82,8 @@ internal class InAppController(context: Context) {
     private fun getEventFilter(campaign: Campaign): GroupFilter {
         return try {
             return Json.decodeFromJsonElement(campaign.trigger["eventFilter"] as JsonElement)
-        } catch (e: JsonSyntaxException) {
-            logger.error("Couldn't deserialize event filter!", e)
+        } catch (e: Exception) {
+            //logger.error("Couldn't deserialize event filter!", e)
             GroupFilter(JoinType.AND, null)
         }
     }
@@ -119,14 +118,10 @@ internal class InAppController(context: Context) {
     }
 
     private suspend fun launchInApp(
-        context: Context, inApp: Campaign
+        context: Context, inAppSelectedForDisplay: Campaign
     ) = withContext(Main) {
         try {
-            InAppViewDecorator(
-                context,
-                inApp,
-                inAppViewLifecycleListener
-            ).show()
+            InAppViewDecorator(context, inAppSelectedForDisplay, inAppViewLifecycleListener).show()
         } catch (e: Exception) {
             logger.error("In-app display failed!", e)
         }

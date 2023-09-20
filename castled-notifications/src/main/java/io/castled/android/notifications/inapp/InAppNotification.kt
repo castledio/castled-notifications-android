@@ -20,6 +20,7 @@ internal object InAppNotification {
     private val logger: CastledLogger = CastledLogger.getInstance(LogTags.IN_APP)
     private lateinit var externalScope: CoroutineScope
     private lateinit var inAppController: InAppController
+
     private var enabled = false
     private var fetchJob: Job? = null
 
@@ -55,6 +56,10 @@ internal object InAppNotification {
     }
 
     fun startCampaignJob() {
+        if (!enabled) {
+            logger.debug("Ignoring app event, In-App disabled")
+            return
+        }
         if (fetchJob == null || !fetchJob!!.isActive) {
             externalScope.launch(Default) {
                 do {
@@ -73,6 +78,7 @@ internal object InAppNotification {
     ) = externalScope.launch(Default) {
         if (!enabled) {
             logger.debug("Ignoring app event, In-App disabled")
+            return@launch
         }
         inAppController.findAndLaunchInApp(context, eventName, eventParams)
     }

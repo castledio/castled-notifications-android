@@ -53,7 +53,7 @@ object InAppViewUtils {
         )
     }
 
-    fun getInAppRootActionParams(modal: JsonObject) : ClickActionParams {
+    fun getInAppRootActionParams(modal: JsonObject): ClickActionParams {
         return ClickActionParams(
             actionLabel = null,
             action = CastledClickAction.valueOf(modal["defaultClickAction"]?.jsonPrimitive?.content!!),
@@ -65,7 +65,7 @@ object InAppViewUtils {
     }
 
     fun getPrimaryButtonActionParams(modal: JsonObject): ClickActionParams? {
-        val btnViewParams =  getPrimaryButtonViewParams(modal)
+        val btnViewParams = getPrimaryButtonViewParams(modal)
         val buttons = modal["actionButtons"]?.jsonArray ?: return null
         val primaryButtonJson = buttons.last().jsonObject
         val keyVals = primaryButtonJson["keyVals"]?.jsonObject
@@ -73,6 +73,21 @@ object InAppViewUtils {
             actionLabel = primaryButtonJson["label"]?.jsonPrimitive?.content!!,
             action = CastledClickAction.valueOf(primaryButtonJson["clickAction"]?.jsonPrimitive?.content!!),
             uri = primaryButtonJson["url"]?.jsonPrimitive?.content ?: "",
+            keyVals = keyVals?.entries?.associate { (key, value) ->
+                key to (value as JsonPrimitive).content
+            }
+        )
+    }
+
+    fun getWebViewButtonActionParams(modal: JsonObject): ClickActionParams? {
+        val keyVals = modal["keyVals"]?.jsonObject
+        return ClickActionParams(
+            actionLabel = modal["keyVals"]?.jsonObject?.get("button_title")?.jsonPrimitive?.content
+                ?: (modal?.get("clickAction")?.jsonPrimitive?.content ?: ""),
+            action = CastledClickAction.valueOf(
+                (modal?.get("clickAction")?.jsonPrimitive?.content ?: "")
+            ),
+            uri = modal?.get("clickActionUrl")?.jsonPrimitive?.content ?: "",
             keyVals = keyVals?.entries?.associate { (key, value) ->
                 key to (value as JsonPrimitive).content
             }

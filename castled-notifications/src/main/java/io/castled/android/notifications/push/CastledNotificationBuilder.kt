@@ -320,16 +320,13 @@ internal class CastledNotificationBuilder(private val context: Context) {
         payload: CastledPushMessage
     ) {
         val channelId = payload.channelId.takeUnless { it.isNullOrBlank() }
-            ?: context.getString(R.string.io_castled_push_default_channel_id)
-        val channelName = payload.channelName.takeUnless { it.isNullOrBlank() } ?: channelId
+            ?: PushConstants.CASTLED_DEFAULT_CHANNEL_ID
         val channelDesc = payload.channelDescription.takeUnless { it.isNullOrBlank() }
             ?: context.getString(R.string.io_castled_push_default_channel_desc)
-
-        notificationBuilder.setChannelId(
+         notificationBuilder.setChannelId(
             PushNotificationManager.getOrCreateNotificationChannel(
                 context,
                 channelId,
-                channelName,
                 channelDesc
             )
         )
@@ -337,7 +334,7 @@ internal class CastledNotificationBuilder(private val context: Context) {
 
     private fun getChannelId(payload: CastledPushMessage): String {
         return payload.channelId.takeUnless { it.isNullOrBlank() }
-            ?: context.getString(R.string.io_castled_push_default_channel_id)
+            ?: PushConstants.CASTLED_DEFAULT_CHANNEL_ID
     }
 
     private fun setTimeout(
