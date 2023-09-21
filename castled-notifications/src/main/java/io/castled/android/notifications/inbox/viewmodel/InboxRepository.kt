@@ -3,7 +3,7 @@ package io.castled.android.notifications.inbox.viewmodel
 import android.content.Context
 import androidx.lifecycle.LiveData
 import io.castled.android.notifications.inbox.InboxEventUtils
-import io.castled.android.notifications.inbox.model.InboxResponse
+import io.castled.android.notifications.inbox.model.CastledInboxItem
 import io.castled.android.notifications.inbox.model.InboxResponseConverter.toInbox
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
@@ -51,7 +51,7 @@ internal class InboxRepository(context: Context) {
         inboxDao.delete(inbox)
     }
 
-    private suspend fun fetchLiveInbox(): List<InboxResponse>? {
+    private suspend fun fetchLiveInbox(): List<CastledInboxItem>? {
         try {
             val response = inboxApi.fetchInboxItems(
                 CastledSharedStore.getApiKey(), CastledSharedStore.getUserId()

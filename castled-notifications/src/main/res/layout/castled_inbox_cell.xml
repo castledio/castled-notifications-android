@@ -59,7 +59,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:lines="1"
-                    android:minHeight="16dp"
+                    android:includeFontPadding="false"
+                    android:layout_marginTop="-2dp"
                     android:textColor="@android:color/black"
                     android:textSize="18sp"
                     android:textStyle="bold"></TextView>
@@ -68,9 +69,10 @@
                     android:id="@+id/txt_body"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2.5dp"
+                    android:layout_marginTop="3dp"
                     android:maxLines="3"
                     android:minHeight="13dp"
+                    android:includeFontPadding="false"
                     android:textColor="@android:color/black"
                     android:textSize="13sp"
                     android:textStyle="normal"></TextView>
@@ -78,7 +80,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2.5dp"
+                    android:layout_marginTop="3dp"
                     android:gravity="end|center_vertical"
                     android:orientation="horizontal">
 

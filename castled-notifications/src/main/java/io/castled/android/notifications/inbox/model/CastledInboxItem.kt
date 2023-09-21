@@ -8,7 +8,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import java.util.Date
 
 @Serializable
-internal data class InboxResponse(
+internal data class CastledInboxItem(
     val teamId: Long,
     val messageId: Long,
     val sourceContext: String,
@@ -23,9 +23,8 @@ internal data class InboxResponse(
         get() = (message["aspectRatio"])?.toString()?.toFloat() ?: 0.0
     val body: String
         get() = (message["body"])?.jsonPrimitive?.content ?: ""
-    val date_added: Date
+    val dateAdded: Date
         get() {
-            val date  = DateTimeUtils.getDateFromEpochTime(startTs)
             return DateTimeUtils.getDateFromEpochTime(startTs)
         }
     val messageType: InboxMessageType
