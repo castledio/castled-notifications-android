@@ -1,12 +1,15 @@
 package io.castled.android.mipush
 
 import com.xiaomi.mipush.sdk.MiPushMessage
-import io.castled.android.notifications.push.models.CastledClickAction
+import io.castled.android.notifications.logger.CastledLogger
+import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.CastledNotificationFieldConsts
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.CastledPushPriority
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+
+private val json = Json { ignoreUnknownKeys = true }
 
 fun MiPushMessage.toCastledPushMessage(): CastledPushMessage? {
     try {
@@ -17,12 +20,9 @@ fun MiPushMessage.toCastledPushMessage(): CastledPushMessage? {
             title = title,
             body = content,
             summary = description,
-            imageUrl = extra["imageUrl"],
+            pushMessageFrames = json.decodeFromString(extra["msgFrames"]!!),
             sound = extra["sound"],
             priority = extra["priority"]?.let { CastledPushPriority.valueOf(it) },
-            clickAction = extra["clickAction"]?.let { CastledClickAction.valueOf(it) },
-            clickActionUri = extra["clickActionUri"],
-            keyVals = extra["keyVals"]?.let { Json.decodeFromString(it) },
             channelId = extra["channelId"],
             channelName = extra["channelName"],
             channelDescription = extra["channelDescription"],
@@ -32,7 +32,7 @@ fun MiPushMessage.toCastledPushMessage(): CastledPushMessage? {
             ttl = extra["ttl"]?.toLong()
         )
     } catch (e: Exception) {
-        CastledPushMessage.logger.error("Parsing xiaomi push payload failed!", e)
+        CastledLogger.getInstance(LogTags.PUSH).error("Parsing xiaomi push payload failed!", e)
         return null
     }
 }
