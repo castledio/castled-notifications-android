@@ -13,8 +13,8 @@ import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.store.models.AppInbox
 import io.castled.android.notifications.workmanager.CastledNetworkWorkManager
 import io.castled.android.notifications.workmanager.models.CastledInboxEventRequest
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.io.IOException
@@ -72,24 +72,6 @@ internal class InboxRepository(context: Context) {
         return null
     }
 
-    internal fun changeTheStatusToread(inboxItems: Set<AppInbox>) {
-
-        GlobalScope.launch(Dispatchers.IO) {
-            try {
-                inboxItems.forEach {
-                    it.isRead = true
-                    inboxDao.updateInboxItem(it)
-                }
-            } catch (e: Exception) {
-                // Handle any exceptions that may occur during database operations
-                e.printStackTrace()
-                // You can also log the exception or show an error message to the user
-            }
-
-
-        }
-    }
-
     internal suspend fun deleteInboxItem(
         inbox: AppInbox, completion: (Boolean, String) -> Unit
     ) {
@@ -136,4 +118,18 @@ internal class InboxRepository(context: Context) {
         return inboxApi.reportInboxEvent(CastledSharedStore.getApiKey(), request)
     }
 
+    internal fun changeTheStatusToRead(inboxItems: Set<AppInbox>, externalScope: CoroutineScope) {
+        externalScope.launch(Dispatchers.Default) {
+            try {
+                inboxItems.forEach {
+                    it.isRead = true
+                    inboxDao.updateInboxItem(it)
+                }
+            } catch (e: Exception) {
+                // Handle any exceptions that may occur during database operations
+                e.printStackTrace()
+                // You can also log the exception or show an error message to the user
+            }
+        }
+    }
 }

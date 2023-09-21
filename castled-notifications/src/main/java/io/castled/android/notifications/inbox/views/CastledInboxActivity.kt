@@ -1,22 +1,28 @@
 package io.castled.android.notifications.inbox.views
 
 import SwipeToDeleteCallback
+import android.app.Activity
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.castled.android.notifications.commons.ColorUtils
 import io.castled.android.notifications.databinding.ActivityCastledInboxBinding
 import io.castled.android.notifications.inbox.InboxLifeCycleListenerImpl
+import io.castled.android.notifications.inbox.model.CastledInboxConfig
 import io.castled.android.notifications.inbox.viewmodel.InboxRepository
 import io.castled.android.notifications.store.models.AppInbox
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.Serializable
 
 class CastledInboxActivity : AppCompatActivity(),
     CoroutineScope by CoroutineScope(Dispatchers.Main) {
@@ -27,15 +33,15 @@ class CastledInboxActivity : AppCompatActivity(),
     private lateinit var inboxListAdapter: CastledInboxAdapter
     val displayedItems = mutableSetOf<AppInbox>()
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // inflate the layout
         binding = ActivityCastledInboxBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.txtEmptyView.text = "We have no updates. Please check again later."
         prepareRecyclerView()
         binding.imgClose.setOnClickListener { finishAfterTransition() }
-        inboxRepository.observeMovieLiveData().observe(this, Observer { inboxList ->
+        inboxRepository.observeMovieLiveData().observe(this) { inboxList ->
             inboxRepository.cachedInboxItems.clear()
             inboxRepository.cachedInboxItems.addAll(inboxList)
             inboxListAdapter.setInboxItems(inboxList)
@@ -45,13 +51,53 @@ class CastledInboxActivity : AppCompatActivity(),
                 if (inboxList.isEmpty()) View.VISIBLE else View.GONE
 
 
-        })
-        launch(Dispatchers.IO) {
+        }
+        launch(Dispatchers.Default) {
             inboxRepository.refreshInbox()
         }
-        supportActionBar.let {
+        supportActionBar?.let {
             binding.toolbar.visibility = View.GONE
         }
+        val displayConfig = getSerializable(
+            this, "displayConfig",
+            CastledInboxConfig::class.java
+        )
+        displayConfig?.let {
+            customizeViews(displayConfig)
+        }
+    }
+
+    private fun customizeViews(displayConfig: CastledInboxConfig) {
+
+        binding.toolbar.setBackgroundColor(
+            ColorUtils.parseColor(
+                displayConfig.navigationBarBackgroundColor,
+                Color.WHITE
+            )
+        )
+        binding.txtEmptyView.text = displayConfig.emptyMessageViewText
+        binding.txtEmptyView.setTextColor(
+            ColorUtils.parseColor(
+                displayConfig.navigationBarBackgroundColor,
+                Color.BLACK
+            )
+        )
+        binding.toolbarTitle.text = displayConfig.navigationBarTitle
+        binding.toolbarTitle.setTextColor(
+            ColorUtils.parseColor(
+                displayConfig.navigationBarTitleColor,
+                Color.WHITE
+            )
+        )
+        binding.viewBg.setBackgroundColor(
+            ColorUtils.parseColor(
+                displayConfig.inboxViewBackgroundColor,
+                Color.WHITE
+            )
+        )
+        binding.toolbar.visibility =
+            if (displayConfig.hideNavigationBar) View.GONE else View.VISIBLE
+
 
     }
 
@@ -59,9 +105,19 @@ class CastledInboxActivity : AppCompatActivity(),
         super.onPause()
         if (displayedItems.size > 0) {
             iboxViewLifecycleListener.registerReadEvents(displayedItems)
-            inboxRepository.changeTheStatusToread(displayedItems)
         }
         // Perform actions when the fragment is no longer visible
+    }
+
+    private fun <T : Serializable?> getSerializable(
+        activity: Activity,
+        name: String,
+        clazz: Class<T>
+    ): T? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            activity.intent.getSerializableExtra(name, clazz)
+        else
+            activity.intent.getSerializableExtra(name) as? T
     }
 
     private fun prepareRecyclerView() {

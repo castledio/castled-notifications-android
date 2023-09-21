@@ -14,6 +14,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import io.castled.android.notifications.R
+import io.castled.android.notifications.commons.ColorUtils
 import io.castled.android.notifications.commons.DateTimeUtils
 import io.castled.android.notifications.databinding.CastledInboxCellBinding
 import io.castled.android.notifications.inbox.model.InboxMessageType
@@ -169,13 +170,13 @@ class CastledInboxAdapter(val context: Context) :
                             child.text = buttonDetails["label"]?.jsonPrimitive?.content ?: ""
                         }
                         child.setTextColor(
-                            parseColor(
+                            ColorUtils.parseColor(
                                 buttonDetails?.get("fontColor")?.jsonPrimitive?.content ?: "",
                                 Color.BLUE
                             )
                         )
                         child.setBackgroundColor(
-                            parseColor(
+                            ColorUtils.parseColor(
                                 buttonDetails?.get("buttonColor")?.jsonPrimitive?.content ?: "",
                                 Color.TRANSPARENT
                             )
@@ -205,28 +206,23 @@ class CastledInboxAdapter(val context: Context) :
 
     private fun customizeViews(holder: ViewHolder, inbox: AppInbox) {
         holder.binding.cardContainer.setCardBackgroundColor(
-            parseColor(
+
+            ColorUtils.parseColor(
                 inbox.message["bgColor"]?.jsonPrimitive?.content ?: "", Color.WHITE
             )
         )
         holder.binding.txtTitle.setTextColor(
-            parseColor(
+            ColorUtils.parseColor(
                 inbox.message["titleFontColor"]?.jsonPrimitive?.content ?: "", Color.BLACK
             )
         )
         holder.binding.txtBody.setTextColor(
-            parseColor(
+            ColorUtils.parseColor(
                 inbox.message["bodyFontColor"]?.jsonPrimitive?.content ?: "", Color.BLACK
             )
         )
         holder.binding.txtDate.setTextColor(holder.binding.txtBody.currentTextColor)
     }
 
-    private fun parseColor(colorStr: String, defaultColor: Int): Int {
-        return try {
-            Color.parseColor(colorStr)
-        } catch (e: IllegalArgumentException) {
-            defaultColor
-        }
-    }
+
 }

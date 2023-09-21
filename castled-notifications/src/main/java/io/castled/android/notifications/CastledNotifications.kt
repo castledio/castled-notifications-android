@@ -9,6 +9,7 @@ import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.inapp.InAppNotification
 import io.castled.android.notifications.inapp.models.consts.AppEvents
 import io.castled.android.notifications.inbox.AppInboxHelper
+import io.castled.android.notifications.inbox.model.CastledInboxConfig
 import io.castled.android.notifications.inbox.views.CastledInboxActivity
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
@@ -190,13 +191,15 @@ object CastledNotifications {
     }
 
     @JvmStatic
-    fun showAppInbox(context: Context) = castledScope.launch(Dispatchers.Default) {
-        if (isInited()) {
-            val intent = Intent(context, CastledInboxActivity::class.java)
-            context.startActivity(intent)
+    fun showAppInbox(context: Context, displayConfig: CastledInboxConfig? = null) =
+        castledScope.launch(Dispatchers.Default) {
+            if (isInited()) {
+                val intent = Intent(context, CastledInboxActivity::class.java)
+                displayConfig?.let { intent.putExtra("displayConfig", displayConfig) }
+                context.startActivity(intent)
 
+            }
         }
-    }
 
     fun getCastledConfigs() = CastledSharedStore.configs
 

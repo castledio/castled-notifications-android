@@ -31,10 +31,10 @@ internal object AppInboxHelper {
             logger.debug("Ignoring inbox event, Castled inbox disabled/ UserId not configured")
             return
         }
-
         reportInboxEvent(
             InboxEventUtils.getReadInboxEventRequest(inboxItems)
         )
+        inboxRepository.changeTheStatusToRead(inboxItems, externalScope)
     }
 
     fun reportEventWith(inbox: AppInbox, btnLabel: String, eventType: String) {
@@ -55,5 +55,6 @@ internal object AppInboxHelper {
     ) {
         inboxRepository.reportEvent(request)
     }
+
 
 }
