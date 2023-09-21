@@ -4,8 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CastledPushMessageFrame(
-    val title: String?,
-    val subtitle: String?,
+    val title: String? = null,
+    val subtitle: String? = null,
     val imageUrl: String? = null,
     val clickAction: CastledClickAction?,
     val clickActionUrl: String? = null,
