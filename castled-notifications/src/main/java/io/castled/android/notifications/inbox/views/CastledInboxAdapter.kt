@@ -211,6 +211,11 @@ class CastledInboxAdapter(val context: Context) :
                 inbox.message["bgColor"]?.jsonPrimitive?.content ?: "", Color.WHITE
             )
         )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Set includeFontPadding to false for SDK version Oreo (26) or higher
+            holder.binding.txtTitle.includeFontPadding = false
+            holder.binding.txtBody.includeFontPadding = false
+        }
         holder.binding.txtTitle.setTextColor(
             ColorUtils.parseColor(
                 inbox.message["titleFontColor"]?.jsonPrimitive?.content ?: "", Color.BLACK
