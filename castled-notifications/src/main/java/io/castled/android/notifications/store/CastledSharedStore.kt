@@ -14,7 +14,7 @@ internal object CastledSharedStore {
 
     lateinit var configs: CastledConfigs
 
-    private lateinit var apiKey: String
+    private lateinit var appId: String
     private var userId: String? = null
     private var secureUserId: String? = null
     private val tokens = mutableMapOf<PushTokenType, String?>()
@@ -25,11 +25,11 @@ internal object CastledSharedStore {
         CastledSharedStore.configs = configs
         sharedPreferences =
             context.getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE)
-        if (sharedPreferences.getString(PrefStoreKeys.API_KEY, null) != configs.apiKey) {
+        if (sharedPreferences.getString(PrefStoreKeys.APP_ID, null) != configs.appId) {
             clearPreferences()
-            setApiKey(configs.apiKey)
+            setApiKey(configs.appId)
         } else {
-            apiKey = sharedPreferences.getString(PrefStoreKeys.API_KEY, null)!!
+            appId = sharedPreferences.getString(PrefStoreKeys.APP_ID, null)!!
         }
         userId = sharedPreferences.getString(PrefStoreKeys.USER_ID, null)
         secureUserId = sharedPreferences.getString(PrefStoreKeys.SECURE_USER_ID, null)
@@ -37,9 +37,9 @@ internal object CastledSharedStore {
         tokens[PushTokenType.MI_PUSH] = sharedPreferences.getString(PrefStoreKeys.MI_TOKEN, null)
     }
 
-    private fun setApiKey(apiKey: String) {
-        CastledSharedStore.apiKey = apiKey
-        sharedPreferences.edit().putString(PrefStoreKeys.API_KEY, apiKey).apply()
+    private fun setApiKey(appId: String) {
+        CastledSharedStore.appId = appId
+        sharedPreferences.edit().putString(PrefStoreKeys.APP_ID, appId).apply()
     }
 
     fun setUserId(userId: String?) {
@@ -47,22 +47,25 @@ internal object CastledSharedStore {
         sharedPreferences.edit().putString(PrefStoreKeys.USER_ID, userId).apply()
 
     }
+
     fun setSecureUserId(secureUserId: String?) {
         CastledSharedStore.secureUserId = secureUserId
         sharedPreferences.edit().putString(PrefStoreKeys.SECURE_USER_ID, secureUserId).apply()
 
     }
+
     fun setToken(fcmToken: String?, tokenType: PushTokenType) {
         tokens[tokenType] = fcmToken
         when (tokenType) {
             PushTokenType.FCM -> sharedPreferences.edit()
                 .putString(PrefStoreKeys.FCM_TOKEN, fcmToken).apply()
+
             PushTokenType.MI_PUSH -> sharedPreferences.edit()
                 .putString(PrefStoreKeys.MI_TOKEN, fcmToken).apply()
         }
     }
 
-    fun getApiKey() = apiKey
+    fun getAppId() = appId
 
     fun getUserId() = userId
 

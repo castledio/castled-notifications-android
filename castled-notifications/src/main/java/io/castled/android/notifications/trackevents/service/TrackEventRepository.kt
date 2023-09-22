@@ -1,4 +1,4 @@
-package io.castled.android.notifications.workmanager.trackevents.service
+package io.castled.android.notifications.trackevents.service
 
 import android.content.Context
 import io.castled.android.notifications.network.CastledRetrofitClient
@@ -30,9 +30,9 @@ internal class TrackEventRepository(context: Context) {
 
         val hashMap = HashMap<String, String>()
         val secureUserId: String? = CastledSharedStore.getSecureUserId()
-        hashMap["Api-Key"] = CastledSharedStore.getApiKey()
+        hashMap["App-Id"] = CastledSharedStore.getAppId()
         secureUserId?.let { hashMap["Auth-Key"] = it }
-        return  hashMap
+        return hashMap
 
     }
 }
