@@ -41,7 +41,7 @@ class CastledInboxActivity : AppCompatActivity(),
         setContentView(binding.root)
         prepareRecyclerView()
         binding.imgClose.setOnClickListener { finishAfterTransition() }
-        inboxRepository.observeMovieLiveData().observe(this) { inboxList ->
+        inboxRepository.observeInboxLiveData().observe(this) { inboxList ->
             inboxRepository.cachedInboxItems.clear()
             inboxRepository.cachedInboxItems.addAll(inboxList)
             inboxListAdapter.setInboxItems(inboxList)

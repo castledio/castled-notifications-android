@@ -1,6 +1,8 @@
 package io.castled.android.notifications.inbox
 
 import android.app.Application
+import io.castled.android.notifications.inbox.model.CastledInboxItem
+import io.castled.android.notifications.inbox.model.InboxResponseConverter.toInboxItem
 import io.castled.android.notifications.inbox.viewmodel.InboxRepository
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
@@ -56,5 +58,16 @@ internal object AppInboxHelper {
         inboxRepository.reportEvent(request)
     }
 
+    internal fun getInboxItems(): List<CastledInboxItem> {
+
+        if (!enabled || CastledSharedStore.getUserId() == null) {
+            logger.debug("Ignoring inbox event, Castled inbox disabled/ UserId not configured")
+            return listOf()
+        }
+        val inboxListItems = mutableListOf<CastledInboxItem>()
+        val inboxDbItems = inboxRepository.inboxDao.dbGetInbox()
+        inboxDbItems.forEach { inboxListItems.add(it.toInboxItem()) }
+        return inboxListItems
+    }
 
 }

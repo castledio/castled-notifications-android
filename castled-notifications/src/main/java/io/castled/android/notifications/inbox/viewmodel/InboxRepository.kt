@@ -21,7 +21,7 @@ import java.io.IOException
 
 internal class InboxRepository(context: Context) {
 
-    private val inboxDao = CastledDbBuilder.getDbInstance(context).inboxDao()
+    internal val inboxDao = CastledDbBuilder.getDbInstance(context).inboxDao()
     private val logger = CastledLogger.getInstance(LogTags.INBOX_REPOSITORY)
     private val inboxApi = CastledRetrofitClient.create(InboxApi::class.java)
     private val networkWorkManager = CastledNetworkWorkManager.getInstance(context)
@@ -102,7 +102,7 @@ internal class InboxRepository(context: Context) {
 
     }
 
-    internal fun observeMovieLiveData(): LiveData<List<AppInbox>> {
+    internal fun observeInboxLiveData(): LiveData<List<AppInbox>> {
         return inboxDao.getInboxItems()
     }
 

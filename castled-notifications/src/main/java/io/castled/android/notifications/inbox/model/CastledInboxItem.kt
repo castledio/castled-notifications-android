@@ -8,7 +8,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import java.util.Date
 
 @Serializable
-internal data class CastledInboxItem(
+data class CastledInboxItem(
     val teamId: Long,
     val messageId: Long,
     val sourceContext: String,

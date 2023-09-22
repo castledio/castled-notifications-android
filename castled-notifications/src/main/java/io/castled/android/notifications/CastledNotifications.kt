@@ -10,6 +10,7 @@ import io.castled.android.notifications.inapp.InAppNotification
 import io.castled.android.notifications.inapp.models.consts.AppEvents
 import io.castled.android.notifications.inbox.AppInboxHelper
 import io.castled.android.notifications.inbox.model.CastledInboxConfig
+import io.castled.android.notifications.inbox.model.CastledInboxItem
 import io.castled.android.notifications.inbox.views.CastledInboxActivity
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
@@ -142,6 +143,7 @@ object CastledNotifications {
         }
     }
 
+
     @JvmStatic
     fun onTokenFetch(token: String?, pushTokenType: PushTokenType) =
         castledScope.launch(Dispatchers.Default) {
@@ -198,6 +200,14 @@ object CastledNotifications {
                 displayConfig?.let { intent.putExtra("displayConfig", displayConfig) }
                 context.startActivity(intent)
 
+            }
+        }
+
+    @JvmStatic
+    fun getInboxItems(completion: (List<CastledInboxItem>) -> Unit) =
+        castledScope.launch(Dispatchers.Default) {
+            if (isInited()) {
+                completion(if (isInited()) AppInboxHelper.getInboxItems() else listOf())
             }
         }
 
