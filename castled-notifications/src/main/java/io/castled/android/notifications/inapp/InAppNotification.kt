@@ -7,8 +7,11 @@ import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.workmanager.models.CastledInAppEventRequest
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 internal object InAppNotification {
@@ -26,6 +29,10 @@ internal object InAppNotification {
         application.registerActivityLifecycleCallbacks(AppActivityLifecycleObserver())
         // observeAppLifecycle(application)
         enabled = true
+        CastledSharedStore.getUserId()?.let {
+            startCampaignJob()
+        }
+
     }
 
     fun startCampaignJob() {
@@ -34,7 +41,7 @@ internal object InAppNotification {
             return
         }
         if (fetchJob == null || !fetchJob!!.isActive) {
-            externalScope.launch(Default) {
+            fetchJob = externalScope.launch(Default) {
                 do {
                     logger.verbose("Syncing in-apps...")
                     inAppController.refreshLiveCampaigns()
