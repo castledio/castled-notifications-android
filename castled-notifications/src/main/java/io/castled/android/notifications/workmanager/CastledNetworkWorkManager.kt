@@ -1,7 +1,13 @@
 package io.castled.android.notifications.workmanager
 
 import android.content.Context
-import androidx.work.*
+import androidx.work.BackoffPolicy
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.store.models.NetworkRetryLog
@@ -41,9 +47,13 @@ internal class CastledNetworkWorkManager private constructor(context: Context) {
         try {
             val response = apiCall(request)
             if (!response.isSuccessful) {
-                logger.error("error code:${response.code()} message: ${response.message()}")
                 enqueueRequest(request)
-            }else{
+                logger.error(
+                    "error code:${response.code()} message: ${
+                        response.errorBody()?.string() ?: response.message()
+                    }"
+                )
+            } else {
                 logger.debug("api success ${request.requestType}")
             }
         } catch (e: Exception) {

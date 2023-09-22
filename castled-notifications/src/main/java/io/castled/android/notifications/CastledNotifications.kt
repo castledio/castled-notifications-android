@@ -132,6 +132,7 @@ object CastledNotifications {
                 CastledSharedStore.setUserId(userId)
             }
             InAppNotification.startCampaignJob()
+            AppInboxHelper.startInboxJob()
             userToken?.let {
                 if (userToken.isBlank()) {
                     throw IllegalStateException("userToken is empty!")
