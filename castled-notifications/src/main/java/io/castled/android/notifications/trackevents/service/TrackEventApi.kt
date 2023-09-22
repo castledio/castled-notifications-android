@@ -6,7 +6,7 @@ import retrofit2.http.*
 
 internal interface TrackEventApi {
 
-    @POST("/v1/product-events/lists?apiSource=Mobile")
+    @POST("external/v1/collections/events/lists?apiSource=app")
     suspend fun reportEvent(
         @HeaderMap headers: Map<String, String>,
         @Body request: CastledTrackEventRequest,
