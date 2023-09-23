@@ -6,4 +6,5 @@ object Configurations {
     const val artifactGroup = "io.castled.android"
     const val sdkVersion = "1.0.13"
 
+
 }
