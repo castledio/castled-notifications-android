@@ -5,16 +5,16 @@ import android.app.Application
 import android.content.Context
 import android.os.Process
 import com.google.firebase.messaging.RemoteMessage
-import io.castled.android.notifications.network.CastledRetrofitClient
 import io.castled.android.notifications.inapp.InAppNotification
 import io.castled.android.notifications.inapp.models.consts.AppEvents
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
+import io.castled.android.notifications.network.CastledRetrofitClient
 import io.castled.android.notifications.push.PushNotification
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.PushTokenType
 import io.castled.android.notifications.store.CastledSharedStore
-import io.castled.android.notifications.workmanager.trackevents.TrackEvents
+import io.castled.android.notifications.trackevents.TrackEvents
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 object CastledNotifications {
 
     private val logger: CastledLogger = CastledLogger.getInstance(LogTags.GENERIC)
-    private lateinit var apiKey: String
+    private lateinit var appId: String
     private val castledCoroutineContext by lazy { Job() }
     private val castledScope = CoroutineScope(castledCoroutineContext)
 
@@ -35,11 +35,11 @@ object CastledNotifications {
             logger.verbose("Not main process...!")
             return
         }
-        if (this::apiKey.isInitialized) {
+        if (this::appId.isInitialized) {
             logger.error("Sdk already initialized!")
             return
         }
-        if (configs.apiKey.isBlank()) {
+        if (configs.appId.isBlank()) {
             logger.error("Api key is not set!")
             return
         }
@@ -56,7 +56,7 @@ object CastledNotifications {
         if (configs.enableTracking) {
             TrackEvents.init(application)
         }
-        apiKey = configs.apiKey
+        appId = configs.appId
         logger.info("Sdk initialized successfully")
     }
 
@@ -187,6 +187,6 @@ object CastledNotifications {
 
     fun getCastledConfigs() = CastledSharedStore.configs
 
-    private fun isInited(): Boolean = this::apiKey.isInitialized
+    private fun isInited(): Boolean = this::appId.isInitialized
 
 }

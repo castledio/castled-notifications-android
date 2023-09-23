@@ -21,7 +21,7 @@ internal class PushRepository(context: Context) {
             request = CastledPushRegisterRequest(userId, tokens),
             apiCall = {
                 return@apiCallWithRetry pushApi.register(
-                    CastledSharedStore.getApiKey(),
+                    CastledSharedStore.getAppId(),
                     it as CastledPushRegisterRequest
                 )
             }
@@ -33,7 +33,7 @@ internal class PushRepository(context: Context) {
             request = event.toCastledPushEventRequest(),
             apiCall = {
                 return@apiCallWithRetry pushApi.reportEvent(
-                    CastledSharedStore.getApiKey(),
+                    CastledSharedStore.getAppId(),
                     it as CastledPushEventRequest
                 )
             }
@@ -42,14 +42,14 @@ internal class PushRepository(context: Context) {
 
     suspend fun registerNoRetry(userId: String, tokens: List<PushTokenInfo>): Response<Void?> {
         return pushApi.register(
-            CastledSharedStore.getApiKey(),
+            CastledSharedStore.getAppId(),
             CastledPushRegisterRequest(userId, tokens)
         )
     }
 
     suspend fun reportEventNoRetry(eventRequest: CastledPushEventRequest): Response<Void?> {
         return pushApi.reportEvent(
-            CastledSharedStore.getApiKey(), eventRequest
+            CastledSharedStore.getAppId(), eventRequest
         )
     }
 

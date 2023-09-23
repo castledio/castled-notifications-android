@@ -2,10 +2,10 @@ package io.castled.android.notifications.store.consts
 
 internal class PrefStoreKeys {
     companion object {
-        const val API_KEY = "apiKey"
+        const val APP_ID = "appId"
         const val DEVICE_ID = "deviceId"
         const val USER_ID = "userId"
-        const val SECURE_USER_ID= "secureUserId"
+        const val SECURE_USER_ID = "secureUserId"
         const val USER_ID_UNREGISTERED = "userIdUnregistered"
         const val FCM_TOKEN = "fcmToken"
         const val MI_TOKEN = "miToken"
