@@ -74,7 +74,7 @@
         android:id="@+id/txt_empty_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Centered Text"
+        android:text="We have no updates. Please check again later."
         android:textSize="18sp"
         android:textAlignment="center"
         android:paddingHorizontal="20dp"

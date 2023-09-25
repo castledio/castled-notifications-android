@@ -1,11 +1,11 @@
-package io.castled.android.notifications.workmanager.trackevents
+package io.castled.android.notifications.trackevents
 
 import android.app.Application
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.store.CastledSharedStore
+import io.castled.android.notifications.trackevents.service.TrackEventRepository
 import io.castled.android.notifications.workmanager.models.CastledTrackEventRequest
-import io.castled.android.notifications.workmanager.trackevents.service.TrackEventRepository
 
 internal object TrackEvents {
 

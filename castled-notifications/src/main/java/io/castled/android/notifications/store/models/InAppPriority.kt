@@ -2,9 +2,9 @@ package io.castled.android.notifications.store.models
 
 enum class InAppPriority {
 
-    URGENT,
-    HIGH,
-    MODERATE,
+    MINIMUM,
     LOW,
-    MINIMUM
+    MODERATE,
+    HIGH,
+    URGENT,
 }

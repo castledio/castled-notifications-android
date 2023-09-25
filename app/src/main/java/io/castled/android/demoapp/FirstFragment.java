@@ -42,7 +42,7 @@ public class FirstFragment extends Fragment {
             }
             return null;
         });
-        
+
         binding.buttonFirst.setOnClickListener(view1 -> NavHostFragment.findNavController(FirstFragment.this)
                 .navigate(R.id.action_FirstFragment_to_SecondFragment));
         binding.btnInbox.setOnClickListener(btnInbox -> {
@@ -54,7 +54,7 @@ public class FirstFragment extends Fragment {
             styleConfig.setNavigationBarTitleColor("#FFFFFF");
             styleConfig.setNavigationBarTitle("Custom Inbox");
             styleConfig.setHideNavigationBar(true);
-            CastledNotifications.showAppInbox(view.getContext(), styleConfig);
+            CastledNotifications.showAppInbox(view.getContext(), null);
         });
 
         
@@ -118,7 +118,6 @@ public class FirstFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        CastledNotifications.logAppPageViewEvent(requireContext(), "FirstFragment");
     }
 
     @Override

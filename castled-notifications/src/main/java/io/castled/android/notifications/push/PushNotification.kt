@@ -1,15 +1,10 @@
 package io.castled.android.notifications.push
 
 import android.content.Context
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ProcessLifecycleOwner
 import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.CastledPushMessage
-import io.castled.android.notifications.push.models.NotificationActionContext
 import io.castled.android.notifications.push.models.PushTokenInfo
 import io.castled.android.notifications.push.models.PushTokenType
 import io.castled.android.notifications.push.service.PushRepository
@@ -27,23 +22,13 @@ internal object PushNotification {
 
     private lateinit var externalScope: CoroutineScope
     private lateinit var pushRepository: PushRepository
-
-    var isAppInForeground = true
+    private var enabled = false
 
     internal fun init(context: Context, externalScope: CoroutineScope) {
 
         this.externalScope = externalScope
         this.pushRepository = PushRepository(context)
-
-        ProcessLifecycleOwner.get().lifecycle.addObserver(LifecycleEventObserver { _: LifecycleOwner?, event: Lifecycle.Event ->
-            if (event == Lifecycle.Event.ON_START) {
-                logger.verbose("App in foreground")
-                this@PushNotification.isAppInForeground = true
-            } else if (event == Lifecycle.Event.ON_STOP) {
-                logger.verbose("App in background")
-                this@PushNotification.isAppInForeground = false
-            }
-        })
+        enabled = true
         initTokenProviders(context)
         refreshPushTokens(context)
     }
@@ -60,10 +45,16 @@ internal object PushNotification {
         }
     }
 
-    fun reportPushEvent(actionContext: NotificationActionContext) =
+    fun reportPushEvent(actionContext: NotificationActionContext) {
+        if (!enabled) {
+            logger.debug("Ignoring push event, PushEvent disabled")
+            return
+        }
         externalScope.launch(Dispatchers.Default) {
             pushRepository.reportEvent(actionContext)
         }
+    }
+
 
     private fun initTokenProviders(context: Context) {
         PushTokenType.values().forEach {
@@ -78,10 +69,19 @@ internal object PushNotification {
         }
     }
 
+
     private fun refreshPushTokens(context: Context) = externalScope.launch(Dispatchers.Default) {
         PushTokenType.values().forEach {
-            val token = tokenProviders[it]?.getToken(context)
-            this@PushNotification.onTokenFetch(token, it)
+            try {
+                val token = tokenProviders[it]?.getToken(context)
+                this@PushNotification.onTokenFetch(token, it)
+            } catch (e: NoClassDefFoundError) {
+                logger.debug("Class definition for ${it.providerClassName} not found!")
+            } catch (e: ClassNotFoundException) {
+                logger.debug("Class ${it.providerClassName} not found!")
+            } catch (e: Exception) {
+                logger.debug("$e")
+            }
         }
     }
 
@@ -101,7 +101,7 @@ internal object PushNotification {
         PushNotificationManager.handleNotification(context, pushMessage)
     }
 
-    fun isCastledPushMessage(remoteMessage: RemoteMessage) : Boolean =
+    fun isCastledPushMessage(remoteMessage: RemoteMessage): Boolean =
         PushNotificationManager.isCastledNotification(remoteMessage)
 
 

@@ -54,7 +54,7 @@ internal class InboxRepository(context: Context) {
     private suspend fun fetchLiveInbox(): List<CastledInboxItem>? {
         try {
             val response = inboxApi.fetchInboxItems(
-                CastledSharedStore.getApiKey(), CastledSharedStore.getUserId()
+                CastledSharedStore.getAppId(), CastledSharedStore.getUserId()
             )
             return if (response.isSuccessful) {
                 response.body()
@@ -77,7 +77,7 @@ internal class InboxRepository(context: Context) {
     ) {
         try {
             val response = inboxApi.reportInboxEvent(
-                CastledSharedStore.getApiKey(), InboxEventUtils.getInboxEventRequest(
+                CastledSharedStore.getAppId(), InboxEventUtils.getInboxEventRequest(
                     inbox, "", "DELETED"
                 )
             )
@@ -109,13 +109,13 @@ internal class InboxRepository(context: Context) {
     suspend fun reportEvent(request: CastledInboxEventRequest) {
         networkWorkManager.apiCallWithRetry(request = request, apiCall = {
             return@apiCallWithRetry inboxApi.reportInboxEvent(
-                CastledSharedStore.getApiKey(), it as CastledInboxEventRequest
+                CastledSharedStore.getAppId(), it as CastledInboxEventRequest
             )
         })
     }
 
     suspend fun reportEventNoRetry(request: CastledInboxEventRequest): Response<Void?> {
-        return inboxApi.reportInboxEvent(CastledSharedStore.getApiKey(), request)
+        return inboxApi.reportInboxEvent(CastledSharedStore.getAppId(), request)
     }
 
     internal fun changeTheStatusToRead(inboxItems: Set<AppInbox>, externalScope: CoroutineScope) {

@@ -1,4 +1,4 @@
-package io.castled.android.notifications.workmanager.trackevents
+package io.castled.android.notifications.trackevents
 
 import io.castled.android.notifications.commons.DateTimeUtils
 import io.castled.android.notifications.store.CastledSharedStore

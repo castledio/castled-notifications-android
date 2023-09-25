@@ -1,10 +1,10 @@
 package io.castled.android.notifications.inapp.service
 
 import android.content.Context
-import io.castled.android.notifications.network.CastledRetrofitClient
 import io.castled.android.notifications.inapp.models.CampaignResponse
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
+import io.castled.android.notifications.network.CastledRetrofitClient
 import io.castled.android.notifications.store.CastledDbBuilder
 import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.store.models.Campaign
@@ -60,7 +60,7 @@ internal class InAppRepository(context: Context) {
     suspend fun fetchLiveCampaigns(): List<CampaignResponse>? {
         try {
             val response = inAppApi.fetchLiveCampaigns(
-                CastledSharedStore.getApiKey(),
+                CastledSharedStore.getAppId(),
                 CastledSharedStore.getUserId()
             )
             return if (response.isSuccessful) {
@@ -84,7 +84,7 @@ internal class InAppRepository(context: Context) {
             request = request,
             apiCall = {
                 return@apiCallWithRetry inAppApi.reportEvent(
-                    CastledSharedStore.getApiKey(),
+                    CastledSharedStore.getAppId(),
                     it as CastledInAppEventRequest
                 )
             }
@@ -92,7 +92,7 @@ internal class InAppRepository(context: Context) {
     }
 
     suspend fun reportEventNoRetry(request: CastledInAppEventRequest): Response<Void?> {
-        return inAppApi.reportEvent(CastledSharedStore.getApiKey(), request)
+        return inAppApi.reportEvent(CastledSharedStore.getAppId(), request)
     }
 
 }

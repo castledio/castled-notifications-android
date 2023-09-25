@@ -19,13 +19,11 @@ import io.castled.android.notifications.logger.CastledLogger.Companion.getInstan
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.*
 import io.castled.android.notifications.commons.CastledIdUtils
-import io.castled.android.notifications.push.models.NotificationActionContext
 import io.castled.android.notifications.push.models.PushConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.io.IOException
 import java.net.URL
 
 internal class CastledNotificationBuilder(private val context: Context) {
@@ -72,10 +70,13 @@ internal class CastledNotificationBuilder(private val context: Context) {
         notificationBuilder: NotificationCompat.Builder,
         payload: CastledPushMessage
     ) {
-        if (!payload.summary.isNullOrBlank()) {
-            notificationBuilder.setSubText(payload.summary)
+        val summary = payload.summary
+        val body = payload.body
+
+        if (!summary.isNullOrBlank()) {
+            notificationBuilder.setSubText(summary)
         }
-        notificationBuilder.setContentText(payload.body)
+        notificationBuilder.setContentText(body)
     }
 
     private fun setPriority(
@@ -179,16 +180,15 @@ internal class CastledNotificationBuilder(private val context: Context) {
         notificationBuilder: NotificationCompat.Builder,
         payload: CastledPushMessage
     ) {
-        if (!payload.imageUrl.isNullOrBlank()) {
-            val bitmap = getBitmapFromUrl(payload.imageUrl)
+        val imageUrl = payload.pushMessageFrames[0].imageUrl
+        val body = payload.body
+        val title = payload.title
+        if (!imageUrl.isNullOrBlank()) {
+            val bitmap = getBitmapFromUrl(imageUrl)
             val style = NotificationCompat.BigPictureStyle()
                 .bigPicture(bitmap)
-                .setSummaryText(payload.body)
-                .setBigContentTitle(payload.title)
-            if (payload.imageUrl == payload.largeIconUri) {
-                // If both are same, user intends to show only 1 image whether it is expanded or collapsed
-                style.bigLargeIcon(null)
-            }
+                .setSummaryText(body)
+                .setBigContentTitle(title)
             notificationBuilder.setStyle(style)
         }
     }
@@ -196,9 +196,14 @@ internal class CastledNotificationBuilder(private val context: Context) {
     private suspend fun getBitmapFromUrl(imageUrl: String?): Bitmap? = withContext(Dispatchers.IO) {
         try {
             val url = URL(imageUrl)
-            return@withContext BitmapFactory.decodeStream(url.openConnection().getInputStream())
-        } catch (e: IOException) {
-            logger.error(e.message ?: "Bitmap fetch failed!", e)
+            val connection = url.openConnection()
+            connection.connectTimeout = 10000 // 10 seconds
+            connection.readTimeout = 15000 // 15 seconds
+            connection.getInputStream().use { inputStream ->
+                return@withContext BitmapFactory.decodeStream(inputStream)
+            }
+        } catch (e: Exception) { // Catch general exceptions
+            logger.debug("Bitmap fetch failed, reason: ${e.message}")
         }
         return@withContext null
     }
@@ -207,16 +212,20 @@ internal class CastledNotificationBuilder(private val context: Context) {
         notificationBuilder: NotificationCompat.Builder,
         payload: CastledPushMessage
     ) {
+        val actionUri = payload.pushMessageFrames[0].clickActionUrl
+        val action = payload.pushMessageFrames[0].clickAction
+        val keyVals = payload.pushMessageFrames[0].keyVals
+
         val pendingIntent = createNotificationIntent(
             NotificationActionContext(
                 notificationId = payload.notificationId,
                 teamId = payload.teamId,
                 sourceContext = payload.sourceContext,
                 eventType = NotificationEventType.CLICKED.toString(),
-                actionUri = payload.clickActionUri,
-                actionType = payload.clickAction.toString(),
+                actionUri = actionUri,
+                actionType = action.toString(),
                 actionLabel = null,
-                keyVals = payload.keyVals
+                keyVals = keyVals
             )
         )
         notificationBuilder.setContentIntent(pendingIntent)
@@ -292,7 +301,7 @@ internal class CastledNotificationBuilder(private val context: Context) {
         val intent = Intent(context, CastledNotificationReceiverAct::class.java).apply {
             putExtra(PushConstants.CASTLED_EXTRA_NOTIF_CONTEXT, Json.encodeToString(actionContext))
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP or
                     Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
 
@@ -311,16 +320,13 @@ internal class CastledNotificationBuilder(private val context: Context) {
         payload: CastledPushMessage
     ) {
         val channelId = payload.channelId.takeUnless { it.isNullOrBlank() }
-            ?: context.getString(R.string.io_castled_push_default_channel_id)
-        val channelName = payload.channelName.takeUnless { it.isNullOrBlank() } ?: channelId
+            ?: PushConstants.CASTLED_DEFAULT_CHANNEL_ID
         val channelDesc = payload.channelDescription.takeUnless { it.isNullOrBlank() }
             ?: context.getString(R.string.io_castled_push_default_channel_desc)
-
-        notificationBuilder.setChannelId(
+         notificationBuilder.setChannelId(
             PushNotificationManager.getOrCreateNotificationChannel(
                 context,
                 channelId,
-                channelName,
                 channelDesc
             )
         )
@@ -328,7 +334,7 @@ internal class CastledNotificationBuilder(private val context: Context) {
 
     private fun getChannelId(payload: CastledPushMessage): String {
         return payload.channelId.takeUnless { it.isNullOrBlank() }
-            ?: context.getString(R.string.io_castled_push_default_channel_id)
+            ?: PushConstants.CASTLED_DEFAULT_CHANNEL_ID
     }
 
     private fun setTimeout(

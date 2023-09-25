@@ -4,6 +4,7 @@ import io.castled.android.notifications.store.models.AppInbox
 
 data class CastledConfigs(
     val apiKey: String,
+    val appId: String,
     val location: CastledLocation,
     val enablePush: Boolean,
     val enableInApp: Boolean,
@@ -16,6 +17,7 @@ data class CastledConfigs(
 ) {
     class Builder {
         private lateinit var apiKey: String
+        private lateinit var appId: String
         private var enablePush: Boolean = true
         private var enableInApp: Boolean = true
         private var enableTracking: Boolean = true
@@ -27,7 +29,16 @@ data class CastledConfigs(
         private var xiaomiAppKey: String? = null
         private var enableUserIdEncryption = false
 
-        fun apiKey(apiKey: String) = apply { this.apiKey = apiKey }
+        fun apiKey(apiKey: String) = apply {
+            this.apiKey = apiKey
+            this.appId = apiKey
+        }
+
+        fun appId(appId: String) = apply {
+            this.appId = appId
+            this.apiKey = appId
+        }
+
         fun enablePush(enablePush: Boolean) = apply { this.enablePush = enablePush }
         fun enableTracking(enableTracking: Boolean) = apply { this.enableTracking = enableTracking }
 
@@ -45,6 +56,7 @@ data class CastledConfigs(
 
         fun build() = CastledConfigs(
             apiKey,
+            appId,
             castledLocation,
             enablePush,
             enableInApp,
