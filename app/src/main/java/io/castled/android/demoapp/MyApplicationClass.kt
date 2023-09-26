@@ -19,19 +19,7 @@ class MyApplicationClass : MultiDexApplication() {
                 .enableTracking(true).inAppFetchIntervalSec(10).xiaomiAppId("2882303761521565034")
                 .xiaomiAppKey("5382156577034").build()
         )
-
-//        // User identification
-//        CastledNotifications.setUserId(
-//            this, "antony@castled.io", this::onSuccess, this::onError
-//        )
-        CastledNotifications.setSecureUserId(
-            this,
-            "antony@castled.io",
-            "90bf526ec70e570e16e82c8c788bc39aadbde7013a5ad85cfbfeaf0774ee0fdf",
-            this::onSuccess,
-            this::onError
-        )
-
+        CastledNotifications.setUserId(this, "antony@castled.io")
     }
 
     private fun onSuccess() {

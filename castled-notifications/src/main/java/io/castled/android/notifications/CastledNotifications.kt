@@ -77,34 +77,17 @@ object CastledNotifications {
     fun setUserId(
         context: Context,
         userId: String,
-        onSuccess: () -> Unit = { },
-        onError: (Exception) -> Unit = { }
+        userToken: String? = null
     ) = castledScope.launch(Dispatchers.Default) {
         try {
-            saveSecureUserId(context, userId, null)
-            onSuccess()
+            saveUserId(context, userId, userToken)
         } catch (e: Exception) {
-            onError(e)
+            logger.verbose("skipping userId/userToken set. $e")
+
         }
     }
 
-    @JvmStatic
-    fun setSecureUserId(
-        context: Context,
-        userId: String,
-        userToken: String,
-        onSuccess: () -> Unit = { },
-        onError: (Exception) -> Unit = { }
-    ) = castledScope.launch(Dispatchers.Default) {
-        try {
-            saveSecureUserId(context, userId, userToken)
-            onSuccess()
-        } catch (e: Exception) {
-            onError(e)
-        }
-    }
-
-    private suspend fun saveSecureUserId(context: Context, userId: String, userToken: String?) {
+    private suspend fun saveUserId(context: Context, userId: String, userToken: String?) {
         if (!isMainProcess(context)) {
             // In case there are services that are not run from main process, skip init
             // for such processes
