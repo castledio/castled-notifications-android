@@ -158,6 +158,14 @@ object CastledNotifications {
             }
         }
 
+    @JvmStatic
+    fun setUserProfile(details: Map<String, Any>) =
+        castledScope.launch(Dispatchers.Default) {
+            if (isInited()) {
+                TrackEvents.reportUserTrackingEventWith(details)
+            }
+        }
+
     fun handlePushNotification(context: Context, pushMessage: CastledPushMessage?) =
         castledScope.launch(Dispatchers.Default) {
             PushNotification.handlePushNotification(context, pushMessage)
