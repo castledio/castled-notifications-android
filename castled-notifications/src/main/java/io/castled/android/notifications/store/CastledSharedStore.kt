@@ -42,10 +42,13 @@ internal object CastledSharedStore {
         sharedPreferences.edit().putString(PrefStoreKeys.APP_ID, appId).apply()
     }
 
-    fun setUserId(userId: String?) {
+    fun setUserId(userId: String?, userToken: String?) {
         CastledSharedStore.userId = userId
+        secureUserId = userToken
         sharedPreferences.edit().putString(PrefStoreKeys.USER_ID, userId).apply()
-
+        userToken?.let {
+            sharedPreferences.edit().putString(PrefStoreKeys.SECURE_USER_ID, userToken).apply()
+        }
     }
 
     fun setSecureUserId(secureUserId: String?) {

@@ -20,7 +20,7 @@ internal object TrackEvents {
     }
 
     suspend fun reportEventWith(event: String, properties: Map<String, Any>?) {
-        if (!enabled || CastledSharedStore.getUserId() == null) {
+        if (!enabled || CastledSharedStore.getUserId().isNullOrBlank()) {
             logger.debug("Ignoring app event, Castled tracking disabled/ UserId not configured")
             return
         }
@@ -28,7 +28,7 @@ internal object TrackEvents {
     }
 
     suspend fun reportUserTrackingEventWith(properties: Map<String, Any>) {
-        if (!enabled || CastledSharedStore.getUserId() == null) {
+        if (!enabled || CastledSharedStore.getUserId().isNullOrBlank()) {
             logger.debug("Ignoring user tracking event, Castled tracking disabled/ UserId not configured")
             return
         }
@@ -36,10 +36,10 @@ internal object TrackEvents {
     }
 
     private suspend fun reportEvent(request: CastledTrackEventRequest) =
-        trackEventRepository?.reportEvent(request)
+        trackEventRepository.reportEvent(request)
 
     private suspend fun reportUserTrackingEvent(request: CastledUserTrackingEventRequest) =
-        trackEventRepository?.reportUserTrackingEvent(request)
+        trackEventRepository.reportUserTrackingEvent(request)
 
 
 }

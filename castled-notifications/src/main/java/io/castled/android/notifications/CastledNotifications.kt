@@ -82,7 +82,7 @@ object CastledNotifications {
         try {
             saveUserId(context, userId, userToken)
         } catch (e: Exception) {
-            logger.verbose("skipping userId/userToken set. $e")
+            logger.verbose("skipping userId set. $e")
 
         }
     }
@@ -103,18 +103,11 @@ object CastledNotifications {
         } else {
             if (CastledSharedStore.getUserId() != userId) {
                 // New user-id
+                CastledSharedStore.setUserId(userId, userToken)
                 PushNotification.registerUser(userId)
-                CastledSharedStore.setUserId(userId)
             }
             InAppNotification.startCampaignJob()
-            userToken?.let {
-                if (userToken.isBlank()) {
-                    throw IllegalStateException("userToken is empty!")
-                }
-                if (CastledSharedStore.getSecureUserId() != userToken) {
-                    CastledSharedStore.setSecureUserId(userToken)
-                }
-            }
+
         }
     }
 
