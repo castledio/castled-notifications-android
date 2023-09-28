@@ -3,8 +3,12 @@ package io.castled.android.notifications.inbox.views
 import SwipeToDeleteCallback
 import android.app.Activity
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
@@ -23,6 +27,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.Serializable
+
 
 class CastledInboxActivity : AppCompatActivity(),
     CoroutineScope by CoroutineScope(Dispatchers.Main) {
@@ -55,16 +60,19 @@ class CastledInboxActivity : AppCompatActivity(),
         launch(Dispatchers.Default) {
             inboxRepository.refreshInbox()
         }
-        supportActionBar?.let {
-            binding.toolbar.visibility = View.GONE
-        }
+
         val displayConfig = getSerializable(
             this, "displayConfig",
             CastledInboxConfig::class.java
         )
         displayConfig?.let {
             customizeViews(displayConfig)
+        } ?: run {
+            supportActionBar?.let {
+                binding.toolbar.visibility = View.GONE
+            }
         }
+
     }
 
     private fun customizeViews(displayConfig: CastledInboxConfig) {
@@ -86,7 +94,7 @@ class CastledInboxActivity : AppCompatActivity(),
         binding.toolbarTitle.setTextColor(
             ColorUtils.parseColor(
                 displayConfig.navigationBarTitleColor,
-                Color.WHITE
+                android.R.attr.colorPrimary
             )
         )
         binding.viewBg.setBackgroundColor(
@@ -98,7 +106,35 @@ class CastledInboxActivity : AppCompatActivity(),
         binding.toolbar.visibility =
             if (displayConfig.hideNavigationBar) View.GONE else View.VISIBLE
 
-
+        val actionBar = getSupportActionBar()
+        actionBar?.let {
+            if (displayConfig.hideNavigationBar) {
+                actionBar.hide()
+            } else {
+                actionBar.setBackgroundDrawable(
+                    ColorDrawable(
+                        ColorUtils.parseColor(
+                            displayConfig.navigationBarBackgroundColor,
+                            (android.R.attr.colorPrimary)
+                        )
+                    )
+                );
+                val text: Spannable = SpannableString(displayConfig.navigationBarTitle)
+                text.setSpan(
+                    ForegroundColorSpan(
+                        ColorUtils.parseColor(
+                            displayConfig.navigationBarTitleColor,
+                            Color.WHITE
+                        )
+                    ),
+                    0,
+                    text.length,
+                    Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                )
+                actionBar.setTitle(text)
+            }
+            binding.toolbar.visibility = View.GONE
+        }
     }
 
     override fun onPause() {

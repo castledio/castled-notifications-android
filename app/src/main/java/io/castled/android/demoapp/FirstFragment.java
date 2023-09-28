@@ -47,14 +47,14 @@ public class FirstFragment extends Fragment {
                 .navigate(R.id.action_FirstFragment_to_SecondFragment));
         binding.btnInbox.setOnClickListener(btnInbox -> {
             CastledInboxConfig styleConfig = new CastledInboxConfig();
-            styleConfig.setEmptyMessageViewText("custom empty view text");
+            styleConfig.setEmptyMessageViewText("There are no inbox items");
             styleConfig.setEmptyMessageViewTextColor("#000000");
             styleConfig.setInboxViewBackgroundColor("#FFFFFF");
             styleConfig.setNavigationBarBackgroundColor("#0000FF");
             styleConfig.setNavigationBarTitleColor("#FFFFFF");
-            styleConfig.setNavigationBarTitle("Custom Inbox");
-            styleConfig.setHideNavigationBar(true);
-            CastledNotifications.showAppInbox(view.getContext(), null);
+            styleConfig.setNavigationBarTitle("Castled Inbox");
+            styleConfig.setHideNavigationBar(false);
+            CastledNotifications.showAppInbox(view.getContext(), styleConfig);
         });
 
         

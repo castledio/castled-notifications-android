@@ -157,7 +157,10 @@ class CastledInboxAdapter(val context: Context) :
 
     private fun populateLinks(holder: ViewHolder, inbox: AppInbox) {
         val actionButtons = inbox.message["actionButtons"] as? JsonArray
-        val linksLayout = holder.binding.linkContainer
+        val linksContainer = holder.binding.linkContainer
+        val linksLayout = holder.binding.linkParentLayout
+
+        // link_parent_layout
         actionButtons?.let {
             // Loop through each child view (buttons) in the LinearLayout
             for (i in 0 until linksLayout.childCount) {
@@ -198,9 +201,9 @@ class CastledInboxAdapter(val context: Context) :
                     }
                 }
             }
-            linksLayout.visibility = holder.binding.link1.visibility
+            linksContainer.visibility = holder.binding.link1.visibility
         } ?: run {
-            linksLayout.visibility = View.GONE
+            linksContainer.visibility = View.GONE
         }
     }
 
