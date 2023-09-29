@@ -16,7 +16,10 @@ internal class AppActivityLifecycleObserver(private val appEventCallbacks: AppEv
         LogTags.ALC_OBS
     )
 
-    override fun onActivityCreated(p0: Activity, p1: Bundle?) {}
+    override fun onActivityCreated(p0: Activity, p1: Bundle?) {
+
+        appEventCallbacks.onActivityCreated(p0)
+    }
 
     override fun onActivityStarted(activity: Activity) {
         logger.debug("onActivityStarted: ${activity.componentName.shortClassName}")

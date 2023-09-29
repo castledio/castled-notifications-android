@@ -2,17 +2,20 @@ package io.castled.android.notifications.inapp
 
 import android.content.Context
 import io.castled.android.notifications.inapp.CampaignResponseConverter.toCampaign
-import io.castled.android.notifications.store.models.Campaign
 import io.castled.android.notifications.inapp.service.InAppRepository
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
+import io.castled.android.notifications.store.models.Campaign
 import io.castled.android.notifications.trigger.EventFilterEvaluator
 import io.castled.android.notifications.trigger.enums.JoinType
 import io.castled.android.notifications.trigger.models.GroupFilter
 import io.castled.android.notifications.workmanager.models.CastledInAppEventRequest
-import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.serialization.json.*
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.decodeFromJsonElement
 
 internal class InAppController(context: Context) {
 
@@ -131,4 +134,17 @@ internal class InAppController(context: Context) {
         inAppRepository.updateCampaignDisplayStats(inApp)
     }
 
+    fun updateInAppForOrientationChanges(context: Context) {
+        currentInAppBeingDisplayed?.let {
+            try {
+                InAppViewDecorator(
+                    context,
+                    currentInAppBeingDisplayed!!,
+                    inAppViewLifecycleListener
+                ).show()
+            } catch (e: Exception) {
+                logger.error("In-app display failed!", e)
+            }
+        }
+    }
 }

@@ -28,6 +28,11 @@ internal object InAppNotification {
     private var fetchJob: Job? = null
 
     private val appEventCallbacks = object : AppEventCallbacks {
+
+        override fun onActivityCreated(activity: Activity) {
+            inAppController.updateInAppForOrientationChanges(activity)
+        }
+
         override fun onAppMovedToForeground(activity: Activity) {
             logAppEvent(activity, AppEvents.APP_OPENED, null)
             CastledSharedStore.isAppInBackground = true
