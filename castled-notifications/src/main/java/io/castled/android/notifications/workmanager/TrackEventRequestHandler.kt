@@ -19,7 +19,7 @@ internal class TrackEventRequestHandler(appContext: Context) : NetworkRequestHan
         requests.forEach { batchedEvents.addAll((it.request as CastledTrackEventRequest).events) }
         try {
             val response =
-                trackEventRepository.reportEventNoRetry(CastledTrackEventRequest(batchedEvents))
+                trackEventRepository.reportCustomEventNoRetry(CastledTrackEventRequest(batchedEvents))
             if (!response.isSuccessful) {
                 onError(requests)
             } else {

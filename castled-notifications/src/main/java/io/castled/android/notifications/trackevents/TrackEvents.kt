@@ -4,9 +4,8 @@ import android.app.Application
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.store.CastledSharedStore
+import io.castled.android.notifications.CastledUserAttributes
 import io.castled.android.notifications.trackevents.service.TrackEventRepository
-import io.castled.android.notifications.workmanager.models.CastledTrackEventRequest
-import io.castled.android.notifications.workmanager.models.CastledUserTrackingEventRequest
 
 internal object TrackEvents {
 
@@ -19,27 +18,28 @@ internal object TrackEvents {
         enabled = true
     }
 
-    suspend fun reportEventWith(event: String, properties: Map<String, Any>?) {
-        if (!enabled || CastledSharedStore.getUserId().isNullOrBlank()) {
-            logger.debug("Ignoring app event, Castled tracking disabled/ UserId not configured")
+    suspend fun logCustomEvent(event: String, properties: Map<String, Any>?) {
+        if (!enabled) {
+            logger.debug("Ignoring custom app event, tracking disabled!")
             return
         }
-        reportEvent(TrackEventUtils.getTrackEvent(event, properties ?: mapOf()))
-    }
-
-    suspend fun reportUserTrackingEventWith(properties: Map<String, Any>) {
-        if (!enabled || CastledSharedStore.getUserId().isNullOrBlank()) {
-            logger.debug("Ignoring user tracking event, Castled tracking disabled/ UserId not configured")
+        if (CastledSharedStore.getUserId().isNullOrBlank()) {
+            logger.debug("Ignoring app event, UserId not set yet!")
             return
         }
-        reportUserTrackingEvent(TrackEventUtils.getUserEvent(properties))
+        trackEventRepository.reportCustomEvent(TrackEventUtils.getTrackEvent(event, properties ?: mapOf()))
     }
 
-    private suspend fun reportEvent(request: CastledTrackEventRequest) =
-        trackEventRepository.reportEvent(request)
-
-    private suspend fun reportUserTrackingEvent(request: CastledUserTrackingEventRequest) =
-        trackEventRepository.reportUserTrackingEvent(request)
-
+    suspend fun logUserTrackingEvent(castledUserAttributes: CastledUserAttributes) {
+        if (!enabled) {
+            logger.debug("Ignoring user track event, tracking disabled!")
+            return
+        }
+        if (CastledSharedStore.getUserId().isNullOrBlank()) {
+            logger.debug("Ignoring user track event, UserId not set yet!")
+            return
+        }
+        trackEventRepository.reportUserTrackingEvent(TrackEventUtils.getUserEvent(castledUserAttributes.getAttributes()))
+    }
 
 }
