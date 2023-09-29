@@ -102,6 +102,7 @@
     <style name="Castled.InApp.Modal.Layout.Buttons">
         <item name="android:orientation">horizontal</item>
         <item name="android:layout_height">45dp</item>
+        <item name="android:layout_marginBottom">@dimen/inapp_margin_vertical</item>
     </style>
 
     <style name="Castled.InApp.CloseImageButton.Modal">

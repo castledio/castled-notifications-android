@@ -74,11 +74,10 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
             imageView!!.layoutParams.height = (dialogSize.x * 1 / 5).toInt()
         }
         val remainingHeight = dialogSize.y - imageView!!.layoutParams.height
-
         headerView!!.maxHeight = remainingHeight * 1 / 4
         messageView!!.maxHeight = remainingHeight * 2 / 4
-//        buttonViewContainer!!.setBackgroundColor(Color.RED)
-//        messageView!!.setBackgroundColor(Color.GREEN)
+        headerView!!.maxLines = 2
+        messageView!!.maxLines = 5
 
         // remaining 1/4th for buttons
 
@@ -89,7 +88,7 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
         val imageViewParams = InAppViewUtils.getImageViewParams(modalParams)
         if (imageViewParams != null && imageView != null) {
             Glide.with(imageView!!.context)
-                .load(imageViewParams.imageUrl)
+                .load(imageViewParams.imageUrl).placeholder(R.drawable.castled_placeholder)
                 .into(imageView!!)
         }
     }
@@ -146,7 +145,6 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
                 parseColor(primaryButtonViewParams.buttonColor, Color.BLUE),
                 parseColor(primaryButtonViewParams.borderColor, Color.TRANSPARENT)
             )
-            //  setBackgroundColor(parseColor(primaryButtonViewParams.buttonColor, Color.BLUE))
             text = primaryButtonViewParams.buttonText
         }
     }

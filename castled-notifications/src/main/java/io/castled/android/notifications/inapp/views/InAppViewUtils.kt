@@ -2,7 +2,12 @@ package io.castled.android.notifications.inapp.views
 
 import io.castled.android.notifications.commons.ClickActionParams
 import io.castled.android.notifications.push.models.CastledClickAction
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.float
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 object InAppViewUtils {
 
@@ -10,7 +15,8 @@ object InAppViewUtils {
         (modal["title"] as JsonPrimitive?)?.content ?: "",
         (modal["titleFontColor"] as JsonPrimitive?)?.content ?: "",
         (modal["titleFontSize"] as JsonPrimitive?)?.float ?: 0F,
-        (modal["titleBgColor"] as JsonPrimitive?)?.content ?: ""
+        (modal["titleBgColor"] as JsonPrimitive?)?.content ?: "",
+        (modal["screenOverlayColor"] as JsonPrimitive?)?.content ?: ""
     )
 
     fun getMessageViewParams(modal: JsonObject): MessageViewParams {

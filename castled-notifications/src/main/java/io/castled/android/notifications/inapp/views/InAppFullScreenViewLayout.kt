@@ -57,7 +57,7 @@ class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) :
         if (imageViewParams != null && imageView != null) {
             Glide.with(imageView!!.context).load(imageViewParams.imageUrl).apply(
                 RequestOptions()
-                    .placeholder(0)
+                    .placeholder(R.drawable.castled_placeholder)
                     .error(0)
             ).into(imageView!!)
         }

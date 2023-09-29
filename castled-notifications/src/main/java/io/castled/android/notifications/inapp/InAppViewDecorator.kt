@@ -118,21 +118,16 @@ internal class InAppViewDecorator(
         }
         when (InAppMessageUtils.getMessageType(inAppMessage.message)) {
             InAppMessageType.MODAL -> dialog.apply {
-                window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                window?.setGravity(Gravity.CENTER)
+
                 requestWindowFeature(Window.FEATURE_NO_TITLE)
                 setCancelable(false)
                 setContentView(inAppViewLayout)
-
-                val dialogueSize =
-                    context.resources.getString(R.string.castled_inapp_dialouge_size).toFloat()
-                val screenSize = CastledUtils.getScreenSize(context)
-                val layoutParams = WindowManager.LayoutParams()
-                layoutParams.copyFrom(dialog.window?.attributes)
-                layoutParams.width = (screenSize.x * dialogueSize).toInt()
-                layoutParams.height = (screenSize.y * dialogueSize).toInt()
-                dialog.window?.attributes = layoutParams
-
+                window?.setGravity(Gravity.CENTER)
+                window?.setLayout(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT
+                )
+                setupModalContainer()
                 show()
             }
 
@@ -172,5 +167,44 @@ internal class InAppViewDecorator(
         inAppViewLifecycleListener.onClosed(inAppMessage)
     }
 
+    private fun parseColor(colorStr: String, defaultColor: Int): Int {
+        return try {
+            Color.parseColor(colorStr)
+        } catch (e: IllegalArgumentException) {
+            defaultColor
+        }
+    }
+
+    private fun setupModalContainer() {
+        val modalParams = inAppMessage.message["modal"]?.jsonObject
+        dialog.window?.setBackgroundDrawable(
+            ColorDrawable(Color.TRANSPARENT)
+        )
+        modalParams?.let {
+            val headerViewParams = InAppViewUtils.getHeaderViewParams(modalParams!!)
+            headerViewParams.let {
+                dialog.window?.setBackgroundDrawable(
+                    ColorDrawable(
+                        parseColor(
+                            headerViewParams.screenOverlayColor,
+                            Color.TRANSPARENT
+                        )
+                    )
+                )
+            }
+            val dialogueSize =
+                context.resources.getString(R.string.castled_inapp_dialouge_size).toFloat()
+            val screenSize = CastledUtils.getScreenSize(context)
+            val layoutParams = inAppViewLayout!!.layoutParams
+            layoutParams.width = (screenSize.x * dialogueSize).toInt()
+            layoutParams.height = (screenSize.y * dialogueSize).toInt()
+            inAppViewLayout.layoutParams = layoutParams
+            inAppViewLayout.x = (screenSize.x / 2 - layoutParams.width / 2).toFloat()
+            inAppViewLayout.y =
+                (screenSize.y / 2 - layoutParams.height / 2 - CastledUtils.getStatusBarHeight(
+                    context
+                ) / 2).toFloat()
+        }
+    }
 }
 

@@ -14,19 +14,39 @@ internal object CastledUtils {
 
     fun getScreenSize(context: Context): Point {
         val outMetrics = DisplayMetrics()
+        val statusBarHeight = getStatusBarHeight(context)
+
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val metrics: WindowMetrics =
                 context.getSystemService(WindowManager::class.java).currentWindowMetrics
-            Point(metrics.bounds.width(), metrics.bounds.height())
+            Point(metrics.bounds.width(), metrics.bounds.height() - statusBarHeight)
 
         } else {
             @Suppress("DEPRECATION") val windowManager =
                 context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
             val display: Display = windowManager.defaultDisplay
             @Suppress("DEPRECATION") display.getMetrics(outMetrics)
-            Point(display.width, display.height)
+
+            // Reduce the status bar height from the screen height
+
+            Point(display.width, display.height - statusBarHeight)
 
         }
+    }
+
+    fun getStatusBarHeight(context: Context): Int {
+        return try {
+            var result = 0
+            val resourceId =
+                context.resources.getIdentifier("status_bar_height", "dimen", "android")
+            if (resourceId > 0) {
+                result = context.resources.getDimensionPixelSize(resourceId)
+            }
+            result
+        } catch (e: Exception) {
+            0
+        }
+
     }
 
     fun getCurrentOrientation(context: Context): Int {
