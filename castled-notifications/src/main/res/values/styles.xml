@@ -24,11 +24,21 @@
 
     <style name="Castled.InApp.Buttons.DualButtons.Secondary" />
 
-    <style name="Castled.InApp.Title">
+    <style name="Castled.InApp.Text">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/inapp_common_padding</item>
+        <item name="android:background">@android:color/transparent</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Castled.InApp.Text.Title">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Castled.InApp.Text.Body">
+        <item name="android:textStyle">normal</item>
     </style>
 
     <style name="Castled.InApp.ActionButtons">
@@ -96,7 +106,7 @@
     </style>
 
     <style name="Castled.InApp.Message.Modal">
-        <item name="android:padding">18.0dp</item>
+        <item name="android:padding">@dimen/inapp_common_padding</item>
     </style>
 
     <style name="Castled.InApp.Modal.Layout.Buttons">
@@ -135,7 +145,7 @@
     </style>
 
     <style name="Castled.InApp.Message.FullScreen">
-        <item name="android:padding">18.0dp</item>
+        <item name="android:padding">@dimen/inapp_margin_vertical</item>
     </style>
 
     <style name="Castled.InApp.FullScreen.Layout.Buttons">

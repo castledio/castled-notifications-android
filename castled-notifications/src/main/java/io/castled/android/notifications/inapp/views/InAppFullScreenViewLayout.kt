@@ -1,12 +1,15 @@
 package io.castled.android.notifications.inapp.views
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
+import android.graphics.Point
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -50,6 +53,7 @@ class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) :
         updateMessageView(modalParams)
         updatePrimaryBtnView(modalParams)
         updateSecondaryBtnView(modalParams)
+        updateContentViewSizes()
     }
 
     private fun updateImageView(modalParams: JsonObject) {
@@ -81,10 +85,12 @@ class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) :
             setTextSize(TypedValue.COMPLEX_UNIT_SP, messageViewParams.fontSize)
             text = messageViewParams.message
         }
-        // Btn panel also have same color as the message section
-        buttonViewContainer?.apply {
-            setBackgroundColor(parseColor(messageViewParams.backgroundColor, Color.WHITE))
-        }
+        (viewContainer as? RelativeLayout)?.setBackgroundColor(
+            parseColor(
+                messageViewParams.backgroundColor,
+                Color.WHITE
+            )
+        )
     }
 
     private fun updatePrimaryBtnView(modalParams: JsonObject) {
@@ -121,6 +127,45 @@ class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) :
         } catch (e: IllegalArgumentException) {
             defaultColor
         }
+    }
+
+    private fun updateContentViewSizes() {
+
+
+        val screenSize = CastledUtils.getScreenSize(context)
+        val dialogSize = Point(
+            (screenSize.x).toInt(),
+            (screenSize.y).toInt()
+        )
+        val orientation =
+            CastledUtils.getCurrentOrientation(context) // Assuming you are inside an activity
+        var messageViewMaxLines: Int = 0
+        var headerViewMaxLines: Int = 0
+
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            // Device is in portrait orientation
+            imageView!!.layoutParams.height = (dialogSize.x * 5 / 6)
+            headerViewMaxLines = 3
+            messageViewMaxLines = 10
+
+
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // Device is in landscape orientation
+            imageView!!.layoutParams.height = (dialogSize.x * 1 / 5)
+            messageViewMaxLines = 2
+            headerViewMaxLines = 2
+        }
+        val remainingHeight = dialogSize.y - imageView!!.layoutParams.height
+//        headerView!!.maxHeight = remainingHeight * 1 / 4
+//        messageView!!.maxHeight = remainingHeight * 2 / 4
+//
+//        // remaining 1/4th for buttons
+//        messageView!!.setBackgroundColor(Color.RED)
+//        // need to set maxLines after setting maxHeight
+        messageView!!.maxLines = messageViewMaxLines
+        headerView!!.maxLines = headerViewMaxLines
+
+
     }
 
     companion object {

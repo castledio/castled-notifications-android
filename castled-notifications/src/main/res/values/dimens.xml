@@ -8,6 +8,8 @@
     <dimen name="inapp_buttons_corner_radius">5dp</dimen>
     <dimen name="inapp_card_shadow">0dp</dimen>
     <dimen name="inapp_buttons_padding">10dp</dimen>
+    <dimen name="inapp_common_padding">15dp</dimen>
+
     <dimen name="inapp_margin_horizontal">15dp</dimen>
     <dimen name="inapp_margin_vertical">15dp</dimen>
 

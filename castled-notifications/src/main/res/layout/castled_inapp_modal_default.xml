@@ -15,6 +15,7 @@
         android:gravity="center">
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/inapp_modal_cardview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardElevation="@dimen/inapp_card_shadow"
@@ -33,18 +34,13 @@
 
                 <TextView
                     android:id="@+id/castled_inapp_modal_title"
-                    style="@style/Castled.InApp.Title"
-                    android:padding="@dimen/inapp_margin_horizontal" />
+                    style="@style/Castled.InApp.Text.Title"
+                    android:includeFontPadding="false" />
 
                 <TextView
                     android:id="@+id/castled_inapp_modal_message"
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:padding="@dimen/inapp_margin_horizontal"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-
-                    android:text="" />
+                    style="@style/Castled.InApp.Text.Body"
+                    android:includeFontPadding="false" />
 
                 <!-- Button LinearLayout with buttons -->
                 <LinearLayout
@@ -52,13 +48,13 @@
                     style="@style/Castled.InApp.Modal.Layout.Buttons">
 
                     <TextView
-                        android:id="@+id/castled_inapp_modal_btn_primary"
+                        android:id="@+id/castled_inapp_modal_btn_secondary"
                         style="@style/Castled.InApp.ActionButtons"
                         android:layout_marginHorizontal="@dimen/inapp_margin_horizontal"
                         android:paddingHorizontal="@dimen/inapp_margin_horizontal"></TextView>
 
                     <TextView
-                        android:id="@+id/castled_inapp_modal_btn_secondary"
+                        android:id="@+id/castled_inapp_modal_btn_primary"
                         style="@style/Castled.InApp.ActionButtons"
                         android:paddingHorizontal="@dimen/inapp_margin_horizontal"
                         android:layout_marginEnd="@dimen/inapp_margin_horizontal"></TextView>

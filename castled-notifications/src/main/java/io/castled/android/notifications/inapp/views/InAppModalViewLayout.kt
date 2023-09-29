@@ -4,13 +4,12 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Point
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import io.castled.android.notifications.R
@@ -23,6 +22,7 @@ import kotlinx.serialization.json.jsonObject
 
 class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
     InAppBaseViewLayout(context, attrs) {
+
 
     override val viewContainer: View?
         get() = findViewById(R.id.castled_inapp_modal_container)
@@ -55,7 +55,7 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
 
     }
 
-    fun updateContentViewSizes() {
+    private fun updateContentViewSizes() {
         val dialoguePercentage =
             context.resources.getString(R.string.castled_inapp_dialouge_size).toFloat()
         val screenSize = CastledUtils.getScreenSize(context)
@@ -65,21 +65,32 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
         )
         val orientation =
             CastledUtils.getCurrentOrientation(context) // Assuming you are inside an activity
+        var messageViewMaxLines: Int = 0
+        var headerViewMaxLines: Int = 0
+
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             // Device is in portrait orientation
-            imageView!!.layoutParams.height = (dialogSize.x * 3 / 4).toInt()
+            imageView!!.layoutParams.height = (dialogSize.x * 3 / 4)
+            headerViewMaxLines = 3
+            messageViewMaxLines = 5
+
 
         } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             // Device is in landscape orientation
-            imageView!!.layoutParams.height = (dialogSize.x * 1 / 5).toInt()
+            imageView!!.layoutParams.height = (dialogSize.x * 1 / 5)
+            messageViewMaxLines = 2
+            headerViewMaxLines = 2
+
+
         }
         val remainingHeight = dialogSize.y - imageView!!.layoutParams.height
         headerView!!.maxHeight = remainingHeight * 1 / 4
         messageView!!.maxHeight = remainingHeight * 2 / 4
-        headerView!!.maxLines = 2
-        messageView!!.maxLines = 5
-
         // remaining 1/4th for buttons
+
+        // need to set maxLines after setting maxHeight
+        headerView!!.maxLines = headerViewMaxLines
+        messageView!!.maxLines = messageViewMaxLines
 
 
     }
@@ -110,29 +121,17 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
             setTextSize(TypedValue.COMPLEX_UNIT_SP, messageViewParams.fontSize)
             text = messageViewParams.message
         }
-        // Message area and button area color will be covered with this
-        viewContainer?.apply {
-            val drawable = when (background) {
-                is GradientDrawable -> {
-                    (background as GradientDrawable).setColor(
-                        parseColor(
-                            messageViewParams.backgroundColor,
-                            Color.WHITE
-                        )
-                    )
-                    null
-                }
-
-                is ColorDrawable -> {
-                    (background as ColorDrawable).color =
-                        parseColor(messageViewParams.backgroundColor, Color.WHITE)
-
-                    null
-                }
-
-                else -> {}
-            }
+        val viewFullContainer: LinearLayout =
+            findViewById(R.id.castled_inapp_modal_container_layout)
+        viewFullContainer?.let {
+            viewFullContainer.setBackgroundColor(
+                parseColor(
+                    messageViewParams.backgroundColor,
+                    Color.WHITE
+                )
+            )
         }
+
     }
 
     private fun updatePrimaryBtnView(modalParams: JsonObject) {
