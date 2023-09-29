@@ -13,7 +13,7 @@ internal class TrackEventRepository(context: Context) {
     private val trackEventApi = CastledRetrofitClient.create(TrackEventApi::class.java)
     private val networkWorkManager = CastledNetworkWorkManager.getInstance(context)
 
-    suspend fun reportEvent(request: CastledTrackEventRequest) {
+    suspend fun reportCustomEvent(request: CastledTrackEventRequest) {
         networkWorkManager.apiCallWithRetry(request = request, apiCall = {
             return@apiCallWithRetry trackEventApi.reportEvent(
                 getHeaders(), (it as CastledTrackEventRequest)
@@ -21,7 +21,7 @@ internal class TrackEventRepository(context: Context) {
         })
     }
 
-    suspend fun reportEventNoRetry(request: CastledTrackEventRequest): Response<Void?> {
+    suspend fun reportCustomEventNoRetry(request: CastledTrackEventRequest): Response<Void?> {
         return trackEventApi.reportEvent(
             getHeaders(), request
         )
