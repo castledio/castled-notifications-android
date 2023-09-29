@@ -5,10 +5,13 @@ import android.graphics.Color
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
-import android.widget.*
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import io.castled.android.notifications.R
+import io.castled.android.notifications.commons.CastledUtils
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.store.models.Campaign
@@ -28,9 +31,9 @@ class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) :
         get() = findViewById(R.id.castled_inapp_fs_img)
     override val buttonViewContainer: View?
         get() = findViewById(R.id.castled_inapp_fs_btn_container)
-    override val primaryButton: Button?
+    override val primaryButton: TextView?
         get() = findViewById(R.id.castled_inapp_fs_btn_primary)
-    override val secondaryButton: Button?
+    override val secondaryButton: TextView?
         get() = findViewById(R.id.castled_inapp_fs_btn_secondary)
     override val closeButton: ImageButton?
         get() = findViewById(R.id.castled_inapp_fs_close_btn)
@@ -89,7 +92,11 @@ class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) :
             ?: return
         primaryButton?.apply {
             setTextColor(parseColor(primaryButtonViewParams.fontColor, Color.WHITE))
-            setBackgroundColor(parseColor(primaryButtonViewParams.buttonColor, Color.BLUE))
+            CastledUtils.changeBackgroundColorAndBorderColor(
+                primaryButton!!,
+                parseColor(primaryButtonViewParams.buttonColor, Color.BLUE),
+                parseColor(primaryButtonViewParams.borderColor, Color.TRANSPARENT)
+            )
             text = primaryButtonViewParams.buttonText
         }
     }
@@ -99,7 +106,11 @@ class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) :
             ?: return
         secondaryButton?.apply {
             setTextColor(parseColor(secondaryButtonViewParams.fontColor, Color.BLACK))
-            setBackgroundColor(parseColor(secondaryButtonViewParams.buttonColor, Color.BLACK))
+            CastledUtils.changeBackgroundColorAndBorderColor(
+                secondaryButton!!,
+                parseColor(secondaryButtonViewParams.buttonColor, Color.WHITE),
+                parseColor(secondaryButtonViewParams.borderColor, Color.TRANSPARENT)
+            )
             text = secondaryButtonViewParams.buttonText
         }
     }

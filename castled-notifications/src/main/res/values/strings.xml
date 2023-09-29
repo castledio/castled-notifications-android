@@ -3,5 +3,6 @@
     <!-- Content Description -->
     <string name="castled_inapp_close_content_description">Close</string>
     <string name="castled_inapp_image_content_description" translatable="false">@null</string>
+    <string name="castled_inapp_dialouge_size">0.9</string>
 
 </resources>

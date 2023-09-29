@@ -14,10 +14,8 @@
     </style>
 
     <style name="Castled.InApp.Buttons.DualButtons">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:minWidth">80.0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">16.0dp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:layout_weight">1</item>
         <item name="android:singleLine">true</item>
     </style>
@@ -30,8 +28,20 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center</item>
-        <item name="android:padding">21.0dp</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Castled.InApp.ActionButtons">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:background">@drawable/inapp_action_buttons_rounded</item>
+
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="Castled.InApp.Message">
@@ -64,14 +74,18 @@
         <item name="android:gravity">center</item>
         <item name="android:orientation">vertical</item>
     </style>
+
     <style name="Castled.InApp.WebView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center</item>
         <item name="android:orientation">vertical</item>
     </style>
-    <style name="Castled.InApp.WebView.FullScreen"/>
-    <style name="Castled.InApp.WebView.Modal"/>
+
+    <style name="Castled.InApp.WebView.FullScreen" />
+
+    <style name="Castled.InApp.WebView.Modal" />
+
     <style name="Castled.InApp.Image.Modal">
         <item name="android:contentDescription">@string/castled_inapp_image_content_description
         </item>
@@ -87,6 +101,7 @@
 
     <style name="Castled.InApp.Modal.Layout.Buttons">
         <item name="android:orientation">horizontal</item>
+        <item name="android:layout_height">45dp</item>
     </style>
 
     <style name="Castled.InApp.CloseImageButton.Modal">

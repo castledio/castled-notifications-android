@@ -8,6 +8,8 @@ import android.util.Base64
 import android.view.Gravity
 import android.view.Window
 import android.view.WindowManager
+import io.castled.android.notifications.R
+import io.castled.android.notifications.commons.CastledUtils
 import io.castled.android.notifications.inapp.js.JavaScriptInterface
 import io.castled.android.notifications.inapp.models.InAppMessageType
 import io.castled.android.notifications.inapp.views.InAppBaseViewLayout
@@ -36,7 +38,7 @@ internal class InAppViewDecorator(
             if (inAppViewLayout.webView == null) {
                 addListenerClickCallbacks()
             } else {
-                loadJSInterface()
+                inAppViewLayout.webView?.let { loadJSInterface() }
             }
         }
 
@@ -121,6 +123,16 @@ internal class InAppViewDecorator(
                 requestWindowFeature(Window.FEATURE_NO_TITLE)
                 setCancelable(false)
                 setContentView(inAppViewLayout)
+
+                val dialogueSize =
+                    context.resources.getString(R.string.castled_inapp_dialouge_size).toFloat()
+                val screenSize = CastledUtils.getScreenSize(context)
+                val layoutParams = WindowManager.LayoutParams()
+                layoutParams.copyFrom(dialog.window?.attributes)
+                layoutParams.width = (screenSize.x * dialogueSize).toInt()
+                layoutParams.height = (screenSize.y * dialogueSize).toInt()
+                dialog.window?.attributes = layoutParams
+
                 show()
             }
 
