@@ -30,7 +30,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
                     android:contentDescription="@string/castled_inapp_image_content_description"
-                    android:scaleType="centerCrop" />
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/castled_placeholder" />
 
                 <TextView
                     android:id="@+id/castled_inapp_modal_title"
@@ -65,11 +66,10 @@
             <ImageButton
                 android:id="@+id/castled_inapp_modal_close_btn"
                 style="@style/Castled.InApp.CloseImageButton.Modal"
-                android:layout_gravity="end"
+                android:layout_gravity="top|end"
                 android:layout_alignParentTop="true"
                 android:contentDescription="@string/castled_inapp_image_content_description"
-                android:layout_toEndOf="@id/castled_inapp_modal_container_layout"
-                android:gravity="top" />
+                android:layout_toEndOf="@id/castled_inapp_modal_container_layout" />
         </androidx.cardview.widget.CardView>
     </RelativeLayout>
 

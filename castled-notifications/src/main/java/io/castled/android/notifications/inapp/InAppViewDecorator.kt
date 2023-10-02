@@ -155,7 +155,13 @@ internal class InAppViewDecorator(
                     WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.WRAP_CONTENT
                 )
+                window?.setFlags(
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                );
+
                 show()
+
             }
         }
         // TODO: Handle auto dismiss
@@ -176,6 +182,7 @@ internal class InAppViewDecorator(
     }
 
     private fun setupModalContainer() {
+
         val modalParams = inAppMessage.message["modal"]?.jsonObject
         dialog.window?.setBackgroundDrawable(
             ColorDrawable(Color.TRANSPARENT)
@@ -183,14 +190,19 @@ internal class InAppViewDecorator(
         modalParams?.let {
             val headerViewParams = InAppViewUtils.getHeaderViewParams(modalParams!!)
             headerViewParams.let {
-                dialog.window?.setBackgroundDrawable(
-                    ColorDrawable(
-                        parseColor(
-                            headerViewParams.screenOverlayColor,
-                            Color.TRANSPARENT
+                try {
+                    dialog.window?.setBackgroundDrawable(
+                        ColorDrawable(
+                            parseColor(
+                                headerViewParams.screenOverlayColor,
+                                Color.TRANSPARENT
+                            )
                         )
                     )
-                )
+                } catch (e: Exception) {
+
+                }
+
             }
             val dialogueSize =
                 context.resources.getString(R.string.castled_inapp_dialouge_size).toFloat()

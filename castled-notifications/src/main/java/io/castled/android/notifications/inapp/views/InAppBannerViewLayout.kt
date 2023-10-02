@@ -11,7 +11,6 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import io.castled.android.notifications.R
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
@@ -48,11 +47,9 @@ class InAppBannerViewLayout(context: Context, attrs: AttributeSet) :
     private fun updateImageView(modalParams: JsonObject) {
         val imageViewParams = InAppViewUtils.getImageViewParams(modalParams)
         if (imageViewParams != null && imageView != null) {
-            Glide.with(imageView!!.context).load(imageViewParams.imageUrl).apply(
-                RequestOptions()
-                    .placeholder(0)
-                    .error(0)
-            ).into(imageView!!)
+            Glide.with(imageView!!.context)
+                .load(imageViewParams.imageUrl).placeholder(R.drawable.castled_placeholder)
+                .into(imageView!!)
         }
     }
 

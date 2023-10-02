@@ -154,6 +154,7 @@
 
     <style name="Castled.InApp.CloseImageButton.FullScreen">
         <item name="android:padding">12dp</item>
+
     </style>
 
     <!-- Castled banner in-app -->
@@ -170,20 +171,20 @@
     <style name="Castled.InApp.Image.Banner">
         <item name="android:contentDescription">@string/castled_inapp_image_content_description
         </item>
-        <item name="android:layout_width">60dp</item>
-        <item name="android:layout_height">60dp</item>
-        <item name="android:layout_marginLeft">8.0dp</item>
+        <item name="android:layout_width">50dp</item>
+        <item name="android:layout_height">50dp</item>
         <item name="android:scaleType">centerCrop</item>
         <item name="android:layout_centerVertical">true</item>
     </style>
 
     <style name="Castled.InApp.Message.Banner">
         <item name="android:gravity">left</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:layout_centerVertical">true</item>
-        <item name="android:paddingLeft">8.0dp</item>
-        <item name="android:paddingRight">18.0dp</item>
-        <item name="android:paddingTop">8.0dp</item>
-        <item name="android:paddingBottom">8.0dp</item>
+        <item name="android:padding">@dimen/inapp_banner_margin</item>
+        <item name="android:maxLines">3</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:ellipsize">end</item>
     </style>
 
     <style name="Castled.InApp.RightIcon">
@@ -191,13 +192,13 @@
         <item name="android:layout_height">14dp</item>
         <item name="android:layout_width">8dp</item>
         <item name="android:scaleType">fitXY</item>
-        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:layout_marginRight">@dimen/inapp_banner_margin</item>
         <item name="android:layout_centerVertical">true</item>
         <item name="android:layout_alignParentEnd">true</item>
     </style>
 
     <style name="Castled.InApp.CloseImageButton.Banner">
-        <item name="android:padding">4.0dp</item>
+        <item name="android:padding">5.0dp</item>
         <item name="android:layout_height">24dp</item>
         <item name="android:layout_width">24dp</item>
     </style>

@@ -1,42 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <io.castled.android.notifications.inapp.views.InAppBannerViewLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/castled_inapp_banner_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16.0dp">
+    android:padding="@dimen/inapp_common_padding">
 
     <RelativeLayout
         android:id="@+id/castled_inapp_banner_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
         android:background="@drawable/inapp_background_rounded"
-        android:minHeight="80dp">
+        android:minHeight="70dp">
 
-        <RelativeLayout
+        <androidx.cardview.widget.CardView
+            android:id="@+id/inapp_modal_cardview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true">
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardElevation="@dimen/inapp_card_shadow"
+            app:cardCornerRadius="@dimen/inapp_corner_radius">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/castled_inapp_banner_img"
-                style="@style/Castled.InApp.Image.Banner" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true">
 
-            <TextView
-                android:id="@+id/castled_inapp_banner_message"
-                style="@style/Castled.InApp.Message.Banner"
-                android:layout_toRightOf="@id/castled_inapp_banner_img"
-                tools:text="Message Text" />
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/inapp_banner_image_cardview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    app:cardElevation="@dimen/inapp_card_shadow"
+                    android:layout_marginLeft="@dimen/inapp_banner_margin"
+                    android:layout_centerVertical="true"
+                    app:cardCornerRadius="@dimen/inapp_corner_radius">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/castled_inapp_banner_right_icon"
-                style="@style/Castled.InApp.RightIcon" />
+                    <ImageView
+                        android:id="@+id/castled_inapp_banner_img"
+                        style="@style/Castled.InApp.Image.Banner"
+                        android:background="@drawable/castled_placeholder" />
 
-        </RelativeLayout>
+                </androidx.cardview.widget.CardView>
 
-        <ImageButton
-            android:id="@+id/castled_inapp_banner_close_btn"
-            style="@style/Castled.InApp.CloseImageButton.Banner" />
+                <TextView
+                    android:id="@+id/castled_inapp_banner_message"
+                    style="@style/Castled.InApp.Message.Banner"
+                    android:layout_toRightOf="@id/inapp_banner_image_cardview"
+                    android:layout_toLeftOf="@+id/castled_inapp_banner_right_icon"
+                    android:background="@android:color/holo_orange_dark"
+                    tools:text="Message Text" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/castled_inapp_banner_right_icon"
+                    style="@style/Castled.InApp.RightIcon" />
+
+            </RelativeLayout>
+
+            <ImageButton
+                android:id="@+id/castled_inapp_banner_close_btn"
+                style="@style/Castled.InApp.CloseImageButton.Banner"
+                android:layout_gravity="top|end"
+                android:layout_alignParentTop="true"
+                android:contentDescription="@string/castled_inapp_image_content_description" />
+        </androidx.cardview.widget.CardView>
+
 
     </RelativeLayout>
 
