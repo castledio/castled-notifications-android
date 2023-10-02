@@ -49,6 +49,10 @@ internal object InAppNotification {
         override fun onAppMovedToBackground(activity: Activity) {
             CastledSharedStore.isAppInBackground = false
         }
+
+        override fun onActivityDestroyed(activity: Activity) {
+            inAppController.dismissDialogIfAny()
+        }
     }
 
     fun init(application: Application, externalScope: CoroutineScope) {

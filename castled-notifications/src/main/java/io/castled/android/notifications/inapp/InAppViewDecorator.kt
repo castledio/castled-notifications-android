@@ -112,7 +112,7 @@ internal class InAppViewDecorator(
         }
     }
 
-    override fun show() {
+    override fun show(withApiCall: Boolean) {
         if (inAppViewLayout == null) {
             return
         }
@@ -158,19 +158,27 @@ internal class InAppViewDecorator(
                 window?.setFlags(
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                );
+                )
 
                 show()
 
             }
         }
         // TODO: Handle auto dismiss
-        inAppViewLifecycleListener.onDisplayed(inAppMessage)
+        if (withApiCall) {
+            inAppViewLifecycleListener.onDisplayed(inAppMessage)
+        }
     }
 
     override fun close() {
-        dialog.dismiss()
+        dismissDialog()
         inAppViewLifecycleListener.onClosed(inAppMessage)
+    }
+
+    internal fun dismissDialog() {
+        if (dialog != null && dialog.isShowing) {
+            dialog.dismiss()
+        }
     }
 
     private fun parseColor(colorStr: String, defaultColor: Int): Int {
@@ -188,7 +196,7 @@ internal class InAppViewDecorator(
             ColorDrawable(Color.TRANSPARENT)
         )
         modalParams?.let {
-            val headerViewParams = InAppViewUtils.getHeaderViewParams(modalParams!!)
+            val headerViewParams = InAppViewUtils.getHeaderViewParams(modalParams)
             headerViewParams.let {
                 try {
                     dialog.window?.setBackgroundDrawable(

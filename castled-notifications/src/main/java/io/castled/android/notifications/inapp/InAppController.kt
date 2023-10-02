@@ -23,6 +23,8 @@ internal class InAppController(context: Context) {
     private val logger = CastledLogger.getInstance(LogTags.IN_APP_TRIGGER)
     private var currentInAppBeingDisplayed: Campaign? = null
     private val inAppViewLifecycleListener = InAppLifeCycleListenerImpl(this)
+    private var inAppViewDecorator: InAppViewDecorator? = null
+
     private val currentInAppLock = Any()
 
     suspend fun refreshLiveCampaigns() {
@@ -67,6 +69,8 @@ internal class InAppController(context: Context) {
 
     fun clearCurrentInApp() {
         currentInAppBeingDisplayed = null
+        inAppViewDecorator = null
+
     }
 
     private fun updateCurrentInApp(inApp: Campaign): Boolean {
@@ -124,7 +128,9 @@ internal class InAppController(context: Context) {
         context: Context, inAppSelectedForDisplay: Campaign
     ) = withContext(Main) {
         try {
-            InAppViewDecorator(context, inAppSelectedForDisplay, inAppViewLifecycleListener).show()
+            inAppViewDecorator =
+                InAppViewDecorator(context, inAppSelectedForDisplay, inAppViewLifecycleListener)
+            inAppViewDecorator?.let { inAppViewDecorator!!.show(true) }
         } catch (e: Exception) {
             logger.error("In-app display failed!", e)
         }
@@ -137,13 +143,29 @@ internal class InAppController(context: Context) {
     fun updateInAppForOrientationChanges(context: Context) {
         currentInAppBeingDisplayed?.let {
             try {
-                InAppViewDecorator(
+                inAppViewDecorator = null
+                inAppViewDecorator = InAppViewDecorator(
                     context,
                     currentInAppBeingDisplayed!!,
                     inAppViewLifecycleListener
-                ).show()
+                )
+                inAppViewDecorator?.let { inAppViewDecorator!!.show(false) }
             } catch (e: Exception) {
-                logger.error("In-app display failed!", e)
+                logger.error("In-app display failed after orientation!", e)
+            }
+        }
+    }
+
+    fun dismissDialogIfAny() {
+        currentInAppBeingDisplayed?.let {
+            try {
+                inAppViewDecorator?.let {
+                    inAppViewDecorator!!.dismissDialog()
+                    inAppViewDecorator = null
+                }
+
+            } catch (e: Exception) {
+                logger.error("In-app dismiss failed!", e)
             }
         }
     }

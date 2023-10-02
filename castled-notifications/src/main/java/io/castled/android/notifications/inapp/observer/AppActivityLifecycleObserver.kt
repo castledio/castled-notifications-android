@@ -22,10 +22,8 @@ internal class AppActivityLifecycleObserver(private val appEventCallbacks: AppEv
     }
 
     override fun onActivityStarted(activity: Activity) {
-        logger.debug("onActivityStarted: ${activity.componentName.shortClassName}")
         if (++activityReferences == 1 && !isActivityChangingConfigurations) {
             // App enters foreground
-            logger.debug("App in foreground")
             appEventCallbacks.onAppMovedToForeground(activity)
         }
         appEventCallbacks.onActivityStarted(activity)
@@ -36,15 +34,15 @@ internal class AppActivityLifecycleObserver(private val appEventCallbacks: AppEv
     override fun onActivityPaused(activity: Activity) {}
 
     override fun onActivityStopped(activity: Activity) {
-        logger.debug("onActivityStopped: ${activity.componentName.shortClassName}")
         isActivityChangingConfigurations = activity.isChangingConfigurations
         if (--activityReferences == 0 && !isActivityChangingConfigurations) {
-            logger.debug("App goes background")
             appEventCallbacks.onAppMovedToBackground(activity)
         }
     }
 
     override fun onActivitySaveInstanceState(p0: Activity, p1: Bundle) {}
 
-    override fun onActivityDestroyed(p0: Activity) {}
+    override fun onActivityDestroyed(p0: Activity) {
+        appEventCallbacks.onActivityDestroyed(p0)
+    }
 }

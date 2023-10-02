@@ -10,4 +10,7 @@ interface AppEventCallbacks {
     fun onActivityStarted(activity: Activity)
 
     fun onAppMovedToBackground(activity: Activity)
+
+    fun onActivityDestroyed(activity: Activity)
+
 }
