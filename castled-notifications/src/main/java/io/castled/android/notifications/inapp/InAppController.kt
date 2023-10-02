@@ -143,7 +143,6 @@ internal class InAppController(context: Context) {
     fun updateInAppForOrientationChanges(context: Context) {
         currentInAppBeingDisplayed?.let {
             try {
-                inAppViewDecorator = null
                 inAppViewDecorator = InAppViewDecorator(
                     context,
                     currentInAppBeingDisplayed!!,
