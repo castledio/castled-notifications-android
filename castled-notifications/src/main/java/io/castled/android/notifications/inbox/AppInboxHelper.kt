@@ -41,7 +41,6 @@ internal object AppInboxHelper {
         if (fetchJob == null || !fetchJob!!.isActive) {
             fetchJob = externalScope.launch(Dispatchers.Default) {
                 do {
-                    logger.verbose("Syncing in-inboxs...")
                     inboxRepository.refreshInbox()
                     delay(TimeUnit.SECONDS.toMillis(CastledSharedStore.configs.inAppFetchIntervalSec))
                 } while (true)

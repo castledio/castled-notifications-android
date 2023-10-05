@@ -2,17 +2,20 @@ package io.castled.android.notifications.inapp
 
 import android.content.Context
 import io.castled.android.notifications.inapp.CampaignResponseConverter.toCampaign
-import io.castled.android.notifications.store.models.Campaign
 import io.castled.android.notifications.inapp.service.InAppRepository
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
+import io.castled.android.notifications.store.models.Campaign
 import io.castled.android.notifications.trigger.EventFilterEvaluator
 import io.castled.android.notifications.trigger.enums.JoinType
 import io.castled.android.notifications.trigger.models.GroupFilter
 import io.castled.android.notifications.workmanager.models.CastledInAppEventRequest
-import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.serialization.json.*
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.decodeFromJsonElement
 
 internal class InAppController(context: Context) {
 
@@ -20,6 +23,8 @@ internal class InAppController(context: Context) {
     private val logger = CastledLogger.getInstance(LogTags.IN_APP_TRIGGER)
     private var currentInAppBeingDisplayed: Campaign? = null
     private val inAppViewLifecycleListener = InAppLifeCycleListenerImpl(this)
+    private var inAppViewDecorator: InAppViewDecorator? = null
+
     private val currentInAppLock = Any()
 
     suspend fun refreshLiveCampaigns() {
@@ -64,6 +69,8 @@ internal class InAppController(context: Context) {
 
     fun clearCurrentInApp() {
         currentInAppBeingDisplayed = null
+        inAppViewDecorator = null
+
     }
 
     private fun updateCurrentInApp(inApp: Campaign): Boolean {
@@ -121,7 +128,9 @@ internal class InAppController(context: Context) {
         context: Context, inAppSelectedForDisplay: Campaign
     ) = withContext(Main) {
         try {
-            InAppViewDecorator(context, inAppSelectedForDisplay, inAppViewLifecycleListener).show()
+            inAppViewDecorator =
+                InAppViewDecorator(context, inAppSelectedForDisplay, inAppViewLifecycleListener)
+            inAppViewDecorator?.let { inAppViewDecorator!!.show(true) }
         } catch (e: Exception) {
             logger.error("In-app display failed!", e)
         }
@@ -131,4 +140,32 @@ internal class InAppController(context: Context) {
         inAppRepository.updateCampaignDisplayStats(inApp)
     }
 
+    fun updateInAppForOrientationChanges(context: Context) {
+        currentInAppBeingDisplayed?.let {
+            try {
+                inAppViewDecorator = InAppViewDecorator(
+                    context,
+                    currentInAppBeingDisplayed!!,
+                    inAppViewLifecycleListener
+                )
+                inAppViewDecorator?.let { inAppViewDecorator!!.show(false) }
+            } catch (e: Exception) {
+                logger.error("In-app display failed after orientation!", e)
+            }
+        }
+    }
+
+    fun dismissDialogIfAny() {
+        currentInAppBeingDisplayed?.let {
+            try {
+                inAppViewDecorator?.let {
+                    inAppViewDecorator!!.dismissDialog()
+                    inAppViewDecorator = null
+                }
+
+            } catch (e: Exception) {
+                logger.error("In-app dismiss failed!", e)
+            }
+        }
+    }
 }

@@ -56,6 +56,15 @@ data class AppInbox(
     @ColumnInfo(name = "is_read")
     var isRead: Boolean,
 
+    @ColumnInfo(name = "is_pinned")
+    var isPinned: Boolean,
+
+    @ColumnInfo(name = "updated_time")
+    val updatedTime: Long,
+
+    @ColumnInfo(name = "tag")
+    val tag: String,
+
     @ColumnInfo(name = "message_type")
     val messageType: InboxMessageType
 )

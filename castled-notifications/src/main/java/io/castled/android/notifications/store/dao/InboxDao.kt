@@ -10,7 +10,7 @@ internal interface InboxDao {
     @Query("SELECT * FROM inbox ORDER BY date_added DESC")
     fun dbGetInbox(): List<AppInbox>
 
-    @Query("SELECT * FROM inbox ORDER BY date_added DESC")
+    @Query("SELECT * FROM inbox ORDER BY is_pinned DESC, date_added DESC")
     fun getInboxItems(): LiveData<List<AppInbox>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

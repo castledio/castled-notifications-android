@@ -6,7 +6,8 @@ data class HeaderViewParams(
     val header: String,
     val fontColor: String,
     val fontSize: Float,
-    val backgroundColor: String
+    val backgroundColor: String,
+    val screenOverlayColor: String
 )
 
 data class MessageViewParams(

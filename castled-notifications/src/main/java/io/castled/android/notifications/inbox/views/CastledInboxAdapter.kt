@@ -49,6 +49,8 @@ class CastledInboxAdapter(val context: Context) :
         holder.binding.txtBody.text = inbox.body
         holder.binding.txtDate.text = DateTimeUtils.timeAgo(inbox.dateAdded)
         holder.binding.imgUnread.visibility = if (inbox.isRead) View.GONE else View.VISIBLE
+        holder.binding.imgPin.visibility = if (inbox.isPinned) View.VISIBLE else View.GONE
+
         when (inbox.messageType) {
             InboxMessageType.MESSAGE_WITH_MEDIA -> {
                 holder.binding.imgCover.visibility = View.VISIBLE

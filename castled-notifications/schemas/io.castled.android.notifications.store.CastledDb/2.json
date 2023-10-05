@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "6d831932c2e82ad4aa67f09702390f73",
+    "identityHash": "5ef924977baf3fe7c9832c9c05d35aae",
     "entities": [
       {
         "tableName": "campaigns",
@@ -147,7 +147,7 @@
       },
       {
         "tableName": "inbox",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `message_id` INTEGER NOT NULL, `team_id` INTEGER NOT NULL, `source_context` TEXT NOT NULL, `thumbnail_url` TEXT NOT NULL, `title` TEXT NOT NULL, `body` TEXT NOT NULL, `date_added` INTEGER NOT NULL, `aspect_ratio` REAL NOT NULL, `start_ts` INTEGER NOT NULL, `expiryTs` INTEGER NOT NULL, `trigger` TEXT NOT NULL, `message_json` TEXT NOT NULL, `is_read` INTEGER NOT NULL, `message_type` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `message_id` INTEGER NOT NULL, `team_id` INTEGER NOT NULL, `source_context` TEXT NOT NULL, `thumbnail_url` TEXT NOT NULL, `title` TEXT NOT NULL, `body` TEXT NOT NULL, `date_added` INTEGER NOT NULL, `aspect_ratio` REAL NOT NULL, `start_ts` INTEGER NOT NULL, `expiryTs` INTEGER NOT NULL, `trigger` TEXT NOT NULL, `message_json` TEXT NOT NULL, `is_read` INTEGER NOT NULL, `is_pinned` INTEGER NOT NULL, `updated_time` INTEGER NOT NULL, `tag` TEXT NOT NULL, `message_type` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -234,6 +234,24 @@
             "notNull": true
           },
           {
+            "fieldPath": "isPinned",
+            "columnName": "is_pinned",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedTime",
+            "columnName": "updated_time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tag",
+            "columnName": "tag",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
             "fieldPath": "messageType",
             "columnName": "message_type",
             "affinity": "TEXT",
@@ -263,7 +281,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6d831932c2e82ad4aa67f09702390f73')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5ef924977baf3fe7c9832c9c05d35aae')"
     ]
   }
 }

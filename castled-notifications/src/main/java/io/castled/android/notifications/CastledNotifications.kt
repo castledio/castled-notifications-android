@@ -85,34 +85,17 @@ object CastledNotifications {
     fun setUserId(
         context: Context,
         userId: String,
-        onSuccess: () -> Unit = { },
-        onError: (Exception) -> Unit = { }
+        userToken: String? = null
     ) = castledScope.launch(Dispatchers.Default) {
         try {
-            saveSecureUserId(context, userId, null)
-            onSuccess()
+            saveUserId(context, userId, userToken)
         } catch (e: Exception) {
-            onError(e)
+            logger.verbose("skipping userId set. $e")
+
         }
     }
 
-    @JvmStatic
-    fun setSecureUserId(
-        context: Context,
-        userId: String,
-        userToken: String,
-        onSuccess: () -> Unit = { },
-        onError: (Exception) -> Unit = { }
-    ) = castledScope.launch(Dispatchers.Default) {
-        try {
-            saveSecureUserId(context, userId, userToken)
-            onSuccess()
-        } catch (e: Exception) {
-            onError(e)
-        }
-    }
-
-    private suspend fun saveSecureUserId(context: Context, userId: String, userToken: String?) {
+    private suspend fun saveUserId(context: Context, userId: String, userToken: String?) {
         if (!isMainProcess(context)) {
             // In case there are services that are not run from main process, skip init
             // for such processes
@@ -128,19 +111,13 @@ object CastledNotifications {
         } else {
             if (CastledSharedStore.getUserId() != userId) {
                 // New user-id
+                CastledSharedStore.setUserId(userId, userToken)
                 PushNotification.registerUser(userId)
-                CastledSharedStore.setUserId(userId)
             }
             InAppNotification.startCampaignJob()
             AppInboxHelper.startInboxJob()
-            userToken?.let {
-                if (userToken.isBlank()) {
-                    throw IllegalStateException("userToken is empty!")
-                }
-                if (CastledSharedStore.getSecureUserId() != userToken) {
-                    CastledSharedStore.setSecureUserId(userToken)
-                }
-            }
+
+
         }
     }
 
@@ -182,6 +159,14 @@ object CastledNotifications {
             if (isInited()) {
                 InAppNotification.logAppEvent(context, eventName, eventParams)
                 TrackEvents.reportEventWith(eventName, eventParams)
+            }
+        }
+
+    @JvmStatic
+    fun setUserProfile(details: Map<String, Any>) =
+        castledScope.launch(Dispatchers.Default) {
+            if (isInited()) {
+                TrackEvents.reportUserTrackingEventWith(details)
             }
         }
 

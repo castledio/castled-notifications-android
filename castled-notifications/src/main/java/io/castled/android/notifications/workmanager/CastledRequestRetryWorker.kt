@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import io.castled.android.notifications.globals.CastledGlobals
-import io.castled.android.notifications.workmanager.models.CastledNetworkRequestType
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.store.models.NetworkRetryLog
+import io.castled.android.notifications.workmanager.models.CastledNetworkRequestType
 import kotlinx.coroutines.sync.withLock
 
 internal class CastledRequestRetryWorker(appContext: Context, workerParams: WorkerParameters) :
@@ -20,7 +20,8 @@ internal class CastledRequestRetryWorker(appContext: Context, workerParams: Work
         CastledNetworkRequestType.PUSH_EVENT to PushEventRequestHandler(appContext),
         CastledNetworkRequestType.IN_APP_EVENT to InAppEventRequestHandler(appContext),
         CastledNetworkRequestType.TRACK_EVENT to TrackEventRequestHandler(appContext),
-        CastledNetworkRequestType.INBOX_EVENT to InboxEventRequestHandler(appContext)
+        CastledNetworkRequestType.INBOX_EVENT to InboxEventRequestHandler(appContext),
+        CastledNetworkRequestType.USER_TRACKING to UserTrackingRequestHandler(appContext)
 
     )
 

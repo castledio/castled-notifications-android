@@ -19,7 +19,10 @@ internal object InboxResponseConverter {
             thumbnailUrl = this.thumbnailUrl,
             body = this.body,
             title = this.title,
-            dateAdded = this.dateAdded
+            dateAdded = this.dateAdded,
+            updatedTime = this.updatedTs,
+            isPinned = this.pinningEnabled,
+            tag = this.tag ?: ""
         )
     }
 
@@ -33,7 +36,10 @@ internal object InboxResponseConverter {
             expiryTs = this.expiryTs,
             read = this.isRead,
             trigger = this.trigger,
-            message = this.message
+            message = this.message,
+            pinningEnabled = this.isPinned,
+            tag = this.tag,
+            updatedTs = this.updatedTime
         )
     }
 }

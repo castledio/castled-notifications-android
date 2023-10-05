@@ -141,6 +141,7 @@ class CastledInboxActivity : AppCompatActivity(),
         super.onPause()
         if (displayedItems.size > 0) {
             iboxViewLifecycleListener.registerReadEvents(displayedItems)
+            displayedItems.clear()
         }
         // Perform actions when the fragment is no longer visible
     }

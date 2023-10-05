@@ -16,7 +16,11 @@ data class CastledInboxItem(
     val startTs: Long,
     val expiryTs: Long,
     val trigger: JsonObject,
-    val message: JsonObject
+    val message: JsonObject,
+    val updatedTs: Long,
+    val tag: String?,
+    val pinningEnabled: Boolean
+
 ) {
 
     val aspectRatio: Number
