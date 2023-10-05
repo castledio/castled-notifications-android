@@ -1,7 +1,5 @@
 package io.castled.android.notifications
 
-import io.castled.android.notifications.store.models.AppInbox
-
 data class CastledConfigs(
     val apiKey: String,
     val appId: String,
@@ -18,10 +16,10 @@ data class CastledConfigs(
     class Builder {
         private lateinit var apiKey: String
         private lateinit var appId: String
-        private var enablePush: Boolean = true
-        private var enableInApp: Boolean = true
-        private var enableTracking: Boolean = true
-        private var enableAppInbox: Boolean = true
+        private var enablePush: Boolean = false
+        private var enableInApp: Boolean = false
+        private var enableTracking: Boolean = false
+        private var enableAppInbox: Boolean = false
 
         private var inAppFetchIntervalSec = 3600L
         private var castledLocation = CastledLocation.US
