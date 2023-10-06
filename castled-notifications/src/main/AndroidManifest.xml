@@ -21,6 +21,10 @@
         <receiver
             android:name="io.castled.android.notifications.push.CastledNotificationReceiver"
             android:exported="false" />
+        <activity android:name="io.castled.android.notifications.inbox.views.CastledInboxActivity">
+            <!-- Intent filters (if any) -->
+        </activity>
     </application>
+
 
 </manifest>

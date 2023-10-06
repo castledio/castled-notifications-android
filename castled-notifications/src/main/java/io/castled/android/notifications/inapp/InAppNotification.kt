@@ -28,6 +28,11 @@ internal object InAppNotification {
     private var fetchJob: Job? = null
 
     private val appEventCallbacks = object : AppEventCallbacks {
+
+        override fun onActivityCreated(activity: Activity) {
+            inAppController.updateInAppForOrientationChanges(activity)
+        }
+
         override fun onAppMovedToForeground(activity: Activity) {
             logAppEvent(activity, AppEvents.APP_OPENED, null)
             CastledSharedStore.isAppInBackground = true
@@ -44,6 +49,10 @@ internal object InAppNotification {
         override fun onAppMovedToBackground(activity: Activity) {
             CastledSharedStore.isAppInBackground = false
         }
+
+        override fun onActivityDestroyed(activity: Activity) {
+            inAppController.dismissDialogIfAny()
+        }
     }
 
     fun init(application: Application, externalScope: CoroutineScope) {
@@ -56,6 +65,10 @@ internal object InAppNotification {
         )
         // observeAppLifecycle(application)
         enabled = true
+        CastledSharedStore.getUserId()?.let {
+            startCampaignJob()
+        }
+
     }
 
     fun startCampaignJob() {
@@ -64,7 +77,7 @@ internal object InAppNotification {
             return
         }
         if (fetchJob == null || !fetchJob!!.isActive) {
-            externalScope.launch(Default) {
+            fetchJob = externalScope.launch(Default) {
                 do {
                     inAppController.refreshLiveCampaigns()
                     delay(TimeUnit.SECONDS.toMillis(CastledSharedStore.configs.inAppFetchIntervalSec))

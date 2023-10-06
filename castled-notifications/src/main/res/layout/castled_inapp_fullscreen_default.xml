@@ -10,50 +10,56 @@
         android:id="@+id/castled_inapp_fs_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/castled_inapp_container_light"
         android:padding="0.0dp">
 
-        <RelativeLayout
+        <ImageView
+            android:id="@+id/castled_inapp_fs_img"
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            android:layout_width="match_parent" />
+
+
+        <LinearLayout
+            android:layout_below="@+id/castled_inapp_fs_img"
+            android:layout_above="@+id/castled_inapp_fs_btn_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/castled_inapp_fs_img"
-                style="@style/Castled.InApp.Image.FullScreen"
-                android:layout_above="@id/castled_inapp_fs_text_container" />
+            <TextView
+                android:id="@+id/castled_inapp_fs_title"
+                style="@style/Castled.InApp.Text.Title"
+                android:includeFontPadding="false"
+                android:background="@android:color/transparent"
+                tools:text="" />
 
-            <LinearLayout
-                android:id="@+id/castled_inapp_fs_text_container"
-                style="@style/Castled.InApp.FullScreen.Layout"
-                android:layout_alignParentBottom="true">
+            <TextView
+                android:id="@+id/castled_inapp_fs_message"
+                style="@style/Castled.InApp.Text.Body"
+                android:includeFontPadding="false"
+                tools:text="" />
 
-                <TextView
-                    android:id="@+id/castled_inapp_fs_title"
-                    style="@style/Castled.InApp.Title"
-                    tools:text="Title Text" />
+        </LinearLayout>
 
-                <TextView
-                    android:id="@+id/castled_inapp_fs_message"
-                    style="@style/Castled.InApp.Message.FullScreen"
-                    tools:text="Message Text" />
+        <LinearLayout
+            android:id="@+id/castled_inapp_fs_btn_container"
+            android:layout_alignParentBottom="true"
+            style="@style/Castled.InApp.Modal.Layout.Buttons"
+            android:layout_marginBottom="@dimen/inapp_common_padding">
 
-                <LinearLayout
-                    android:id="@+id/castled_inapp_fs_btn_container"
-                    style="@style/Castled.InApp.FullScreen.Layout.Buttons">
+            <TextView
+                android:id="@+id/castled_inapp_fs_btn_secondary"
+                style="@style/Castled.InApp.ActionButtons"
+                android:layout_marginHorizontal="@dimen/inapp_margin_horizontal"
+                android:paddingHorizontal="@dimen/inapp_margin_horizontal"></TextView>
 
-                    <Button
-                        android:id="@+id/castled_inapp_fs_btn_secondary"
-                        style="@style/Castled.InApp.Buttons.DualButtons.Secondary"
-                        tools:text="Second Button" />
+            <TextView
+                android:id="@+id/castled_inapp_fs_btn_primary"
+                style="@style/Castled.InApp.ActionButtons"
+                android:paddingHorizontal="@dimen/inapp_margin_horizontal"
+                android:layout_marginEnd="@dimen/inapp_margin_horizontal"></TextView>
 
-                    <Button
-                        android:id="@+id/castled_inapp_fs_btn_primary"
-                        style="@style/Castled.InApp.Buttons.DualButtons.Primary"
-                        tools:text="Primary Button" />
-
-                </LinearLayout>
-            </LinearLayout>
-        </RelativeLayout>
+        </LinearLayout>
 
         <ImageButton
             android:id="@+id/castled_inapp_fs_close_btn"

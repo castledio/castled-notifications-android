@@ -20,11 +20,13 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.snackbar.Snackbar;
 
 import io.castled.android.demoapp.databinding.ActivityMainBinding;
+import io.castled.android.demoapp.databinding.ContentMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
+    private ContentMainBinding bindingContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +34,9 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         setSupportActionBar(binding.toolbar);
+        // bindingContent = ContentMainBinding.inflate(getLayoutInflater());
+
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
@@ -49,7 +52,40 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
         }
         createNotificationChannels();
+      /*  CastledNotifications.getInboxUnreadCount(count -> {
+            // Handle the result in Java
+            System.out.println("unread Inbox Count: " + count);
+            return null;
+        });
+
+        CastledNotifications.getInboxItems((List<CastledInboxItem> itemsList) -> {
+
+            for (CastledInboxItem item : itemsList) {
+                System.out.println("Item ID: " + item);
+                System.out.println("Item Name: " + item.getTitle());
+            }
+            CastledNotifications.logInboxItemsRead(itemsList);
+            CastledInboxItem itemToDelete = itemsList.get(itemsList.size() - 1);
+            CastledNotifications.logInboxItemClicked(itemToDelete, "");
+            CastledNotifications.deleteInboxItem(itemToDelete, new kotlin.jvm.functions.Function2<Boolean, String, Unit>() {
+                @Override
+                public Unit invoke(Boolean success, String message) {
+                    // Handle the success and message here
+                    if (success) {
+                        System.out.println("Item deleted: " + message);
+                    } else {
+                        System.out.println("Error: " + message);
+                    }
+                    return null;
+                }
+            });
+
+
+            return null;
+        });*/
+
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -18,7 +18,7 @@
     </padding>-->
 
     <corners
-        android:radius="4dp"   >
+        android:radius="@dimen/inapp_corner_radius"   >
     </corners>
 
 </shape>

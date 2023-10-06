@@ -1,35 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <io.castled.android.notifications.inapp.views.InAppWebViewLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/castled_inapp_modal_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="0dp">
-
-    <androidx.cardview.widget.CardView
+    
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <io.castled.android.notifications.inapp.views.InAppConstrainedLayout
-            android:id="@+id/castled_inapp_html_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="0.0dp">
-
-            <WebView
-                android:id="@+id/castled_inapp_webview"
-                style="@style/Castled.InApp.WebView.FullScreen"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true" />
-
-            <ImageButton
-                android:id="@+id/castled_inapp_html_close_btn"
-                style="@style/Castled.InApp.CloseImageButton.Modal" />
-
-        </io.castled.android.notifications.inapp.views.InAppConstrainedLayout>
-    </androidx.cardview.widget.CardView>
-
+        android:layout_height="match_parent"
+        android:id="@+id/castled_inapp_html_container"
+        android:gravity="center">
+        
+        <WebView
+        android:id="@+id/castled_inapp_webview"
+        style="@style/Castled.InApp.WebView.FullScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" />
+        
+        <ImageButton
+        android:id="@+id/castled_inapp_html_close_btn"
+        style="@style/Castled.InApp.CloseImageButton.FullScreen"
+        android:layout_gravity="top|end"
+        android:layout_alignParentTop="true" />
+        
+    </RelativeLayout>
+    
+    
 </io.castled.android.notifications.inapp.views.InAppWebViewLayout>

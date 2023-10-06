@@ -16,7 +16,8 @@ class MyApplicationClass : MultiDexApplication() {
             this,
             CastledConfigs.Builder().appId("718c38e2e359d94367a2e0d35e1fd4df")
                 .location(CastledConfigs.CastledLocation.US).enablePush(true).enableInApp(true)
-                .enableTracking(true).inAppFetchIntervalSec(10).xiaomiAppId("2882303761521565034")
+                .enableAppInbox(true).enableTracking(true).inAppFetchIntervalSec(10)
+                .xiaomiAppId("2882303761521565034")
                 .xiaomiAppKey("5382156577034").build()
         )
         CastledNotifications.setUserId(this, "antony@castled.io")

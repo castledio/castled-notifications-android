@@ -57,6 +57,10 @@ internal object CastledSharedStore {
 
     }
 
+    fun setPushToken(fcmToken: String?, tokenType: PushTokenType) {
+        setToken(fcmToken, tokenType)
+    }
+
     fun setToken(fcmToken: String?, tokenType: PushTokenType) {
         tokens[tokenType] = fcmToken
         when (tokenType) {

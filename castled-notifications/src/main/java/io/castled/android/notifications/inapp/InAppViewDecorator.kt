@@ -8,6 +8,8 @@ import android.util.Base64
 import android.view.Gravity
 import android.view.Window
 import android.view.WindowManager
+import io.castled.android.notifications.R
+import io.castled.android.notifications.commons.CastledUtils
 import io.castled.android.notifications.inapp.js.JavaScriptInterface
 import io.castled.android.notifications.inapp.models.InAppMessageType
 import io.castled.android.notifications.inapp.views.InAppBaseViewLayout
@@ -36,7 +38,7 @@ internal class InAppViewDecorator(
             if (inAppViewLayout.webView == null) {
                 addListenerClickCallbacks()
             } else {
-                loadJSInterface()
+                inAppViewLayout.webView?.let { loadJSInterface() }
             }
         }
 
@@ -110,17 +112,22 @@ internal class InAppViewDecorator(
         }
     }
 
-    override fun show() {
+    override fun show(withApiCall: Boolean) {
         if (inAppViewLayout == null) {
             return
         }
         when (InAppMessageUtils.getMessageType(inAppMessage.message)) {
             InAppMessageType.MODAL -> dialog.apply {
-                window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                window?.setGravity(Gravity.CENTER)
+
                 requestWindowFeature(Window.FEATURE_NO_TITLE)
                 setCancelable(false)
                 setContentView(inAppViewLayout)
+                window?.setGravity(Gravity.CENTER)
+                window?.setLayout(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT
+                )
+                setupModalContainer()
                 show()
             }
 
@@ -148,17 +155,76 @@ internal class InAppViewDecorator(
                     WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.WRAP_CONTENT
                 )
+                window?.setFlags(
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                )
+
                 show()
+
             }
         }
         // TODO: Handle auto dismiss
-        inAppViewLifecycleListener.onDisplayed(inAppMessage)
+        if (withApiCall) {
+            inAppViewLifecycleListener.onDisplayed(inAppMessage)
+        }
     }
 
     override fun close() {
-        dialog.dismiss()
+        dismissDialog()
         inAppViewLifecycleListener.onClosed(inAppMessage)
     }
 
+    internal fun dismissDialog() {
+        if (dialog != null && dialog.isShowing) {
+            dialog.dismiss()
+        }
+    }
+
+    private fun parseColor(colorStr: String, defaultColor: Int): Int {
+        return try {
+            Color.parseColor(colorStr)
+        } catch (e: IllegalArgumentException) {
+            defaultColor
+        }
+    }
+
+    private fun setupModalContainer() {
+
+        val modalParams = inAppMessage.message["modal"]?.jsonObject
+        dialog.window?.setBackgroundDrawable(
+            ColorDrawable(Color.TRANSPARENT)
+        )
+        modalParams?.let {
+            val headerViewParams = InAppViewUtils.getHeaderViewParams(modalParams)
+            headerViewParams.let {
+                try {
+                    dialog.window?.setBackgroundDrawable(
+                        ColorDrawable(
+                            parseColor(
+                                headerViewParams.screenOverlayColor,
+                                Color.TRANSPARENT
+                            )
+                        )
+                    )
+                } catch (e: Exception) {
+
+                }
+
+            }
+            val dialogueSize =
+                context.resources.getString(R.string.castled_inapp_dialouge_size).toFloat()
+            val screenSize = CastledUtils.getScreenSize(context)
+            val layoutParams = inAppViewLayout!!.layoutParams
+            layoutParams.width = (screenSize.x * dialogueSize).toInt()
+            layoutParams.height = (screenSize.y * dialogueSize).toInt()
+            inAppViewLayout.layoutParams = layoutParams
+            inAppViewLayout.x = (screenSize.x / 2 - layoutParams.width / 2).toFloat()
+            inAppViewLayout.y =
+                (screenSize.y / 2 - layoutParams.height / 2 - CastledUtils.getStatusBarHeight(
+                    context
+                ) / 2).toFloat()
+        }
+    }
 }
 

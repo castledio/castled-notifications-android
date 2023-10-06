@@ -14,6 +14,8 @@ object Versions {
     // Retrofit
     const val retrofit = "2.9.0"
 
+    const val material = "1.9.0"
+
     // Firebase Messaging
     const val firebase = "23.1.1"
 
@@ -34,6 +36,15 @@ object Versions {
 
     //Card View
     const val cardView = "1.0.0"
+
+    //Recycle View
+    const val recycleView = "1.3.1"
+
+    //MVVM
+    const val mvvmLifecycleExtensions = "2.2.0"
+    const val mvvmLifecycleCommon = "2.5.1"
+    const val mvvmLifecycleViewmodel = "2.5.1"
+    const val mvvmActivity = "1.6.1"
 }
 
 object Libs {
@@ -62,6 +73,7 @@ object Libs {
     // Retrofit
     const val converterGson = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
+    const val material = "com.google.android.material:material:${Versions.material}"
 
     // Glide
     const val glide = "com.github.bumptech.glide:glide:${Versions.glide}"
@@ -81,4 +93,13 @@ object Libs {
 
     // cardView
     const val cardView = "androidx.cardview:cardview:${Versions.cardView}"
+
+    //recycleView
+    const val recycleView = "androidx.recyclerview:recyclerview:${Versions.recycleView}"
+
+    //MVVM
+    const val mvvmLifecycleExtensions = "androidx.lifecycle:lifecycle-extensions:${Versions.mvvmLifecycleExtensions}"
+    const val mvvmLifecycleCommon = "androidx.lifecycle:lifecycle-common-java8:${Versions.mvvmLifecycleCommon}"
+    const val mvvmLifecycleViewmodel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.mvvmLifecycleViewmodel}"
+    const val mvvmActivity = "androidx.activity:activity-ktx:${Versions.mvvmActivity}"
 }

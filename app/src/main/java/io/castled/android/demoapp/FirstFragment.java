@@ -9,7 +9,12 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import java.util.List;
+
 import io.castled.android.demoapp.databinding.FragmentFirstBinding;
+import io.castled.android.notifications.CastledNotifications;
+import io.castled.android.notifications.inbox.model.CastledInboxDisplayConfig;
+import io.castled.android.notifications.inbox.model.CastledInboxItem;
 
 public class FirstFragment extends Fragment {
 
@@ -29,9 +34,29 @@ public class FirstFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        CastledNotifications.getInboxItems((List<CastledInboxItem> items) -> {
+            // Handle the fetched items here
+            for (CastledInboxItem item : items) {
+                // Your code to handle each item
+
+            }
+            return null;
+        });
 
         binding.buttonFirst.setOnClickListener(view1 -> NavHostFragment.findNavController(FirstFragment.this)
                 .navigate(R.id.action_FirstFragment_to_SecondFragment));
+        binding.btnInbox.setOnClickListener(btnInbox -> {
+            CastledInboxDisplayConfig styleConfig = new CastledInboxDisplayConfig();
+            styleConfig.setEmptyMessageViewText("There are no inbox items");
+            styleConfig.setEmptyMessageViewTextColor("#000000");
+            styleConfig.setInboxViewBackgroundColor("#FFFFFF");
+            styleConfig.setNavigationBarBackgroundColor("#0000FF");
+            styleConfig.setNavigationBarTitleColor("#FFFFFF");
+            styleConfig.setNavigationBarTitle("Castled Inbox");
+            styleConfig.setHideNavigationBar(false);
+            CastledNotifications.showAppInbox(view.getContext(), styleConfig);
+        });
+
         
         /*
 

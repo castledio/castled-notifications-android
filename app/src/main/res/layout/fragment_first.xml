@@ -105,6 +105,18 @@
             android:text="Db Event"
             android:textAllCaps="false" />
 
+        <Button
+            android:id="@+id/btn_inbox"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="Inbox"
+            android:textAllCaps="false" />
+
     </LinearLayout>
 
 

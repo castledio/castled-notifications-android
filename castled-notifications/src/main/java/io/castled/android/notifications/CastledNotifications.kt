@@ -3,10 +3,15 @@ package io.castled.android.notifications
 import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.os.Process
 import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.inapp.InAppNotification
 import io.castled.android.notifications.inapp.models.consts.AppEvents
+import io.castled.android.notifications.inbox.AppInbox
+import io.castled.android.notifications.inbox.model.CastledInboxDisplayConfig
+import io.castled.android.notifications.inbox.model.CastledInboxItem
+import io.castled.android.notifications.inbox.views.CastledInboxActivity
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.network.CastledRetrofitClient
@@ -55,6 +60,9 @@ object CastledNotifications {
         }
         if (configs.enableTracking) {
             TrackEvents.init(application)
+        }
+        if (configs.enableAppInbox) {
+            AppInbox.init(application, castledScope)
         }
         appId = configs.appId
         logger.info("Sdk initialized successfully")
@@ -106,8 +114,11 @@ object CastledNotifications {
                 PushNotification.registerUser(userId)
             }
             InAppNotification.startCampaignJob()
+            AppInbox.startInboxJob()
+
         }
     }
+
 
     @JvmStatic
     fun onTokenFetch(token: String?, pushTokenType: PushTokenType) =
@@ -165,6 +176,61 @@ object CastledNotifications {
     fun isCastledPushMessage(remoteMessage: RemoteMessage): Boolean {
         return PushNotification.isCastledPushMessage(remoteMessage)
     }
+
+    @JvmStatic
+    fun showAppInbox(context: Context, displayConfig: CastledInboxDisplayConfig? = null) =
+        castledScope.launch(Dispatchers.Default) {
+            if (isInited() && getCastledConfigs().enableAppInbox) {
+                val intent = Intent(context, CastledInboxActivity::class.java)
+                displayConfig?.let { intent.putExtra("displayConfig", displayConfig) }
+                context.startActivity(intent)
+
+            } else {
+                logger.verbose("enableAppInbox while initializing the sdk")
+
+            }
+        }
+
+    @JvmStatic
+    fun getInboxItems(completion: (List<CastledInboxItem>) -> Unit) =
+        castledScope.launch(Dispatchers.Default) {
+            completion(
+                if (isInited() && getCastledConfigs().enableAppInbox)
+                    AppInbox.getInboxItems()
+                else listOf()
+            )
+        }
+
+    @JvmStatic
+    fun logInboxItemClicked(inboxItem: CastledInboxItem, buttonTitle: String) =
+        castledScope.launch(Dispatchers.Default) {
+            AppInbox.reportEventWith(
+                inboxItem, buttonTitle ?: "", "CLICKED"
+            )
+        }
+
+    @JvmStatic
+    fun logInboxItemsRead(inboxItems: List<CastledInboxItem>) =
+        castledScope.launch(Dispatchers.Default) {
+            AppInbox.reportReadEventsWithItems(inboxItems)
+        }
+
+    @JvmStatic
+    fun deleteInboxItem(
+        inboxItem: CastledInboxItem, completion: (Boolean, String) -> Unit
+    ) {
+        AppInbox.deleteInboxItem(inboxItem) { success, message ->
+            completion(success, message)
+        }
+    }
+
+    @JvmStatic
+    fun getInboxUnreadCount(completion: (Int) -> Unit) =
+        castledScope.launch(Dispatchers.Default) {
+            completion(
+                AppInbox.getInboxUnreadCount()
+            )
+        }
 
     fun getCastledConfigs() = CastledSharedStore.configs
 

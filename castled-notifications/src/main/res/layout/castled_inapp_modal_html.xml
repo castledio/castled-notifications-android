@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<io.castled.android.notifications.inapp.views.InAppWebViewLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<io.castled.android.notifications.inapp.views.InAppWebViewLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/castled_inapp_modal_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="0dp">
 
-    <androidx.cardview.widget.CardView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginVertical="@dimen/inapp_html_vertical_margin"
-        app:cardCornerRadius="@dimen/inapp_corner_radius">
+        android:id="@+id/castled_inapp_html_container"
+        android:gravity="center">
 
-        <io.castled.android.notifications.inapp.views.InAppConstrainedLayout
-            android:id="@+id/castled_inapp_html_container"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="0.0dp">
+            android:layout_marginVertical="@dimen/inapp_html_vertical_margin"
+            app:cardElevation="@dimen/inapp_card_shadow"
+            app:cardCornerRadius="@dimen/inapp_corner_radius">
 
             <WebView
                 android:id="@+id/castled_inapp_webview"
@@ -29,9 +30,12 @@
 
             <ImageButton
                 android:id="@+id/castled_inapp_html_close_btn"
-                style="@style/Castled.InApp.CloseImageButton.Modal" />
+                style="@style/Castled.InApp.CloseImageButton.Modal"
+                android:layout_gravity="top|end"
+                android:layout_alignParentTop="true" />
+        </androidx.cardview.widget.CardView>
 
-        </io.castled.android.notifications.inapp.views.InAppConstrainedLayout>
-    </androidx.cardview.widget.CardView>
+    </RelativeLayout>
+
 
 </io.castled.android.notifications.inapp.views.InAppWebViewLayout>

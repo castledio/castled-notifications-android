@@ -7,7 +7,10 @@ data class CastledConfigs(
     val enablePush: Boolean,
     val enableInApp: Boolean,
     val enableTracking: Boolean,
+    val enableAppInbox: Boolean,
     val inAppFetchIntervalSec: Long,
+    val inBoxFetchIntervalSec: Long,
+
     val xiaomiAppId: String?,
     val xiaomiAppKey: String?,
     val enableUserIdEncryption: Boolean
@@ -15,11 +18,14 @@ data class CastledConfigs(
     class Builder {
         private lateinit var apiKey: String
         private lateinit var appId: String
-        private var enablePush: Boolean = true
-        private var enableInApp: Boolean = true
-        private var enableTracking: Boolean = true
+        private var enablePush: Boolean = false
+        private var enableInApp: Boolean = false
+        private var enableTracking: Boolean = false
+        private var enableAppInbox: Boolean = false
 
         private var inAppFetchIntervalSec = 3600L
+        private var inBoxFetchIntervalSec = 3600L
+
         private var castledLocation = CastledLocation.US
         private var xiaomiAppId: String? = null
         private var xiaomiAppKey: String? = null
@@ -37,10 +43,14 @@ data class CastledConfigs(
 
         fun enablePush(enablePush: Boolean) = apply { this.enablePush = enablePush }
         fun enableTracking(enableTracking: Boolean) = apply { this.enableTracking = enableTracking }
-
         fun enableInApp(enableInApp: Boolean) = apply { this.enableInApp = enableInApp }
+        fun enableAppInbox(enableAppInbox: Boolean) = apply { this.enableAppInbox = enableAppInbox }
+
         fun inAppFetchIntervalSec(inAppFetchIntervalSec: Long) =
             apply { this.inAppFetchIntervalSec = inAppFetchIntervalSec }
+
+        fun inBoxFetchIntervalSec(inBoxFetchIntervalSec: Long) =
+            apply { this.inBoxFetchIntervalSec = inBoxFetchIntervalSec }
 
         fun location(castledLocation: CastledLocation) =
             apply { this.castledLocation = castledLocation }
@@ -57,7 +67,9 @@ data class CastledConfigs(
             enablePush,
             enableInApp,
             enableTracking,
+            enableAppInbox,
             inAppFetchIntervalSec,
+            inBoxFetchIntervalSec,
             xiaomiAppId,
             xiaomiAppKey,
             enableUserIdEncryption
