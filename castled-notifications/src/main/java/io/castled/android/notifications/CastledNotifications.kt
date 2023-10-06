@@ -91,7 +91,6 @@ object CastledNotifications {
             saveUserId(context, userId, userToken)
         } catch (e: Exception) {
             logger.verbose("skipping userId set. $e")
-
         }
     }
 
@@ -116,7 +115,6 @@ object CastledNotifications {
             }
             InAppNotification.startCampaignJob()
             AppInbox.startInboxJob()
-
 
         }
     }
@@ -154,19 +152,19 @@ object CastledNotifications {
     }
 
     @JvmStatic
-    fun logCustomAppEvent(context: Context, eventName: String, eventParams: Map<String, Any>?) =
+    fun logCustomAppEvent(context: Context, eventName: String, eventParams: Map<String, Any>? = null) =
         castledScope.launch(Dispatchers.Default) {
             if (isInited()) {
                 InAppNotification.logAppEvent(context, eventName, eventParams)
-                TrackEvents.reportEventWith(eventName, eventParams)
+                TrackEvents.logCustomEvent(eventName, eventParams)
             }
         }
 
     @JvmStatic
-    fun setUserProfile(details: Map<String, Any>) =
+    fun setUserAttributes(context: Context, attributes: CastledUserAttributes) =
         castledScope.launch(Dispatchers.Default) {
             if (isInited()) {
-                TrackEvents.reportUserTrackingEventWith(details)
+                TrackEvents.logUserTrackingEvent(attributes)
             }
         }
 
@@ -174,7 +172,6 @@ object CastledNotifications {
         castledScope.launch(Dispatchers.Default) {
             PushNotification.handlePushNotification(context, pushMessage)
         }
-
 
     fun isCastledPushMessage(remoteMessage: RemoteMessage): Boolean {
         return PushNotification.isCastledPushMessage(remoteMessage)

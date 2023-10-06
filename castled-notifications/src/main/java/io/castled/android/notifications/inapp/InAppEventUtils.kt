@@ -1,12 +1,9 @@
 package io.castled.android.notifications.inapp
 
 import io.castled.android.notifications.commons.ClickActionParams
-import io.castled.android.notifications.inapp.views.ButtonViewParams
 import io.castled.android.notifications.store.models.Campaign
 import io.castled.android.notifications.workmanager.models.CastledInAppEvent
 import io.castled.android.notifications.workmanager.models.CastledInAppEventRequest
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
 import java.util.*
 
 internal object InAppEventUtils {

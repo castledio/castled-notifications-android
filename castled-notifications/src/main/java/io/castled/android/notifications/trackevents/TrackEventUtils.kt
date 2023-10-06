@@ -2,11 +2,11 @@ package io.castled.android.notifications.trackevents
 
 import io.castled.android.notifications.commons.DateTimeUtils
 import io.castled.android.notifications.store.CastledSharedStore
+import io.castled.android.notifications.trackevents.extensions.toJsonElement
 import io.castled.android.notifications.workmanager.models.CastledTrackEvent
 import io.castled.android.notifications.workmanager.models.CastledTrackEventRequest
 import io.castled.android.notifications.workmanager.models.CastledUserTrackingEventRequest
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
 
 internal object TrackEventUtils {
 
@@ -19,13 +19,13 @@ internal object TrackEventUtils {
             userId = CastledSharedStore.getUserId() ?: "",
             event = eventName,
             properties = JsonObject(properties.map { (key, value) ->
-                key to JsonPrimitive(value.toString())
+                key to value.toJsonElement()
             }.toMap()),
             timestamp = DateTimeUtils.getCurrentTimeFormatted()
         )
         return CastledTrackEventRequest(listOf(event))
     }
-    
+
     fun getUserEvent(
         traits: Map<String, Any>
     ): CastledUserTrackingEventRequest {
@@ -33,11 +33,11 @@ internal object TrackEventUtils {
         val event = CastledUserTrackingEventRequest(
             userId = CastledSharedStore.getUserId() ?: "",
             traits = JsonObject(traits.map { (key, value) ->
-                key to JsonPrimitive(value.toString())
+                key to value.toJsonElement()
             }.toMap()),
             timestamp = DateTimeUtils.getCurrentTimeFormatted()
         )
-
         return event
     }
+
 }
