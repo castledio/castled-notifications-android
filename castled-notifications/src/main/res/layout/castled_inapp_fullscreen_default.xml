@@ -30,14 +30,14 @@
                 android:id="@+id/castled_inapp_fs_title"
                 style="@style/Castled.InApp.Text.Title"
                 android:includeFontPadding="false"
-                android:background="@android:color/holo_orange_dark"
-                tools:text="Title TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle TextTitle Text" />
+                android:background="@android:color/transparent"
+                tools:text="" />
 
             <TextView
                 android:id="@+id/castled_inapp_fs_message"
                 style="@style/Castled.InApp.Text.Body"
                 android:includeFontPadding="false"
-                tools:text="Body TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody Body TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextTextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody TextBody Text" />
+                tools:text="" />
 
         </LinearLayout>
 

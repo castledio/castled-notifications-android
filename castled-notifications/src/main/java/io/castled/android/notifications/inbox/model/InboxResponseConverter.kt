@@ -1,11 +1,11 @@
 package io.castled.android.notifications.inbox.model
 
-import io.castled.android.notifications.store.models.AppInbox
+import io.castled.android.notifications.store.models.Inbox
 
 internal object InboxResponseConverter {
 
-    fun CastledInboxItem.toInbox(): AppInbox {
-        return AppInbox(
+    fun CastledInboxItem.toInbox(): Inbox {
+        return Inbox(
             messageId = this.messageId,
             teamId = this.teamId,
             sourceContext = this.sourceContext,
@@ -26,7 +26,7 @@ internal object InboxResponseConverter {
         )
     }
 
-    fun AppInbox.toInboxItem(): CastledInboxItem {
+    fun Inbox.toInboxItem(): CastledInboxItem {
 
         return CastledInboxItem(
             messageId = this.messageId,

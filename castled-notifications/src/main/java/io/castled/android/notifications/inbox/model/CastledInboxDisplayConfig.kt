@@ -2,7 +2,7 @@ package io.castled.android.notifications.inbox.model
 
 import java.io.Serializable
 
-class CastledInboxConfig : Serializable {
+class CastledInboxDisplayConfig : Serializable {
     var emptyMessageViewText: String = "We have no updates. Please check again later."
     var emptyMessageViewTextColor: String = "#000000"
     var inboxViewBackgroundColor: String = "#ffffff"

@@ -1,7 +1,7 @@
 package io.castled.android.notifications.inbox
 
 import io.castled.android.notifications.inbox.model.CastledInboxItem
-import io.castled.android.notifications.store.models.AppInbox
+import io.castled.android.notifications.store.models.Inbox
 import io.castled.android.notifications.workmanager.models.CastledInboxEvent
 import io.castled.android.notifications.workmanager.models.CastledInboxEventRequest
 import java.util.TimeZone
@@ -23,7 +23,7 @@ internal object InboxEventUtils {
     }
 
     fun getReadInboxEventRequest(
-        inboxItems: Set<AppInbox>
+        inboxItems: Set<Inbox>
     ): CastledInboxEventRequest {
         val batchedEvents = mutableListOf<CastledInboxEvent>()
 

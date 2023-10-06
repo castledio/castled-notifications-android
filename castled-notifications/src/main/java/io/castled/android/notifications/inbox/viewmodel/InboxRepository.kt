@@ -10,7 +10,7 @@ import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.network.CastledRetrofitClient
 import io.castled.android.notifications.store.CastledDbBuilder
 import io.castled.android.notifications.store.CastledSharedStore
-import io.castled.android.notifications.store.models.AppInbox
+import io.castled.android.notifications.store.models.Inbox
 import io.castled.android.notifications.workmanager.CastledNetworkWorkManager
 import io.castled.android.notifications.workmanager.models.CastledInboxEventRequest
 import retrofit2.Response
@@ -22,7 +22,7 @@ internal class InboxRepository(context: Context) {
     private val logger = CastledLogger.getInstance(LogTags.INBOX_REPOSITORY)
     private val inboxApi = CastledRetrofitClient.create(InboxApi::class.java)
     private val networkWorkManager = CastledNetworkWorkManager.getInstance(context)
-    internal val cachedInboxItems = mutableListOf<AppInbox>()
+    internal val cachedInboxItems = mutableListOf<Inbox>()
     internal suspend fun refreshInbox() {
         val liveInboxResponse = fetchLiveInbox() ?: return
         val liveInboxItems = liveInboxResponse.map { it.toInbox() }
@@ -36,15 +36,15 @@ internal class InboxRepository(context: Context) {
         deleteDbInbox(expiredInboxItems)
     }
 
-    private suspend fun insertInboxIntoDb(inboxItems: List<AppInbox>): LongArray {
+    private suspend fun insertInboxIntoDb(inboxItems: List<Inbox>): LongArray {
         return inboxDao.dbInsertInbox(inboxItems)
     }
 
-    private suspend fun deleteDbInbox(inboxItems: List<AppInbox>): Int {
+    private suspend fun deleteDbInbox(inboxItems: List<Inbox>): Int {
         return inboxDao.dbDeleteAllInboxItems(inboxItems)
     }
 
-    internal fun deleteInboxItem(inbox: AppInbox) {
+    internal fun deleteInboxItem(inbox: Inbox) {
         inboxDao.delete(inbox)
     }
 
@@ -104,7 +104,7 @@ internal class InboxRepository(context: Context) {
 
     }
 
-    internal fun observeInboxLiveData(): LiveData<List<AppInbox>> {
+    internal fun observeInboxLiveData(): LiveData<List<Inbox>> {
         return inboxDao.getInboxItems()
     }
 
@@ -120,16 +120,15 @@ internal class InboxRepository(context: Context) {
         return inboxApi.reportInboxEvent(CastledSharedStore.getAppId(), request)
     }
 
-    internal fun changeTheStatusToRead(inboxItems: Set<AppInbox>) {
+    internal fun changeTheStatusToRead(inboxItems: Set<Inbox>) {
         try {
             inboxItems.forEach {
-                it.isRead = false
+                it.isRead = true
                 inboxDao.updateInboxItem(it)
             }
         } catch (e: Exception) {
             // Handle any exceptions that may occur during database operations
-            e.printStackTrace()
-            // You can also log the exception or show an error message to the user
+            logger.error("Unknown error!", e)
         }
 
     }

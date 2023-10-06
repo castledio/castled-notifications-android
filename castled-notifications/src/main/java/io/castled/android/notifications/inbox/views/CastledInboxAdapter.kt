@@ -18,7 +18,7 @@ import io.castled.android.notifications.commons.ColorUtils
 import io.castled.android.notifications.commons.DateTimeUtils
 import io.castled.android.notifications.databinding.CastledInboxCellBinding
 import io.castled.android.notifications.inbox.model.InboxMessageType
-import io.castled.android.notifications.store.models.AppInbox
+import io.castled.android.notifications.store.models.Inbox
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
@@ -28,7 +28,7 @@ import kotlinx.serialization.json.jsonPrimitive
 class CastledInboxAdapter(val context: Context) :
     RecyclerView.Adapter<CastledInboxAdapter.ViewHolder>() {
     // DAO instance to interact with the database
-    internal var inboxItemsList = ArrayList<AppInbox>()
+    internal var inboxItemsList = ArrayList<Inbox>()
     private var screenWidth = getScreenWidth()
 
     // Inner ViewHolder class
@@ -131,7 +131,7 @@ class CastledInboxAdapter(val context: Context) :
         }
     }
 
-    internal fun setInboxItems(inboxItems: List<AppInbox>) {
+    internal fun setInboxItems(inboxItems: List<Inbox>) {
         inboxItemsList.clear()
         inboxItemsList.addAll(inboxItems)
         reloadRecyclerView()
@@ -157,7 +157,7 @@ class CastledInboxAdapter(val context: Context) :
         }
     }
 
-    private fun populateLinks(holder: ViewHolder, inbox: AppInbox) {
+    private fun populateLinks(holder: ViewHolder, inbox: Inbox) {
         val actionButtons = inbox.message["actionButtons"] as? JsonArray
         val linksContainer = holder.binding.linkContainer
         val linksLayout = holder.binding.linkParentLayout
@@ -209,7 +209,7 @@ class CastledInboxAdapter(val context: Context) :
         }
     }
 
-    private fun customizeViews(holder: ViewHolder, inbox: AppInbox) {
+    private fun customizeViews(holder: ViewHolder, inbox: Inbox) {
         holder.binding.cardContainer.setCardBackgroundColor(
 
             ColorUtils.parseColor(

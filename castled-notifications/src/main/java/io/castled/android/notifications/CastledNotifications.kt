@@ -8,8 +8,8 @@ import android.os.Process
 import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.inapp.InAppNotification
 import io.castled.android.notifications.inapp.models.consts.AppEvents
-import io.castled.android.notifications.inbox.AppInboxHelper
-import io.castled.android.notifications.inbox.model.CastledInboxConfig
+import io.castled.android.notifications.inbox.AppInbox
+import io.castled.android.notifications.inbox.model.CastledInboxDisplayConfig
 import io.castled.android.notifications.inbox.model.CastledInboxItem
 import io.castled.android.notifications.inbox.views.CastledInboxActivity
 import io.castled.android.notifications.logger.CastledLogger
@@ -62,7 +62,7 @@ object CastledNotifications {
             TrackEvents.init(application)
         }
         if (configs.enableAppInbox) {
-            AppInboxHelper.init(application, castledScope)
+            AppInbox.init(application, castledScope)
         }
         appId = configs.appId
         logger.info("Sdk initialized successfully")
@@ -115,7 +115,7 @@ object CastledNotifications {
                 PushNotification.registerUser(userId)
             }
             InAppNotification.startCampaignJob()
-            AppInboxHelper.startInboxJob()
+            AppInbox.startInboxJob()
 
 
         }
@@ -181,7 +181,7 @@ object CastledNotifications {
     }
 
     @JvmStatic
-    fun showAppInbox(context: Context, displayConfig: CastledInboxConfig? = null) =
+    fun showAppInbox(context: Context, displayConfig: CastledInboxDisplayConfig? = null) =
         castledScope.launch(Dispatchers.Default) {
             if (isInited() && getCastledConfigs().enableAppInbox) {
                 val intent = Intent(context, CastledInboxActivity::class.java)
@@ -199,7 +199,7 @@ object CastledNotifications {
         castledScope.launch(Dispatchers.Default) {
             completion(
                 if (isInited() && getCastledConfigs().enableAppInbox)
-                    AppInboxHelper.getInboxItems()
+                    AppInbox.getInboxItems()
                 else listOf()
             )
         }
@@ -207,7 +207,7 @@ object CastledNotifications {
     @JvmStatic
     fun logInboxItemClicked(inboxItem: CastledInboxItem, buttonTitle: String) =
         castledScope.launch(Dispatchers.Default) {
-            AppInboxHelper.reportEventWith(
+            AppInbox.reportEventWith(
                 inboxItem, buttonTitle ?: "", "CLICKED"
             )
         }
@@ -215,14 +215,14 @@ object CastledNotifications {
     @JvmStatic
     fun logInboxItemsRead(inboxItems: List<CastledInboxItem>) =
         castledScope.launch(Dispatchers.Default) {
-            AppInboxHelper.reportReadEventsWithItems(inboxItems)
+            AppInbox.reportReadEventsWithItems(inboxItems)
         }
 
     @JvmStatic
     fun deleteInboxItem(
         inboxItem: CastledInboxItem, completion: (Boolean, String) -> Unit
     ) {
-        AppInboxHelper.deleteInboxItem(inboxItem) { success, message ->
+        AppInbox.deleteInboxItem(inboxItem) { success, message ->
             completion(success, message)
         }
     }

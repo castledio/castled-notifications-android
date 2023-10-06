@@ -13,7 +13,7 @@ import java.util.List;
 
 import io.castled.android.demoapp.databinding.FragmentFirstBinding;
 import io.castled.android.notifications.CastledNotifications;
-import io.castled.android.notifications.inbox.model.CastledInboxConfig;
+import io.castled.android.notifications.inbox.model.CastledInboxDisplayConfig;
 import io.castled.android.notifications.inbox.model.CastledInboxItem;
 
 public class FirstFragment extends Fragment {
@@ -46,7 +46,7 @@ public class FirstFragment extends Fragment {
         binding.buttonFirst.setOnClickListener(view1 -> NavHostFragment.findNavController(FirstFragment.this)
                 .navigate(R.id.action_FirstFragment_to_SecondFragment));
         binding.btnInbox.setOnClickListener(btnInbox -> {
-            CastledInboxConfig styleConfig = new CastledInboxConfig();
+            CastledInboxDisplayConfig styleConfig = new CastledInboxDisplayConfig();
             styleConfig.setEmptyMessageViewText("There are no inbox items");
             styleConfig.setEmptyMessageViewTextColor("#000000");
             styleConfig.setInboxViewBackgroundColor("#FFFFFF");

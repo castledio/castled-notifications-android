@@ -25,12 +25,15 @@ data class CastledInboxItem(
 
     val aspectRatio: Number
         get() = (message["aspectRatio"])?.toString()?.toFloat() ?: 0.0
+
     val body: String
         get() = (message["body"])?.jsonPrimitive?.content ?: ""
+
     val dateAdded: Date
         get() {
             return DateTimeUtils.getDateFromEpochTime(startTs)
         }
+
     val messageType: InboxMessageType
         get() {
             val type = message["type"]?.jsonPrimitive?.content ?: "OTHER"
@@ -40,6 +43,7 @@ data class CastledInboxItem(
                 InboxMessageType.valueOf("OTHER")
             }
         }
+
     val thumbnailUrl: String
         get() = (message["thumbnailUrl"]?.jsonPrimitive?.content
             ?: (message["contents"])?.let { it as? JsonArray }?.firstOrNull()

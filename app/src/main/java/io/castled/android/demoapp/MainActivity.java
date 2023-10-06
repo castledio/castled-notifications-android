@@ -21,7 +21,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import io.castled.android.demoapp.databinding.ActivityMainBinding;
 import io.castled.android.demoapp.databinding.ContentMainBinding;
-import io.castled.android.notifications.CastledNotifications;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,7 +52,34 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
         }
         createNotificationChannels();
+      /*  CastledNotifications.getInboxItems((List<CastledInboxItem> itemsList) -> {
+
+            for (CastledInboxItem item : itemsList) {
+                System.out.println("Item ID: " + item);
+                System.out.println("Item Name: " + item.getTitle());
+            }
+            CastledNotifications.logInboxItemsRead(itemsList);
+            CastledInboxItem itemToDelete = itemsList.get(itemsList.size() - 1);
+            CastledNotifications.logInboxItemClicked(itemToDelete, "");
+              CastledNotifications.deleteInboxItem(itemToDelete, new kotlin.jvm.functions.Function2<Boolean, String, Unit>() {
+                @Override
+                public Unit invoke(Boolean success, String message) {
+                    // Handle the success and message here
+                    if (success) {
+                        System.out.println("Item deleted: " + message);
+                    } else {
+                        System.out.println("Error: " + message);
+                    }
+                    return null;
+                }
+            });
+
+
+            return null;
+        });*/
+
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -19,26 +19,26 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.castled.android.notifications.commons.ColorUtils
 import io.castled.android.notifications.databinding.ActivityCastledInboxBinding
-import io.castled.android.notifications.inbox.AppInboxHelper
+import io.castled.android.notifications.inbox.AppInbox
 import io.castled.android.notifications.inbox.InboxLifeCycleListenerImpl
-import io.castled.android.notifications.inbox.model.CastledInboxConfig
+import io.castled.android.notifications.inbox.model.CastledInboxDisplayConfig
 import io.castled.android.notifications.inbox.model.InboxResponseConverter.toInboxItem
 import io.castled.android.notifications.inbox.viewmodel.InboxRepository
-import io.castled.android.notifications.store.models.AppInbox
+import io.castled.android.notifications.store.models.Inbox
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.Serializable
 
 
-class CastledInboxActivity : AppCompatActivity(),
+internal class CastledInboxActivity : AppCompatActivity(),
     CoroutineScope by CoroutineScope(Dispatchers.Main) {
 
     private val inboxViewLifecycleListener = InboxLifeCycleListenerImpl(this)
     private lateinit var binding: ActivityCastledInboxBinding
     private val inboxRepository = InboxRepository(this)
     private lateinit var inboxListAdapter: CastledInboxAdapter
-    val displayedItems = mutableSetOf<AppInbox>()
+    val displayedItems = mutableSetOf<Inbox>()
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +65,7 @@ class CastledInboxActivity : AppCompatActivity(),
 
         val displayConfig = getSerializable(
             this, "displayConfig",
-            CastledInboxConfig::class.java
+            CastledInboxDisplayConfig::class.java
         )
         displayConfig?.let {
             customizeViews(displayConfig)
@@ -77,7 +77,7 @@ class CastledInboxActivity : AppCompatActivity(),
 
     }
 
-    private fun customizeViews(displayConfig: CastledInboxConfig) {
+    private fun customizeViews(displayConfig: CastledInboxDisplayConfig) {
 
         binding.toolbar.setBackgroundColor(
             ColorUtils.parseColor(
@@ -187,9 +187,9 @@ class CastledInboxActivity : AppCompatActivity(),
         }
     }
 
-    internal fun deleteItem(position: Int, item: AppInbox) {
+    internal fun deleteItem(position: Int, item: Inbox) {
         binding.progressBar.visibility = ProgressBar.VISIBLE
-        AppInboxHelper.deleteInboxItem(item.toInboxItem()) { success, message ->
+        AppInbox.deleteInboxItem(item.toInboxItem()) { success, message ->
             this@CastledInboxActivity.launch(Dispatchers.Main) {
                 if (success) {
                     displayedItems.remove(item)
@@ -207,7 +207,7 @@ class CastledInboxActivity : AppCompatActivity(),
     }
 
     internal fun onClicked(
-        inboxItem: AppInbox, actionParams: Map<String, Any>
+        inboxItem: Inbox, actionParams: Map<String, Any>
     ) {
         inboxViewLifecycleListener.onClicked(inboxItem, actionParams)
     }
