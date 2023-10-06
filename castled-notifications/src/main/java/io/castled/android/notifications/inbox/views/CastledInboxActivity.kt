@@ -19,8 +19,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.castled.android.notifications.commons.ColorUtils
 import io.castled.android.notifications.databinding.ActivityCastledInboxBinding
+import io.castled.android.notifications.inbox.AppInboxHelper
 import io.castled.android.notifications.inbox.InboxLifeCycleListenerImpl
 import io.castled.android.notifications.inbox.model.CastledInboxConfig
+import io.castled.android.notifications.inbox.model.InboxResponseConverter.toInboxItem
 import io.castled.android.notifications.inbox.viewmodel.InboxRepository
 import io.castled.android.notifications.store.models.AppInbox
 import kotlinx.coroutines.CoroutineScope
@@ -32,7 +34,7 @@ import java.io.Serializable
 class CastledInboxActivity : AppCompatActivity(),
     CoroutineScope by CoroutineScope(Dispatchers.Main) {
 
-    private val iboxViewLifecycleListener = InboxLifeCycleListenerImpl(this)
+    private val inboxViewLifecycleListener = InboxLifeCycleListenerImpl(this)
     private lateinit var binding: ActivityCastledInboxBinding
     private val inboxRepository = InboxRepository(this)
     private lateinit var inboxListAdapter: CastledInboxAdapter
@@ -106,7 +108,7 @@ class CastledInboxActivity : AppCompatActivity(),
         binding.toolbar.visibility =
             if (displayConfig.hideNavigationBar) View.GONE else View.VISIBLE
 
-        val actionBar = getSupportActionBar()
+        val actionBar = supportActionBar
         actionBar?.let {
             if (displayConfig.hideNavigationBar) {
                 actionBar.hide()
@@ -131,7 +133,7 @@ class CastledInboxActivity : AppCompatActivity(),
                     text.length,
                     Spannable.SPAN_INCLUSIVE_INCLUSIVE
                 )
-                actionBar.setTitle(text)
+                actionBar.title = text
             }
             binding.toolbar.visibility = View.GONE
         }
@@ -140,8 +142,7 @@ class CastledInboxActivity : AppCompatActivity(),
     override fun onPause() {
         super.onPause()
         if (displayedItems.size > 0) {
-            iboxViewLifecycleListener.registerReadEvents(displayedItems)
-            displayedItems.clear()
+            inboxViewLifecycleListener.registerReadEvents(displayedItems)
         }
         // Perform actions when the fragment is no longer visible
     }
@@ -188,13 +189,10 @@ class CastledInboxActivity : AppCompatActivity(),
 
     internal fun deleteItem(position: Int, item: AppInbox) {
         binding.progressBar.visibility = ProgressBar.VISIBLE
-        this@CastledInboxActivity.launch(Dispatchers.Main) {
-            inboxRepository.deleteInboxItem(item) { success, message ->
+        AppInboxHelper.deleteInboxItem(item.toInboxItem()) { success, message ->
+            this@CastledInboxActivity.launch(Dispatchers.Main) {
                 if (success) {
                     displayedItems.remove(item)
-                    this@CastledInboxActivity.launch(Dispatchers.IO) {
-                        inboxRepository.deleteInboxItem(item)
-                    }
                 } else {
                     val toast = Toast.makeText(
                         this@CastledInboxActivity, message, Toast.LENGTH_LONG
@@ -204,7 +202,6 @@ class CastledInboxActivity : AppCompatActivity(),
                     inboxListAdapter.reloadRecyclerView()
                 }
                 binding.progressBar.visibility = ProgressBar.GONE
-
             }
         }
     }
@@ -212,6 +209,6 @@ class CastledInboxActivity : AppCompatActivity(),
     internal fun onClicked(
         inboxItem: AppInbox, actionParams: Map<String, Any>
     ) {
-        iboxViewLifecycleListener.onClicked(inboxItem, actionParams)
+        inboxViewLifecycleListener.onClicked(inboxItem, actionParams)
     }
 }

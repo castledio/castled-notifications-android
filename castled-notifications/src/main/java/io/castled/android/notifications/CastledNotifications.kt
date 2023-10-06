@@ -183,10 +183,13 @@ object CastledNotifications {
     @JvmStatic
     fun showAppInbox(context: Context, displayConfig: CastledInboxConfig? = null) =
         castledScope.launch(Dispatchers.Default) {
-            if (isInited()) {
+            if (isInited() && getCastledConfigs().enableAppInbox) {
                 val intent = Intent(context, CastledInboxActivity::class.java)
                 displayConfig?.let { intent.putExtra("displayConfig", displayConfig) }
                 context.startActivity(intent)
+
+            } else {
+                logger.verbose("enableAppInbox while initializing the sdk")
 
             }
         }
@@ -194,10 +197,35 @@ object CastledNotifications {
     @JvmStatic
     fun getInboxItems(completion: (List<CastledInboxItem>) -> Unit) =
         castledScope.launch(Dispatchers.Default) {
-            if (isInited()) {
-                completion(if (isInited()) AppInboxHelper.getInboxItems() else listOf())
-            }
+            completion(
+                if (isInited() && getCastledConfigs().enableAppInbox)
+                    AppInboxHelper.getInboxItems()
+                else listOf()
+            )
         }
+
+    @JvmStatic
+    fun logInboxItemClicked(inboxItem: CastledInboxItem, buttonTitle: String) =
+        castledScope.launch(Dispatchers.Default) {
+            AppInboxHelper.reportEventWith(
+                inboxItem, buttonTitle ?: "", "CLICKED"
+            )
+        }
+
+    @JvmStatic
+    fun logInboxItemsRead(inboxItems: List<CastledInboxItem>) =
+        castledScope.launch(Dispatchers.Default) {
+            AppInboxHelper.reportReadEventsWithItems(inboxItems)
+        }
+
+    @JvmStatic
+    fun deleteInboxItem(
+        inboxItem: CastledInboxItem, completion: (Boolean, String) -> Unit
+    ) {
+        AppInboxHelper.deleteInboxItem(inboxItem) { success, message ->
+            completion(success, message)
+        }
+    }
 
     fun getCastledConfigs() = CastledSharedStore.configs
 

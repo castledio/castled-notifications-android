@@ -23,7 +23,6 @@ internal object AppInboxHelper {
     private val logger: CastledLogger = CastledLogger.getInstance(LogTags.INBOX_REPOSITORY)
     private lateinit var externalScope: CoroutineScope
     private var fetchJob: Job? = null
-
     private var enabled = false
 
     fun init(application: Application, externalScope: CoroutineScope) {
@@ -42,24 +41,39 @@ internal object AppInboxHelper {
             fetchJob = externalScope.launch(Dispatchers.Default) {
                 do {
                     inboxRepository.refreshInbox()
-                    delay(TimeUnit.SECONDS.toMillis(CastledSharedStore.configs.inAppFetchIntervalSec))
+                    delay(TimeUnit.SECONDS.toMillis(CastledSharedStore.configs.inBoxFetchIntervalSec))
                 } while (true)
             }
         }
     }
 
-    fun reportReadEventsWith(inboxItems: Set<AppInbox>) {
+    fun reportReadEventsWithItems(inboxItems: List<CastledInboxItem>) {
         if (!enabled || CastledSharedStore.getUserId() == null) {
             logger.debug("Ignoring inbox event, Castled inbox disabled/ UserId not configured")
             return
         }
-        reportInboxEvent(
-            InboxEventUtils.getReadInboxEventRequest(inboxItems)
-        )
-        inboxRepository.changeTheStatusToRead(inboxItems, externalScope)
+        externalScope.launch(Dispatchers.Default) {
+            val inboxObjects =
+                inboxRepository.inboxDao.getInboxObjectsByMessageIds(inboxItems.map { it.messageId })
+            reportReadEventsWithObjects(inboxObjects.toSet())
+        }
     }
 
-    fun reportEventWith(inbox: AppInbox, btnLabel: String, eventType: String) {
+    fun reportReadEventsWithObjects(inboxObjects: Set<AppInbox>) {
+        if (!enabled || CastledSharedStore.getUserId() == null) {
+            logger.debug("Ignoring inbox event, Castled inbox disabled/ UserId not configured")
+            return
+        }
+        externalScope.launch(Dispatchers.Default) {
+            reportInboxEvent(
+                InboxEventUtils.getReadInboxEventRequest(inboxObjects)
+            )
+            inboxRepository.changeTheStatusToRead(inboxObjects)
+        }
+
+    }
+
+    fun reportEventWith(inbox: CastledInboxItem, btnLabel: String, eventType: String) {
         if (!enabled || CastledSharedStore.getUserId() == null) {
             logger.debug("Ignoring inbox event, Castled inbox disabled/ UserId not configured")
             return
@@ -70,6 +84,16 @@ internal object AppInboxHelper {
             )
         )
 
+    }
+
+    fun deleteInboxItem(
+        inboxItem: CastledInboxItem, completion: (Boolean, String) -> Unit
+    ) = externalScope.launch(
+        Dispatchers.Default
+    ) {
+        inboxRepository.deleteInboxItem(inboxItem) { success, message ->
+            completion(success, message)
+        }
     }
 
     private fun reportInboxEvent(request: CastledInboxEventRequest) = externalScope.launch(

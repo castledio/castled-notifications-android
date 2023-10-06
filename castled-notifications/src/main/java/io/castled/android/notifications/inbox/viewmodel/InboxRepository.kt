@@ -13,9 +13,6 @@ import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.store.models.AppInbox
 import io.castled.android.notifications.workmanager.CastledNetworkWorkManager
 import io.castled.android.notifications.workmanager.models.CastledInboxEventRequest
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.io.IOException
 
@@ -73,15 +70,20 @@ internal class InboxRepository(context: Context) {
     }
 
     internal suspend fun deleteInboxItem(
-        inbox: AppInbox, completion: (Boolean, String) -> Unit
+        inboxItem: CastledInboxItem, completion: (Boolean, String) -> Unit
     ) {
         try {
             val response = inboxApi.reportInboxEvent(
                 CastledSharedStore.getAppId(), InboxEventUtils.getInboxEventRequest(
-                    inbox, "", "DELETED"
+                    inboxItem, "", "DELETED"
                 )
             )
             if (response.isSuccessful) {
+
+                val inboxObject = inboxDao.getInboxObjectByMessageId(inboxItem.messageId)
+                inboxObject?.let {
+                    inboxDao.delete(inboxObject)
+                }
                 completion(true, "")
                 return
             } else {
@@ -118,18 +120,17 @@ internal class InboxRepository(context: Context) {
         return inboxApi.reportInboxEvent(CastledSharedStore.getAppId(), request)
     }
 
-    internal fun changeTheStatusToRead(inboxItems: Set<AppInbox>, externalScope: CoroutineScope) {
-        externalScope.launch(Dispatchers.Default) {
-            try {
-                inboxItems.forEach {
-                    it.isRead = true
-                    inboxDao.updateInboxItem(it)
-                }
-            } catch (e: Exception) {
-                // Handle any exceptions that may occur during database operations
-                e.printStackTrace()
-                // You can also log the exception or show an error message to the user
+    internal fun changeTheStatusToRead(inboxItems: Set<AppInbox>) {
+        try {
+            inboxItems.forEach {
+                it.isRead = false
+                inboxDao.updateInboxItem(it)
             }
+        } catch (e: Exception) {
+            // Handle any exceptions that may occur during database operations
+            e.printStackTrace()
+            // You can also log the exception or show an error message to the user
         }
+
     }
 }

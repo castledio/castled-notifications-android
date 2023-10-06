@@ -1,5 +1,6 @@
 package io.castled.android.notifications.inbox
 
+import io.castled.android.notifications.inbox.model.CastledInboxItem
 import io.castled.android.notifications.store.models.AppInbox
 import io.castled.android.notifications.workmanager.models.CastledInboxEvent
 import io.castled.android.notifications.workmanager.models.CastledInboxEventRequest
@@ -8,7 +9,7 @@ import java.util.TimeZone
 internal object InboxEventUtils {
 
     fun getInboxEventRequest(
-        inbox: AppInbox, btnLabel: String, eventType: String
+        inbox: CastledInboxItem, btnLabel: String, eventType: String
     ): CastledInboxEventRequest {
         val event = CastledInboxEvent(
             teamId = inbox.teamId.toString(),

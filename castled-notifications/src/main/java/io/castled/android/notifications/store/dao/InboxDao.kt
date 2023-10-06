@@ -13,6 +13,12 @@ internal interface InboxDao {
     @Query("SELECT * FROM inbox ORDER BY is_pinned DESC, date_added DESC")
     fun getInboxItems(): LiveData<List<AppInbox>>
 
+    @Query("SELECT * FROM inbox WHERE message_id = :messageId LIMIT 1")
+    fun getInboxObjectByMessageId(messageId: Long): AppInbox?
+
+    @Query("SELECT * FROM inbox WHERE message_id IN (:messageIds)")
+    fun getInboxObjectsByMessageIds(messageIds: List<Long>): List<AppInbox>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun dbInsertInbox(inboxList: List<AppInbox>): LongArray
 
@@ -25,6 +31,4 @@ internal interface InboxDao {
     @Update
     fun updateInboxItem(item: AppInbox)
 
-//    @Query("UPDATE inbox SET times_displayed=:timeDisplayed, last_displayed_time=:lastDisplayedTime WHERE id = :id AND messageId = :notificationId")
-//    suspend fun dbUpdateCampaignLastDisplayed(timeDisplayed: Long, lastDisplayedTime: Long, id: Int, notificationId: Int): Int
 }

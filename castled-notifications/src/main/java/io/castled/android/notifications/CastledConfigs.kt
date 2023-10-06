@@ -9,6 +9,8 @@ data class CastledConfigs(
     val enableTracking: Boolean,
     val enableAppInbox: Boolean,
     val inAppFetchIntervalSec: Long,
+    val inBoxFetchIntervalSec: Long,
+
     val xiaomiAppId: String?,
     val xiaomiAppKey: String?,
     val enableUserIdEncryption: Boolean
@@ -22,6 +24,8 @@ data class CastledConfigs(
         private var enableAppInbox: Boolean = false
 
         private var inAppFetchIntervalSec = 3600L
+        private var inBoxFetchIntervalSec = 3600L
+
         private var castledLocation = CastledLocation.US
         private var xiaomiAppId: String? = null
         private var xiaomiAppKey: String? = null
@@ -39,10 +43,14 @@ data class CastledConfigs(
 
         fun enablePush(enablePush: Boolean) = apply { this.enablePush = enablePush }
         fun enableTracking(enableTracking: Boolean) = apply { this.enableTracking = enableTracking }
-
         fun enableInApp(enableInApp: Boolean) = apply { this.enableInApp = enableInApp }
+        fun enableAppInbox(enableAppInbox: Boolean) = apply { this.enableAppInbox = enableAppInbox }
+
         fun inAppFetchIntervalSec(inAppFetchIntervalSec: Long) =
             apply { this.inAppFetchIntervalSec = inAppFetchIntervalSec }
+
+        fun inBoxFetchIntervalSec(inBoxFetchIntervalSec: Long) =
+            apply { this.inBoxFetchIntervalSec = inBoxFetchIntervalSec }
 
         fun location(castledLocation: CastledLocation) =
             apply { this.castledLocation = castledLocation }
@@ -61,6 +69,7 @@ data class CastledConfigs(
             enableTracking,
             enableAppInbox,
             inAppFetchIntervalSec,
+            inBoxFetchIntervalSec,
             xiaomiAppId,
             xiaomiAppKey,
             enableUserIdEncryption

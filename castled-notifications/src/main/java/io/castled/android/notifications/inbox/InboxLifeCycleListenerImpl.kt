@@ -3,6 +3,7 @@ package io.castled.android.notifications.inbox
 import android.content.Context
 import io.castled.android.notifications.commons.CastledClickActionUtils
 import io.castled.android.notifications.commons.toMapString
+import io.castled.android.notifications.inbox.model.InboxResponseConverter.toInboxItem
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.CastledClickAction
@@ -23,14 +24,12 @@ class InboxLifeCycleListenerImpl(private val context: Context) {
     fun registerReadEvents(
         inboxItems: Set<AppInbox>
     ) {
-        AppInboxHelper.reportReadEventsWith(inboxItems)
-
+        AppInboxHelper.reportReadEventsWithObjects(inboxItems)
     }
 
     fun onClicked(
         inboxItem: AppInbox, actionParams: Map<String, Any>
     ) {
-
         val clickAction = getClickAction(
             (actionParams["clickAction"] as? JsonPrimitive?)?.content
                 ?: (actionParams["clickAction"] as? String) ?: "NONE"
@@ -40,7 +39,7 @@ class InboxLifeCycleListenerImpl(private val context: Context) {
             ?: ""
         val keyVals = ((actionParams["keyVals"] as? JsonObject)?.toMapString())
         AppInboxHelper.reportEventWith(
-            inboxItem, (actionParams["label"] as? String) ?: "", "CLICKED"
+            inboxItem.toInboxItem(), (actionParams["label"] as? String) ?: "", "CLICKED"
         )
         when (clickAction) {
             CastledClickAction.NONE -> {
