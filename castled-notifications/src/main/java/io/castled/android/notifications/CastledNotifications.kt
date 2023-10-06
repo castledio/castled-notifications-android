@@ -227,6 +227,14 @@ object CastledNotifications {
         }
     }
 
+    @JvmStatic
+    fun getInboxUnreadCount(completion: (Int) -> Unit) =
+        castledScope.launch(Dispatchers.Default) {
+            completion(
+                AppInbox.getInboxUnreadCount()
+            )
+        }
+
     fun getCastledConfigs() = CastledSharedStore.configs
 
     private fun isInited(): Boolean = this::appId.isInitialized

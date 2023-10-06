@@ -8,7 +8,7 @@ import io.castled.android.notifications.store.models.Inbox
 internal interface InboxDao {
 
     @Query("SELECT * FROM inbox ORDER BY date_added DESC")
-    fun dbGetInbox(): List<Inbox>
+    suspend fun dbGetInbox(): List<Inbox>
 
     @Query("SELECT * FROM inbox ORDER BY is_pinned DESC, date_added DESC")
     fun getInboxItems(): LiveData<List<Inbox>>
@@ -17,7 +17,10 @@ internal interface InboxDao {
     fun getInboxObjectByMessageId(messageId: Long): Inbox?
 
     @Query("SELECT * FROM inbox WHERE message_id IN (:messageIds)")
-    fun getInboxObjectsByMessageIds(messageIds: List<Long>): List<Inbox>
+    suspend fun getInboxObjectsByMessageIds(messageIds: List<Long>): List<Inbox>
+
+    @Query("SELECT COUNT(*) FROM inbox WHERE is_read = 0")
+    suspend fun getInboxUnreadCount(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun dbInsertInbox(inboxList: List<Inbox>): LongArray

@@ -15,9 +15,10 @@ internal class DateTimeUtils {
             return dateFormat.format(Date())
         }
 
-        internal fun  getDateFromEpochTime(timestamp: Long): Date{
-             return Date(timestamp)
+        internal fun getDateFromEpochTime(timestamp: Long): Date {
+            return Date(timestamp)
         }
+
         internal fun timeAgo(date: Date, defaultFormat: String? = "MMM d, yyyy"): String {
             val now = Date()
             val timeDifference = now.time - date.time
@@ -33,6 +34,7 @@ internal class DateTimeUtils {
                     dateFormatter.timeZone = TimeZone.getDefault()
                     dateFormatter.format(date)
                 }
+
                 days >= 1 -> "$days day${if (days > 1) "s" else ""} ago"
                 hours >= 1 -> "$hours hour${if (hours > 1) "s" else ""} ago"
                 minutes >= 1 -> "$minutes minute${if (minutes > 1) "s" else ""} ago"
@@ -40,5 +42,4 @@ internal class DateTimeUtils {
             }
         }
     }
-
 }

@@ -52,7 +52,13 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
         }
         createNotificationChannels();
-      /*  CastledNotifications.getInboxItems((List<CastledInboxItem> itemsList) -> {
+      /*  CastledNotifications.getInboxUnreadCount(count -> {
+            // Handle the result in Java
+            System.out.println("unread Inbox Count: " + count);
+            return null;
+        });
+
+        CastledNotifications.getInboxItems((List<CastledInboxItem> itemsList) -> {
 
             for (CastledInboxItem item : itemsList) {
                 System.out.println("Item ID: " + item);
@@ -61,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             CastledNotifications.logInboxItemsRead(itemsList);
             CastledInboxItem itemToDelete = itemsList.get(itemsList.size() - 1);
             CastledNotifications.logInboxItemClicked(itemToDelete, "");
-              CastledNotifications.deleteInboxItem(itemToDelete, new kotlin.jvm.functions.Function2<Boolean, String, Unit>() {
+            CastledNotifications.deleteInboxItem(itemToDelete, new kotlin.jvm.functions.Function2<Boolean, String, Unit>() {
                 @Override
                 public Unit invoke(Boolean success, String message) {
                     // Handle the success and message here

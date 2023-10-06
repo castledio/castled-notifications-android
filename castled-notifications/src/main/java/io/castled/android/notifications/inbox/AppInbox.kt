@@ -47,7 +47,7 @@ internal object AppInbox {
         }
     }
 
-    fun reportReadEventsWithItems(inboxItems: List<CastledInboxItem>) {
+    suspend fun reportReadEventsWithItems(inboxItems: List<CastledInboxItem>) {
         if (!enabled || CastledSharedStore.getUserId() == null) {
             logger.debug("Ignoring inbox event, Castled inbox disabled/ UserId not configured")
             return
@@ -102,7 +102,11 @@ internal object AppInbox {
         inboxRepository.reportEvent(request)
     }
 
-    internal fun getInboxItems(): List<CastledInboxItem> {
+    suspend fun getInboxUnreadCount(): Int {
+        return inboxRepository.inboxDao.getInboxUnreadCount()
+    }
+
+    suspend fun getInboxItems(): List<CastledInboxItem> {
 
         if (!enabled || CastledSharedStore.getUserId() == null) {
             logger.debug("Ignoring inbox event, Castled inbox disabled/ UserId not configured")
