@@ -52,7 +52,6 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
         updatePrimaryBtnView(modalParams)
         updateSecondaryBtnView(modalParams)
         updateContentViewSizes()
-
     }
 
     private fun updateContentViewSizes() {
@@ -70,18 +69,15 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             // Device is in portrait orientation
-            imageView!!.layoutParams.height = (dialogSize.x * 3 / 4)
+            imageView!!.layoutParams.height = (dialogSize.x * 1 / 2)
             headerViewMaxLines = 3
             messageViewMaxLines = 5
-
 
         } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             // Device is in landscape orientation
             imageView!!.layoutParams.height = (dialogSize.x * 1 / 5)
             messageViewMaxLines = 2
             headerViewMaxLines = 2
-
-
         }
         val remainingHeight = dialogSize.y - imageView!!.layoutParams.height
         headerView!!.maxHeight = remainingHeight * 1 / 4
@@ -91,8 +87,6 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
         // need to set maxLines after setting maxHeight
         headerView!!.maxLines = headerViewMaxLines
         messageView!!.maxLines = messageViewMaxLines
-
-
     }
 
     private fun updateImageView(modalParams: JsonObject) {
@@ -123,7 +117,7 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
         }
         val viewFullContainer: LinearLayout =
             findViewById(R.id.castled_inapp_modal_container_layout)
-        viewFullContainer?.let {
+        viewFullContainer.let {
             viewFullContainer.setBackgroundColor(
                 parseColor(
                     messageViewParams.backgroundColor,

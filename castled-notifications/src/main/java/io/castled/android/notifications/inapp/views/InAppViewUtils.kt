@@ -71,7 +71,6 @@ object InAppViewUtils {
     }
 
     fun getPrimaryButtonActionParams(modal: JsonObject): ClickActionParams? {
-        val btnViewParams = getPrimaryButtonViewParams(modal)
         val buttons = modal["actionButtons"]?.jsonArray ?: return null
         val primaryButtonJson = buttons.last().jsonObject
         val keyVals = primaryButtonJson["keyVals"]?.jsonObject
@@ -89,11 +88,11 @@ object InAppViewUtils {
         val keyVals = modal["keyVals"]?.jsonObject
         return ClickActionParams(
             actionLabel = modal["keyVals"]?.jsonObject?.get("button_title")?.jsonPrimitive?.content
-                ?: (modal?.get("clickAction")?.jsonPrimitive?.content ?: ""),
+                ?: (modal.get("clickAction")?.jsonPrimitive?.content ?: ""),
             action = CastledClickAction.valueOf(
-                (modal?.get("clickAction")?.jsonPrimitive?.content ?: "")
+                (modal.get("clickAction")?.jsonPrimitive?.content ?: "")
             ),
-            uri = modal?.get("clickActionUrl")?.jsonPrimitive?.content ?: "",
+            uri = modal.get("clickActionUrl")?.jsonPrimitive?.content ?: "",
             keyVals = keyVals?.entries?.associate { (key, value) ->
                 key to (value as JsonPrimitive).content
             }

@@ -11,7 +11,7 @@ import io.castled.android.notifications.store.models.Inbox
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
-class InboxLifeCycleListenerImpl(private val context: Context) {
+internal class InboxLifeCycleListenerImpl(private val context: Context) {
 
     private fun getClickAction(action: String): CastledClickAction {
         return try {

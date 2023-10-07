@@ -25,7 +25,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 
-class CastledInboxAdapter(val context: Context) :
+internal class CastledInboxAdapter(val context: Context) :
     RecyclerView.Adapter<CastledInboxAdapter.ViewHolder>() {
     // DAO instance to interact with the database
     internal var inboxItemsList = ArrayList<Inbox>()

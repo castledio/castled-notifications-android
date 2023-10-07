@@ -6,17 +6,16 @@
     <dimen name="inapp_html_vertical_margin">20dp</dimen>
     <dimen name="inapp_corner_radius">10dp</dimen>
     <dimen name="inapp_banner_corner_radius">5dp</dimen>
-
     <dimen name="inapp_buttons_corner_radius">5dp</dimen>
     <dimen name="inapp_card_shadow">0dp</dimen>
     <dimen name="inapp_buttons_padding">10dp</dimen>
     <dimen name="inapp_common_padding">15dp</dimen>
-
+    <dimen name="inapp_textview_minheight">60dp</dimen>
     <dimen name="inapp_margin_horizontal">15dp</dimen>
     <dimen name="inapp_margin_vertical">15dp</dimen>
     <dimen name="inapp_banner_margin">10dp</dimen>
-
     <dimen name="inbox_buttons_padding">10dp</dimen>
+    <dimen name="inbox_buttons_top_margin">5dp</dimen>
 
 
 </resources>
