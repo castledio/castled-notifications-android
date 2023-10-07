@@ -1,4 +1,3 @@
-
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -8,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import io.castled.android.notifications.R
 import io.castled.android.notifications.inbox.views.CastledInboxAdapter
 
-class SwipeToDeleteCallback(private var adapter: CastledInboxAdapter) :
+internal class SwipeToDeleteCallback(private var adapter: CastledInboxAdapter) :
     ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
     override fun onMove(

@@ -152,7 +152,11 @@ object CastledNotifications {
     }
 
     @JvmStatic
-    fun logCustomAppEvent(context: Context, eventName: String, eventParams: Map<String, Any>? = null) =
+    fun logCustomAppEvent(
+        context: Context,
+        eventName: String,
+        eventParams: Map<String, Any>? = null
+    ) =
         castledScope.launch(Dispatchers.Default) {
             if (isInited()) {
                 InAppNotification.logAppEvent(context, eventName, eventParams)
@@ -205,7 +209,7 @@ object CastledNotifications {
     fun logInboxItemClicked(inboxItem: CastledInboxItem, buttonTitle: String) =
         castledScope.launch(Dispatchers.Default) {
             AppInbox.reportEventWith(
-                inboxItem, buttonTitle ?: "", "CLICKED"
+                inboxItem, buttonTitle, "CLICKED"
             )
         }
 

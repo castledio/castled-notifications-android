@@ -95,11 +95,11 @@ internal class InboxRepository(context: Context) {
             }
         } catch (e: IOException) {
             logger.error("Network error!", e)
-            completion(false, e.localizedMessage)
+            completion(false, e.localizedMessage ?: "Network error while deleting inbox item!!")
 
         } catch (e: Exception) {
             logger.error("Unknown error!", e)
-            completion(false, e.localizedMessage)
+            completion(false, e.localizedMessage ?: "Unknown error while deleting inbox item!")
         }
 
     }

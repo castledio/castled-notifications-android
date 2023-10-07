@@ -12,7 +12,7 @@ import java.util.Date
     tableName = "inbox",
     indices = [Index(value = ["message_id"], unique = true)]
 )
-data class Inbox(
+internal data class Inbox(
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,

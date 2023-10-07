@@ -19,7 +19,6 @@ object InAppViewFactory {
         val messageTemplateType: InAppMessageTemplateType =
             InAppMessageUtils.getMessageTemplateType(
                 (msgBody["type"]?.jsonPrimitive?.content ?: "")
-                    ?: ""
             )
 
         return when (messageType) {

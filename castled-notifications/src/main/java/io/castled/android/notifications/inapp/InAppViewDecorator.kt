@@ -176,9 +176,13 @@ internal class InAppViewDecorator(
     }
 
     internal fun dismissDialog() {
-        if (dialog != null && dialog.isShowing) {
-            dialog.dismiss()
+        try {
+            if (dialog.isShowing) {
+                dialog.dismiss()
+            }
+        } catch (_: Exception) {
         }
+
     }
 
     private fun parseColor(colorStr: String, defaultColor: Int): Int {

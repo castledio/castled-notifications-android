@@ -144,7 +144,7 @@ class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) :
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             // Device is in portrait orientation
-            imageView!!.layoutParams.height = (dialogSize.x * 5 / 6)
+            imageView!!.layoutParams.height = (dialogSize.x * 3 / 4)
             headerViewMaxLines = 3
             messageViewMaxLines = 10
 
@@ -155,17 +155,8 @@ class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) :
             messageViewMaxLines = 2
             headerViewMaxLines = 2
         }
-        val remainingHeight = dialogSize.y - imageView!!.layoutParams.height
-//        headerView!!.maxHeight = remainingHeight * 1 / 4
-//        messageView!!.maxHeight = remainingHeight * 2 / 4
-//
-//        // remaining 1/4th for buttons
-//        messageView!!.setBackgroundColor(Color.RED)
-//        // need to set maxLines after setting maxHeight
         messageView!!.maxLines = messageViewMaxLines
         headerView!!.maxLines = headerViewMaxLines
-
-
     }
 
     companion object {

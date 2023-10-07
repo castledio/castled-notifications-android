@@ -23,7 +23,7 @@ class InAppConstrainedLayout(context: Context, attrs: AttributeSet) :
 
     init {
 
-        attrs?.let {
+        attrs.let {
             val typedArray: TypedArray =
                 context.obtainStyledAttributes(it, R.styleable.CustomConstriants)
             ignoreDimension =

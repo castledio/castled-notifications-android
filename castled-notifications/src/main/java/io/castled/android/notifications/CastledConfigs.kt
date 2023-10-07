@@ -10,10 +10,8 @@ data class CastledConfigs(
     val enableAppInbox: Boolean,
     val inAppFetchIntervalSec: Long,
     val inBoxFetchIntervalSec: Long,
-
     val xiaomiAppId: String?,
-    val xiaomiAppKey: String?,
-    val enableUserIdEncryption: Boolean
+    val xiaomiAppKey: String?
 ) {
     class Builder {
         private lateinit var apiKey: String
@@ -29,7 +27,6 @@ data class CastledConfigs(
         private var castledLocation = CastledLocation.US
         private var xiaomiAppId: String? = null
         private var xiaomiAppKey: String? = null
-        private var enableUserIdEncryption = false
 
         fun apiKey(apiKey: String) = apply {
             this.apiKey = apiKey
@@ -57,8 +54,6 @@ data class CastledConfigs(
 
         fun xiaomiAppId(xiaomiAppId: String?) = apply { this.xiaomiAppId = xiaomiAppId }
         fun xiaomiAppKey(xiaomiAppKey: String?) = apply { this.xiaomiAppKey = xiaomiAppKey }
-        fun enableUserIdEncryption(enableUserIdEncryption: Boolean) =
-            apply { this.enableUserIdEncryption = enableUserIdEncryption }
 
         fun build() = CastledConfigs(
             apiKey,
@@ -71,8 +66,7 @@ data class CastledConfigs(
             inAppFetchIntervalSec,
             inBoxFetchIntervalSec,
             xiaomiAppId,
-            xiaomiAppKey,
-            enableUserIdEncryption
+            xiaomiAppKey
         )
     }
 
