@@ -1,7 +1,6 @@
 package io.castled.android.notifications
 
 data class CastledConfigs(
-    val apiKey: String,
     val appId: String,
     val location: CastledLocation,
     val enablePush: Boolean,
@@ -14,7 +13,6 @@ data class CastledConfigs(
     val xiaomiAppKey: String?
 ) {
     class Builder {
-        private lateinit var apiKey: String
         private lateinit var appId: String
         private var enablePush: Boolean = false
         private var enableInApp: Boolean = false
@@ -28,14 +26,8 @@ data class CastledConfigs(
         private var xiaomiAppId: String? = null
         private var xiaomiAppKey: String? = null
 
-        fun apiKey(apiKey: String) = apply {
-            this.apiKey = apiKey
-            this.appId = apiKey
-        }
-
         fun appId(appId: String) = apply {
             this.appId = appId
-            this.apiKey = appId
         }
 
         fun enablePush(enablePush: Boolean) = apply { this.enablePush = enablePush }
@@ -56,7 +48,6 @@ data class CastledConfigs(
         fun xiaomiAppKey(xiaomiAppKey: String?) = apply { this.xiaomiAppKey = xiaomiAppKey }
 
         fun build() = CastledConfigs(
-            apiKey,
             appId,
             castledLocation,
             enablePush,
