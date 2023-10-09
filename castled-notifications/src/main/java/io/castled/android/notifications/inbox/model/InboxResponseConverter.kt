@@ -1,6 +1,7 @@
 package io.castled.android.notifications.inbox.model
 
 import io.castled.android.notifications.store.models.Inbox
+import kotlinx.serialization.json.JsonObject
 
 internal object InboxResponseConverter {
 
@@ -12,7 +13,7 @@ internal object InboxResponseConverter {
             startTs = this.startTs,
             expiryTs = this.expiryTs,
             isRead = this.read,
-            trigger = this.trigger,
+            trigger = this.trigger ?: JsonObject(emptyMap()),
             message = this.message,
             messageType = this.messageType,
             aspectRatio = this.aspectRatio,
