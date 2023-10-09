@@ -27,7 +27,7 @@ internal object CastledSharedStore {
             context.getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE)
         if (sharedPreferences.getString(PrefStoreKeys.APP_ID, null) != configs.appId) {
             clearPreferences()
-            setApiKey(configs.appId)
+            setAppId(configs.appId)
         } else {
             appId = sharedPreferences.getString(PrefStoreKeys.APP_ID, null)!!
         }
@@ -37,7 +37,7 @@ internal object CastledSharedStore {
         tokens[PushTokenType.MI_PUSH] = sharedPreferences.getString(PrefStoreKeys.MI_TOKEN, null)
     }
 
-    private fun setApiKey(appId: String) {
+    private fun setAppId(appId: String) {
         CastledSharedStore.appId = appId
         sharedPreferences.edit().putString(PrefStoreKeys.APP_ID, appId).apply()
     }
