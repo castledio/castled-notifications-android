@@ -15,7 +15,7 @@ data class CastledInboxItem(
     val read: Boolean,
     val startTs: Long,
     val expiryTs: Long,
-    val trigger: JsonObject,
+    val trigger: JsonObject?,
     val message: JsonObject,
     val updatedTs: Long,
     val tag: String?,

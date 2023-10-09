@@ -14,8 +14,8 @@ class MyApplicationClass : MultiDexApplication() {
         // SDK initialization
         CastledNotifications.initialize(
             this,
-            CastledConfigs.Builder().appId("718c38e2e359d94367a2e0d35e1fd4df")
-                .location(CastledConfigs.CastledLocation.US).enablePush(true).enableInApp(true)
+            CastledConfigs.Builder().appId("e8a4f68bfb6a58b40a77a0e6150eca0b")
+                .location(CastledConfigs.CastledLocation.TEST).enablePush(true).enableInApp(true)
                 .enableAppInbox(true).enableTracking(true).inAppFetchIntervalSec(10)
                 .xiaomiAppId("2882303761521565034")
                 .xiaomiAppKey("5382156577034").build()
