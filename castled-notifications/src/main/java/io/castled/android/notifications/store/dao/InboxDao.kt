@@ -13,6 +13,13 @@ internal interface InboxDao {
     @Query("SELECT * FROM inbox ORDER BY is_pinned DESC, date_added DESC")
     fun getInboxItems(): LiveData<List<Inbox>>
 
+    @Query(
+        "SELECT * FROM inbox WHERE (LENGTH(:selectedTag) > 0 AND tag = :selectedTag) " +
+                "OR LENGTH(:selectedTag) = 0 ORDER BY is_pinned DESC, date_added DESC"
+    )
+    fun getInboxItemsWith(selectedTag: String): LiveData<List<Inbox>>
+
+
     @Query("SELECT * FROM inbox WHERE message_id = :messageId LIMIT 1")
     fun getInboxObjectByMessageId(messageId: Long): Inbox?
 
@@ -21,6 +28,9 @@ internal interface InboxDao {
 
     @Query("SELECT COUNT(*) FROM inbox WHERE is_read = 0")
     suspend fun getInboxUnreadCount(): Int
+
+    @Query("SELECT DISTINCT tag FROM Inbox WHERE tag IS NOT NULL AND tag <> '' ORDER BY tag ASC")
+    suspend fun getUniqueNonEmptyTags(): List<String>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun dbInsertInbox(inboxList: List<Inbox>): LongArray

@@ -104,8 +104,17 @@ internal class InboxRepository(context: Context) {
 
     }
 
+    suspend fun getCategoryTags(): List<String> {
+        val uniqueTagsWithAll = inboxDao.getUniqueNonEmptyTags()
+        return listOf("All") + uniqueTagsWithAll
+    }
+
     internal fun observeInboxLiveData(): LiveData<List<Inbox>> {
         return inboxDao.getInboxItems()
+    }
+
+    internal fun observeInboxLiveDataWithTag(tag: String): LiveData<List<Inbox>> {
+        return inboxDao.getInboxItemsWith(tag)
     }
 
     suspend fun reportEvent(request: CastledInboxEventRequest) {
