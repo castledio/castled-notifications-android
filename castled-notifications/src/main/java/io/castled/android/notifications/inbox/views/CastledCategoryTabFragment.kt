@@ -1,0 +1,146 @@
+package io.castled.android.notifications.inbox.views
+
+import SwipeToDeleteCallback
+import android.content.Context
+import android.graphics.Color
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import io.castled.android.notifications.commons.ColorUtils
+import io.castled.android.notifications.databinding.CastledInboxCategoryFragmentBinding
+import io.castled.android.notifications.inbox.AppInbox
+import io.castled.android.notifications.inbox.model.InboxResponseConverter.toInboxItem
+import io.castled.android.notifications.inbox.viewmodel.InboxViewModel
+import io.castled.android.notifications.store.models.Inbox
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
+internal class CastledCategoryTabFragment : Fragment() {
+
+    private lateinit var binding: CastledInboxCategoryFragmentBinding
+    private lateinit var viewModel: InboxViewModel
+    private lateinit var context: Context
+    private lateinit var inboxListAdapter: CastledInboxRecycleViewAdapter
+    private var currentCategoryIndex: Int = 0
+    private lateinit var currentCategory: String
+
+    companion object {
+        private const val ARG_INDEX = "index"
+        private const val ARG_CAT = "category"
+
+        fun newInstance(index: Int, category: String): CastledCategoryTabFragment {
+            val fragment = CastledCategoryTabFragment()
+            val args = Bundle()
+            args.putInt(ARG_INDEX, index)
+            args.putString(ARG_CAT, category)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+
+        binding = CastledInboxCategoryFragmentBinding.inflate(layoutInflater)
+        context = requireContext()
+        viewModel = ViewModelProvider(requireActivity())[InboxViewModel::class.java]
+        viewModel.displayConfig?.let {
+            customizeViews()
+        }
+        currentCategoryIndex = arguments?.getInt(ARG_INDEX, 0) ?: 0
+        currentCategory = arguments?.getString(ARG_CAT, "") ?: ""
+        prepareRecyclerView()
+        initializeDaoListener()
+        return binding.root
+    }
+
+    private fun customizeViews() {
+        binding.viewBg.setBackgroundColor(
+            ColorUtils.parseColor(
+                viewModel.displayConfig!!.inboxViewBackgroundColor,
+                Color.WHITE
+            )
+        )
+        binding.txtEmptyView.text = viewModel.displayConfig!!.emptyMessageViewText
+        binding.txtEmptyView.setTextColor(
+            ColorUtils.parseColor(
+                viewModel.displayConfig!!.emptyMessageViewTextColor,
+                Color.BLACK
+            )
+        )
+    }
+
+    private fun initializeDaoListener() {
+        viewModel.inboxRepository.observeInboxLiveDataWithTag(
+            if (currentCategoryIndex == 0) ""
+            else currentCategory
+        )
+            .observe(viewLifecycleOwner) { inboxList ->
+                inboxListAdapter.setInboxItems(inboxList)
+                binding.inboxRecycleView.visibility =
+                    if (inboxList.isEmpty()) View.GONE else View.VISIBLE
+                binding.txtEmptyView.visibility =
+                    if (inboxList.isEmpty()) View.VISIBLE else View.GONE
+            }
+    }
+
+    private fun prepareRecyclerView() {
+        inboxListAdapter = CastledInboxRecycleViewAdapter(context, viewModel, this)
+        binding.inboxRecycleView.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = inboxListAdapter
+            val itemTouchHelper =
+                ItemTouchHelper(SwipeToDeleteCallback(adapter as CastledInboxRecycleViewAdapter))
+            itemTouchHelper.attachToRecyclerView(binding.inboxRecycleView)
+            binding.inboxRecycleView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    val firstVisibleItemPosition =
+                        (layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+                    val lastVisibleItemPosition =
+                        (layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+                    for (i in firstVisibleItemPosition..lastVisibleItemPosition) {
+                        if (i >= 0 && i < inboxListAdapter.inboxItemsList.size) {
+                            val data = inboxListAdapter.inboxItemsList[i]
+                            if (!data.isRead && !viewModel.displayedItems.contains(data.messageId)) {
+                                viewModel.displayedItems.add(data.messageId)
+                            }
+                        }
+                    }
+
+                }
+            })
+        }
+    }
+
+    internal fun deleteItem(position: Int, item: Inbox) {
+        (context as CastledInboxActivity).launch(Dispatchers.IO) {
+            item.isDeleted = true
+            viewModel.inboxRepository.inboxDao.updateInboxItem(item)
+        }
+        binding.progressBar.visibility = ProgressBar.VISIBLE
+        AppInbox.deleteInboxItem(item.toInboxItem()) { success, message ->
+            (context as CastledInboxActivity).launch(Dispatchers.Main) {
+                if (success) {
+                    viewModel.displayedItems.remove(item.messageId)
+                } else {
+                    val toast = Toast.makeText(
+                        context, message, Toast.LENGTH_LONG
+                    )
+                    toast.show()
+                }
+                binding.progressBar.visibility = ProgressBar.GONE
+            }
+        }
+    }
+}

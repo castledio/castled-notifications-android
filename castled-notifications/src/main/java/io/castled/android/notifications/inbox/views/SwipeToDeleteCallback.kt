@@ -5,9 +5,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import io.castled.android.notifications.R
-import io.castled.android.notifications.inbox.views.CastledInboxAdapter
+import io.castled.android.notifications.inbox.views.CastledInboxRecycleViewAdapter
 
-internal class SwipeToDeleteCallback(private var adapter: CastledInboxAdapter) :
+internal class SwipeToDeleteCallback(private var adapter: CastledInboxRecycleViewAdapter) :
     ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
     override fun onMove(

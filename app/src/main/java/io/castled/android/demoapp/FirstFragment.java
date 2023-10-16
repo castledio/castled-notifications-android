@@ -48,12 +48,19 @@ public class FirstFragment extends Fragment {
         binding.btnInbox.setOnClickListener(btnInbox -> {
             CastledInboxDisplayConfig styleConfig = new CastledInboxDisplayConfig();
             styleConfig.setEmptyMessageViewText("There are no inbox items");
-            styleConfig.setEmptyMessageViewTextColor("#000000");
-            styleConfig.setInboxViewBackgroundColor("#FFFFFF");
+            styleConfig.setEmptyMessageViewTextColor("#195190");
+            styleConfig.setInboxViewBackgroundColor("#A2A2A1");
             styleConfig.setNavigationBarBackgroundColor("#0000FF");
             styleConfig.setNavigationBarTitleColor("#FFFFFF");
             styleConfig.setNavigationBarTitle("Castled Inbox");
             styleConfig.setHideNavigationBar(false);
+
+            styleConfig.setShowCategoriesTab(true);
+            styleConfig.setTabBarDefaultBackgroundColor("#00203F");
+            styleConfig.setTabBarSelectedBackgroundColor("#EEA47F");
+            styleConfig.setTabBarDefaultTextColor("#ADEFD1");
+            styleConfig.setTabBarSelectedTextColor("#00539C");
+            styleConfig.setTabBarIndicatorBackgroundColor("#FEE715");
             CastledNotifications.showAppInbox(view.getContext(), styleConfig);
         });
 

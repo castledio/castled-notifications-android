@@ -1,0 +1,33 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/view_bg"
+    android:background="@android:color/transparent">
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/inbox_recycle_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:scrollbars="vertical" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/txt_empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="We have no updates. Please check again later."
+        android:textSize="18sp"
+        android:textAlignment="center"
+        android:background="@android:color/transparent"
+
+        android:paddingHorizontal="20dp" />
+</RelativeLayout>

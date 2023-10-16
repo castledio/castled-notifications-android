@@ -48,41 +48,39 @@
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/inbox_recycler_view"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:paddingVertical="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        android:scrollbars="vertical"
-        app:layout_constraintVertical_bias="0" />
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar">
+        <!-- TabLayout for top categories -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/categories_tab_parent_view"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="0dp">
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:visibility="gone" />
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/categories_tab"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:tabMode="scrollable"
+                app:tabGravity="fill"
+                android:background="@android:color/white"
+                app:tabSelectedTextColor="@android:color/holo_blue_light"
+                app:tabTextColor="@android:color/holo_blue_light" />
+        </androidx.cardview.widget.CardView>
 
-    <TextView
-        android:id="@+id/txt_empty_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="We have no updates. Please check again later."
-        android:textSize="18sp"
-        android:textAlignment="center"
-        android:paddingHorizontal="20dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.5" />
+        <!-- ViewPager for the RecyclerView fragments -->
+        <androidx.viewpager2.widget.ViewPager2
+            android:layout_marginVertical="@dimen/inapp_banner_margin"
+            android:id="@+id/categories_view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:layout_below="@+id/categories_tab_parent_view" />
+    </RelativeLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

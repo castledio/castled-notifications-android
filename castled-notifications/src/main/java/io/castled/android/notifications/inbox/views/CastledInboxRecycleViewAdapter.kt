@@ -18,6 +18,7 @@ import io.castled.android.notifications.commons.ColorUtils
 import io.castled.android.notifications.commons.DateTimeUtils
 import io.castled.android.notifications.databinding.CastledInboxCellBinding
 import io.castled.android.notifications.inbox.model.InboxMessageType
+import io.castled.android.notifications.inbox.viewmodel.InboxViewModel
 import io.castled.android.notifications.store.models.Inbox
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -25,8 +26,12 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 
-internal class CastledInboxAdapter(val context: Context) :
-    RecyclerView.Adapter<CastledInboxAdapter.ViewHolder>() {
+internal class CastledInboxRecycleViewAdapter(
+    val context: Context,
+    private val viewModel: InboxViewModel,
+    private val tabFrgament: CastledCategoryTabFragment
+) :
+    RecyclerView.Adapter<CastledInboxRecycleViewAdapter.ViewHolder>() {
     // DAO instance to interact with the database
     internal var inboxItemsList = ArrayList<Inbox>()
     private var screenWidth = getScreenWidth()
@@ -104,7 +109,7 @@ internal class CastledInboxAdapter(val context: Context) :
                 keyVals?.let {
                     map["keyVals"] = JsonObject(keyVals)
                 }
-                (context as CastledInboxActivity).onClicked(
+                viewModel.inboxViewLifecycleListener.onClicked(
                     inbox, map
                 )
 
@@ -148,10 +153,10 @@ internal class CastledInboxAdapter(val context: Context) :
 
     internal fun deleteItem(position: Int) {
         try {
-            val itemToDelete = inboxItemsList.get(position)
-            inboxItemsList.removeAt(position)
+            val itemToDelete = inboxItemsList[position]
+            itemToDelete.isDeleted = true
             notifyItemRemoved(position)
-            (context as CastledInboxActivity).deleteItem(position, itemToDelete)
+            tabFrgament.deleteItem(position, itemToDelete)
         } catch (e: Exception) {
 
         }
@@ -192,7 +197,7 @@ internal class CastledInboxAdapter(val context: Context) :
                         child.setOnClickListener {
                             // Handle button click action here
                             buttonDetails?.let {
-                                (context as CastledInboxActivity).onClicked(
+                                viewModel.inboxViewLifecycleListener.onClicked(
                                     inbox, buttonDetails.toMap()
                                 )
                             }
