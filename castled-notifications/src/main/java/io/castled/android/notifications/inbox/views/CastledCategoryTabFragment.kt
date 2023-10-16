@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -14,11 +16,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.castled.android.notifications.commons.ColorUtils
 import io.castled.android.notifications.databinding.CastledInboxCategoryFragmentBinding
+import io.castled.android.notifications.inbox.AppInbox
+import io.castled.android.notifications.inbox.model.InboxResponseConverter.toInboxItem
 import io.castled.android.notifications.inbox.viewmodel.InboxViewModel
 import io.castled.android.notifications.store.models.Inbox
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 internal class CastledCategoryTabFragment : Fragment() {
-
 
     private lateinit var binding: CastledInboxCategoryFragmentBinding
     private lateinit var viewModel: InboxViewModel
@@ -44,24 +49,23 @@ internal class CastledCategoryTabFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         binding = CastledInboxCategoryFragmentBinding.inflate(layoutInflater)
         context = requireContext()
-        viewModel = ViewModelProvider(this)[InboxViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[InboxViewModel::class.java]
         viewModel.displayConfig?.let {
             customizeViews()
         }
         currentCategoryIndex = arguments?.getInt(ARG_INDEX, 0) ?: 0
         currentCategory = arguments?.getString(ARG_CAT, "") ?: ""
-        println("viewModel.displayedItems count  ${viewModel.displayedItems.count()}--- $viewModel.displayedItems")
         prepareRecyclerView()
         initializeDaoListener()
         return binding.root
     }
 
     private fun customizeViews() {
-        binding.inboxRecycleView.setBackgroundColor(
+        binding.viewBg.setBackgroundColor(
             ColorUtils.parseColor(
                 viewModel.displayConfig!!.inboxViewBackgroundColor,
                 Color.WHITE
@@ -74,34 +78,24 @@ internal class CastledCategoryTabFragment : Fragment() {
                 Color.BLACK
             )
         )
-        binding.progressBar.setBackgroundColor(
-            ColorUtils.parseColor(
-                viewModel.displayConfig!!.navigationBarBackgroundColor,
-                Color.BLUE
-            )
-        )
     }
 
-    fun initializeDaoListener() {
+    private fun initializeDaoListener() {
         viewModel.inboxRepository.observeInboxLiveDataWithTag(
             if (currentCategoryIndex == 0) ""
             else currentCategory
         )
             .observe(viewLifecycleOwner) { inboxList ->
-                viewModel.inboxRepository.cachedInboxItems.clear()
-                viewModel.inboxRepository.cachedInboxItems.addAll(inboxList)
                 inboxListAdapter.setInboxItems(inboxList)
                 binding.inboxRecycleView.visibility =
                     if (inboxList.isEmpty()) View.GONE else View.VISIBLE
                 binding.txtEmptyView.visibility =
                     if (inboxList.isEmpty()) View.VISIBLE else View.GONE
-
-
             }
     }
 
     private fun prepareRecyclerView() {
-        inboxListAdapter = CastledInboxRecycleViewAdapter(context, viewModel)
+        inboxListAdapter = CastledInboxRecycleViewAdapter(context, viewModel, this)
         binding.inboxRecycleView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = inboxListAdapter
@@ -118,11 +112,9 @@ internal class CastledCategoryTabFragment : Fragment() {
                     for (i in firstVisibleItemPosition..lastVisibleItemPosition) {
                         if (i >= 0 && i < inboxListAdapter.inboxItemsList.size) {
                             val data = inboxListAdapter.inboxItemsList[i]
-                            viewModel.displayedItems.add(data.messageId)
-                            //  if (!data.isRead && !viewModel.displayedItems.contains(data.messageId))
-//                            {
-//                                viewModel.displayedItems.add(data.messageId)
-//                            }
+                            if (!data.isRead && !viewModel.displayedItems.contains(data.messageId)) {
+                                viewModel.displayedItems.add(data.messageId)
+                            }
                         }
                     }
 
@@ -132,27 +124,23 @@ internal class CastledCategoryTabFragment : Fragment() {
     }
 
     internal fun deleteItem(position: Int, item: Inbox) {
-        /*  binding.progressBar.visibility = ProgressBar.VISIBLE
-          AppInbox.deleteInboxItem(item.toInboxItem()) { success, message ->
-              this@CastledInboxActivity.launch(Dispatchers.Main) {
-                  if (success) {
-                      displayedItems.remove(item)
-                  } else {
-                      val toast = Toast.makeText(
-                          this@CastledInboxActivity, message, Toast.LENGTH_LONG
-                      )
-                      toast.show()
-                      inboxListAdapter.inboxItemsList.add(position, item)
-                      inboxListAdapter.reloadRecyclerView()
-                  }
-                  binding.progressBar.visibility = ProgressBar.GONE
-              }
-          }*/
-    }
-
-    internal fun onClicked(
-        inboxItem: Inbox, actionParams: Map<String, Any>
-    ) {
-        viewModel.inboxViewLifecycleListener.onClicked(inboxItem, actionParams)
+        (context as CastledInboxActivity).launch(Dispatchers.IO) {
+            item.isDeleted = true
+            viewModel.inboxRepository.inboxDao.updateInboxItem(item)
+        }
+        binding.progressBar.visibility = ProgressBar.VISIBLE
+        AppInbox.deleteInboxItem(item.toInboxItem()) { success, message ->
+            (context as CastledInboxActivity).launch(Dispatchers.Main) {
+                if (success) {
+                    viewModel.displayedItems.remove(item.messageId)
+                } else {
+                    val toast = Toast.makeText(
+                        context, message, Toast.LENGTH_LONG
+                    )
+                    toast.show()
+                }
+                binding.progressBar.visibility = ProgressBar.GONE
+            }
+        }
     }
 }

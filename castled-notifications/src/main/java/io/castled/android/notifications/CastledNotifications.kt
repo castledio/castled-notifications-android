@@ -191,7 +191,6 @@ object CastledNotifications {
 
             } else {
                 logger.verbose("enableAppInbox while initializing the sdk")
-
             }
         }
 

@@ -26,7 +26,11 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 
-internal class CastledInboxRecycleViewAdapter(val context: Context, val viewModel: InboxViewModel) :
+internal class CastledInboxRecycleViewAdapter(
+    val context: Context,
+    private val viewModel: InboxViewModel,
+    private val tabFrgament: CastledCategoryTabFragment
+) :
     RecyclerView.Adapter<CastledInboxRecycleViewAdapter.ViewHolder>() {
     // DAO instance to interact with the database
     internal var inboxItemsList = ArrayList<Inbox>()
@@ -38,7 +42,6 @@ internal class CastledInboxRecycleViewAdapter(val context: Context, val viewMode
 
     // function to inflate the layout for each contact and create a new ViewHolder instance
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-
         return ViewHolder(
             CastledInboxCellBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         )
@@ -139,7 +142,7 @@ internal class CastledInboxRecycleViewAdapter(val context: Context, val viewMode
         reloadRecyclerView()
     }
 
-    private fun reloadRecyclerView() {
+    internal fun reloadRecyclerView() {
         notifyDataSetChanged()
     }
 
@@ -150,11 +153,10 @@ internal class CastledInboxRecycleViewAdapter(val context: Context, val viewMode
 
     internal fun deleteItem(position: Int) {
         try {
-            val itemToDelete = inboxItemsList.get(position)
-            inboxItemsList.removeAt(position)
+            val itemToDelete = inboxItemsList[position]
+            itemToDelete.isDeleted = true
             notifyItemRemoved(position)
-            //todo
-            //  (context as CastledInboxActivity).deleteItem(position, itemToDelete)
+            tabFrgament.deleteItem(position, itemToDelete)
         } catch (e: Exception) {
 
         }

@@ -23,7 +23,8 @@ internal object InboxResponseConverter {
             dateAdded = this.dateAdded,
             updatedTime = this.updatedTs,
             isPinned = this.pinningEnabled,
-            tag = this.tag ?: ""
+            tag = this.tag ?: "",
+            isDeleted = false
         )
     }
 

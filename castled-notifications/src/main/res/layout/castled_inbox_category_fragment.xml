@@ -2,7 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/view_bg"
-    android:background="@android:color/white">
+    android:background="@android:color/transparent">
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -27,5 +27,7 @@
         android:text="We have no updates. Please check again later."
         android:textSize="18sp"
         android:textAlignment="center"
+        android:background="@android:color/transparent"
+
         android:paddingHorizontal="20dp" />
 </RelativeLayout>

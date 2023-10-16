@@ -9,7 +9,7 @@
         android:id="@android:id/text1"
         android:layout_width="match_parent"
         android:text=""
-        android:paddingHorizontal="10dp"
+        android:paddingHorizontal="12dp"
         android:gravity="center"
         android:textSize="16sp"
         android:textColor="@android:color/black"

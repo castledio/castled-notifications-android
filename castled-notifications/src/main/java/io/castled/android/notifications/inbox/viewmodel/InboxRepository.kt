@@ -22,8 +22,8 @@ internal class InboxRepository(context: Context) {
     private val logger = CastledLogger.getInstance(LogTags.INBOX_REPOSITORY)
     private val inboxApi = CastledRetrofitClient.create(InboxApi::class.java)
     private val networkWorkManager = CastledNetworkWorkManager.getInstance(context)
-    internal val cachedInboxItems = mutableListOf<Inbox>()
     internal suspend fun refreshInbox() {
+        val cachedInboxItems = inboxDao.dbGetInbox()
         val liveInboxResponse = fetchLiveInbox() ?: return
         val liveInboxItems = liveInboxResponse.map { it.toInbox() }
         val cachedInboxItemsMapById = cachedInboxItems.associateBy { it.messageId }
@@ -72,21 +72,25 @@ internal class InboxRepository(context: Context) {
     internal suspend fun deleteInboxItem(
         inboxItem: CastledInboxItem, completion: (Boolean, String) -> Unit
     ) {
+        val inboxObject = inboxDao.getInboxObjectByMessageId(inboxItem.messageId)
+
         try {
             val response = inboxApi.reportInboxEvent(
                 CastledSharedStore.getAppId(), InboxEventUtils.getInboxEventRequest(
                     inboxItem, "", "DELETED"
                 )
             )
-            if (response.isSuccessful) {
 
-                val inboxObject = inboxDao.getInboxObjectByMessageId(inboxItem.messageId)
+            if (response.isSuccessful) {
                 inboxObject?.let {
                     inboxDao.delete(inboxObject)
                 }
                 completion(true, "")
                 return
             } else {
+                inboxObject?.let {
+                    resetInboxObjectStatusAfterFailure(inboxObject)
+                }
                 // Handle API errors (e.g., 4xx or 5xx status codes)
                 val errorMessage = response.errorBody()?.string() ?: "Unknown error"
                 logger.error(errorMessage)
@@ -95,22 +99,28 @@ internal class InboxRepository(context: Context) {
             }
         } catch (e: IOException) {
             logger.error("Network error!", e)
+            inboxObject?.let {
+                resetInboxObjectStatusAfterFailure(inboxObject)
+            }
             completion(false, e.localizedMessage ?: "Network error while deleting inbox item!!")
 
         } catch (e: Exception) {
             logger.error("Unknown error!", e)
+            inboxObject?.let {
+                resetInboxObjectStatusAfterFailure(inboxObject)
+            }
             completion(false, e.localizedMessage ?: "Unknown error while deleting inbox item!")
         }
 
     }
 
-    suspend fun getCategoryTags(): List<String> {
-        val uniqueTagsWithAll = inboxDao.getUniqueNonEmptyTags()
-        return listOf("All") + uniqueTagsWithAll
+    fun resetInboxObjectStatusAfterFailure(inboxObject: Inbox) {
+        inboxObject.isDeleted = false
+        inboxDao.updateInboxItem(inboxObject)
     }
 
-    internal fun observeInboxLiveData(): LiveData<List<Inbox>> {
-        return inboxDao.getInboxItems()
+    suspend fun getCategoryTags(): List<String> {
+        return inboxDao.getUniqueNonEmptyTags()
     }
 
     internal fun observeInboxLiveDataWithTag(tag: String): LiveData<List<Inbox>> {

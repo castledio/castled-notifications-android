@@ -56,6 +56,9 @@ internal data class Inbox(
     @ColumnInfo(name = "is_read")
     var isRead: Boolean,
 
+    @ColumnInfo(name = "is_deleted", defaultValue = "false")
+    var isDeleted: Boolean,
+
     @ColumnInfo(name = "is_pinned")
     var isPinned: Boolean,
 

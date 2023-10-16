@@ -11,11 +11,11 @@ import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.view.View
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
@@ -34,7 +34,7 @@ import java.io.Serializable
 
 internal class CastledInboxActivity : AppCompatActivity(),
     CoroutineScope by CoroutineScope(Dispatchers.Main) {
-    private lateinit var viewModel: InboxViewModel
+    private val viewModel: InboxViewModel by viewModels()
     private lateinit var binding: ActivityCastledInboxBinding
     private lateinit var inboxRepository: InboxRepository
     private var categories = mutableListOf<String>()
@@ -52,14 +52,10 @@ internal class CastledInboxActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         binding = ActivityCastledInboxBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel = ViewModelProvider(this)[InboxViewModel::class.java]
-
-        println("activity viewModel.displayedItems count  ${viewModel.displayedItems.count()}--- $viewModel.displayedItems")
-
         inboxRepository = viewModel.inboxRepository
         categoriesTab = binding.categoriesTab
         viewPager = binding.categoriesViewPager
-        viewPager.isUserInputEnabled = false;
+        viewPager.isUserInputEnabled = false
         binding.imgClose.setOnClickListener { finishAfterTransition() }
         val displayConfig = getSerializable(
             this, "displayConfig",
@@ -68,20 +64,36 @@ internal class CastledInboxActivity : AppCompatActivity(),
         displayConfig?.let {
             viewModel.displayConfig = displayConfig
             customizeViews(displayConfig)
+            populateTabs(displayConfig.showCategoriesTab)
         } ?: run {
             supportActionBar?.let {
                 binding.toolbar.visibility = View.GONE
             }
+            populateTabs(true)
+        }
+
+    }
+
+    private fun populateTabs(withTab: Boolean) {
+        launch(Dispatchers.Default) {
+            inboxRepository.refreshInbox()
         }
         launch(Dispatchers.IO) {
-            inboxRepository.refreshInbox()
-            val newCategories = inboxRepository.getCategoryTags()
-            launch(Dispatchers.Main) {
-                categories.clear()
-                categories.addAll(newCategories)
-                prepareViewPager()
+            categories.clear()
+            categories.add("All")
+            if (withTab) {
+                val newCategories = inboxRepository.getCategoryTags()
+                launch(Dispatchers.Main) {
+                    categories.addAll(newCategories)
+                    prepareViewPager()
+                }
+            } else {
+                launch(Dispatchers.Main) {
+                    prepareViewPager()
+                }
             }
         }
+
     }
 
     private fun customizeViews(displayConfig: CastledInboxDisplayConfig) {
@@ -129,6 +141,7 @@ internal class CastledInboxActivity : AppCompatActivity(),
                 Color.WHITE
             )
         )
+        binding.categoriesTab.setBackgroundColor(unselectedTabColor)
         binding.toolbar.visibility =
             if (displayConfig.hideNavigationBar) View.GONE else View.VISIBLE
 
@@ -144,7 +157,7 @@ internal class CastledInboxActivity : AppCompatActivity(),
                             (android.R.attr.colorPrimary)
                         )
                     )
-                );
+                )
                 val text: Spannable = SpannableString(displayConfig.navigationBarTitle)
                 text.setSpan(
                     ForegroundColorSpan(
@@ -165,8 +178,6 @@ internal class CastledInboxActivity : AppCompatActivity(),
 
     override fun onPause() {
         super.onPause()
-        println("activity onPause viewModel.displayedItems count  ${viewModel.displayedItems.count()}--- $viewModel.displayedItems")
-
         if (viewModel.displayedItems.isNotEmpty()) {
             viewModel.inboxViewLifecycleListener.registerReadEvents(viewModel.displayedItems)
         }
