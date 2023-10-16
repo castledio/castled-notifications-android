@@ -22,9 +22,9 @@ internal class InboxLifeCycleListenerImpl(private val context: Context) {
     }
 
     fun registerReadEvents(
-        inboxItems: Set<Inbox>
+        inboxItems: Set<Long>
     ) {
-        AppInbox.reportReadEventsWithObjects(inboxItems)
+        AppInbox.reportInboxIdsRead(inboxItems)
     }
 
     fun onClicked(

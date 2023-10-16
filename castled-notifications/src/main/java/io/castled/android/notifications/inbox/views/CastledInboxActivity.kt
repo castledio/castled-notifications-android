@@ -26,7 +26,6 @@ import io.castled.android.notifications.databinding.ActivityCastledInboxBinding
 import io.castled.android.notifications.inbox.model.CastledInboxDisplayConfig
 import io.castled.android.notifications.inbox.viewmodel.InboxRepository
 import io.castled.android.notifications.inbox.viewmodel.InboxViewModel
-import io.castled.android.notifications.store.models.Inbox
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,8 +34,6 @@ import java.io.Serializable
 
 internal class CastledInboxActivity : AppCompatActivity(),
     CoroutineScope by CoroutineScope(Dispatchers.Main) {
-    val displayedItems = mutableSetOf<Inbox>()
-
     private lateinit var viewModel: InboxViewModel
     private lateinit var binding: ActivityCastledInboxBinding
     private lateinit var inboxRepository: InboxRepository
@@ -45,9 +42,9 @@ internal class CastledInboxActivity : AppCompatActivity(),
     private lateinit var viewPager: ViewPager2
     private var selectedTabColor = Color.BLACK
     private var unselectedTabColor = Color.WHITE
-    private var selectedTabTextColor = 0XFF0000 // Red text for selected tab
-    private var unselectedTabTextColor = 0X0000FF // Blue text for unselected tab
-    private var selectedIndicatorColor = 0X0000FF // Blue text for unselected tab
+    private var selectedTabTextColor = 0XFF0000
+    private var unselectedTabTextColor = 0X0000FF
+    private var selectedIndicatorColor = 0X0000FF
     private var marginInPixels = 5
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -56,6 +53,9 @@ internal class CastledInboxActivity : AppCompatActivity(),
         binding = ActivityCastledInboxBinding.inflate(layoutInflater)
         setContentView(binding.root)
         viewModel = ViewModelProvider(this)[InboxViewModel::class.java]
+
+        println("activity viewModel.displayedItems count  ${viewModel.displayedItems.count()}--- $viewModel.displayedItems")
+
         inboxRepository = viewModel.inboxRepository
         categoriesTab = binding.categoriesTab
         viewPager = binding.categoriesViewPager
@@ -66,6 +66,7 @@ internal class CastledInboxActivity : AppCompatActivity(),
             CastledInboxDisplayConfig::class.java
         )
         displayConfig?.let {
+            viewModel.displayConfig = displayConfig
             customizeViews(displayConfig)
         } ?: run {
             supportActionBar?.let {
@@ -128,7 +129,6 @@ internal class CastledInboxActivity : AppCompatActivity(),
                 Color.WHITE
             )
         )
-
         binding.toolbar.visibility =
             if (displayConfig.hideNavigationBar) View.GONE else View.VISIBLE
 
@@ -165,8 +165,10 @@ internal class CastledInboxActivity : AppCompatActivity(),
 
     override fun onPause() {
         super.onPause()
-        if (displayedItems.size > 0) {
-            viewModel.inboxViewLifecycleListener.registerReadEvents(displayedItems)
+        println("activity onPause viewModel.displayedItems count  ${viewModel.displayedItems.count()}--- $viewModel.displayedItems")
+
+        if (viewModel.displayedItems.isNotEmpty()) {
+            viewModel.inboxViewLifecycleListener.registerReadEvents(viewModel.displayedItems)
         }
         // Perform actions when the fragment is no longer visible
     }

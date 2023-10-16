@@ -47,6 +47,19 @@ internal object AppInbox {
         }
     }
 
+    fun reportInboxIdsRead(ids: Set<Long>) {
+        if (!enabled || CastledSharedStore.getUserId() == null) {
+            logger.debug("Ignoring inbox event, Castled inbox disabled/ UserId not configured")
+            return
+        }
+        externalScope.launch(Dispatchers.Default) {
+            val inboxObjects =
+                inboxRepository.inboxDao.getInboxObjectsByMessageIds(ids.toList())
+            if (inboxObjects.isNotEmpty())
+                reportReadEventsWithObjects(inboxObjects.toSet())
+        }
+    }
+
     suspend fun reportReadEventsWithItems(inboxItems: List<CastledInboxItem>) {
         if (!enabled || CastledSharedStore.getUserId() == null) {
             logger.debug("Ignoring inbox event, Castled inbox disabled/ UserId not configured")
@@ -55,7 +68,8 @@ internal object AppInbox {
         externalScope.launch(Dispatchers.Default) {
             val inboxObjects =
                 inboxRepository.inboxDao.getInboxObjectsByMessageIds(inboxItems.map { it.messageId })
-            reportReadEventsWithObjects(inboxObjects.toSet())
+            if (!inboxObjects.isEmpty())
+                reportReadEventsWithObjects(inboxObjects.toSet())
         }
     }
 

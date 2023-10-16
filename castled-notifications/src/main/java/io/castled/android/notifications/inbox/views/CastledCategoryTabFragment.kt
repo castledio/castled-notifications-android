@@ -2,6 +2,7 @@ package io.castled.android.notifications.inbox.views
 
 import SwipeToDeleteCallback
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.castled.android.notifications.commons.ColorUtils
 import io.castled.android.notifications.databinding.CastledInboxCategoryFragmentBinding
 import io.castled.android.notifications.inbox.viewmodel.InboxViewModel
 import io.castled.android.notifications.store.models.Inbox
@@ -47,11 +49,37 @@ internal class CastledCategoryTabFragment : Fragment() {
         binding = CastledInboxCategoryFragmentBinding.inflate(layoutInflater)
         context = requireContext()
         viewModel = ViewModelProvider(this)[InboxViewModel::class.java]
+        viewModel.displayConfig?.let {
+            customizeViews()
+        }
         currentCategoryIndex = arguments?.getInt(ARG_INDEX, 0) ?: 0
         currentCategory = arguments?.getString(ARG_CAT, "") ?: ""
+        println("viewModel.displayedItems count  ${viewModel.displayedItems.count()}--- $viewModel.displayedItems")
         prepareRecyclerView()
         initializeDaoListener()
         return binding.root
+    }
+
+    private fun customizeViews() {
+        binding.inboxRecycleView.setBackgroundColor(
+            ColorUtils.parseColor(
+                viewModel.displayConfig!!.inboxViewBackgroundColor,
+                Color.WHITE
+            )
+        )
+        binding.txtEmptyView.text = viewModel.displayConfig!!.emptyMessageViewText
+        binding.txtEmptyView.setTextColor(
+            ColorUtils.parseColor(
+                viewModel.displayConfig!!.emptyMessageViewTextColor,
+                Color.BLACK
+            )
+        )
+        binding.progressBar.setBackgroundColor(
+            ColorUtils.parseColor(
+                viewModel.displayConfig!!.navigationBarBackgroundColor,
+                Color.BLUE
+            )
+        )
     }
 
     fun initializeDaoListener() {
@@ -90,10 +118,11 @@ internal class CastledCategoryTabFragment : Fragment() {
                     for (i in firstVisibleItemPosition..lastVisibleItemPosition) {
                         if (i >= 0 && i < inboxListAdapter.inboxItemsList.size) {
                             val data = inboxListAdapter.inboxItemsList[i]
-                            if (!data.isRead) {
-                                //todo
-                                //   displayedItems.add(data)
-                            }
+                            viewModel.displayedItems.add(data.messageId)
+                            //  if (!data.isRead && !viewModel.displayedItems.contains(data.messageId))
+//                            {
+//                                viewModel.displayedItems.add(data.messageId)
+//                            }
                         }
                     }
 

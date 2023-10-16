@@ -45,6 +45,8 @@ object Versions {
     const val mvvmLifecycleCommon = "2.5.1"
     const val mvvmLifecycleViewmodel = "2.5.1"
     const val mvvmActivity = "1.6.1"
+    const val fragment = "1.3.5"
+
 }
 
 object Libs {
@@ -86,7 +88,8 @@ object Libs {
     // Default Android Dependencies
     const val appCompat = "androidx.appcompat:appcompat:${Versions.appCompat}"
     const val lifecycleProcess = "androidx.lifecycle:lifecycle-process:${Versions.lifecycleProcess}"
-    const val constraintLayout = "androidx.constraintlayout:constraintlayout:${Versions.constraintLayout}"
+    const val constraintLayout =
+        "androidx.constraintlayout:constraintlayout:${Versions.constraintLayout}"
 
     // Google
     const val googleServices = "com.google.gms:google-services:${Versions.google}"
@@ -98,8 +101,12 @@ object Libs {
     const val recycleView = "androidx.recyclerview:recyclerview:${Versions.recycleView}"
 
     //MVVM
-    const val mvvmLifecycleExtensions = "androidx.lifecycle:lifecycle-extensions:${Versions.mvvmLifecycleExtensions}"
-    const val mvvmLifecycleCommon = "androidx.lifecycle:lifecycle-common-java8:${Versions.mvvmLifecycleCommon}"
-    const val mvvmLifecycleViewmodel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.mvvmLifecycleViewmodel}"
+    const val mvvmLifecycleExtensions =
+        "androidx.lifecycle:lifecycle-extensions:${Versions.mvvmLifecycleExtensions}"
+    const val mvvmLifecycleCommon =
+        "androidx.lifecycle:lifecycle-common-java8:${Versions.mvvmLifecycleCommon}"
+    const val mvvmLifecycleViewmodel =
+        "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.mvvmLifecycleViewmodel}"
     const val mvvmActivity = "androidx.activity:activity-ktx:${Versions.mvvmActivity}"
+    const val fragment = "androidx.fragment:fragment-ktx::${Versions.fragment}"
 }

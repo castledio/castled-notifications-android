@@ -1,12 +1,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/view_bg"
+    android:background="@android:color/white">
 
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/inbox_recycle_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@android:color/transparent"
         android:scrollbars="vertical" />
 
     <ProgressBar
