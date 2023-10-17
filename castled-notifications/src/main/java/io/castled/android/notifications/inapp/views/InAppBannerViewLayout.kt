@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import io.castled.android.notifications.R
+import io.castled.android.notifications.commons.ColorUtils
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.store.models.Campaign
@@ -37,7 +38,7 @@ class InAppBannerViewLayout(context: Context, attrs: AttributeSet) :
     override fun updateViewParams(inAppMessage: Campaign) {
         // TODO: testing with modal payload
         val modalParams = inAppMessage.message["banner"]?.jsonObject ?: run {
-            InAppModalViewLayout.logger.debug("banner object not present in in-app message!")
+            logger.debug("banner object not present in in-app message!")
             return
         }
         updateImageView(modalParams)
@@ -68,12 +69,9 @@ class InAppBannerViewLayout(context: Context, attrs: AttributeSet) :
         }
     }
 
-    private fun parseColor(colorStr: String?, defaultColor: Int): Int {
-        return try {
-            Color.parseColor(colorStr)
-        } catch (e: IllegalArgumentException) {
-            defaultColor
-        }
+    private fun parseColor(colorStr: String, defaultColor: Int): Int {
+        return ColorUtils.parseColor(colorStr, defaultColor)
+
     }
 
     companion object {

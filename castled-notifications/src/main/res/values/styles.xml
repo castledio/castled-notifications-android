@@ -111,7 +111,7 @@
 
     <style name="Castled.InApp.Modal.Layout.Buttons">
         <item name="android:orientation">horizontal</item>
-        <item name="android:layout_height">45dp</item>
+        <item name="android:layout_height">50dp</item>
         <item name="android:layout_marginBottom">@dimen/inapp_margin_vertical</item>
         <item name="android:layout_marginTop">@dimen/inbox_buttons_top_margin</item>
 

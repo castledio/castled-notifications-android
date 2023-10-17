@@ -20,7 +20,11 @@ object InAppViewFactory {
             InAppMessageUtils.getMessageTemplateType(
                 (msgBody["type"]?.jsonPrimitive?.content ?: "")
             )
-
+        return LayoutInflater.from(context)
+            .inflate(
+                R.layout.castled_inapp_modal_text_buttons,
+                null
+            ) as InAppBaseViewLayout
         return when (messageType) {
             InAppMessageType.MODAL ->
                 when (messageTemplateType) {
@@ -30,6 +34,7 @@ object InAppViewFactory {
                                 R.layout.castled_inapp_modal_default,
                                 null
                             ) as InAppBaseViewLayout
+
 
                     InAppMessageTemplateType.CUSTOM_HTML ->
                         LayoutInflater.from(context)
@@ -45,6 +50,13 @@ object InAppViewFactory {
                         LayoutInflater.from(context)
                             .inflate(
                                 R.layout.castled_inapp_fullscreen_default,
+                                null
+                            ) as InAppBaseViewLayout
+
+                    InAppMessageTemplateType.IMG_AND_BUTTONS ->
+                        LayoutInflater.from(context)
+                            .inflate(
+                                R.layout.castled_inapp_fullscreen_image_buttons,
                                 null
                             ) as InAppBaseViewLayout
 

@@ -11,7 +11,6 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.bumptech.glide.Glide
 import io.castled.android.notifications.R
 import io.castled.android.notifications.commons.CastledUtils
 import io.castled.android.notifications.commons.ColorUtils
@@ -21,9 +20,9 @@ import io.castled.android.notifications.store.models.Campaign
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 
-class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
+class InAppModalTextAndButtonsViewLayout(context: Context, attrs: AttributeSet) :
     InAppBaseViewLayout(context, attrs) {
-    
+
     override val viewContainer: View?
         get() = findViewById(R.id.castled_inapp_modal_container)
     override val headerView: TextView?
@@ -46,7 +45,7 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
             logger.debug("Model object not present in in-app message!")
             return
         }
-        updateImageView(modalParams)
+        // updateImageView(modalParams)
         updateHeaderView(modalParams)
         updateMessageView(modalParams)
         updatePrimaryBtnView(modalParams)
@@ -69,17 +68,15 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             // Device is in portrait orientation
-            imageView!!.layoutParams.height = (dialogSize.x * 1 / 2)
             headerViewMaxLines = 3
             messageViewMaxLines = 5
 
         } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             // Device is in landscape orientation
-            imageView!!.layoutParams.height = (dialogSize.x * 1 / 5)
-            messageViewMaxLines = 2
-            headerViewMaxLines = 2
+            messageViewMaxLines = 3
+            headerViewMaxLines = 5
         }
-        val remainingHeight = dialogSize.y - imageView!!.layoutParams.height
+        val remainingHeight = dialogSize.y
         headerView!!.maxHeight = remainingHeight * 1 / 4
         messageView!!.maxHeight = remainingHeight * 2 / 4
         // remaining 1/4th for buttons
@@ -87,15 +84,6 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
         // need to set maxLines after setting maxHeight
         headerView!!.maxLines = headerViewMaxLines
         messageView!!.maxLines = messageViewMaxLines
-    }
-
-    private fun updateImageView(modalParams: JsonObject) {
-        val imageViewParams = InAppViewUtils.getImageViewParams(modalParams)
-        if (imageViewParams != null && imageView != null) {
-            Glide.with(imageView!!.context)
-                .load(imageViewParams.imageUrl).placeholder(R.drawable.castled_placeholder)
-                .into(imageView!!)
-        }
     }
 
     private fun updateHeaderView(modalParams: JsonObject) {
@@ -130,7 +118,12 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
 
     private fun updatePrimaryBtnView(modalParams: JsonObject) {
         val primaryButtonViewParams = InAppViewUtils.getPrimaryButtonViewParams(modalParams)
-            ?: return
+            ?: run {
+                primaryButton?.let {
+                    primaryButton!!.visibility = android.view.View.GONE
+                }
+                return
+            }
         primaryButton?.apply {
             setTextColor(parseColor(primaryButtonViewParams.fontColor, Color.WHITE))
             CastledUtils.changeBackgroundColorAndBorderColor(
@@ -144,7 +137,12 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
 
     private fun updateSecondaryBtnView(modalParams: JsonObject) {
         val secondaryButtonViewParams = InAppViewUtils.getSecondaryButtonViewParams(modalParams)
-            ?: return
+            ?: run {
+                buttonViewContainer?.let {
+                    buttonViewContainer!!.visibility = android.view.View.GONE
+                }
+                return
+            }
         secondaryButton?.apply {
             setTextColor(parseColor(secondaryButtonViewParams.fontColor, Color.BLACK))
             CastledUtils.changeBackgroundColorAndBorderColor(

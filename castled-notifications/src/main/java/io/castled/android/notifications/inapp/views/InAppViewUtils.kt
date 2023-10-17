@@ -71,7 +71,10 @@ object InAppViewUtils {
     }
 
     fun getPrimaryButtonActionParams(modal: JsonObject): ClickActionParams? {
-        val buttons = modal["actionButtons"]?.jsonArray ?: return null
+        val buttons = modal["actionButtons"]?.jsonArray
+        if (buttons.isNullOrEmpty() || buttons.size < 2) {
+            return null
+        }
         val primaryButtonJson = buttons.last().jsonObject
         val keyVals = primaryButtonJson["keyVals"]?.jsonObject
         return ClickActionParams(
@@ -101,7 +104,7 @@ object InAppViewUtils {
 
     fun getSecondaryButtonViewParams(modal: JsonObject): ButtonViewParams? {
         val buttons = modal["actionButtons"]?.jsonArray
-        if (buttons.isNullOrEmpty() || buttons.size < 2) {
+        if (buttons.isNullOrEmpty() || buttons.size < 1) {
             return null
         }
         val secondaryButtonJson = buttons.first().jsonObject
