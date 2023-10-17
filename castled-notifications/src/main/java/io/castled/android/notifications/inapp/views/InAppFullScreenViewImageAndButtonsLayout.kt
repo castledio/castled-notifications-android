@@ -61,7 +61,7 @@ class InAppFullScreenViewImageAndButtonsLayout(context: Context, attrs: Attribut
         val primaryButtonViewParams = InAppViewUtils.getPrimaryButtonViewParams(modalParams)
             ?: run {
                 primaryButton?.let {
-                    primaryButton!!.visibility = android.view.View.GONE
+                    primaryButton!!.visibility = GONE
                 }
                 return
             }
@@ -80,7 +80,7 @@ class InAppFullScreenViewImageAndButtonsLayout(context: Context, attrs: Attribut
         val secondaryButtonViewParams = InAppViewUtils.getSecondaryButtonViewParams(modalParams)
             ?: run {
                 buttonViewContainer?.let {
-                    buttonViewContainer!!.visibility = android.view.View.GONE
+                    buttonViewContainer!!.visibility = GONE
                 }
                 return
             }

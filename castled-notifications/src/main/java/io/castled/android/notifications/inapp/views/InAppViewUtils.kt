@@ -43,7 +43,10 @@ object InAppViewUtils {
     }
 
     fun getPrimaryButtonViewParams(modal: JsonObject): ButtonViewParams? {
-        val buttons = modal["actionButtons"]?.jsonArray ?: return null
+        val buttons = modal["actionButtons"]?.jsonArray
+        if (buttons.isNullOrEmpty() || buttons.size < 2) {
+            return null
+        }
         val primaryButtonJson = buttons.last().jsonObject
         val keyVals = primaryButtonJson["keyVals"]?.jsonObject
         return ButtonViewParams(

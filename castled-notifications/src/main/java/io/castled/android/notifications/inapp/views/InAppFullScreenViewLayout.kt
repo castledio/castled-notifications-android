@@ -95,7 +95,12 @@ class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) :
 
     private fun updatePrimaryBtnView(modalParams: JsonObject) {
         val primaryButtonViewParams = InAppViewUtils.getPrimaryButtonViewParams(modalParams)
-            ?: return
+            ?: run {
+                primaryButton?.let {
+                    primaryButton!!.visibility = GONE
+                }
+                return
+            }
         primaryButton?.apply {
             setTextColor(parseColor(primaryButtonViewParams.fontColor, Color.WHITE))
             CastledUtils.changeBackgroundColorAndBorderColor(
@@ -109,7 +114,12 @@ class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) :
 
     private fun updateSecondaryBtnView(modalParams: JsonObject) {
         val secondaryButtonViewParams = InAppViewUtils.getSecondaryButtonViewParams(modalParams)
-            ?: return
+            ?: run {
+                buttonViewContainer?.let {
+                    buttonViewContainer!!.visibility = GONE
+                }
+                return
+            }
         secondaryButton?.apply {
             setTextColor(parseColor(secondaryButtonViewParams.fontColor, Color.BLACK))
             CastledUtils.changeBackgroundColorAndBorderColor(
@@ -129,13 +139,13 @@ class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) :
 
         val screenSize = CastledUtils.getScreenSize(context)
         val dialogSize = Point(
-            (screenSize.x).toInt(),
-            (screenSize.y).toInt()
+            (screenSize.x),
+            (screenSize.y)
         )
         val orientation =
             CastledUtils.getCurrentOrientation(context) // Assuming you are inside an activity
-        var messageViewMaxLines: Int = 0
-        var headerViewMaxLines: Int = 0
+        var messageViewMaxLines = 0
+        var headerViewMaxLines = 0
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             // Device is in portrait orientation

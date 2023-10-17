@@ -2,6 +2,7 @@ package io.castled.android.notifications.inapp.views
 
 import android.content.Context
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Point
 import android.util.AttributeSet
@@ -63,8 +64,8 @@ class InAppModalTextAndButtonsViewLayout(context: Context, attrs: AttributeSet) 
         )
         val orientation =
             CastledUtils.getCurrentOrientation(context) // Assuming you are inside an activity
-        var messageViewMaxLines: Int = 0
-        var headerViewMaxLines: Int = 0
+        var messageViewMaxLines = 0
+        var headerViewMaxLines = 0
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             // Device is in portrait orientation
@@ -84,6 +85,24 @@ class InAppModalTextAndButtonsViewLayout(context: Context, attrs: AttributeSet) 
         // need to set maxLines after setting maxHeight
         headerView!!.maxLines = headerViewMaxLines
         messageView!!.maxLines = messageViewMaxLines
+
+        val density = Resources.getSystem().displayMetrics.density.toInt()
+        val verticalPadding =
+            context.resources.getString(R.string.inapp_modal_text_button_vertical_padding)
+                .toInt() * density
+        val horizontalPadding =
+            context.resources.getString(R.string.inapp_modal_text_button_horizontal_padding)
+                .toInt() * density
+
+        headerView!!.setPadding(
+            horizontalPadding,
+            verticalPadding + verticalPadding / 4,
+            horizontalPadding,
+            verticalPadding / 2
+        )
+        messageView!!.setPadding(
+            horizontalPadding, verticalPadding / 2, horizontalPadding, verticalPadding
+        )
     }
 
     private fun updateHeaderView(modalParams: JsonObject) {
@@ -94,6 +113,7 @@ class InAppModalTextAndButtonsViewLayout(context: Context, attrs: AttributeSet) 
             setTextSize(TypedValue.COMPLEX_UNIT_SP, headerViewParams.fontSize)
             text = headerViewParams.header
         }
+
     }
 
     private fun updateMessageView(modalParams: JsonObject) {
@@ -114,13 +134,14 @@ class InAppModalTextAndButtonsViewLayout(context: Context, attrs: AttributeSet) 
             )
         }
 
+
     }
 
     private fun updatePrimaryBtnView(modalParams: JsonObject) {
         val primaryButtonViewParams = InAppViewUtils.getPrimaryButtonViewParams(modalParams)
             ?: run {
                 primaryButton?.let {
-                    primaryButton!!.visibility = android.view.View.GONE
+                    primaryButton!!.visibility = GONE
                 }
                 return
             }
@@ -139,7 +160,7 @@ class InAppModalTextAndButtonsViewLayout(context: Context, attrs: AttributeSet) 
         val secondaryButtonViewParams = InAppViewUtils.getSecondaryButtonViewParams(modalParams)
             ?: run {
                 buttonViewContainer?.let {
-                    buttonViewContainer!!.visibility = android.view.View.GONE
+                    buttonViewContainer!!.visibility = GONE
                 }
                 return
             }

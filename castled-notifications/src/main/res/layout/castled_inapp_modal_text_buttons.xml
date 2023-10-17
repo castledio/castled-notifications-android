@@ -27,8 +27,7 @@
 
                 <TextView
                     android:id="@+id/castled_inapp_modal_title"
-                    style="@style/Castled.InApp.Text.Title"
-                    android:includeFontPadding="false" />
+                    style="@style/Castled.InApp.Text.Title" />
 
                 <TextView
                     android:id="@+id/castled_inapp_modal_message"

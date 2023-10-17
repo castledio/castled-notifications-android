@@ -23,7 +23,7 @@ import kotlinx.serialization.json.jsonObject
 
 class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
     InAppBaseViewLayout(context, attrs) {
-    
+
     override val viewContainer: View?
         get() = findViewById(R.id.castled_inapp_modal_container)
     override val headerView: TextView?
@@ -64,8 +64,8 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
         )
         val orientation =
             CastledUtils.getCurrentOrientation(context) // Assuming you are inside an activity
-        var messageViewMaxLines: Int = 0
-        var headerViewMaxLines: Int = 0
+        var messageViewMaxLines = 0
+        var headerViewMaxLines = 0
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             // Device is in portrait orientation
@@ -130,7 +130,12 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
 
     private fun updatePrimaryBtnView(modalParams: JsonObject) {
         val primaryButtonViewParams = InAppViewUtils.getPrimaryButtonViewParams(modalParams)
-            ?: return
+            ?: run {
+                primaryButton?.let {
+                    primaryButton!!.visibility = GONE
+                }
+                return
+            }
         primaryButton?.apply {
             setTextColor(parseColor(primaryButtonViewParams.fontColor, Color.WHITE))
             CastledUtils.changeBackgroundColorAndBorderColor(
@@ -144,7 +149,12 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
 
     private fun updateSecondaryBtnView(modalParams: JsonObject) {
         val secondaryButtonViewParams = InAppViewUtils.getSecondaryButtonViewParams(modalParams)
-            ?: return
+            ?: run {
+                buttonViewContainer?.let {
+                    buttonViewContainer!!.visibility = GONE
+                }
+                return
+            }
         secondaryButton?.apply {
             setTextColor(parseColor(secondaryButtonViewParams.fontColor, Color.BLACK))
             CastledUtils.changeBackgroundColorAndBorderColor(
