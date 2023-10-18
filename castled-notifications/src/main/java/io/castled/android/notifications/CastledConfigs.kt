@@ -19,8 +19,8 @@ data class CastledConfigs(
         private var enableTracking: Boolean = false
         private var enableAppInbox: Boolean = false
 
-        private var inAppFetchIntervalSec = 3600L
-        private var inBoxFetchIntervalSec = 3600L
+        private var inAppFetchIntervalSec = 600L
+        private var inBoxFetchIntervalSec = 600L
 
         private var castledLocation = CastledLocation.US
         private var xiaomiAppId: String? = null

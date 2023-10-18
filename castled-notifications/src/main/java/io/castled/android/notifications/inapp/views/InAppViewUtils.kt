@@ -65,7 +65,9 @@ object InAppViewUtils {
     fun getInAppRootActionParams(modal: JsonObject): ClickActionParams {
         return ClickActionParams(
             actionLabel = null,
-            action = CastledClickAction.valueOf(modal["defaultClickAction"]?.jsonPrimitive?.content!!),
+            action = CastledClickAction.valueOf(
+                modal["defaultClickAction"]?.jsonPrimitive?.content ?: "CUSTOM"
+            ),
             uri = modal["url"]?.jsonPrimitive?.content ?: "",
             keyVals = (modal["keyVals"] as? JsonObject)?.jsonObject?.entries?.associate { (key, value) ->
                 key to (value as JsonPrimitive).content

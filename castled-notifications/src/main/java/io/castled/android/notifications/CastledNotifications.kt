@@ -8,6 +8,7 @@ import android.os.Process
 import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.inapp.InAppNotification
 import io.castled.android.notifications.inapp.models.consts.AppEvents
+import io.castled.android.notifications.inapp.observer.AppActivityLifecycleObserver
 import io.castled.android.notifications.inbox.AppInbox
 import io.castled.android.notifications.inbox.model.CastledInboxDisplayConfig
 import io.castled.android.notifications.inbox.model.CastledInboxItem
@@ -29,8 +30,11 @@ object CastledNotifications {
 
     private val logger: CastledLogger = CastledLogger.getInstance(LogTags.GENERIC)
     private lateinit var appId: String
+    private lateinit var application: Application
+    private var isLifeCycleInitialized = false
+
     private val castledCoroutineContext by lazy { Job() }
-    private val castledScope = CoroutineScope(castledCoroutineContext)
+    internal val castledScope = CoroutineScope(castledCoroutineContext)
 
     @JvmStatic
     fun initialize(application: Application, configs: CastledConfigs) {
@@ -48,7 +52,7 @@ object CastledNotifications {
             logger.error("Api key is not set!")
             return
         }
-
+        this.application = application
         CastledSharedStore.init(application, configs)
         CastledRetrofitClient.init(configs)
 
@@ -65,6 +69,9 @@ object CastledNotifications {
             AppInbox.init(application, castledScope)
         }
         appId = configs.appId
+        CastledSharedStore.getUserId()?.let {
+            observeAppLifecycle()
+        }
         logger.info("Sdk initialized successfully")
     }
 
@@ -112,10 +119,10 @@ object CastledNotifications {
                 // New user-id
                 CastledSharedStore.setUserId(userId, userToken)
                 PushNotification.registerUser(userId)
+                observeAppLifecycle()
             }
             InAppNotification.startCampaignJob()
             AppInbox.startInboxJob()
-
         }
     }
 
@@ -234,6 +241,19 @@ object CastledNotifications {
                 AppInbox.getInboxUnreadCount()
             )
         }
+
+    private fun observeAppLifecycle() {
+        if (!isLifeCycleInitialized && isInited() &&
+            (getCastledConfigs().enableAppInbox || getCastledConfigs().enableInApp)
+        ) {
+            isLifeCycleInitialized = true
+            application.registerActivityLifecycleCallbacks(
+                AppActivityLifecycleObserver(
+                    CastledLifeCycleObserver.appEventCallbacks
+                )
+            )
+        }
+    }
 
     fun getCastledConfigs() = CastledSharedStore.configs
 

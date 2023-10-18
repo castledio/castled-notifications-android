@@ -46,7 +46,6 @@ internal class InAppViewDecorator(
 
     private fun addListenerClickCallbacks() {
         val msgBody = InAppMessageUtils.getMessageBody(inAppMessage.message)
-
         inAppViewLayout?.viewContainer?.setOnClickListener {
             inAppViewLifecycleListener.onClicked(
                 it.context,

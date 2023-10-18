@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 
 internal object AppInbox {
 
-    private lateinit var inboxRepository: InboxRepository
+    internal lateinit var inboxRepository: InboxRepository
     private val logger: CastledLogger = CastledLogger.getInstance(LogTags.INBOX_REPOSITORY)
     private lateinit var externalScope: CoroutineScope
     private var fetchJob: Job? = null
@@ -40,8 +40,8 @@ internal object AppInbox {
         if (fetchJob == null || !fetchJob!!.isActive) {
             fetchJob = externalScope.launch(Dispatchers.Default) {
                 do {
-                    inboxRepository.refreshInbox()
                     delay(TimeUnit.SECONDS.toMillis(CastledSharedStore.configs.inBoxFetchIntervalSec))
+                    inboxRepository.refreshInbox()
                 } while (true)
             }
         }
