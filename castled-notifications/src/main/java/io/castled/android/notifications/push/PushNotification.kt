@@ -69,8 +69,8 @@ internal object PushNotification {
     private fun initializeTokenRefreshWorker(context: Context) {
         val refreshTokenRequest: PeriodicWorkRequest =
             PeriodicWorkRequestBuilder<CastledTokenRefreshWorkManager>(
-                repeatInterval = 20,
-                repeatIntervalTimeUnit = TimeUnit.MINUTES
+                repeatInterval = 14,
+                repeatIntervalTimeUnit = TimeUnit.DAYS
             ).setConstraints(constraints)
                 .build()
 
