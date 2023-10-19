@@ -151,7 +151,7 @@ class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) :
             // Device is in portrait orientation
             imageView!!.layoutParams.height = (dialogSize.x * 3 / 4)
             headerViewMaxLines = 3
-            messageViewMaxLines = 10
+            messageViewMaxLines = 8
 
 
         } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
