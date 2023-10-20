@@ -43,7 +43,10 @@ object InAppViewUtils {
     }
 
     fun getPrimaryButtonViewParams(modal: JsonObject): ButtonViewParams? {
-        val buttons = modal["actionButtons"]?.jsonArray ?: return null
+        val buttons = modal["actionButtons"]?.jsonArray
+        if (buttons.isNullOrEmpty() || buttons.size < 2) {
+            return null
+        }
         val primaryButtonJson = buttons.last().jsonObject
         val keyVals = primaryButtonJson["keyVals"]?.jsonObject
         return ButtonViewParams(
@@ -62,7 +65,9 @@ object InAppViewUtils {
     fun getInAppRootActionParams(modal: JsonObject): ClickActionParams {
         return ClickActionParams(
             actionLabel = null,
-            action = CastledClickAction.valueOf(modal["defaultClickAction"]?.jsonPrimitive?.content!!),
+            action = CastledClickAction.valueOf(
+                modal["defaultClickAction"]?.jsonPrimitive?.content ?: "CUSTOM"
+            ),
             uri = modal["url"]?.jsonPrimitive?.content ?: "",
             keyVals = (modal["keyVals"] as? JsonObject)?.jsonObject?.entries?.associate { (key, value) ->
                 key to (value as JsonPrimitive).content
@@ -71,7 +76,10 @@ object InAppViewUtils {
     }
 
     fun getPrimaryButtonActionParams(modal: JsonObject): ClickActionParams? {
-        val buttons = modal["actionButtons"]?.jsonArray ?: return null
+        val buttons = modal["actionButtons"]?.jsonArray
+        if (buttons.isNullOrEmpty() || buttons.size < 2) {
+            return null
+        }
         val primaryButtonJson = buttons.last().jsonObject
         val keyVals = primaryButtonJson["keyVals"]?.jsonObject
         return ClickActionParams(
@@ -101,7 +109,7 @@ object InAppViewUtils {
 
     fun getSecondaryButtonViewParams(modal: JsonObject): ButtonViewParams? {
         val buttons = modal["actionButtons"]?.jsonArray
-        if (buttons.isNullOrEmpty() || buttons.size < 2) {
+        if (buttons.isNullOrEmpty() || buttons.size < 1) {
             return null
         }
         val secondaryButtonJson = buttons.first().jsonObject

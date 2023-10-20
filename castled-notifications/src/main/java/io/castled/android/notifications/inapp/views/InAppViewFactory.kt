@@ -31,6 +31,13 @@ object InAppViewFactory {
                                 null
                             ) as InAppBaseViewLayout
 
+                    InAppMessageTemplateType.TEXT_AND_BUTTONS ->
+                        LayoutInflater.from(context)
+                            .inflate(
+                                R.layout.castled_inapp_modal_text_buttons,
+                                null
+                            ) as InAppBaseViewLayout
+
                     InAppMessageTemplateType.CUSTOM_HTML ->
                         LayoutInflater.from(context)
                             .inflate(R.layout.castled_inapp_modal_html, null) as InAppBaseViewLayout
@@ -45,6 +52,13 @@ object InAppViewFactory {
                         LayoutInflater.from(context)
                             .inflate(
                                 R.layout.castled_inapp_fullscreen_default,
+                                null
+                            ) as InAppBaseViewLayout
+
+                    InAppMessageTemplateType.IMG_AND_BUTTONS ->
+                        LayoutInflater.from(context)
+                            .inflate(
+                                R.layout.castled_inapp_fullscreen_image_buttons,
                                 null
                             ) as InAppBaseViewLayout
 

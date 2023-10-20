@@ -1,15 +1,11 @@
 package io.castled.android.notifications.inapp.views
 
 import android.content.Context
-import android.content.res.Configuration
 import android.graphics.Color
-import android.graphics.Point
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -22,15 +18,13 @@ import io.castled.android.notifications.store.models.Campaign
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 
-class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) :
+class InAppFullScreenViewImageAndButtonsLayout(context: Context, attrs: AttributeSet) :
     InAppBaseViewLayout(context, attrs) {
 
     override val viewContainer: View?
         get() = findViewById(R.id.castled_inapp_fs_container)
-    override val headerView: TextView?
-        get() = findViewById(R.id.castled_inapp_fs_title)
-    override val messageView: TextView?
-        get() = findViewById(R.id.castled_inapp_fs_message)
+    override val headerView: TextView? = null
+    override val messageView: TextView? = null
     override val imageView: ImageView?
         get() = findViewById(R.id.castled_inapp_fs_img)
     override val buttonViewContainer: View?
@@ -47,13 +41,9 @@ class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) :
             logger.debug("fs object not present in in-app message!")
             return
         }
-
         updateImageView(modalParams)
-        updateHeaderView(modalParams)
-        updateMessageView(modalParams)
         updatePrimaryBtnView(modalParams)
         updateSecondaryBtnView(modalParams)
-        updateContentViewSizes()
     }
 
     private fun updateImageView(modalParams: JsonObject) {
@@ -65,32 +55,6 @@ class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) :
                     .error(0)
             ).into(imageView!!)
         }
-    }
-
-    private fun updateHeaderView(modalParams: JsonObject) {
-        val headerViewParams = InAppViewUtils.getHeaderViewParams(modalParams)
-        headerView?.apply {
-            setBackgroundColor(parseColor(headerViewParams.backgroundColor, Color.WHITE))
-            setTextColor(parseColor(headerViewParams.fontColor, Color.BLACK))
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, headerViewParams.fontSize)
-            text = headerViewParams.header
-        }
-    }
-
-    private fun updateMessageView(modalParams: JsonObject) {
-        val messageViewParams = InAppViewUtils.getMessageViewParams(modalParams)
-        messageView?.apply {
-            setBackgroundColor(parseColor(messageViewParams.backgroundColor, Color.WHITE))
-            setTextColor(parseColor(messageViewParams.fontColor, Color.BLACK))
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, messageViewParams.fontSize)
-            text = messageViewParams.message
-        }
-        (viewContainer as? RelativeLayout)?.setBackgroundColor(
-            parseColor(
-                messageViewParams.backgroundColor,
-                Color.WHITE
-            )
-        )
     }
 
     private fun updatePrimaryBtnView(modalParams: JsonObject) {
@@ -133,35 +97,6 @@ class InAppFullScreenViewLayout(context: Context, attrs: AttributeSet) :
 
     private fun parseColor(colorStr: String, defaultColor: Int): Int {
         return ColorUtils.parseColor(colorStr, defaultColor)
-    }
-
-    private fun updateContentViewSizes() {
-
-        val screenSize = CastledUtils.getScreenSize(context)
-        val dialogSize = Point(
-            (screenSize.x),
-            (screenSize.y)
-        )
-        val orientation =
-            CastledUtils.getCurrentOrientation(context) // Assuming you are inside an activity
-        var messageViewMaxLines = 0
-        var headerViewMaxLines = 0
-
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            // Device is in portrait orientation
-            imageView!!.layoutParams.height = (dialogSize.x * 3 / 4)
-            headerViewMaxLines = 3
-            messageViewMaxLines = 8
-
-
-        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            // Device is in landscape orientation
-            imageView!!.layoutParams.height = (dialogSize.x * 1 / 5)
-            messageViewMaxLines = 2
-            headerViewMaxLines = 2
-        }
-        messageView!!.maxLines = messageViewMaxLines
-        headerView!!.maxLines = headerViewMaxLines
     }
 
     companion object {

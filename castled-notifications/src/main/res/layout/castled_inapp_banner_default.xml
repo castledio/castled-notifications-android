@@ -5,14 +5,13 @@
     android:id="@+id/castled_inapp_banner_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/inapp_common_padding">
+    android:padding="@dimen/inapp_banner_margin">
 
     <RelativeLayout
         android:id="@+id/castled_inapp_banner_container"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:background="@drawable/inapp_background_rounded"
-        android:minHeight="70dp">
+        android:background="@drawable/inapp_background_rounded">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/inapp_modal_cardview"

@@ -21,16 +21,18 @@ internal object CastledSharedStore {
 
     var isAppInBackground = true
 
-    fun init(context: Context, configs: CastledConfigs) {
-        CastledSharedStore.configs = configs
+    fun init(context: Context, configs: CastledConfigs? = null) {
         sharedPreferences =
             context.getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE)
-        if (sharedPreferences.getString(PrefStoreKeys.APP_ID, null) != configs.appId) {
-            clearPreferences()
-            setAppId(configs.appId)
-        } else {
-            appId = sharedPreferences.getString(PrefStoreKeys.APP_ID, null)!!
+        configs?.let {
+            CastledSharedStore.configs = configs
+            if (sharedPreferences.getString(PrefStoreKeys.APP_ID, null) != configs.appId) {
+                clearPreferences()
+                setAppId(configs.appId)
+            }
         }
+
+        appId = sharedPreferences.getString(PrefStoreKeys.APP_ID, null)!!
         userId = sharedPreferences.getString(PrefStoreKeys.USER_ID, null)
         secureUserId = sharedPreferences.getString(PrefStoreKeys.SECURE_USER_ID, null)
         tokens[PushTokenType.FCM] = sharedPreferences.getString(PrefStoreKeys.FCM_TOKEN, null)

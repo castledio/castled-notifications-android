@@ -2,6 +2,7 @@ package io.castled.android.notifications.inapp.views
 
 import android.content.Context
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Point
 import android.util.AttributeSet
@@ -11,7 +12,6 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.bumptech.glide.Glide
 import io.castled.android.notifications.R
 import io.castled.android.notifications.commons.CastledUtils
 import io.castled.android.notifications.commons.ColorUtils
@@ -21,7 +21,7 @@ import io.castled.android.notifications.store.models.Campaign
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 
-class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
+class InAppModalTextAndButtonsViewLayout(context: Context, attrs: AttributeSet) :
     InAppBaseViewLayout(context, attrs) {
 
     override val viewContainer: View?
@@ -46,7 +46,7 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
             logger.debug("Model object not present in in-app message!")
             return
         }
-        updateImageView(modalParams)
+        // updateImageView(modalParams)
         updateHeaderView(modalParams)
         updateMessageView(modalParams)
         updatePrimaryBtnView(modalParams)
@@ -69,17 +69,15 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             // Device is in portrait orientation
-            imageView!!.layoutParams.height = (dialogSize.x * 1 / 2)
             headerViewMaxLines = 3
             messageViewMaxLines = 5
 
         } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             // Device is in landscape orientation
-            imageView!!.layoutParams.height = (dialogSize.x * 1 / 5)
-            messageViewMaxLines = 2
-            headerViewMaxLines = 2
+            messageViewMaxLines = 3
+            headerViewMaxLines = 5
         }
-        val remainingHeight = dialogSize.y - imageView!!.layoutParams.height
+        val remainingHeight = dialogSize.y
         headerView!!.maxHeight = remainingHeight * 1 / 4
         messageView!!.maxHeight = remainingHeight * 2 / 4
         // remaining 1/4th for buttons
@@ -87,15 +85,24 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
         // need to set maxLines after setting maxHeight
         headerView!!.maxLines = headerViewMaxLines
         messageView!!.maxLines = messageViewMaxLines
-    }
 
-    private fun updateImageView(modalParams: JsonObject) {
-        val imageViewParams = InAppViewUtils.getImageViewParams(modalParams)
-        if (imageViewParams != null && imageView != null) {
-            Glide.with(imageView!!.context)
-                .load(imageViewParams.imageUrl).placeholder(R.drawable.castled_placeholder)
-                .into(imageView!!)
-        }
+        val density = Resources.getSystem().displayMetrics.density.toInt()
+        val verticalPadding =
+            context.resources.getString(R.string.inapp_modal_text_button_vertical_padding)
+                .toInt() * density
+        val horizontalPadding =
+            context.resources.getString(R.string.inapp_modal_text_button_horizontal_padding)
+                .toInt() * density
+
+        headerView!!.setPadding(
+            horizontalPadding,
+            verticalPadding + verticalPadding / 4,
+            horizontalPadding,
+            verticalPadding / 2
+        )
+        messageView!!.setPadding(
+            horizontalPadding, verticalPadding / 2, horizontalPadding, verticalPadding
+        )
     }
 
     private fun updateHeaderView(modalParams: JsonObject) {
@@ -106,6 +113,7 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
             setTextSize(TypedValue.COMPLEX_UNIT_SP, headerViewParams.fontSize)
             text = headerViewParams.header
         }
+
     }
 
     private fun updateMessageView(modalParams: JsonObject) {
@@ -125,6 +133,7 @@ class InAppModalViewLayout(context: Context, attrs: AttributeSet) :
                 )
             )
         }
+
 
     }
 

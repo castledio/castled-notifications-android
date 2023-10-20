@@ -29,6 +29,17 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                     // Do nothing
                 }
 
+                CastledClickAction.CUSTOM -> {
+                    // Do nothing
+                    InAppNotification.reportInAppEvent(
+                        InAppEventUtils.getClickedEvent(
+                            inAppMessage,
+                            actionParams
+                        )
+                    )
+                    inAppViewBaseDecorator.close()
+                }
+
                 CastledClickAction.DEEP_LINKING, CastledClickAction.RICH_LANDING -> {
                     CastledClickActionUtils.handleDeeplinkAction(
                         context,

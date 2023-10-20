@@ -9,6 +9,7 @@ import io.castled.android.notifications.push.models.PushTokenInfo
 import io.castled.android.notifications.push.models.PushTokenType
 import io.castled.android.notifications.push.service.PushRepository
 import io.castled.android.notifications.store.CastledSharedStore
+import io.castled.android.notifications.workmanager.CastledTokenRefreshWorkManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,9 +18,7 @@ import kotlin.reflect.full.primaryConstructor
 internal object PushNotification {
 
     private val logger = CastledLogger.getInstance(LogTags.PUSH)
-
     private val tokenProviders = mutableMapOf<PushTokenType, CastledPushTokenProvider>()
-
     private lateinit var externalScope: CoroutineScope
     private lateinit var pushRepository: PushRepository
     private var enabled = false
@@ -31,6 +30,7 @@ internal object PushNotification {
         enabled = true
         initTokenProviders(context)
         refreshPushTokens(context)
+        CastledTokenRefreshWorkManager.getInstance(context).init();
     }
 
     suspend fun registerUser(userId: String) {
@@ -55,7 +55,6 @@ internal object PushNotification {
         }
     }
 
-
     private fun initTokenProviders(context: Context) {
         PushTokenType.values().forEach {
             try {
@@ -68,7 +67,6 @@ internal object PushNotification {
             }
         }
     }
-
 
     private fun refreshPushTokens(context: Context) = externalScope.launch(Dispatchers.Default) {
         PushTokenType.values().forEach {

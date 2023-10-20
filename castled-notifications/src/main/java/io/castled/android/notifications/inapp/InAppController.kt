@@ -68,9 +68,10 @@ internal class InAppController(context: Context) {
     }
 
     fun clearCurrentInApp() {
-        currentInAppBeingDisplayed = null
-        inAppViewDecorator = null
-
+        synchronized(currentInAppLock) {
+            currentInAppBeingDisplayed = null
+            inAppViewDecorator = null
+        }
     }
 
     private fun updateCurrentInApp(inApp: Campaign): Boolean {

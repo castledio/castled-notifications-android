@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 
 internal object AppInbox {
 
-    private lateinit var inboxRepository: InboxRepository
+    internal lateinit var inboxRepository: InboxRepository
     private val logger: CastledLogger = CastledLogger.getInstance(LogTags.INBOX_REPOSITORY)
     private lateinit var externalScope: CoroutineScope
     private var fetchJob: Job? = null
@@ -40,8 +40,10 @@ internal object AppInbox {
         if (fetchJob == null || !fetchJob!!.isActive) {
             fetchJob = externalScope.launch(Dispatchers.Default) {
                 do {
-                    inboxRepository.refreshInbox()
                     delay(TimeUnit.SECONDS.toMillis(CastledSharedStore.configs.inBoxFetchIntervalSec))
+                    if (!CastledSharedStore.isAppInBackground) {
+                        inboxRepository.refreshInbox()
+                    }
                 } while (true)
             }
         }
@@ -68,12 +70,12 @@ internal object AppInbox {
         externalScope.launch(Dispatchers.Default) {
             val inboxObjects =
                 inboxRepository.inboxDao.getInboxObjectsByMessageIds(inboxItems.map { it.messageId })
-            if (!inboxObjects.isEmpty())
+            if (inboxObjects.isNotEmpty())
                 reportReadEventsWithObjects(inboxObjects.toSet())
         }
     }
 
-    fun reportReadEventsWithObjects(inboxObjects: Set<Inbox>) {
+    private fun reportReadEventsWithObjects(inboxObjects: Set<Inbox>) {
         if (!enabled || CastledSharedStore.getUserId() == null) {
             logger.debug("Ignoring inbox event, Castled inbox disabled/ UserId not configured")
             return
