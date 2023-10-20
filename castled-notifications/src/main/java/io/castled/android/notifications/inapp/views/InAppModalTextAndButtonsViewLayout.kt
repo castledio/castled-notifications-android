@@ -96,12 +96,12 @@ class InAppModalTextAndButtonsViewLayout(context: Context, attrs: AttributeSet) 
 
         headerView!!.setPadding(
             horizontalPadding,
-            verticalPadding + verticalPadding / 4,
+            verticalPadding,
             horizontalPadding,
-            verticalPadding / 2
+            verticalPadding
         )
         messageView!!.setPadding(
-            horizontalPadding, verticalPadding / 2, horizontalPadding, verticalPadding
+            horizontalPadding, 3 * verticalPadding / 4, horizontalPadding, 3 * verticalPadding / 4
         )
     }
 
