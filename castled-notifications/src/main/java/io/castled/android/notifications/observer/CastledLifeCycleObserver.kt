@@ -1,6 +1,7 @@
-package io.castled.android.notifications
+package io.castled.android.notifications.observer
 
 import android.app.Activity
+import io.castled.android.notifications.CastledNotifications
 import io.castled.android.notifications.inapp.InAppNotification
 import io.castled.android.notifications.inapp.models.consts.AppEvents
 import io.castled.android.notifications.inapp.observer.AppEventCallbacks
@@ -14,8 +15,10 @@ internal class CastledLifeCycleObserver {
         private var isInitialLaunch = true
         val appEventCallbacks = object : AppEventCallbacks {
             override fun onActivityCreated(activity: Activity) {
-                if (CastledNotifications.getCastledConfigs().enableInApp) {
-                    InAppNotification.inAppController.updateInAppForOrientationChanges(activity)
+                if (CastledNotifications.getCastledConfigs().enableInApp
+                    && !isCastledInternalActivity(activity)
+                ) {
+                    InAppNotification.onOrientationChange(activity)
                 }
             }
 
@@ -25,14 +28,15 @@ internal class CastledLifeCycleObserver {
             }
 
             override fun onActivityStarted(activity: Activity) {
-                if (CastledNotifications.getCastledConfigs().enableInApp) {
+                if (CastledNotifications.getCastledConfigs().enableInApp
+                    && !isCastledInternalActivity(activity)
+                ) {
                     InAppNotification.logAppEvent(
                         activity,
                         AppEvents.APP_PAGE_VIEWED,
                         mapOf("name" to activity.componentName.shortClassName.drop(1))
                     )
                 }
-
             }
 
             override fun onAppMovedToBackground(activity: Activity) {
@@ -40,8 +44,10 @@ internal class CastledLifeCycleObserver {
             }
 
             override fun onActivityDestroyed(activity: Activity) {
-                if (CastledNotifications.getCastledConfigs().enableInApp) {
-                    InAppNotification.inAppController.dismissDialogIfAny()
+                if (CastledNotifications.getCastledConfigs().enableInApp
+                    && !isCastledInternalActivity(activity)
+                ) {
+                    InAppNotification.dismissInAppDialogsIfAny()
                 }
             }
         }
@@ -49,7 +55,7 @@ internal class CastledLifeCycleObserver {
         fun performAppOpenedActions(activity: Activity) =
             CastledNotifications.castledScope.launch(Dispatchers.Default) {
                 if (CastledNotifications.getCastledConfigs().enableInApp) {
-                    InAppNotification.inAppController.refreshLiveCampaigns()
+                    InAppNotification.refreshCampaigns()
                     InAppNotification.logAppEvent(activity, AppEvents.APP_OPENED, null)
                 }
                 if (CastledNotifications.getCastledConfigs().enableAppInbox) {
@@ -57,6 +63,8 @@ internal class CastledLifeCycleObserver {
                 }
             }
 
+        private fun isCastledInternalActivity(activity: Activity) =
+            activity.componentName.shortClassName.contains("CastledNotificationReceiverAct")
 
     }
 }

@@ -41,7 +41,9 @@ internal object AppInbox {
             fetchJob = externalScope.launch(Dispatchers.Default) {
                 do {
                     delay(TimeUnit.SECONDS.toMillis(CastledSharedStore.configs.inBoxFetchIntervalSec))
-                    inboxRepository.refreshInbox()
+                    if (!CastledSharedStore.isAppInBackground) {
+                        inboxRepository.refreshInbox()
+                    }
                 } while (true)
             }
         }
@@ -68,12 +70,12 @@ internal object AppInbox {
         externalScope.launch(Dispatchers.Default) {
             val inboxObjects =
                 inboxRepository.inboxDao.getInboxObjectsByMessageIds(inboxItems.map { it.messageId })
-            if (!inboxObjects.isEmpty())
+            if (inboxObjects.isNotEmpty())
                 reportReadEventsWithObjects(inboxObjects.toSet())
         }
     }
 
-    fun reportReadEventsWithObjects(inboxObjects: Set<Inbox>) {
+    private fun reportReadEventsWithObjects(inboxObjects: Set<Inbox>) {
         if (!enabled || CastledSharedStore.getUserId() == null) {
             logger.debug("Ignoring inbox event, Castled inbox disabled/ UserId not configured")
             return

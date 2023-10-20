@@ -16,6 +16,7 @@ import io.castled.android.notifications.inbox.views.CastledInboxActivity
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.network.CastledRetrofitClient
+import io.castled.android.notifications.observer.CastledLifeCycleObserver
 import io.castled.android.notifications.push.PushNotification
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.PushTokenType

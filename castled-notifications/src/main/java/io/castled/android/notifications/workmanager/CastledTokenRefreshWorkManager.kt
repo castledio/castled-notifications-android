@@ -1,63 +1,46 @@
 package io.castled.android.notifications.workmanager
 
 import android.content.Context
-import androidx.work.CoroutineWorker
-import androidx.work.WorkerParameters
-import com.google.firebase.messaging.FirebaseMessaging
-import io.castled.android.notifications.logger.CastledLogger
-import io.castled.android.notifications.logger.LogTags
-import io.castled.android.notifications.push.models.PushTokenInfo
-import io.castled.android.notifications.push.models.PushTokenType
-import io.castled.android.notifications.push.service.PushRepository
-import io.castled.android.notifications.store.CastledSharedStore
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequest
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import java.util.concurrent.TimeUnit
 
-class CastledTokenRefreshWorkManager(
-    private val appContext: Context,
-    workerParams: WorkerParameters
-) :
-    CoroutineWorker(appContext, workerParams) {
-    private val logger = CastledLogger.getInstance(LogTags.PUSH)
-    override suspend fun doWork(): Result {
-        return try {
-            val token = getToken()
-            if (!token.isNullOrEmpty()) {
-                val appContext = appContext
-                CastledSharedStore.init(appContext)
-                val userId = CastledSharedStore.getUserId()
-                if (!userId.isNullOrEmpty() &&
-                    token != CastledSharedStore.getToken(PushTokenType.FCM)
-                ) {
-                    val pushRepository = PushRepository(appContext)
-                    pushRepository.register(
-                        userId,
-                        listOf(PushTokenInfo(token, PushTokenType.FCM))
-                    )
-                    logger.debug("Fetching token updated")
+internal class CastledTokenRefreshWorkManager private constructor(context: Context) {
 
-                }
-                logger.debug("Fetching token $token")
-                Result.success()
-            } else {
-                logger.debug("Fetching FCM registration token failed")
-                Result.failure()
-            }
-        } catch (e: Exception) {
-            // Handle exceptions if any occurred during token retrieval
-            logger.debug("Fetching Token retrieval error $e")
-            Result.failure()
-        }
+    private val workManager = WorkManager.getInstance(context)
+    private val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED)
+        .setRequiresBatteryNotLow(true).build()
+
+    fun init() {
+        val refreshTokenRequest: PeriodicWorkRequest =
+            PeriodicWorkRequestBuilder<CastledTokenRefreshWorker>(
+                repeatInterval = 14,
+                repeatIntervalTimeUnit = TimeUnit.DAYS
+            ).setConstraints(constraints)
+                .build()
+
+        workManager.enqueueUniquePeriodicWork(
+            CASTLED_TOKEN_REFRESH_WORK,
+            ExistingPeriodicWorkPolicy.KEEP,
+            refreshTokenRequest
+        )
     }
 
-    private suspend fun getToken(): String? = suspendCoroutine { continuation ->
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val token = task.result
-                continuation.resume(token)
-            } else {
-                continuation.resume(null)
+    companion object {
+
+        private const val CASTLED_TOKEN_REFRESH_WORK = "castled_token_refresh_work"
+        private var instance: CastledTokenRefreshWorkManager? = null
+
+        @Synchronized
+        fun getInstance(context: Context): CastledTokenRefreshWorkManager {
+            if (instance == null) {
+                instance = CastledTokenRefreshWorkManager(context)
             }
+            return instance!!
         }
     }
 }

@@ -1,5 +1,6 @@
 package io.castled.android.notifications.inapp
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import io.castled.android.notifications.logger.CastledLogger
@@ -18,7 +19,7 @@ internal object InAppNotification {
 
     private val logger: CastledLogger = CastledLogger.getInstance(LogTags.IN_APP)
     private lateinit var externalScope: CoroutineScope
-    internal lateinit var inAppController: InAppController
+    private lateinit var inAppController: InAppController
 
     private var enabled = false
     private var fetchJob: Job? = null
@@ -42,7 +43,9 @@ internal object InAppNotification {
             fetchJob = externalScope.launch(Default) {
                 do {
                     delay(TimeUnit.SECONDS.toMillis(CastledSharedStore.configs.inAppFetchIntervalSec))
-                    inAppController.refreshLiveCampaigns()
+                    if (!CastledSharedStore.isAppInBackground)  {
+                        inAppController.refreshLiveCampaigns()
+                    }
                 } while (true)
             }
         }
@@ -67,4 +70,12 @@ internal object InAppNotification {
     fun updateInAppDisplayStats(inApp: Campaign) = externalScope.launch(Default) {
         inAppController.updateInAppDisplayStats(inApp)
     }
+
+    fun dismissInAppDialogsIfAny() = inAppController.dismissDialogIfAny()
+
+    suspend fun refreshCampaigns() = inAppController.refreshLiveCampaigns()
+
+    fun onOrientationChange(activity: Activity) =
+        inAppController.updateInAppForOrientationChanges(activity)
+
 }
