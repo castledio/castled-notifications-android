@@ -14,8 +14,8 @@ class MyApplicationClass : MultiDexApplication() {
         CastledNotifications.initialize(
             this,
             CastledConfigs.Builder()
-                .appId("829c38e2e359d94372a2e0d35e1f74df")
-                .location(CastledConfigs.CastledLocation.US)
+                .appId("e8a4f68bfb6a58b40a77a0e6150eca0b")
+                .location(CastledConfigs.CastledLocation.TEST)
                 .enablePush(true)
                 .enableInApp(true)
                 .enableAppInbox(true)
@@ -26,7 +26,7 @@ class MyApplicationClass : MultiDexApplication() {
         )
 
         // User-id needs to set after login flow of your app is complete
-        CastledNotifications.setUserId(this, "frank@castled.io")
+        CastledNotifications.setUserId(this, "antony@castled.io")
     }
 
     override fun attachBaseContext(base: Context) {
