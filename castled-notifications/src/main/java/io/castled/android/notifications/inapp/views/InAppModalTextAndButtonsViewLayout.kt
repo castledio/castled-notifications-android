@@ -101,7 +101,8 @@ class InAppModalTextAndButtonsViewLayout(context: Context, attrs: AttributeSet) 
             verticalPadding
         )
         messageView!!.setPadding(
-            horizontalPadding, 3 * verticalPadding / 4, horizontalPadding, 3 * verticalPadding / 4
+            horizontalPadding, 3 * verticalPadding / 4, horizontalPadding,
+            3 * verticalPadding / 4
         )
     }
 
