@@ -27,9 +27,6 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
             when (actionParams.action) {
                 CastledClickAction.NONE -> {
                     // Do nothing
-
-                    inAppViewBaseDecorator.close()
-
                 }
 
                 CastledClickAction.CUSTOM -> {
@@ -41,7 +38,6 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                         )
                     )
                     inAppViewBaseDecorator.close()
-
                 }
 
                 CastledClickAction.DEEP_LINKING, CastledClickAction.RICH_LANDING -> {
