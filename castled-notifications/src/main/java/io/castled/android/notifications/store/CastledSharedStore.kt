@@ -9,6 +9,7 @@ import io.castled.android.notifications.store.consts.PrefStoreKeys
 internal object CastledSharedStore {
 
     private const val PREFERENCE_FILE_KEY = "io.castled.android.notifications"
+    private const val DISPLAYED_NOTIFICATIONS = "castled_displayed_notifications"
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -72,6 +73,22 @@ internal object CastledSharedStore {
             PushTokenType.MI_PUSH -> sharedPreferences.edit()
                 .putString(PrefStoreKeys.MI_TOKEN, fcmToken).apply()
         }
+    }
+
+    fun getRecentDisplayedNotifications(): MutableSet<Int> {
+        return sharedPreferences.getStringSet(DISPLAYED_NOTIFICATIONS, emptySet<String>())
+            ?.map { it.toInt() }
+            ?.toMutableSet() ?: mutableSetOf()
+    }
+
+    fun setRecentDisplayedNotifications(items: MutableSet<Int>) {
+        while (items.size > 5) {
+            items.remove(items.first())
+        }
+        // Save the updated array back to SharedPreferences
+        sharedPreferences.edit()
+            .putStringSet(DISPLAYED_NOTIFICATIONS, items.map { it.toString() }.toSet())
+            .apply()
     }
 
     fun getAppId() = appId
