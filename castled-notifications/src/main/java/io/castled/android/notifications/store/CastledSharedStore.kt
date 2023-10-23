@@ -75,14 +75,14 @@ internal object CastledSharedStore {
         }
     }
 
-    fun getRecentDisplayedNotifications(): MutableSet<Int> {
-        return sharedPreferences.getStringSet(DISPLAYED_NOTIFICATIONS, emptySet<String>())
-            ?.map { it.toInt() }
-            ?.toMutableSet() ?: mutableSetOf()
+    fun getRecentDisplayedNotifications(): MutableList<Int> {
+        val existingItemsStringSet =
+            sharedPreferences.getStringSet(DISPLAYED_NOTIFICATIONS, emptySet()) ?: emptySet()
+        return existingItemsStringSet.mapNotNull { it.toIntOrNull() }.toMutableList()
     }
 
-    fun setRecentDisplayedNotifications(items: MutableSet<Int>) {
-        while (items.size > 5) {
+    fun setRecentDisplayedNotifications(items: MutableList<Int>) {
+        if (items.size > 5) {
             items.remove(items.first())
         }
         // Save the updated array back to SharedPreferences

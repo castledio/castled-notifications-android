@@ -99,7 +99,6 @@ internal object PushNotificationManager {
         val existingItems = CastledSharedStore.getRecentDisplayedNotifications()
         val isItemPresent = newItem in existingItems
         if (!isItemPresent) {
-            // Add the new item to the array
             existingItems.add(newItem)
             CastledSharedStore.setRecentDisplayedNotifications(existingItems)
         }
