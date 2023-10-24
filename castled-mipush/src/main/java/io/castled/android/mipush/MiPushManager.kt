@@ -15,14 +15,13 @@ internal object MiPushManager {
 
     fun register(context: Context) {
         val configs = CastledNotifications.getCastledConfigs()
-        val region = when (configs.location) {
-            CastledConfigs.CastledLocation.AP -> Region.Global
-            CastledConfigs.CastledLocation.IN -> Region.India
-            CastledConfigs.CastledLocation.EU -> Region.Europe
-            CastledConfigs.CastledLocation.TEST -> Region.India
+        val region = when (configs.xiaomiRegion) {
+            CastledConfigs.XiaomiRegion.Global -> Region.Global
+            CastledConfigs.XiaomiRegion.India -> Region.India
+            CastledConfigs.XiaomiRegion.Europe -> Region.Europe
             else -> null
         } ?: run {
-            logger.error("Xiaomi not supported in location: ${configs.location}")
+            logger.error("Xiaomi region not set!")
             return
         }
         if (configs.xiaomiAppId != null && configs.xiaomiAppKey != null) {

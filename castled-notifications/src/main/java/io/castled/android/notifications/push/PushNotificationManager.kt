@@ -13,15 +13,15 @@ import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.R
 import io.castled.android.notifications.logger.CastledLogger.Companion.getInstance
 import io.castled.android.notifications.logger.LogTags
+import io.castled.android.notifications.push.extensions.getNotificationDisplayId
 import io.castled.android.notifications.push.models.CastledNotificationFieldConsts
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.NotificationEventType
 import io.castled.android.notifications.push.models.PushConstants
-import io.castled.android.notifications.store.CastledSharedStore
 
 internal object PushNotificationManager {
     private val logger = getInstance(LogTags.PUSH)
-    private const val DISPLAYED_NOTIFICATIONS = "castled_displayed_notifications"
+
     fun isCastledNotification(remoteMessage: RemoteMessage): Boolean {
         if (remoteMessage.data.containsKey(CastledNotificationFieldConsts.CASTLED_KEY)) {
             return true
@@ -45,15 +45,14 @@ internal object PushNotificationManager {
             logger.debug("Do not have push permission!")
             return
         }
-        if (checkNotificationIsDisplayed(pushPayload.notificationId)) {
+        if (PushNotification.checkAndSetRecentNotificationId(pushPayload.getNotificationDisplayId())) {
             return
         }
         logger.debug("Building castled notification...")
-//
         val notification =
             CastledNotificationBuilder(context).buildNotification(pushPayload)
         NotificationManagerCompat.from(context)
-            .notify(pushPayload.notificationId, notification)
+            .notify(pushPayload.getNotificationDisplayId(), notification)
 
         PushNotification.reportPushEvent(
             NotificationActionContext(
@@ -92,17 +91,6 @@ internal object PushNotificationManager {
             }
         }
         return channelId
-    }
-
-    // Function to check if a Long item is in the array and manage array length
-    private fun checkNotificationIsDisplayed(newItem: Int): Boolean {
-        val existingItems = CastledSharedStore.getRecentDisplayedNotifications()
-        val isItemPresent = newItem in existingItems
-        if (!isItemPresent) {
-            existingItems.add(newItem)
-            CastledSharedStore.setRecentDisplayedNotifications(existingItems)
-        }
-        return isItemPresent
     }
 
 }

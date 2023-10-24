@@ -17,11 +17,11 @@ class MiPushMessageReceiver : PushMessageReceiver() {
     override fun onReceivePassThroughMessage(context: Context?, message: MiPushMessage) {
         if (message.isCastledPushMessage()) {
             // Push message from castled server
-            logger.verbose("Push message received from Castled")
+            logger.debug("mi push message received")
             val pushMessage = message.toCastledPushMessage() ?: return
             CastledNotifications.handlePushNotification(context!!, pushMessage)
         } else {
-            logger.verbose("Push message not from Castled")
+            logger.debug("mi push message not from Castled")
         }
     }
 

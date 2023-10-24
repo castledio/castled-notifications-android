@@ -30,7 +30,7 @@ internal object PushNotification {
         enabled = true
         initTokenProviders(context)
         refreshPushTokens(context)
-        CastledTokenRefreshWorkManager.getInstance(context).init();
+        CastledTokenRefreshWorkManager.getInstance(context).init()
     }
 
     suspend fun registerUser(userId: String) {
@@ -84,6 +84,7 @@ internal object PushNotification {
     }
 
     suspend fun onTokenFetch(token: String?, tokenType: PushTokenType) {
+        logger.info("push token: $token, type: $tokenType")
         if (CastledSharedStore.getToken(tokenType) != token) {
             // New token
             CastledSharedStore.setToken(token, tokenType)
@@ -101,6 +102,15 @@ internal object PushNotification {
 
     fun isCastledPushMessage(remoteMessage: RemoteMessage): Boolean =
         PushNotificationManager.isCastledNotification(remoteMessage)
+
+    @Synchronized
+    fun checkAndSetRecentNotificationId(newId: Int): Boolean {
+        if (newId in CastledSharedStore.getRecentDisplayedPushIds()) {
+            return true
+        }
+        CastledSharedStore.setRecentDisplayedPushId(newId)
+        return false
+    }
 
 
 }
