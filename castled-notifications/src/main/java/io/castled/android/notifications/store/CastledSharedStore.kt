@@ -42,7 +42,9 @@ internal object CastledSharedStore {
         val numbersStr = sharedPreferences.getString(PrefStoreKeys.RECENT_DISPLAYED_PUSH_IDS, "")
         if (!numbersStr.isNullOrEmpty()) {
             val numbersArray = TextUtils.split(numbersStr, ",")
-            numbersArray.forEach { recentDisplayedPushIds.add(it.toInt()) }
+            numbersArray.forEach {
+                it.toIntOrNull()?.let { num -> recentDisplayedPushIds.add(num) }
+            }
         }
     }
 
