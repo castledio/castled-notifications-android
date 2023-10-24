@@ -12,7 +12,7 @@ internal class CastledRetrofitClient {
     companion object {
         private const val BASE_URL = "https://%s.castled.io/backend/"
         private val clusterMap = mapOf(
-            CastledConfigs.CastledLocation.US to "app",
+            CastledConfigs.CastledLocation.US to "api",
             CastledConfigs.CastledLocation.AP to "in",
             CastledConfigs.CastledLocation.IN to "in",
             CastledConfigs.CastledLocation.TEST to "test"

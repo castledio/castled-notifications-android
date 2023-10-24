@@ -2,6 +2,7 @@ package io.castled.android.notifications.store
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.text.TextUtils
 import io.castled.android.notifications.CastledConfigs
 import io.castled.android.notifications.push.models.PushTokenType
 import io.castled.android.notifications.store.consts.PrefStoreKeys
@@ -9,7 +10,6 @@ import io.castled.android.notifications.store.consts.PrefStoreKeys
 internal object CastledSharedStore {
 
     private const val PREFERENCE_FILE_KEY = "io.castled.android.notifications"
-
     private lateinit var sharedPreferences: SharedPreferences
 
     lateinit var configs: CastledConfigs
@@ -18,6 +18,7 @@ internal object CastledSharedStore {
     private var userId: String? = null
     private var secureUserId: String? = null
     private val tokens = mutableMapOf<PushTokenType, String?>()
+    private var recentDisplayedPushIds = mutableListOf<Int>()
 
     var isAppInBackground = true
 
@@ -37,6 +38,14 @@ internal object CastledSharedStore {
         secureUserId = sharedPreferences.getString(PrefStoreKeys.SECURE_USER_ID, null)
         tokens[PushTokenType.FCM] = sharedPreferences.getString(PrefStoreKeys.FCM_TOKEN, null)
         tokens[PushTokenType.MI_PUSH] = sharedPreferences.getString(PrefStoreKeys.MI_TOKEN, null)
+
+        val numbersStr = sharedPreferences.getString(PrefStoreKeys.RECENT_DISPLAYED_PUSH_IDS, "")
+        if (!numbersStr.isNullOrEmpty()) {
+            val numbersArray = TextUtils.split(numbersStr, ",")
+            numbersArray.forEach {
+                it.toIntOrNull()?.let { num -> recentDisplayedPushIds.add(num) }
+            }
+        }
     }
 
     private fun setAppId(appId: String) {
@@ -74,6 +83,18 @@ internal object CastledSharedStore {
         }
     }
 
+    fun setRecentDisplayedPushId(id: Int) {
+        while (recentDisplayedPushIds.size >= 20) {
+            recentDisplayedPushIds.removeFirst()
+        }
+        recentDisplayedPushIds.add(id)
+        // Save the updated array back to SharedPreferences
+        val numbersStr: String = TextUtils.join(",", recentDisplayedPushIds)
+        sharedPreferences.edit()
+            .putString(PrefStoreKeys.RECENT_DISPLAYED_PUSH_IDS, numbersStr)
+            .apply()
+    }
+
     fun getAppId() = appId
 
     fun getUserId() = userId
@@ -81,6 +102,8 @@ internal object CastledSharedStore {
     fun getSecureUserId() = secureUserId
 
     fun getToken(tokenType: PushTokenType) = tokens[tokenType]
+
+    fun getRecentDisplayedPushIds() = recentDisplayedPushIds
 
     private fun clearPreferences() {
         sharedPreferences.edit().clear().apply()

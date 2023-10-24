@@ -13,9 +13,10 @@ import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.R
 import io.castled.android.notifications.logger.CastledLogger.Companion.getInstance
 import io.castled.android.notifications.logger.LogTags
+import io.castled.android.notifications.push.extensions.getNotificationDisplayId
+import io.castled.android.notifications.push.models.CastledNotificationFieldConsts
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.NotificationEventType
-import io.castled.android.notifications.push.models.CastledNotificationFieldConsts
 import io.castled.android.notifications.push.models.PushConstants
 
 internal object PushNotificationManager {
@@ -44,12 +45,14 @@ internal object PushNotificationManager {
             logger.debug("Do not have push permission!")
             return
         }
+        if (PushNotification.checkAndSetRecentNotificationId(pushPayload.getNotificationDisplayId())) {
+            return
+        }
         logger.debug("Building castled notification...")
-
         val notification =
             CastledNotificationBuilder(context).buildNotification(pushPayload)
         NotificationManagerCompat.from(context)
-            .notify(pushPayload.notificationId, notification)
+            .notify(pushPayload.getNotificationDisplayId(), notification)
 
         PushNotification.reportPushEvent(
             NotificationActionContext(
@@ -89,4 +92,5 @@ internal object PushNotificationManager {
         }
         return channelId
     }
+
 }

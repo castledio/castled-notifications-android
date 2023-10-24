@@ -127,7 +127,6 @@ object CastledNotifications {
         }
     }
 
-
     @JvmStatic
     fun onTokenFetch(token: String?, pushTokenType: PushTokenType) =
         castledScope.launch(Dispatchers.Default) {

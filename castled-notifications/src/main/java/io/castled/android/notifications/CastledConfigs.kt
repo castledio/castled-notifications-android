@@ -10,7 +10,8 @@ data class CastledConfigs(
     val inAppFetchIntervalSec: Long,
     val inBoxFetchIntervalSec: Long,
     val xiaomiAppId: String?,
-    val xiaomiAppKey: String?
+    val xiaomiAppKey: String?,
+    val xiaomiRegion: XiaomiRegion?
 ) {
     class Builder {
         private lateinit var appId: String
@@ -25,6 +26,8 @@ data class CastledConfigs(
         private var castledLocation = CastledLocation.US
         private var xiaomiAppId: String? = null
         private var xiaomiAppKey: String? = null
+        private var xiaomiRegion: XiaomiRegion? = null
+
 
         fun appId(appId: String) = apply {
             this.appId = appId
@@ -45,7 +48,10 @@ data class CastledConfigs(
             apply { this.castledLocation = castledLocation }
 
         fun xiaomiAppId(xiaomiAppId: String?) = apply { this.xiaomiAppId = xiaomiAppId }
+
         fun xiaomiAppKey(xiaomiAppKey: String?) = apply { this.xiaomiAppKey = xiaomiAppKey }
+
+        fun xiaomiRegion(xiaomiRegion: XiaomiRegion?) = apply { this.xiaomiRegion = xiaomiRegion }
 
         fun build() = CastledConfigs(
             appId,
@@ -57,7 +63,8 @@ data class CastledConfigs(
             inAppFetchIntervalSec,
             inBoxFetchIntervalSec,
             xiaomiAppId,
-            xiaomiAppKey
+            xiaomiAppKey,
+            xiaomiRegion
         )
     }
 
@@ -67,5 +74,11 @@ data class CastledConfigs(
         IN,   // India
         AP,    // Asia Pacific
         TEST   // Test
+    }
+
+    enum class XiaomiRegion {
+        Global,  // United States
+        India,   // Europe
+        Europe   // India
     }
 }

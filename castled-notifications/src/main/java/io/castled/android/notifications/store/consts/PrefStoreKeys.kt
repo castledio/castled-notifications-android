@@ -12,5 +12,6 @@ internal class PrefStoreKeys {
         const val FCM_TOKEN_UNREGISTERED = "fcmTokenUnregistered"
         const val OS_VERSION = "osVersion"
         const val SDK_VERSION = "sdkVersion"
+        const val RECENT_DISPLAYED_PUSH_IDS = "recentDisplayedPushIds"
     }
 }

@@ -1,10 +1,14 @@
 package io.castled.android.mipush
 
 import android.content.Context
-import com.xiaomi.mipush.sdk.*
+import com.xiaomi.mipush.sdk.ErrorCode
+import com.xiaomi.mipush.sdk.MiPushClient
+import com.xiaomi.mipush.sdk.MiPushCommandMessage
+import com.xiaomi.mipush.sdk.MiPushMessage
+import com.xiaomi.mipush.sdk.PushMessageReceiver
+import io.castled.android.mipush.consts.MiLogTags
 import io.castled.android.notifications.CastledNotifications
 import io.castled.android.notifications.logger.CastledLogger
-import io.castled.android.mipush.consts.MiLogTags
 
 class MiPushMessageReceiver : PushMessageReceiver() {
 
@@ -13,11 +17,11 @@ class MiPushMessageReceiver : PushMessageReceiver() {
     override fun onReceivePassThroughMessage(context: Context?, message: MiPushMessage) {
         if (message.isCastledPushMessage()) {
             // Push message from castled server
-            logger.verbose("Push message received from Castled")
+            logger.debug("mi push message received")
             val pushMessage = message.toCastledPushMessage() ?: return
             CastledNotifications.handlePushNotification(context!!, pushMessage)
         } else {
-            logger.verbose("Push message not from Castled")
+            logger.debug("mi push message not from Castled")
         }
     }
 
@@ -34,12 +38,12 @@ class MiPushMessageReceiver : PushMessageReceiver() {
     }
 
     override fun onReceiveRegisterResult(context: Context?, message: MiPushCommandMessage) {
-        val regId =  message.commandArguments?.firstOrNull() ?: return
+        val regId = message.commandArguments?.firstOrNull() ?: return
         val cmdArg2 = message.commandArguments?.getOrNull(1)
         if (MiPushClient.COMMAND_REGISTER == message.command) {
             if (message.resultCode == ErrorCode.SUCCESS.toLong()) {
                 val region = MiPushClient.getAppRegion(context)
-                MiPushManager.onNewToken("$region:$regId")
+                MiPushManager.onNewToken("$region:::$regId")
                 logger.verbose("onReceiveRegisterResult, token:$regId, region:$region")
             } else {
                 logger.debug("onReceiveRegisterResult, error:${message.resultCode} arg1:$regId, arg2:$cmdArg2")
