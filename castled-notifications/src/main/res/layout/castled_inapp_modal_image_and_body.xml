@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<io.castled.android.notifications.inapp.views.InAppModalImageAndBodyViewLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/castled_inapp_modal_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:padding="0dp">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/castled_inapp_modal_container"
+        android:gravity="center">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/inapp_modal_cardview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="@dimen/inapp_card_shadow"
+            app:cardCornerRadius="@dimen/inapp_corner_radius">
+
+            <LinearLayout
+                style="@style/Castled.InApp.Modal.Layout"
+                android:id="@+id/castled_inapp_modal_container_layout">
+
+                <ImageView
+                    android:id="@+id/castled_inapp_modal_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:contentDescription="@string/castled_inapp_image_content_description"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/castled_placeholder" />
+
+                <TextView
+                    android:id="@+id/castled_inapp_modal_message"
+                    style="@style/Castled.InApp.Text.Body"
+                    android:includeFontPadding="false" />
+
+                <!-- Button LinearLayout with buttons -->
+                <LinearLayout
+                    android:id="@+id/castled_inapp_modal_btn_container"
+                    style="@style/Castled.InApp.Modal.Layout.Buttons">
+
+                    <TextView
+                        android:id="@+id/castled_inapp_modal_btn_secondary"
+                        style="@style/Castled.InApp.ActionButtons"
+                        android:layout_marginHorizontal="@dimen/inapp_margin_horizontal"
+                        android:paddingHorizontal="@dimen/inapp_margin_horizontal"></TextView>
+
+                    <TextView
+                        android:id="@+id/castled_inapp_modal_btn_primary"
+                        style="@style/Castled.InApp.ActionButtons"
+                        android:paddingHorizontal="@dimen/inapp_margin_horizontal"
+                        android:layout_marginEnd="@dimen/inapp_margin_horizontal"></TextView>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/castled_inapp_modal_close_btn"
+                style="@style/Castled.InApp.CloseImageButton.Modal"
+                android:layout_gravity="top|end"
+                android:layout_alignParentTop="true"
+                android:contentDescription="@string/castled_inapp_image_content_description"
+                android:layout_toEndOf="@id/castled_inapp_modal_container_layout" />
+        </androidx.cardview.widget.CardView>
+    </RelativeLayout>
+
+</io.castled.android.notifications.inapp.views.InAppModalImageAndBodyViewLayout>

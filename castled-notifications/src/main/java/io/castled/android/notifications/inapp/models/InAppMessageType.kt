@@ -10,6 +10,7 @@ enum class InAppMessageTemplateType {
     DEFAULT,
     IMG_AND_BUTTONS,
     TEXT_AND_BUTTONS,
+    IMG_AND_BODY,
     IMG_ONLY,
     CUSTOM_HTML,
     OTHER
