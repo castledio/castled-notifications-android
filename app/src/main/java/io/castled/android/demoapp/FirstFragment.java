@@ -56,11 +56,11 @@ public class FirstFragment extends Fragment {
             styleConfig.setHideNavigationBar(false);
 
             styleConfig.setShowCategoriesTab(true);
-            styleConfig.setTabBarDefaultBackgroundColor("#00203F");
-            styleConfig.setTabBarSelectedBackgroundColor("#EEA47F");
-            styleConfig.setTabBarDefaultTextColor("#ADEFD1");
+            styleConfig.setTabBarDefaultBackgroundColor("#FFFFFF");
+            styleConfig.setTabBarSelectedBackgroundColor("#FFFFFF");
+            styleConfig.setTabBarDefaultTextColor("#00539C");
             styleConfig.setTabBarSelectedTextColor("#00539C");
-            styleConfig.setTabBarIndicatorBackgroundColor("#FEE715");
+            styleConfig.setTabBarIndicatorBackgroundColor("#0000FF");
             CastledNotifications.showAppInbox(view.getContext(), styleConfig);
         });
 
