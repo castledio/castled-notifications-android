@@ -2,7 +2,7 @@ package io.castled.android.notifications.push.service
 
 import android.content.Context
 import io.castled.android.notifications.network.CastledRetrofitClient.Companion.create
-import io.castled.android.notifications.push.NotificationActionContext
+import io.castled.android.notifications.push.models.NotificationActionContext
 import io.castled.android.notifications.push.extensions.toCastledPushEventRequest
 import io.castled.android.notifications.push.models.PushTokenInfo
 import io.castled.android.notifications.store.CastledSharedStore
@@ -13,7 +13,7 @@ import retrofit2.Response
 
 internal class PushRepository(context: Context) {
 
-    private val networkWorkManager = CastledNetworkWorkManager.getInstance(context)
+    private val networkWorkManager by lazy { CastledNetworkWorkManager.getInstance(context) }
     private val pushApi by lazy { create(PushApi::class.java) }
 
     suspend fun register(userId: String, tokens: List<PushTokenInfo>) {

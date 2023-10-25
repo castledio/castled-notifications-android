@@ -7,7 +7,7 @@ import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.CastledUserAttributes
 import io.castled.android.notifications.trackevents.service.TrackEventRepository
 
-internal object TrackEvents {
+internal object EventsTracker {
 
     private lateinit var trackEventRepository: TrackEventRepository
     private val logger: CastledLogger = CastledLogger.getInstance(LogTags.TRACK_EVENT_REPOSITORY)

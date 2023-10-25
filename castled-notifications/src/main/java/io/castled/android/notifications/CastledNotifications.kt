@@ -21,7 +21,7 @@ import io.castled.android.notifications.push.PushNotification
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.PushTokenType
 import io.castled.android.notifications.store.CastledSharedStore
-import io.castled.android.notifications.trackevents.TrackEvents
+import io.castled.android.notifications.trackevents.EventsTracker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -54,7 +54,7 @@ object CastledNotifications {
             return
         }
         this.application = application
-        CastledSharedStore.init(application, configs)
+        CastledSharedStore.init(application, configs, castledScope)
         CastledRetrofitClient.init(configs)
 
         if (configs.enablePush) {
@@ -64,7 +64,7 @@ object CastledNotifications {
             InAppNotification.init(application, castledScope)
         }
         if (configs.enableTracking) {
-            TrackEvents.init(application)
+            EventsTracker.init(application)
         }
         if (configs.enableAppInbox) {
             AppInbox.init(application, castledScope)
@@ -167,7 +167,7 @@ object CastledNotifications {
         castledScope.launch(Dispatchers.Default) {
             if (isInited()) {
                 InAppNotification.logAppEvent(context, eventName, eventParams)
-                TrackEvents.logCustomEvent(eventName, eventParams)
+                EventsTracker.logCustomEvent(eventName, eventParams)
             }
         }
 
@@ -175,17 +175,20 @@ object CastledNotifications {
     fun setUserAttributes(context: Context, attributes: CastledUserAttributes) =
         castledScope.launch(Dispatchers.Default) {
             if (isInited()) {
-                TrackEvents.logUserTrackingEvent(attributes)
+                EventsTracker.logUserTrackingEvent(attributes)
             }
         }
 
-    fun handlePushNotification(context: Context, pushMessage: CastledPushMessage?) =
-        castledScope.launch(Dispatchers.Default) {
-            PushNotification.handlePushNotification(context, pushMessage)
-        }
+    fun handlePushNotification(context: Context, pushMessage: CastledPushMessage?) {
+        PushNotification.handlePushNotification(context, pushMessage)
+    }
 
     fun isCastledPushMessage(remoteMessage: RemoteMessage): Boolean {
         return PushNotification.isCastledPushMessage(remoteMessage)
+    }
+
+    fun subscribeToPushNotificationEvents(pushNotificationListener: CastledPushNotificationListener) {
+        PushNotification.subscribeToPushNotificationEvents(pushNotificationListener)
     }
 
     @JvmStatic

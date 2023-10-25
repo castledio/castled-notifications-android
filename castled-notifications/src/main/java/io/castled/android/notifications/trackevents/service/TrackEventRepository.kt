@@ -10,8 +10,8 @@ import retrofit2.Response
 
 internal class TrackEventRepository(context: Context) {
 
-    private val trackEventApi = CastledRetrofitClient.create(TrackEventApi::class.java)
-    private val networkWorkManager = CastledNetworkWorkManager.getInstance(context)
+    private val trackEventApi by lazy { CastledRetrofitClient.create(TrackEventApi::class.java) }
+    private val networkWorkManager by lazy { CastledNetworkWorkManager.getInstance(context) }
 
     suspend fun reportCustomEvent(request: CastledTrackEventRequest) {
         networkWorkManager.apiCallWithRetry(request = request, apiCall = {
