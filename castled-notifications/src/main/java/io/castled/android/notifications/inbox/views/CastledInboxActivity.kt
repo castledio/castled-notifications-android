@@ -82,6 +82,7 @@ internal class CastledInboxActivity : AppCompatActivity(),
             categories.clear()
             categories.add("All")
             if (withTab) {
+
                 val newCategories = inboxRepository.getCategoryTags()
                 launch(Dispatchers.Main) {
                     categories.addAll(newCategories)
@@ -208,17 +209,20 @@ internal class CastledInboxActivity : AppCompatActivity(),
             // Set the title for each tab here
             tab.text = categories[position]
         }.attach()
-        if (areTabTitlesExceedingWidth(categoriesTab, resources.displayMetrics.widthPixels)) {
-            categoriesTab.tabMode = TabLayout.MODE_SCROLLABLE
-        } else {
-            categoriesTab.tabMode = TabLayout.MODE_FIXED
-        }
+
+
         for (i in 0 until categoriesTab.tabCount) {
             val tab = categoriesTab.getTabAt(i)
             tab?.view?.tab?.setCustomView(R.layout.castled_custom_tab)
             setTab(tab, i == viewModel.currentCategoryIndex)
 
         }
+//        if (areTabTitlesExceedingWidth(categoriesTab, resources.displayMetrics.widthPixels)) {
+//            categoriesTab.tabMode = TabLayout.MODE_SCROLLABLE
+//        } else {
+//            categoriesTab.tabMode = TabLayout.MODE_FIXED
+//        }
+        setModeForTabView()
         // Set up a TabLayout.OnTabSelectedListener to change tab colors when selected
         categoriesTab.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
@@ -250,13 +254,42 @@ internal class CastledInboxActivity : AppCompatActivity(),
 
     }
 
+    private fun setModeForTabView() {
+        categoriesTab.post {
+            // Calculate the total content width
+
+            val screenWidth = resources.displayMetrics.widthPixels
+
+            var totalContentWidth = 0
+            for (i in 0 until categoriesTab.tabCount) {
+                val tabView = categoriesTab.getTabAt(i)?.view
+                totalContentWidth += tabView?.measuredWidth ?: 0
+            }
+
+            // Set the tabMode based on content width
+            if (totalContentWidth > screenWidth) {
+                categoriesTab.tabMode = TabLayout.MODE_SCROLLABLE
+            } else {
+                categoriesTab.tabMode = TabLayout.MODE_FIXED
+            }
+        }
+    }
+
     private fun areTabTitlesExceedingWidth(tabLayout: TabLayout, availableWidth: Int): Boolean {
+
+        var totalContentWidth = 0
+        for (i in 0 until tabLayout.tabCount) {
+            val tabView = tabLayout.getTabAt(i)?.view
+            totalContentWidth += tabView?.measuredWidth ?: 0
+        }
         var totalWidth = 0
         for (i in 0 until tabLayout.tabCount) {
             val tab = tabLayout.getTabAt(i)
             totalWidth += tab?.text?.length ?: 0
         }
-        return totalWidth > availableWidth
+        totalWidth +=
+            tabLayout.tabCount * (12 * Resources.getSystem().displayMetrics.density).toInt()
+        return totalContentWidth > availableWidth
     }
 
     private inner class PagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {

@@ -155,8 +155,7 @@ internal class CastledInboxRecycleViewAdapter(
         try {
             val itemToDelete = inboxItemsList[position]
             itemToDelete.isDeleted = true
-            notifyItemRemoved(position)
-            tabFrgament.deleteItem(position, itemToDelete)
+            tabFrgament.deleteItem(itemToDelete)
         } catch (e: Exception) {
 
         }

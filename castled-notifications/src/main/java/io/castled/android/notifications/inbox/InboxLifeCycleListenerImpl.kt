@@ -21,6 +21,14 @@ internal class InboxLifeCycleListenerImpl(private val context: Context) {
         }
     }
 
+    fun deleteItem(
+        inboxItem: Inbox
+    ) {
+        AppInbox.reportEventWith(
+            inboxItem.toInboxItem(), "", "DELETED"
+        )
+    }
+
     fun registerReadEvents(
         inboxItems: Set<Long>
     ) {

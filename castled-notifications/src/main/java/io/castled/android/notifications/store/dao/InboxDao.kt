@@ -12,6 +12,10 @@ internal interface InboxDao {
     // it will get again added as there is check while inserting
     suspend fun dbGetInbox(): List<Inbox>
 
+    @Query("SELECT * FROM inbox WHERE is_deleted = 0 ORDER BY date_added DESC")
+    suspend fun dbGetAllInboxItems(): List<Inbox>
+
+
     @Query("SELECT * FROM inbox WHERE is_deleted = 0 ORDER BY is_pinned DESC, date_added DESC")
     fun getInboxItems(): LiveData<List<Inbox>>
 
@@ -33,7 +37,7 @@ internal interface InboxDao {
     @Query("SELECT COUNT(*) FROM inbox WHERE is_read = 0")
     suspend fun getInboxUnreadCount(): Int
 
-    @Query("SELECT DISTINCT tag FROM Inbox WHERE tag IS NOT NULL AND tag <> '' ORDER BY tag ASC")
+    @Query("SELECT DISTINCT tag FROM Inbox WHERE is_deleted = 0 AND tag IS NOT NULL AND tag <> '' ORDER BY tag ASC")
     suspend fun getUniqueNonEmptyTags(): List<String>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
