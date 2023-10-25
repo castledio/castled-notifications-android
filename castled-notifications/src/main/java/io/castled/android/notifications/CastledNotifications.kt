@@ -36,7 +36,7 @@ object CastledNotifications {
 
     private val castledCoroutineContext by lazy { Job() }
     internal val castledScope = CoroutineScope(castledCoroutineContext)
-    
+
 
     @JvmStatic
     fun initialize(application: Application, configs: CastledConfigs) {
@@ -206,9 +206,9 @@ object CastledNotifications {
         }
 
     @JvmStatic
-    fun getInboxItems(completion: (List<CastledInboxItem>) -> Unit) =
+    fun getInboxItems(onCompletion: (List<CastledInboxItem>) -> Unit) =
         castledScope.launch(Dispatchers.Default) {
-            completion(
+            onCompletion(
                 if (isInited() && getCastledConfigs().enableAppInbox)
                     AppInbox.getInboxItems()
                 else listOf()
@@ -237,9 +237,9 @@ object CastledNotifications {
     }
 
     @JvmStatic
-    fun getInboxUnreadCount(completion: (Int) -> Unit) =
+    fun getInboxUnreadCount(onCompletion: (Int) -> Unit) =
         castledScope.launch(Dispatchers.Default) {
-            completion(
+            onCompletion(
                 AppInbox.getInboxUnreadCount()
             )
         }
