@@ -103,13 +103,17 @@ internal object AppInbox {
     }
 
     fun deleteInboxItem(
-        inboxItem: CastledInboxItem, completion: (Boolean, String) -> Unit
+        inboxItem: CastledInboxItem
     ) = externalScope.launch(
         Dispatchers.Default
     ) {
-        inboxRepository.deleteInboxItem(inboxItem) { success, message ->
-            completion(success, message)
+        val inboxObject = inboxRepository.inboxDao.getInboxObjectByMessageId(inboxItem.messageId)
+        inboxObject?.let {
+            inboxObject.isDeleted = true
+            inboxRepository.inboxDao.updateInboxItem(inboxObject)
         }
+        reportEventWith(inboxItem, "", "DELETED")
+
     }
 
     private fun reportInboxEvent(request: CastledInboxEventRequest) = externalScope.launch(
@@ -129,7 +133,7 @@ internal object AppInbox {
             return listOf()
         }
         val inboxListItems = mutableListOf<CastledInboxItem>()
-        val inboxDbItems = inboxRepository.inboxDao.dbGetInbox()
+        val inboxDbItems = inboxRepository.inboxDao.dbGetAllInboxItems()
         inboxDbItems.forEach { inboxListItems.add(it.toInboxItem()) }
         return inboxListItems
     }

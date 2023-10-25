@@ -7,8 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -16,8 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.castled.android.notifications.commons.ColorUtils
 import io.castled.android.notifications.databinding.CastledInboxCategoryFragmentBinding
-import io.castled.android.notifications.inbox.AppInbox
-import io.castled.android.notifications.inbox.model.InboxResponseConverter.toInboxItem
 import io.castled.android.notifications.inbox.viewmodel.InboxViewModel
 import io.castled.android.notifications.store.models.Inbox
 import kotlinx.coroutines.Dispatchers
@@ -123,24 +119,11 @@ internal class CastledCategoryTabFragment : Fragment() {
         }
     }
 
-    internal fun deleteItem(position: Int, item: Inbox) {
+    internal fun deleteItem(item: Inbox) {
         (context as CastledInboxActivity).launch(Dispatchers.IO) {
             item.isDeleted = true
             viewModel.inboxRepository.inboxDao.updateInboxItem(item)
         }
-        binding.progressBar.visibility = ProgressBar.VISIBLE
-        AppInbox.deleteInboxItem(item.toInboxItem()) { success, message ->
-            (context as CastledInboxActivity).launch(Dispatchers.Main) {
-                if (success) {
-                    viewModel.displayedItems.remove(item.messageId)
-                } else {
-                    val toast = Toast.makeText(
-                        context, message, Toast.LENGTH_LONG
-                    )
-                    toast.show()
-                }
-                binding.progressBar.visibility = ProgressBar.GONE
-            }
-        }
+        viewModel.inboxViewLifecycleListener.deleteItem(item)
     }
 }

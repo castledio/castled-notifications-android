@@ -36,6 +36,7 @@ object CastledNotifications {
 
     private val castledCoroutineContext by lazy { Job() }
     internal val castledScope = CoroutineScope(castledCoroutineContext)
+    
 
     @JvmStatic
     fun initialize(application: Application, configs: CastledConfigs) {
@@ -230,11 +231,9 @@ object CastledNotifications {
 
     @JvmStatic
     fun deleteInboxItem(
-        inboxItem: CastledInboxItem, completion: (Boolean, String) -> Unit
+        inboxItem: CastledInboxItem
     ) {
-        AppInbox.deleteInboxItem(inboxItem) { success, message ->
-            completion(success, message)
-        }
+        AppInbox.deleteInboxItem(inboxItem)
     }
 
     @JvmStatic
