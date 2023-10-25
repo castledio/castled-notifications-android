@@ -4,6 +4,8 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Handler
+import android.os.Looper
 import android.util.Base64
 import android.view.Gravity
 import android.view.Window
@@ -31,6 +33,7 @@ internal class InAppViewDecorator(
     private var dialog = Dialog(context)
     private val inAppViewLayout: InAppBaseViewLayout? =
         InAppViewFactory.createView(context, inAppMessage)
+    private val autoDismissalHandler = Handler(Looper.getMainLooper())
 
     init {
         if (inAppViewLayout != null) {
@@ -158,15 +161,10 @@ internal class InAppViewDecorator(
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                 )
-
                 show()
-
             }
         }
-        // TODO: Handle auto dismiss
-        if (withApiCall) {
-            inAppViewLifecycleListener.onDisplayed(inAppMessage)
-        }
+        handleAutoDismissal(withApiCall)
     }
 
     override fun close() {
@@ -228,6 +226,33 @@ internal class InAppViewDecorator(
                     context
                 ) / 2).toFloat()
         }
+    }
+
+    private fun handleAutoDismissal(withApiCall: Boolean) {
+        removeAutoDismissalHandler()
+        var inappAutoDismissalTime = 0L
+        if (withApiCall) { // this is for oriention handling,this will be false for orientation change
+            inAppViewLifecycleListener.onDisplayed(inAppMessage)
+
+            if (inAppMessage.displayConfig.autoDismissInterval > 0) {
+                inappAutoDismissalTime =
+                    inAppMessage.displayConfig.autoDismissInterval * 1000
+            }
+        } else if (inAppMessage.displayConfig.autoDismissInterval > 0) {
+            inappAutoDismissalTime =
+                ((inAppMessage.lastDisplayedTime + inAppMessage.displayConfig.autoDismissInterval) -
+                        (System.currentTimeMillis() / 1000)) * 1000
+        }
+        if (inappAutoDismissalTime > 0) {
+            val task = Runnable {
+                close()
+            }
+            autoDismissalHandler.postDelayed(task, inappAutoDismissalTime)
+        }
+    }
+
+    private fun removeAutoDismissalHandler() {
+        autoDismissalHandler.removeCallbacksAndMessages(null)
     }
 }
 

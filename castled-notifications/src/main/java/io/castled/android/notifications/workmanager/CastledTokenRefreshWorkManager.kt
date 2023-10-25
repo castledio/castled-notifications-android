@@ -21,7 +21,7 @@ internal class CastledTokenRefreshWorkManager private constructor(context: Conte
         val refreshTokenRequest: PeriodicWorkRequest =
             PeriodicWorkRequestBuilder<CastledTokenRefreshWorker>(
                 repeatInterval = 14,
-                repeatIntervalTimeUnit = TimeUnit.MINUTES
+                repeatIntervalTimeUnit = TimeUnit.DAYS
             ).setConstraints(constraints)
                 .build()
 

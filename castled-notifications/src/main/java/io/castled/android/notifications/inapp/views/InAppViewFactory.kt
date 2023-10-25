@@ -21,6 +21,8 @@ object InAppViewFactory {
                 (msgBody["type"]?.jsonPrimitive?.content ?: "")
             )
 
+
+
         return when (messageType) {
             InAppMessageType.MODAL ->
                 when (messageTemplateType) {
@@ -35,6 +37,13 @@ object InAppViewFactory {
                         LayoutInflater.from(context)
                             .inflate(
                                 R.layout.castled_inapp_modal_text_buttons,
+                                null
+                            ) as InAppBaseViewLayout
+
+                    InAppMessageTemplateType.IMG_TEXT_AND_BUTTONS ->
+                        return LayoutInflater.from(context)
+                            .inflate(
+                                R.layout.castled_inapp_modal_image_and_body,
                                 null
                             ) as InAppBaseViewLayout
 
