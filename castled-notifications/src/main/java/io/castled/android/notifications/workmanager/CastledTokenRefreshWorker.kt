@@ -24,7 +24,6 @@ class CastledTokenRefreshWorker(
             val token = getToken()
             if (!token.isNullOrEmpty()) {
                 val appContext = appContext
-                CastledSharedStore.init(appContext)
                 val userId = CastledSharedStore.getUserId()
                 if (!userId.isNullOrEmpty() &&
                     token != CastledSharedStore.getToken(PushTokenType.FCM)

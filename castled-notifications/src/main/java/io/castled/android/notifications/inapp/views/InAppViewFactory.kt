@@ -40,7 +40,7 @@ object InAppViewFactory {
                                 null
                             ) as InAppBaseViewLayout
 
-                    InAppMessageTemplateType.IMG_AND_BODY ->
+                    InAppMessageTemplateType.IMG_TEXT_AND_BUTTONS ->
                         return LayoutInflater.from(context)
                             .inflate(
                                 R.layout.castled_inapp_modal_image_and_body,
