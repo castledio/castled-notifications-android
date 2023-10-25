@@ -18,10 +18,10 @@ import java.io.IOException
 
 internal class InboxRepository(context: Context) {
 
-    internal val inboxDao = CastledDbBuilder.getDbInstance(context).inboxDao()
     private val logger = CastledLogger.getInstance(LogTags.INBOX_REPOSITORY)
-    private val inboxApi = CastledRetrofitClient.create(InboxApi::class.java)
-    private val networkWorkManager = CastledNetworkWorkManager.getInstance(context)
+    internal val inboxDao by lazy { CastledDbBuilder.getDbInstance(context).inboxDao() }
+    private val inboxApi by lazy { CastledRetrofitClient.create(InboxApi::class.java) }
+    private val networkWorkManager by lazy { CastledNetworkWorkManager.getInstance(context) }
     internal suspend fun refreshInbox() {
         val cachedInboxItems = inboxDao.dbGetInbox()
         val liveInboxResponse = fetchLiveInbox() ?: return

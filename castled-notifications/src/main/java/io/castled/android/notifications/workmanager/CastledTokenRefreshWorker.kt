@@ -23,16 +23,15 @@ class CastledTokenRefreshWorker(
         return try {
             val token = getToken()
             if (!token.isNullOrEmpty()) {
-                val appContext = appContext
                 val userId = CastledSharedStore.getUserId()
-                if (!userId.isNullOrEmpty() &&
-                    token != CastledSharedStore.getToken(PushTokenType.FCM)
-                ) {
+                if (!userId.isNullOrEmpty()) {
                     PushRepository(appContext).register(
                         userId,
                         listOf(PushTokenInfo(token, PushTokenType.FCM))
                     )
                     logger.debug("Fcm token refresh completed")
+                } else {
+                    logger.debug("Fcm token refresh user is empty!!!!!")
                 }
                 Result.success()
             } else {

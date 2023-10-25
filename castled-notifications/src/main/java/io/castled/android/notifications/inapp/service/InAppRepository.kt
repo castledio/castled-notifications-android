@@ -15,10 +15,10 @@ import java.io.IOException
 
 internal class InAppRepository(context: Context) {
 
-    private val campaignDao = CastledDbBuilder.getDbInstance(context).campaignDao()
     private val logger = CastledLogger.getInstance(LogTags.IN_APP_REPOSITORY)
-    private val inAppApi = CastledRetrofitClient.create(InAppApi::class.java)
-    private val networkWorkManager = CastledNetworkWorkManager.getInstance(context)
+    private val campaignDao by lazy { CastledDbBuilder.getDbInstance(context).campaignDao() }
+    private val inAppApi by lazy { CastledRetrofitClient.create(InAppApi::class.java) }
+    private val networkWorkManager by lazy { CastledNetworkWorkManager.getInstance(context) }
 
     suspend fun getCampaigns(): List<Campaign> {
         return campaignDao.dbGetCampaigns()

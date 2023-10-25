@@ -12,10 +12,12 @@ import java.util.concurrent.TimeUnit
 internal class CastledTokenRefreshWorkManager private constructor(context: Context) {
 
     private val workManager = WorkManager.getInstance(context)
-    private val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED)
-        .setRequiresBatteryNotLow(true).build()
+    private val constraints = Constraints.Builder()
+        .setRequiredNetworkType(NetworkType.CONNECTED)
+        .setRequiresBatteryNotLow(true)
+        .build()
 
-    fun init() {
+    fun start() {
         val refreshTokenRequest: PeriodicWorkRequest =
             PeriodicWorkRequestBuilder<CastledTokenRefreshWorker>(
                 repeatInterval = 14,

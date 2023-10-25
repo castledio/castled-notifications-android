@@ -1,13 +1,10 @@
 package io.castled.android.notifications.push
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Build
-import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.R
@@ -16,6 +13,7 @@ import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.extensions.getNotificationDisplayId
 import io.castled.android.notifications.push.models.CastledNotificationFieldConsts
 import io.castled.android.notifications.push.models.CastledPushMessage
+import io.castled.android.notifications.push.models.NotificationActionContext
 import io.castled.android.notifications.push.models.NotificationEventType
 import io.castled.android.notifications.push.models.PushConstants
 
@@ -31,34 +29,19 @@ internal object PushNotificationManager {
     }
 
     @SuppressLint("MissingPermission")
-    suspend fun handleNotification(context: Context, pushPayload: CastledPushMessage?) {
-        // Payload from Castled server
-        pushPayload ?: run {
-            logger.debug("Castled push notification empty! skipping notification handling...")
-            return
-        }
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            logger.debug("Do not have push permission!")
-            return
-        }
-        if (PushNotification.checkAndSetRecentNotificationId(pushPayload.getNotificationDisplayId())) {
-            return
-        }
+    suspend fun displayNotification(context: Context, pushMessage: CastledPushMessage) {
         logger.debug("Building castled notification...")
         val notification =
-            CastledNotificationBuilder(context).buildNotification(pushPayload)
+            CastledNotificationBuilder(context).buildNotification(pushMessage)
         NotificationManagerCompat.from(context)
-            .notify(pushPayload.getNotificationDisplayId(), notification)
+            .notify(pushMessage.getNotificationDisplayId(), notification)
 
         PushNotification.reportPushEvent(
             NotificationActionContext(
-                notificationId = pushPayload.notificationId,
-                teamId = pushPayload.teamId,
-                sourceContext = pushPayload.sourceContext,
+                notificationId = pushMessage.notificationId,
+                displayId = pushMessage.getNotificationDisplayId(),
+                teamId = pushMessage.teamId,
+                sourceContext = pushMessage.sourceContext,
                 eventType = NotificationEventType.RECEIVED.toString(),
                 actionLabel = null,
                 actionType = null,
