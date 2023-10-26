@@ -91,6 +91,8 @@ dependencies {
     implementation Libs.mvvmLifecycleCommon
     implementation Libs.mvvmLifecycleViewmodel
     implementation Libs.mvvmActivity
+    implementation Libs.swiperefreshlayout
+
 
     // Test Dependencies
     testImplementation Libs.jUnit

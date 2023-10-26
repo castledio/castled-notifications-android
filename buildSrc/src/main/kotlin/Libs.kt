@@ -45,6 +45,7 @@ object Versions {
     const val mvvmLifecycleCommon = "2.5.1"
     const val mvvmLifecycleViewmodel = "2.5.1"
     const val mvvmActivity = "1.6.1"
+    const val swiperefreshlayout = "1.1.0"
     const val fragment = "1.3.5"
 
 }
@@ -108,5 +109,7 @@ object Libs {
     const val mvvmLifecycleViewmodel =
         "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.mvvmLifecycleViewmodel}"
     const val mvvmActivity = "androidx.activity:activity-ktx:${Versions.mvvmActivity}"
+    const val swiperefreshlayout =
+        "androidx.swiperefreshlayout:swiperefreshlayout:${Versions.swiperefreshlayout}"
     const val fragment = "androidx.fragment:fragment-ktx::${Versions.fragment}"
 }
