@@ -27,6 +27,7 @@ internal class CastledCategoryTabFragment : Fragment() {
     private lateinit var inboxListAdapter: CastledInboxRecycleViewAdapter
     private var currentCategoryIndex: Int = 0
     private lateinit var currentCategory: String
+    private var isItemsLoaded = false
 
     companion object {
         private const val ARG_INDEX = "index"
@@ -56,6 +57,7 @@ internal class CastledCategoryTabFragment : Fragment() {
         currentCategoryIndex = arguments?.getInt(ARG_INDEX, 0) ?: 0
         currentCategory = arguments?.getString(ARG_CAT, "") ?: ""
         prepareRecyclerView()
+        isItemsLoaded = false
         initializeDaoListener()
         return binding.root
     }
@@ -76,6 +78,10 @@ internal class CastledCategoryTabFragment : Fragment() {
         )
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
     private fun initializeDaoListener() {
         viewModel.inboxRepository.observeInboxLiveDataWithTag(
             if (currentCategoryIndex == 0) ""
@@ -83,10 +89,15 @@ internal class CastledCategoryTabFragment : Fragment() {
         )
             .observe(viewLifecycleOwner) { inboxList ->
                 inboxListAdapter.setInboxItems(inboxList)
+                if (currentCategoryIndex == 0 && isItemsLoaded) {
+                    (context as? CastledInboxActivity)?.refreshTabsAfterDBChanges()
+                }
+                isItemsLoaded = true
                 binding.inboxRecycleView.visibility =
                     if (inboxList.isEmpty()) View.GONE else View.VISIBLE
                 binding.txtEmptyView.visibility =
                     if (inboxList.isEmpty()) View.VISIBLE else View.GONE
+
             }
     }
 

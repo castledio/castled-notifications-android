@@ -33,6 +33,5 @@
         android:textSize="18sp"
         android:textAlignment="center"
         android:background="@android:color/transparent"
-
         android:paddingHorizontal="20dp" />
 </RelativeLayout>

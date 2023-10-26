@@ -30,11 +30,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.Serializable
+import kotlin.math.min
 
 
 internal class CastledInboxActivity : AppCompatActivity(),
     CoroutineScope by CoroutineScope(Dispatchers.Main) {
     private val viewModel: InboxViewModel by viewModels()
+    private val allString = "All"
     private lateinit var binding: ActivityCastledInboxBinding
     private lateinit var inboxRepository: InboxRepository
     private var categories = mutableListOf<String>()
@@ -64,37 +66,50 @@ internal class CastledInboxActivity : AppCompatActivity(),
         displayConfig?.let {
             viewModel.displayConfig = displayConfig
             customizeViews(displayConfig)
-            populateTabs(displayConfig.showCategoriesTab)
+            populateTabs(displayConfig.showCategoriesTab, true)
         } ?: run {
             supportActionBar?.let {
                 binding.toolbar.visibility = View.GONE
             }
-            populateTabs(true)
+            populateTabs(true, true)
         }
 
     }
 
-    private fun populateTabs(withTab: Boolean) {
-        launch(Dispatchers.Default) {
-            inboxRepository.refreshInbox()
+    private fun populateTabs(withTab: Boolean, shouldRefresh: Boolean) {
+
+        if (shouldRefresh) {
+            launch(Dispatchers.Default) {
+                inboxRepository.refreshInbox()
+            }
         }
         launch(Dispatchers.IO) {
-            categories.clear()
-            categories.add("All")
-            if (withTab) {
 
-                val newCategories = inboxRepository.getCategoryTags()
-                launch(Dispatchers.Main) {
-                    categories.addAll(newCategories)
-                    prepareViewPager()
+            if (withTab) {
+                val newCategories = listOf(allString) + inboxRepository.getCategoryTags()
+                if (newCategories != categories) {
+                    categories.clear()
+                    launch(Dispatchers.Main) {
+                        categories.addAll(newCategories)
+                        prepareViewPager()
+                    }
                 }
+
             } else {
+                categories.clear()
+                categories.add(allString)
                 launch(Dispatchers.Main) {
                     prepareViewPager()
                 }
             }
         }
 
+    }
+
+    internal fun refreshTabsAfterDBChanges() {
+        if (categoriesTab.visibility == View.VISIBLE) {
+            populateTabs(true, false)
+        }
     }
 
     private fun customizeViews(displayConfig: CastledInboxDisplayConfig) {
@@ -205,11 +220,12 @@ internal class CastledInboxActivity : AppCompatActivity(),
         }
         val pagerAdapter = PagerAdapter(this)
         viewPager.adapter = pagerAdapter
+        viewPager.offscreenPageLimit = min(categories.size, 3)
+
         TabLayoutMediator(categoriesTab, viewPager) { tab, position ->
             // Set the title for each tab here
             tab.text = categories[position]
         }.attach()
-
 
         for (i in 0 until categoriesTab.tabCount) {
             val tab = categoriesTab.getTabAt(i)
@@ -217,11 +233,6 @@ internal class CastledInboxActivity : AppCompatActivity(),
             setTab(tab, i == viewModel.currentCategoryIndex)
 
         }
-//        if (areTabTitlesExceedingWidth(categoriesTab, resources.displayMetrics.widthPixels)) {
-//            categoriesTab.tabMode = TabLayout.MODE_SCROLLABLE
-//        } else {
-//            categoriesTab.tabMode = TabLayout.MODE_FIXED
-//        }
         setModeForTabView()
         // Set up a TabLayout.OnTabSelectedListener to change tab colors when selected
         categoriesTab.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -273,23 +284,6 @@ internal class CastledInboxActivity : AppCompatActivity(),
                 categoriesTab.tabMode = TabLayout.MODE_FIXED
             }
         }
-    }
-
-    private fun areTabTitlesExceedingWidth(tabLayout: TabLayout, availableWidth: Int): Boolean {
-
-        var totalContentWidth = 0
-        for (i in 0 until tabLayout.tabCount) {
-            val tabView = tabLayout.getTabAt(i)?.view
-            totalContentWidth += tabView?.measuredWidth ?: 0
-        }
-        var totalWidth = 0
-        for (i in 0 until tabLayout.tabCount) {
-            val tab = tabLayout.getTabAt(i)
-            totalWidth += tab?.text?.length ?: 0
-        }
-        totalWidth +=
-            tabLayout.tabCount * (12 * Resources.getSystem().displayMetrics.density).toInt()
-        return totalContentWidth > availableWidth
     }
 
     private inner class PagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
