@@ -82,6 +82,14 @@ internal class CastledCategoryTabFragment : Fragment() {
         super.onDestroy()
     }
 
+    override fun onResume() {
+        super.onResume()
+        isItemsLoaded = false
+        inboxListAdapter?.let {
+            inboxListAdapter.reloadRecyclerView()
+        }
+    }
+
     private fun initializeDaoListener() {
         viewModel.inboxRepository.observeInboxLiveDataWithTag(
             if (currentCategoryIndex == 0) ""
@@ -89,7 +97,7 @@ internal class CastledCategoryTabFragment : Fragment() {
         )
             .observe(viewLifecycleOwner) { inboxList ->
                 inboxListAdapter.setInboxItems(inboxList)
-                if (currentCategoryIndex == 0 && isItemsLoaded) {
+                if (isItemsLoaded) {
                     (context as? CastledInboxActivity)?.refreshTabsAfterDBChanges()
                 }
                 isItemsLoaded = true
@@ -103,31 +111,30 @@ internal class CastledCategoryTabFragment : Fragment() {
 
     private fun prepareRecyclerView() {
         inboxListAdapter = CastledInboxRecycleViewAdapter(context, viewModel, this)
-        binding.inboxRecycleView.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = inboxListAdapter
-            val itemTouchHelper =
-                ItemTouchHelper(SwipeToDeleteCallback(adapter as CastledInboxRecycleViewAdapter))
-            itemTouchHelper.attachToRecyclerView(binding.inboxRecycleView)
-            binding.inboxRecycleView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-                    val firstVisibleItemPosition =
-                        (layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-                    val lastVisibleItemPosition =
-                        (layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
-                    for (i in firstVisibleItemPosition..lastVisibleItemPosition) {
-                        if (i >= 0 && i < inboxListAdapter.inboxItemsList.size) {
-                            val data = inboxListAdapter.inboxItemsList[i]
-                            if (!data.isRead && !viewModel.displayedItems.contains(data.messageId)) {
-                                viewModel.displayedItems.add(data.messageId)
-                            }
+        binding.inboxRecycleView.adapter = inboxListAdapter
+        binding.inboxRecycleView.layoutManager = LinearLayoutManager(context)
+        val itemTouchHelper =
+            ItemTouchHelper(SwipeToDeleteCallback(inboxListAdapter as CastledInboxRecycleViewAdapter))
+        itemTouchHelper.attachToRecyclerView(binding.inboxRecycleView)
+        binding.inboxRecycleView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val firstVisibleItemPosition =
+                    (binding.inboxRecycleView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+                val lastVisibleItemPosition =
+                    (binding.inboxRecycleView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+                for (i in firstVisibleItemPosition..lastVisibleItemPosition) {
+                    if (i >= 0 && i < inboxListAdapter.inboxItemsList.size) {
+                        val data = inboxListAdapter.inboxItemsList[i]
+                        if (!data.isRead && !viewModel.displayedItems.contains(data.messageId)) {
+                            viewModel.displayedItems.add(data.messageId)
                         }
                     }
-
                 }
-            })
-        }
+
+            }
+        })
+
         binding.swipeRefreshList.setOnRefreshListener {
             (context as CastledInboxActivity).launch(Dispatchers.Default) {
                 viewModel.inboxRepository.refreshInbox()

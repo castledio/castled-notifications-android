@@ -30,7 +30,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.Serializable
-import kotlin.math.min
 
 
 internal class CastledInboxActivity : AppCompatActivity(),
@@ -51,6 +50,7 @@ internal class CastledInboxActivity : AppCompatActivity(),
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         binding = ActivityCastledInboxBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -71,9 +71,8 @@ internal class CastledInboxActivity : AppCompatActivity(),
             supportActionBar?.let {
                 binding.toolbar.visibility = View.GONE
             }
-            populateTabs(true, true)
+            populateTabs(withTab = true, shouldRefresh = true)
         }
-
     }
 
     private fun populateTabs(withTab: Boolean, shouldRefresh: Boolean) {
@@ -108,7 +107,7 @@ internal class CastledInboxActivity : AppCompatActivity(),
 
     internal fun refreshTabsAfterDBChanges() {
         if (categoriesTab.visibility == View.VISIBLE) {
-            populateTabs(true, false)
+            populateTabs(withTab = true, shouldRefresh = false)
         }
     }
 
@@ -217,16 +216,23 @@ internal class CastledInboxActivity : AppCompatActivity(),
         categoriesTab.setSelectedTabIndicatorColor(selectedIndicatorColor)
         if (categories.count() == 1) {
             binding.categoriesTabParentView.visibility = View.GONE
+        } else {
+            //scenario - initially only one tab, later adding more tabs
+            viewModel.displayConfig?.let {
+                if (viewModel.displayConfig!!.showCategoriesTab) {
+                    binding.categoriesTabParentView.visibility = View.VISIBLE
+
+                }
+            }
         }
         val pagerAdapter = PagerAdapter(this)
         viewPager.adapter = pagerAdapter
-        viewPager.offscreenPageLimit = min(categories.size, 3)
+        // viewPager.offscreenPageLimit = min(categories.size, 3)
 
         TabLayoutMediator(categoriesTab, viewPager) { tab, position ->
             // Set the title for each tab here
             tab.text = categories[position]
         }.attach()
-
         for (i in 0 until categoriesTab.tabCount) {
             val tab = categoriesTab.getTabAt(i)
             tab?.view?.tab?.setCustomView(R.layout.castled_custom_tab)
