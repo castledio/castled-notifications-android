@@ -8,7 +8,6 @@ import android.os.Process
 import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.inapp.InAppNotification
 import io.castled.android.notifications.inapp.models.consts.AppEvents
-import io.castled.android.notifications.inapp.observer.AppActivityLifecycleObserver
 import io.castled.android.notifications.inbox.AppInbox
 import io.castled.android.notifications.inbox.model.CastledInboxDisplayConfig
 import io.castled.android.notifications.inbox.model.CastledInboxItem
@@ -32,10 +31,9 @@ object CastledNotifications {
     private val logger: CastledLogger = CastledLogger.getInstance(LogTags.GENERIC)
     private lateinit var appId: String
     private lateinit var application: Application
-    private var isLifeCycleInitialized = false
 
     private val castledCoroutineContext by lazy { Job() }
-    internal val castledScope = CoroutineScope(castledCoroutineContext)
+    private val castledScope = CoroutineScope(castledCoroutineContext)
 
 
     @JvmStatic
@@ -55,8 +53,9 @@ object CastledNotifications {
             return
         }
         this.application = application
-        CastledSharedStore.init(application, configs, castledScope)
         CastledRetrofitClient.init(configs)
+
+        CastledLifeCycleObserver.init(application)
 
         if (configs.enablePush) {
             PushNotification.init(application, castledScope)
@@ -70,10 +69,15 @@ object CastledNotifications {
         if (configs.enableAppInbox) {
             AppInbox.init(application, castledScope)
         }
+
+        CastledSharedStore.init(
+            application,
+            configs,
+            listOf(PushNotification, InAppNotification, AppInbox),
+            castledScope
+        )
+
         appId = configs.appId
-        CastledSharedStore.getUserId()?.let {
-            observeAppLifecycle()
-        }
         logger.info("Sdk initialized successfully")
     }
 
@@ -103,6 +107,11 @@ object CastledNotifications {
         }
     }
 
+    @JvmStatic
+    fun logout(context: Context) {
+        CastledSharedStore.clearUserId()
+    }
+
     private suspend fun saveUserId(context: Context, userId: String, userToken: String?) {
         if (!isMainProcess(context)) {
             // In case there are services that are not run from main process, skip init
@@ -112,19 +121,10 @@ object CastledNotifications {
         }
         if (!isInited()) {
             throw IllegalStateException("Sdk not yet initialized!")
-
         } else if (userId.isBlank()) {
             throw IllegalStateException("UserId is empty!")
-
         } else {
-            if (CastledSharedStore.getUserId() != userId) {
-                // New user-id
-                CastledSharedStore.setUserId(userId, userToken)
-                PushNotification.registerUser(userId)
-                observeAppLifecycle()
-            }
-            InAppNotification.startCampaignJob()
-            AppInbox.startInboxJob()
+            CastledSharedStore.setUserId(context, userId, userToken)
         }
     }
 
@@ -243,19 +243,6 @@ object CastledNotifications {
                 AppInbox.getInboxUnreadCount()
             )
         }
-
-    private fun observeAppLifecycle() {
-        if (!isLifeCycleInitialized && isInited() &&
-            (getCastledConfigs().enableAppInbox || getCastledConfigs().enableInApp)
-        ) {
-            isLifeCycleInitialized = true
-            application.registerActivityLifecycleCallbacks(
-                AppActivityLifecycleObserver(
-                    CastledLifeCycleObserver.appEventCallbacks
-                )
-            )
-        }
-    }
 
     fun getCastledConfigs() = CastledSharedStore.configs
 

@@ -3,6 +3,7 @@ package io.castled.android.notifications.logger
 object LogTags {
     const val GENERIC = "CastledNotifications"
     const val IN_APP = "CastledNotifications-InApp"
+    const val STORE = "CastledNotifications-Store"
     const val PUSH = "CastledNotifications-Push"
     const val PUSH_TOKEN_PROVIDER = "CastledNotifications-PushTokenProvider"
     const val DB_OPS = "CastledNotifications-DbOps"

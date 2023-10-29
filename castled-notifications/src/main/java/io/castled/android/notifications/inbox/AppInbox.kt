@@ -1,12 +1,15 @@
 package io.castled.android.notifications.inbox
 
 import android.app.Application
+import android.content.Context
 import io.castled.android.notifications.inbox.model.CastledInboxItem
 import io.castled.android.notifications.inbox.model.InboxResponseConverter.toInboxItem
 import io.castled.android.notifications.inbox.viewmodel.InboxRepository
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
+import io.castled.android.notifications.observer.CastledLifeCycleObserver
 import io.castled.android.notifications.store.CastledSharedStore
+import io.castled.android.notifications.store.CastledSharedStoreListener
 import io.castled.android.notifications.store.models.Inbox
 import io.castled.android.notifications.workmanager.models.CastledInboxEventRequest
 import kotlinx.coroutines.CoroutineScope
@@ -17,9 +20,9 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 
-internal object AppInbox {
+internal object AppInbox : CastledSharedStoreListener {
 
-    internal lateinit var inboxRepository: InboxRepository
+    private lateinit var inboxRepository: InboxRepository
     private val logger: CastledLogger = CastledLogger.getInstance(LogTags.INBOX_REPOSITORY)
     private lateinit var externalScope: CoroutineScope
     private var fetchJob: Job? = null
@@ -28,11 +31,15 @@ internal object AppInbox {
     fun init(application: Application, externalScope: CoroutineScope) {
         AppInbox.externalScope = externalScope
         inboxRepository = InboxRepository(application)
+        CastledLifeCycleObserver.registerListener(InboxAppLifeCycleListener(externalScope))
         enabled = true
-        startInboxJob()
     }
 
-    internal fun startInboxJob() {
+    suspend fun refreshInbox() {
+        inboxRepository.refreshInbox()
+    }
+
+    private fun startInboxJob() {
         if (!enabled) {
             logger.debug("Ignoring inbox event, Castled inbox disabled/ UserId not configured")
             return
@@ -127,7 +134,6 @@ internal object AppInbox {
     }
 
     suspend fun getInboxItems(): List<CastledInboxItem> {
-
         if (!enabled || CastledSharedStore.getUserId() == null) {
             logger.debug("Ignoring inbox event, Castled inbox disabled/ UserId not configured")
             return listOf()
@@ -136,6 +142,16 @@ internal object AppInbox {
         val inboxDbItems = inboxRepository.inboxDao.dbGetAllInboxItems()
         inboxDbItems.forEach { inboxListItems.add(it.toInboxItem()) }
         return inboxListItems
+    }
+
+    override fun onStoreInitialized(context: Context) {
+        CastledSharedStore.getUserId()?.let {
+            startInboxJob()
+        }
+    }
+
+    override fun onStoreUserIdSet(context: Context) {
+        startInboxJob()
     }
 
 }

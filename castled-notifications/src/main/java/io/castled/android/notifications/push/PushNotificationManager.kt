@@ -10,7 +10,6 @@ import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.R
 import io.castled.android.notifications.logger.CastledLogger.Companion.getInstance
 import io.castled.android.notifications.logger.LogTags
-import io.castled.android.notifications.push.extensions.getNotificationDisplayId
 import io.castled.android.notifications.push.models.CastledNotificationFieldConsts
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.NotificationActionContext
@@ -34,12 +33,11 @@ internal object PushNotificationManager {
         val notification =
             CastledNotificationBuilder(context).buildNotification(pushMessage)
         NotificationManagerCompat.from(context)
-            .notify(pushMessage.getNotificationDisplayId(), notification)
+            .notify(pushMessage.notificationId, notification)
 
         PushNotification.reportPushEvent(
             NotificationActionContext(
                 notificationId = pushMessage.notificationId,
-                displayId = pushMessage.getNotificationDisplayId(),
                 teamId = pushMessage.teamId,
                 sourceContext = pushMessage.sourceContext,
                 eventType = NotificationEventType.RECEIVED.toString(),

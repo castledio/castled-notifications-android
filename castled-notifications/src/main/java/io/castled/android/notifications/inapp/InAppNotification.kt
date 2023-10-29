@@ -5,7 +5,9 @@ import android.app.Application
 import android.content.Context
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
+import io.castled.android.notifications.observer.CastledLifeCycleObserver
 import io.castled.android.notifications.store.CastledSharedStore
+import io.castled.android.notifications.store.CastledSharedStoreListener
 import io.castled.android.notifications.store.models.Campaign
 import io.castled.android.notifications.workmanager.models.CastledInAppEventRequest
 import kotlinx.coroutines.CoroutineScope
@@ -15,7 +17,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
-internal object InAppNotification {
+internal object InAppNotification : CastledSharedStoreListener {
 
     private val logger: CastledLogger = CastledLogger.getInstance(LogTags.IN_APP)
     private lateinit var externalScope: CoroutineScope
@@ -27,14 +29,11 @@ internal object InAppNotification {
     fun init(application: Application, externalScope: CoroutineScope) {
         InAppNotification.externalScope = externalScope
         inAppController = InAppController(application)
+        CastledLifeCycleObserver.registerListener(InAppAppLifeCycleListener(externalScope))
         enabled = true
-        CastledSharedStore.getUserId()?.let {
-            startCampaignJob()
-        }
-
     }
 
-    fun startCampaignJob() {
+    private fun startCampaignJob() {
         if (!enabled) {
             logger.debug("Ignoring app event, In-App disabled")
             return
@@ -43,7 +42,7 @@ internal object InAppNotification {
             fetchJob = externalScope.launch(Default) {
                 do {
                     delay(TimeUnit.SECONDS.toMillis(CastledSharedStore.configs.inAppFetchIntervalSec))
-                    if (!CastledSharedStore.isAppInBackground)  {
+                    if (!CastledSharedStore.isAppInBackground) {
                         inAppController.refreshLiveCampaigns()
                     }
                 } while (true)
@@ -77,5 +76,15 @@ internal object InAppNotification {
 
     fun onOrientationChange(activity: Activity) =
         inAppController.updateInAppForOrientationChanges(activity)
+
+    override fun onStoreInitialized(context: Context) {
+        CastledSharedStore.getUserId()?.let {
+            startCampaignJob()
+        }
+    }
+
+    override fun onStoreUserIdSet(context: Context) {
+        startCampaignJob()
+    }
 
 }

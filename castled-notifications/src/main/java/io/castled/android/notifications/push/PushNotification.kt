@@ -9,7 +9,6 @@ import io.castled.android.notifications.CastledPushNotificationListener
 import io.castled.android.notifications.commons.CastledLinkedHashCache
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
-import io.castled.android.notifications.push.extensions.getNotificationDisplayId
 import io.castled.android.notifications.push.extensions.toCastledActionContext
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.NotificationActionContext
@@ -18,13 +17,14 @@ import io.castled.android.notifications.push.models.PushTokenInfo
 import io.castled.android.notifications.push.models.PushTokenType
 import io.castled.android.notifications.push.service.PushRepository
 import io.castled.android.notifications.store.CastledSharedStore
+import io.castled.android.notifications.store.CastledSharedStoreListener
 import io.castled.android.notifications.workmanager.CastledTokenRefreshWorkManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.reflect.full.primaryConstructor
 
-internal object PushNotification {
+internal object PushNotification : CastledSharedStoreListener {
 
     private val logger = CastledLogger.getInstance(LogTags.PUSH)
     private val tokenProviders = mutableMapOf<PushTokenType, CastledPushTokenProvider>()
@@ -41,12 +41,9 @@ internal object PushNotification {
         this.externalScope = externalScope
         this.pushRepository = PushRepository(context)
         enabled = true
-        initTokenProviders(context)
-        refreshPushTokens(context)
-        startPeriodicTokenRefreshTask(context)
     }
 
-    suspend fun registerUser(userId: String) {
+    private suspend fun registerUser(userId: String) {
         val tokens = mutableListOf<PushTokenInfo>()
         PushTokenType.values().forEach { tokenType ->
             CastledSharedStore.getToken(tokenType)?.let { tokenVal ->
@@ -66,7 +63,7 @@ internal object PushNotification {
 
         // Listener callbacks
         pushNotificationListener?.let {
-            val pushMessage = pushMessageCache?.get(actionContext.displayId)
+            val pushMessage = pushMessageCache?.get(actionContext.notificationId)
             pushMessage ?: return
             val eventType = NotificationEventType.valueOf(actionContext.eventType)
             when (eventType) {
@@ -83,7 +80,7 @@ internal object PushNotification {
                 else -> logger.debug("Event type: $eventType not handled!")
             }
             if (eventType != NotificationEventType.RECEIVED) {
-                pushMessageCache?.remove(actionContext.displayId)
+                pushMessageCache?.remove(actionContext.notificationId)
             }
         }
         externalScope.launch(Dispatchers.Default) {
@@ -130,7 +127,8 @@ internal object PushNotification {
         }
 
     suspend fun onTokenFetch(token: String?, tokenType: PushTokenType) {
-        logger.info("push token: $token, type: $tokenType")
+        val oldToken = CastledSharedStore.getToken(tokenType)
+        logger.info("push token: $token, old token: $oldToken type: $tokenType")
         if (CastledSharedStore.getToken(tokenType) != token) {
             // New token
             CastledSharedStore.setToken(token, tokenType)
@@ -144,16 +142,16 @@ internal object PushNotification {
 
     fun handlePushNotification(context: Context, pushMessage: CastledPushMessage?) {
         pushMessage ?: return
-        if (!shouldDisplayPushMessage(context, pushMessage)) {
-            return
-        }
-        pushMessageCache?.set(pushMessage.getNotificationDisplayId(), pushMessage)
         externalScope.launch(Dispatchers.Default) {
+            if (!shouldDisplayPushMessage(context, pushMessage)) {
+                return@launch
+            }
+            pushMessageCache?.set(pushMessage.notificationId, pushMessage)
             PushNotificationManager.displayNotification(context, pushMessage)
         }
     }
 
-    private fun shouldDisplayPushMessage(
+    private suspend fun shouldDisplayPushMessage(
         context: Context,
         pushMessage: CastledPushMessage?
     ): Boolean {
@@ -170,7 +168,11 @@ internal object PushNotification {
             logger.debug("Do not have push permission!")
             return false
         }
-        if (checkAndSetRecentNotificationId(pushMessage.getNotificationDisplayId())) {
+        if (CastledSharedStore.checkAndSetRecentDisplayedPushId(
+                context,
+                pushMessage.notificationId
+            )
+        ) {
             logger.debug("Message already displayed!")
             return false
         }
@@ -180,13 +182,16 @@ internal object PushNotification {
     fun isCastledPushMessage(remoteMessage: RemoteMessage): Boolean =
         PushNotificationManager.isCastledNotification(remoteMessage)
 
-    @Synchronized
-    private fun checkAndSetRecentNotificationId(newId: Int): Boolean {
-        if (newId in CastledSharedStore.getRecentDisplayedPushIds()) {
-            return true
+    override fun onStoreInitialized(context: Context) {
+        initTokenProviders(context)
+        refreshPushTokens(context)
+        startPeriodicTokenRefreshTask(context)
+    }
+
+    override fun onStoreUserIdSet(context: Context) {
+        externalScope.launch {
+            registerUser(CastledSharedStore.getUserId()!!)
         }
-        CastledSharedStore.setRecentDisplayedPushId(newId)
-        return false
     }
 
 

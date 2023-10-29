@@ -19,7 +19,6 @@ import io.castled.android.notifications.logger.CastledLogger.Companion.getInstan
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.*
 import io.castled.android.notifications.commons.CastledIdUtils
-import io.castled.android.notifications.push.extensions.getNotificationDisplayId
 import io.castled.android.notifications.push.models.PushConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -220,7 +219,6 @@ internal class CastledNotificationBuilder(private val context: Context) {
         val pendingIntent = createNotificationIntent(
             NotificationActionContext(
                 notificationId = payload.notificationId,
-                displayId = payload.getNotificationDisplayId(),
                 teamId = payload.teamId,
                 sourceContext = payload.sourceContext,
                 eventType = NotificationEventType.CLICKED.toString(),
@@ -240,7 +238,6 @@ internal class CastledNotificationBuilder(private val context: Context) {
         payload.castledActionButtons?.forEach { actionButton ->
             val event = NotificationActionContext(
                 notificationId = payload.notificationId,
-                displayId = payload.getNotificationDisplayId(),
                 teamId = payload.teamId,
                 sourceContext = payload.sourceContext,
                 eventType = if (actionButton.clickAction == CastledClickAction.DISMISS_NOTIFICATION) {
@@ -272,7 +269,6 @@ internal class CastledNotificationBuilder(private val context: Context) {
         val pendingIntent = createDiscardIntent(
             NotificationActionContext(
                 notificationId = payload.notificationId,
-                displayId = payload.getNotificationDisplayId(),
                 teamId = payload.teamId,
                 sourceContext = payload.sourceContext,
                 eventType = NotificationEventType.DISCARDED.toString(),
