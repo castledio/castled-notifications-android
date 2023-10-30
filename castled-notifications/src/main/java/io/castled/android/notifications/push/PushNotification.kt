@@ -40,7 +40,9 @@ internal object PushNotification : CastledSharedStoreListener {
 
         this.externalScope = externalScope
         this.pushRepository = PushRepository(context)
+        CastledSharedStore.registerListener(this)
         enabled = true
+        logger.debug("Push module initialized")
     }
 
     private suspend fun registerUser(userId: String) {

@@ -19,16 +19,16 @@ class MyApplicationClass : MultiDexApplication() {
         CastledNotifications.initialize(
             this,
             CastledConfigs.Builder()
-                .appId("qwertyasdfg")
-                .location(CastledConfigs.CastledLocation.TEST)
+                .appId("829c38e2e359d94372a2e0d35e1f74df")
+                .location(CastledConfigs.CastledLocation.US)
                 .enablePush(true)
                 .enableAppInbox(true)
-                .enableInApp(true)
-                .enableTracking(true)
+                .enableInApp(false)
+                .enableTracking(false)
                 .inAppFetchIntervalSec(60)
-                //.xiaomiAppId("2882303761522058544")
-                //.xiaomiAppKey("5302205887544")
-                //.xiaomiRegion(CastledConfigs.XiaomiRegion.India)
+                .xiaomiAppId("2882303761522058544")
+                .xiaomiAppKey("5302205887544")
+                .xiaomiRegion(CastledConfigs.XiaomiRegion.India)
                 .build()
         )
 
