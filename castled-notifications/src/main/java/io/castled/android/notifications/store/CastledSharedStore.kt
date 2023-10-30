@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.text.TextUtils
 import io.castled.android.notifications.CastledConfigs
+import io.castled.android.notifications.exceptions.CastledRuntimeException
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.PushTokenType
@@ -38,7 +39,6 @@ internal object CastledSharedStore {
     fun init(
         context: Context,
         configs: CastledConfigs,
-        listeners: List<CastledSharedStoreListener>?,
         externalScope: CoroutineScope
     ) {
         this.appId = configs.appId
@@ -124,6 +124,13 @@ internal object CastledSharedStore {
                 .apply()
             return false
         }
+    }
+
+    fun registerListener(listener: CastledSharedStoreListener) {
+        if (listeners.contains(listener)) {
+            throw CastledRuntimeException("Listener already registered!")
+        }
+        listeners.add(listener)
     }
 
     private fun getSharedPreference(context: Context): SharedPreferences {

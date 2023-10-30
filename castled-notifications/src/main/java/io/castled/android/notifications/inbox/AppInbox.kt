@@ -32,7 +32,9 @@ internal object AppInbox : CastledSharedStoreListener {
         AppInbox.externalScope = externalScope
         inboxRepository = InboxRepository(application)
         CastledLifeCycleObserver.registerListener(InboxAppLifeCycleListener(externalScope))
+        CastledSharedStore.registerListener(this)
         enabled = true
+        logger.debug("AppInbox module initialized")
     }
 
     suspend fun refreshInbox() {

@@ -29,8 +29,10 @@ internal object InAppNotification : CastledSharedStoreListener {
     fun init(application: Application, externalScope: CoroutineScope) {
         InAppNotification.externalScope = externalScope
         inAppController = InAppController(application)
-        enabled = true
+        CastledSharedStore.registerListener(this)
         CastledLifeCycleObserver.registerListener(InAppAppLifeCycleListener(externalScope))
+        enabled = true
+        logger.debug("InApp module initialized")
     }
 
     private fun startCampaignJob() {

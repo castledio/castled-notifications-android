@@ -71,7 +71,6 @@ object CastledNotifications {
         CastledSharedStore.init(
             application,
             configs,
-            listOf(PushNotification, InAppNotification, AppInbox),
             castledScope
         )
 
