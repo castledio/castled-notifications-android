@@ -19,7 +19,9 @@ class CastledNotificationReceiverAct : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         handleIntent(this, intent)
-        finish()
+        if (!isFinishing) {
+            finish()
+        }
     }
 
     private fun handleIntent(context: Context, intent: Intent) {
@@ -28,9 +30,11 @@ class CastledNotificationReceiverAct : AppCompatActivity() {
 
             val contextJson =
                 intent.extras?.getString(PushConstants.CASTLED_EXTRA_NOTIF_CONTEXT) ?: return
-            val notificationContext: NotificationActionContext = Json.decodeFromString(contextJson)
+            val notificationContext: NotificationActionContext =
+                Json.decodeFromString(contextJson)
             val clickedAction =
-                notificationContext.actionType?.let { CastledClickAction.valueOf(it) } ?: CastledClickAction.NONE
+                notificationContext.actionType?.let { CastledClickAction.valueOf(it) }
+                    ?: CastledClickAction.NONE
 
             // Cancel the notification
             val notificationManager =
@@ -40,15 +44,26 @@ class CastledNotificationReceiverAct : AppCompatActivity() {
             when (clickedAction) {
                 CastledClickAction.DEEP_LINKING, CastledClickAction.RICH_LANDING -> {
                     val uri = notificationContext.actionUri ?: return
-                    CastledClickActionUtils.handleDeeplinkAction(context, uri, notificationContext.keyVals)
+                    CastledClickActionUtils.handleDeeplinkAction(
+                        context,
+                        uri,
+                        notificationContext.keyVals
+                    )
                 }
+
                 CastledClickAction.NAVIGATE_TO_SCREEN -> {
                     val className = notificationContext.actionUri ?: return
-                    CastledClickActionUtils.handleNavigationAction(context, className, notificationContext.keyVals)
+                    CastledClickActionUtils.handleNavigationAction(
+                        context,
+                        className,
+                        notificationContext.keyVals
+                    )
                 }
+
                 CastledClickAction.DEFAULT -> {
                     CastledClickActionUtils.handleDefaultAction(context)
                 }
+
                 else -> {
                     logger.debug("Undefined click action: $clickedAction")
                 }

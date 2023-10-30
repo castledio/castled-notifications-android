@@ -1,18 +1,16 @@
-package io.castled.android.notifications.inapp.observer
+package io.castled.android.notifications.observer
 
-import android.content.Context
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 
-class FragmentLifeCycleObserver(val context: Context, val screenName: String) :
-    LifecycleEventObserver {
-
+class ScreenLifeCycleObserver(val screenName: String): LifecycleEventObserver {
+    
     private val logger = CastledLogger.getInstance(
         LogTags.FLC_OBS)
-
+    
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
             Lifecycle.Event.ON_CREATE -> {
@@ -28,7 +26,7 @@ class FragmentLifeCycleObserver(val context: Context, val screenName: String) :
                 logger.debug("on pause $source, ${source.lifecycle.currentState.name}")
             }
             Lifecycle.Event.ON_STOP -> {
-                logger.debug("on stop $source, ${source.lifecycle.currentState}")
+                logger.debug("on stop $source, ${source.lifecycle.currentState.name}")
             }
             Lifecycle.Event.ON_DESTROY -> {
                 logger.debug("on destroy $source, ${source.lifecycle.currentState.name}")

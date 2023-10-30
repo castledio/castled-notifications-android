@@ -5,7 +5,7 @@ internal class PrefStoreKeys {
         const val APP_ID = "appId"
         const val DEVICE_ID = "deviceId"
         const val USER_ID = "userId"
-        const val SECURE_USER_ID = "secureUserId"
+        const val USER_TOKEN = "userToken"
         const val USER_ID_UNREGISTERED = "userIdUnregistered"
         const val FCM_TOKEN = "fcmToken"
         const val MI_TOKEN = "miToken"

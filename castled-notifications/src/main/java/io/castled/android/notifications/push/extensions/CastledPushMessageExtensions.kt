@@ -13,5 +13,4 @@ fun CastledPushMessage.getDefaultClickAction(): CastledClickAction? =
 fun CastledPushMessage.getDefaultActionPayload(): Map<String, String>? =
     pushMessageFrames[0].keyVals
 
-fun CastledPushMessage.getNotificationDisplayId(): Int =
-    (title + body + notificationId.toString()).hashCode()
+fun CastledPushMessage.getNotificationDisplayId(): Int = notificationId
