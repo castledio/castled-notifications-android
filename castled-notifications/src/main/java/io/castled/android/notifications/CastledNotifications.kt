@@ -55,8 +55,6 @@ object CastledNotifications {
         this.application = application
         CastledRetrofitClient.init(configs)
 
-        CastledLifeCycleObserver.init(application)
-
         if (configs.enablePush) {
             PushNotification.init(application, castledScope)
         }
@@ -76,6 +74,8 @@ object CastledNotifications {
             listOf(PushNotification, InAppNotification, AppInbox),
             castledScope
         )
+
+        CastledLifeCycleObserver.start(application)
 
         appId = configs.appId
         logger.info("Sdk initialized successfully")
