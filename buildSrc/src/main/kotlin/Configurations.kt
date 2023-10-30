@@ -7,4 +7,5 @@ object Configurations {
     const val sdkVersion = "2.1.2"
 
 
+
 }

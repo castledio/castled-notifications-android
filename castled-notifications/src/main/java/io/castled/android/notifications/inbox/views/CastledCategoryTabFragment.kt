@@ -143,6 +143,14 @@ internal class CastledCategoryTabFragment : Fragment() {
                 }
             }
         }
+        binding.swipeRefreshList.setOnRefreshListener {
+            (context as CastledInboxActivity).launch(Dispatchers.Default) {
+                viewModel.inboxRepository.refreshInbox()
+                launch(Dispatchers.IO) {
+                    binding.swipeRefreshList.isRefreshing = false
+                }
+            }
+        }
     }
 
     internal fun deleteItem(item: Inbox) {
