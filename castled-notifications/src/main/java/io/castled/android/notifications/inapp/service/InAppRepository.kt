@@ -33,7 +33,7 @@ internal class InAppRepository(context: Context) {
     }
 
     suspend fun updateCampaignDisplayStats(campaign: Campaign) {
-        campaign.lastDisplayedTime = System.currentTimeMillis() / 1000
+        campaign.lastDisplayedTime = System.currentTimeMillis()
         campaign.timesDisplayed = campaign.timesDisplayed + 1
         campaignDao.dbUpdateCampaignLastDisplayed(
             campaign.timesDisplayed,
