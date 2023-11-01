@@ -13,6 +13,9 @@ android {
 
         minSdk Configurations.minSdk
         targetSdk Configurations.targetSdk
+        buildConfigField "String", "SDK_VERSION", "\"${Configurations.sdkVersion}\""
+        // Set your SDK version here
+
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"

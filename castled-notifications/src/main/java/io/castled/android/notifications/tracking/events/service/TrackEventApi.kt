@@ -1,4 +1,4 @@
-package io.castled.android.notifications.trackevents.service
+package io.castled.android.notifications.tracking.events.service
 
 import io.castled.android.notifications.workmanager.models.CastledTrackEventRequest
 import io.castled.android.notifications.workmanager.models.CastledUserTrackingEventRequest

@@ -2,7 +2,7 @@ package io.castled.android.notifications.workmanager
 
 import android.content.Context
 import io.castled.android.notifications.store.models.NetworkRetryLog
-import io.castled.android.notifications.trackevents.service.TrackEventRepository
+import io.castled.android.notifications.tracking.events.service.TrackEventRepository
 import io.castled.android.notifications.workmanager.models.CastledTrackEvent
 import io.castled.android.notifications.workmanager.models.CastledTrackEventRequest
 

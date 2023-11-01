@@ -1,4 +1,4 @@
-package io.castled.android.notifications.trackevents.service
+package io.castled.android.notifications.tracking.events.service
 
 import android.content.Context
 import io.castled.android.notifications.network.CastledRetrofitClient

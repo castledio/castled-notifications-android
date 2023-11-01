@@ -1,8 +1,8 @@
-package io.castled.android.notifications.trackevents
+package io.castled.android.notifications.tracking.events
 
 import io.castled.android.notifications.commons.DateTimeUtils
 import io.castled.android.notifications.store.CastledSharedStore
-import io.castled.android.notifications.trackevents.extensions.toJsonElement
+import io.castled.android.notifications.tracking.events.extensions.toJsonElement
 import io.castled.android.notifications.workmanager.models.CastledTrackEvent
 import io.castled.android.notifications.workmanager.models.CastledTrackEventRequest
 import io.castled.android.notifications.workmanager.models.CastledUserTrackingEventRequest
