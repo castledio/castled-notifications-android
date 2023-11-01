@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 
 internal object CastledSharedStore {
 
@@ -30,6 +31,9 @@ internal object CastledSharedStore {
 
     private lateinit var appId: String
     private var userId: String? = null
+    private var deviceId: String? = null
+    private var deviceInfo: Map<String, String>? = null
+
     private var userToken: String? = null
     private val tokens = mutableMapOf<PushTokenType, String?>()
     private var recentDisplayedPushIds = mutableListOf<Int>()
@@ -54,7 +58,10 @@ internal object CastledSharedStore {
                 val sharedPref = getSharedPreference(context)
                 // Restore from shared store
                 userId = sharedPref.getString(PrefStoreKeys.USER_ID, null)
+                deviceId = sharedPref.getString(PrefStoreKeys.DEVICE_ID, null)
+
                 userToken = sharedPref.getString(PrefStoreKeys.USER_TOKEN, null)
+                deviceInfo = fetchDeviceInfo()
                 tokens[PushTokenType.FCM] =
                     sharedPref.getString(PrefStoreKeys.FCM_TOKEN, null)
                 tokens[PushTokenType.MI_PUSH] =
@@ -149,6 +156,31 @@ internal object CastledSharedStore {
         return sharedPreferences
     }
 
+    private fun fetchDeviceInfo(): Map<String, String>? {
+        val deviceInfoJson = sharedPreferences.getString(PrefStoreKeys.DEVICE_INFO, null)
+        return if (deviceInfoJson != null) {
+            val jsonObject = JSONObject(deviceInfoJson)
+            val map = HashMap<String, String>()
+            for (key in jsonObject.keys()) {
+                map[key] = jsonObject.getString(key)
+            }
+            map
+        } else {
+            null
+        }
+    }
+
+    fun setDeviceInfo(deviceInfoMap: Map<String, String>) {
+        deviceInfo = deviceInfoMap
+        val deviceInfoJson = JSONObject(deviceInfoMap).toString()
+        sharedPreferences.edit().putString(PrefStoreKeys.DEVICE_INFO, deviceInfoJson).apply()
+    }
+
+    fun setDeviceId(deviceID: String) {
+        deviceId = deviceID
+        sharedPreferences.edit().putString(PrefStoreKeys.DEVICE_ID, deviceId).apply()
+    }
+
     fun getAppId() = appId
 
     fun getUserId() = userId
@@ -156,6 +188,10 @@ internal object CastledSharedStore {
     fun getSecureUserId() = userToken
 
     fun getToken(tokenType: PushTokenType) = tokens[tokenType]
+
+    fun getDeviceInfo() = deviceInfo
+
+    fun getDeviceId() = deviceId
 
     fun clearUserId() {
         sharedPreferences.edit().remove(PrefStoreKeys.USER_ID).apply()

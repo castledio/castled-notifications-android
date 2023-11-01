@@ -177,6 +177,8 @@ internal class InAppViewDecorator(
             if (dialog.isShowing) {
                 dialog.dismiss()
             }
+            removeAutoDismissalHandler()
+
         } catch (_: Exception) {
         }
 
@@ -240,9 +242,10 @@ internal class InAppViewDecorator(
             }
         } else if (inAppMessage.displayConfig.autoDismissInterval > 0) {
             inappAutoDismissalTime =
-                ((inAppMessage.lastDisplayedTime + inAppMessage.displayConfig.autoDismissInterval) -
-                        (System.currentTimeMillis() / 1000)) * 1000
+                ((inAppMessage.lastDisplayedTime + inAppMessage.displayConfig.autoDismissInterval * 1000) -
+                        (System.currentTimeMillis()))
         }
+
         if (inappAutoDismissalTime > 0) {
             val task = Runnable {
                 close()

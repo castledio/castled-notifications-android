@@ -1,4 +1,4 @@
-package io.castled.android.notifications.trackevents.extensions
+package io.castled.android.notifications.tracking.events.extensions
 
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
@@ -8,6 +8,6 @@ fun Any?.toJsonElement(): JsonElement {
         is Number -> JsonPrimitive(this)
         is Boolean -> JsonPrimitive(this)
         null -> JsonPrimitive("null")
-        else ->  JsonPrimitive(this.toString())
+        else -> JsonPrimitive(this.toString())
     }
 }

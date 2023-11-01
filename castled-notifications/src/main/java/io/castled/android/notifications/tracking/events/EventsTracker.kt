@@ -1,11 +1,11 @@
-package io.castled.android.notifications.trackevents
+package io.castled.android.notifications.tracking.events
 
 import android.app.Application
+import io.castled.android.notifications.CastledUserAttributes
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.store.CastledSharedStore
-import io.castled.android.notifications.CastledUserAttributes
-import io.castled.android.notifications.trackevents.service.TrackEventRepository
+import io.castled.android.notifications.tracking.events.service.TrackEventRepository
 
 internal object EventsTracker {
 
@@ -27,7 +27,12 @@ internal object EventsTracker {
             logger.debug("Ignoring app event, UserId not set yet!")
             return
         }
-        trackEventRepository.reportCustomEvent(TrackEventUtils.getTrackEvent(event, properties ?: mapOf()))
+        trackEventRepository.reportCustomEvent(
+            TrackEventUtils.getTrackEvent(
+                event,
+                properties ?: mapOf()
+            )
+        )
     }
 
     suspend fun logUserTrackingEvent(castledUserAttributes: CastledUserAttributes) {
@@ -39,7 +44,11 @@ internal object EventsTracker {
             logger.debug("Ignoring user track event, UserId not set yet!")
             return
         }
-        trackEventRepository.reportUserTrackingEvent(TrackEventUtils.getUserEvent(castledUserAttributes.getAttributes()))
+        trackEventRepository.reportUserTrackingEvent(
+            TrackEventUtils.getUserEvent(
+                castledUserAttributes.getAttributes()
+            )
+        )
     }
 
 }
