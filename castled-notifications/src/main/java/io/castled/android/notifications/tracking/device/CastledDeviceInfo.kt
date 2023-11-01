@@ -25,7 +25,7 @@ internal class CastledDeviceInfo(context: Context) {
             PackageInfoCompat.getLongVersionCode(packageInfo).toString()
 
         } catch (e: Exception) {
-            "0"
+            "0.0.0"
         }
     }
 
