@@ -22,7 +22,7 @@ internal class CastledRequestRetryWorker(appContext: Context, workerParams: Work
         CastledNetworkRequestType.TRACK_EVENT to TrackEventRequestHandler(appContext),
         CastledNetworkRequestType.INBOX_EVENT to InboxEventRequestHandler(appContext),
         CastledNetworkRequestType.USER_TRACKING to UserTrackingRequestHandler(appContext),
-        CastledNetworkRequestType.DEVICE_TRACKING to DeviceTrackingRequestHandler(appContext)
+        CastledNetworkRequestType.DEVICE_INFO to DeviceInfoRequestHandler(appContext)
 
     )
 

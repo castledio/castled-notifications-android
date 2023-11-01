@@ -1,14 +1,14 @@
 package io.castled.android.notifications.tracking.events.service
 
-import io.castled.android.notifications.workmanager.models.CastledDeviceTrackingRequest
+import io.castled.android.notifications.workmanager.models.CastledDeviceInfoRequest
 import retrofit2.Response
 import retrofit2.http.*
 
-internal interface TrackDeviceApi {
+internal interface DeviceInfoApi {
 
     @POST("external/v1/collections/devices")
-    suspend fun reportDeviceTracking(
+    suspend fun reportDeviceInfo(
         @HeaderMap headers: Map<String, String>,
-        @Body request: CastledDeviceTrackingRequest,
+        @Body request: CastledDeviceInfoRequest,
     ): Response<Void?>
 }

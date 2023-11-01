@@ -4,24 +4,24 @@ import android.content.Context
 import io.castled.android.notifications.network.CastledRetrofitClient
 import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.workmanager.CastledNetworkWorkManager
-import io.castled.android.notifications.workmanager.models.CastledDeviceTrackingRequest
+import io.castled.android.notifications.workmanager.models.CastledDeviceInfoRequest
 import retrofit2.Response
 
-internal class TrackDeviceRepository(context: Context) {
+internal class DeviceInfoRepository(context: Context) {
 
-    private val trackDeviceApi by lazy { CastledRetrofitClient.create(TrackDeviceApi::class.java) }
+    private val deviceInfoApi by lazy { CastledRetrofitClient.create(DeviceInfoApi::class.java) }
     private val networkWorkManager by lazy { CastledNetworkWorkManager.getInstance(context) }
 
-    suspend fun reportDeviceTracking(request: CastledDeviceTrackingRequest) {
+    suspend fun reportDeviceInfo(request: CastledDeviceInfoRequest) {
         networkWorkManager.apiCallWithRetry(request = request, apiCall = {
-            return@apiCallWithRetry trackDeviceApi.reportDeviceTracking(
-                getHeaders(), (it as CastledDeviceTrackingRequest)
+            return@apiCallWithRetry deviceInfoApi.reportDeviceInfo(
+                getHeaders(), (it as CastledDeviceInfoRequest)
             )
         })
     }
 
-    suspend fun reportDeviceTrackingNoRetry(request: CastledDeviceTrackingRequest): Response<Void?> {
-        return trackDeviceApi.reportDeviceTracking(
+    suspend fun reportDeviceInfoNoRetry(request: CastledDeviceInfoRequest): Response<Void?> {
+        return deviceInfoApi.reportDeviceInfo(
             getHeaders(), request
         )
     }

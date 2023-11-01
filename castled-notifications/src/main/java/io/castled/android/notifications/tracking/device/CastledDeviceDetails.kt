@@ -9,7 +9,7 @@ import java.util.Locale
 import kotlin.random.Random
 
 
-internal class CastledDeviceInfo(context: Context) {
+internal class CastledDeviceDetails(context: Context) {
 
     private val packageManager by lazy { context.packageManager }
     private val packageName by lazy { context.packageName }
@@ -48,7 +48,7 @@ internal class CastledDeviceInfo(context: Context) {
     // You can obtain a unique device ID using various methods, such as the device's secure Android ID
     internal fun getDeviceId(): String {
         CastledSharedStore.getDeviceId()?.let {
-            return CastledSharedStore.getDeviceId()!!
+            return it
         } ?: run {
             val randomString = Random.nextInt(1, Int.MAX_VALUE).toString()
             CastledSharedStore.setDeviceId(randomString)

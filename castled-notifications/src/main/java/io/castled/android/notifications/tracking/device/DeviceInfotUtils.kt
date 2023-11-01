@@ -2,15 +2,15 @@ package io.castled.android.notifications.tracking.device
 
 import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.tracking.events.extensions.toJsonElement
-import io.castled.android.notifications.workmanager.models.CastledDeviceTrackingRequest
+import io.castled.android.notifications.workmanager.models.CastledDeviceInfoRequest
 import kotlinx.serialization.json.JsonObject
 
-internal object TrackDevicetUtils {
+internal object DeviceInfotUtils {
 
-    fun getDeviceTrackRequest(
+    fun getDeviceInfoRequest(
         deviceInfo: Map<String, Any>
-    ): CastledDeviceTrackingRequest {
-        val event = CastledDeviceTrackingRequest(
+    ): CastledDeviceInfoRequest {
+        val event = CastledDeviceInfoRequest(
             type = "track",
             userId = CastledSharedStore.getUserId() ?: "",
             deviceInfo = JsonObject(deviceInfo.map { (key, value) ->

@@ -7,23 +7,23 @@ import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.store.CastledSharedStoreListener
-import io.castled.android.notifications.tracking.events.service.TrackDeviceRepository
+import io.castled.android.notifications.tracking.events.service.DeviceInfoRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-internal object DeviceTracker : CastledSharedStoreListener {
+internal object DeviceInfo : CastledSharedStoreListener {
 
-    private lateinit var trackDeviceRepository: TrackDeviceRepository
+    private lateinit var deviceInfoRepository: DeviceInfoRepository
     private val logger: CastledLogger = CastledLogger.getInstance(LogTags.TRACK_EVENT_REPOSITORY)
     private lateinit var externalScope: CoroutineScope
-    private lateinit var deviceInfo: CastledDeviceInfo
+    private lateinit var deviceInfo: CastledDeviceDetails
 
     fun init(application: Application, externalScope: CoroutineScope) {
-        DeviceTracker.externalScope = externalScope
-        trackDeviceRepository = TrackDeviceRepository(application)
-        deviceInfo = CastledDeviceInfo(application)
+        DeviceInfo.externalScope = externalScope
+        deviceInfoRepository = DeviceInfoRepository(application)
+        deviceInfo = CastledDeviceDetails(application)
         CastledSharedStore.registerListener(this)
     }
 
@@ -43,8 +43,8 @@ internal object DeviceTracker : CastledSharedStoreListener {
                 )
                 if (deviceInfoMap != CastledSharedStore.getDeviceInfo()) {
                     CastledSharedStore.setDeviceInfo(deviceInfoMap)
-                    trackDeviceRepository.reportDeviceTracking(
-                        TrackDevicetUtils.getDeviceTrackRequest(
+                    deviceInfoRepository.reportDeviceInfo(
+                        DeviceInfotUtils.getDeviceInfoRequest(
                             deviceInfoMap
                         )
                     )

@@ -2,11 +2,11 @@ package io.castled.android.notifications.workmanager
 
 import android.content.Context
 import io.castled.android.notifications.store.models.NetworkRetryLog
-import io.castled.android.notifications.tracking.events.service.TrackDeviceRepository
-import io.castled.android.notifications.workmanager.models.CastledDeviceTrackingRequest
+import io.castled.android.notifications.tracking.events.service.DeviceInfoRepository
+import io.castled.android.notifications.workmanager.models.CastledDeviceInfoRequest
 
-internal class DeviceTrackingRequestHandler(appContext: Context) : NetworkRequestHandler {
-    private val trackDeviceRepository by lazy { TrackDeviceRepository(appContext) }
+internal class DeviceInfoRequestHandler(appContext: Context) : NetworkRequestHandler {
+    private val trackDeviceRepository by lazy { DeviceInfoRepository(appContext) }
     override suspend fun handleRequest(
         requests: List<NetworkRetryLog>,
         onSuccess: (entries: List<NetworkRetryLog>) -> Unit,
@@ -15,7 +15,7 @@ internal class DeviceTrackingRequestHandler(appContext: Context) : NetworkReques
         for (entry in requests) {
             try {
                 val response =
-                    trackDeviceRepository.reportDeviceTrackingNoRetry((entry.request as CastledDeviceTrackingRequest))
+                    trackDeviceRepository.reportDeviceInfoNoRetry((entry.request as CastledDeviceInfoRequest))
                 if (!response.isSuccessful) {
                     onError(listOf(entry))
                 } else {
