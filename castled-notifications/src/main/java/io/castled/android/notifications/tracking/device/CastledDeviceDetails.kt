@@ -1,8 +1,10 @@
 package io.castled.android.notifications.tracking.device
 
+import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.core.app.ActivityCompat
 import androidx.core.content.pm.PackageInfoCompat
 import io.castled.android.notifications.store.CastledSharedStore
 import java.util.Locale
@@ -13,7 +15,7 @@ internal class CastledDeviceDetails(context: Context) {
 
     private val packageManager by lazy { context.packageManager }
     private val packageName by lazy { context.packageName }
-
+ 
     internal fun getAppVersion(): String {
         return try {
             val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -27,6 +29,17 @@ internal class CastledDeviceDetails(context: Context) {
         } catch (e: Exception) {
             "0.0.0"
         }
+    }
+
+    fun checkNotificationPermissions(context: Context): Boolean {
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return false
+        }
+        return true
     }
 
     internal fun getModel(): String {

@@ -19,15 +19,18 @@ internal object DeviceInfo : CastledSharedStoreListener {
     private val logger: CastledLogger = CastledLogger.getInstance(LogTags.TRACK_EVENT_REPOSITORY)
     private lateinit var externalScope: CoroutineScope
     private lateinit var deviceInfo: CastledDeviceDetails
-
+    private lateinit var applicationContext: Application
     fun init(application: Application, externalScope: CoroutineScope) {
         DeviceInfo.externalScope = externalScope
+        applicationContext = application
         deviceInfoRepository = DeviceInfoRepository(application)
         deviceInfo = CastledDeviceDetails(application)
         CastledSharedStore.registerListener(this)
     }
 
+
     private fun updateDeviceInfo() {
+
 
         externalScope.launch(Dispatchers.Default) {
             try {
@@ -35,6 +38,10 @@ internal object DeviceInfo : CastledSharedStoreListener {
                     "sdkVersion" to BuildConfig.SDK_VERSION,
                     "appVersion" to deviceInfo.getAppVersion(),
                     "model" to deviceInfo.getModel(),
+                    "pushPermission" to if (deviceInfo.checkNotificationPermissions(
+                            applicationContext
+                        )
+                    ) "1" else "0",
                     "make" to deviceInfo.getMake(),
                     "osVersion" to deviceInfo.getOSVersion(),
                     "locale" to deviceInfo.getLocale(),
