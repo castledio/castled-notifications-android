@@ -46,6 +46,9 @@ public class FirstFragment extends Fragment {
         binding.buttonFirst.setOnClickListener(view1 -> NavHostFragment.findNavController(FirstFragment.this)
                 .navigate(R.id.action_FirstFragment_to_SecondFragment));
         binding.btnInbox.setOnClickListener(btnInbox -> {
+            CastledNotifications.logCustomAppEvent(view.getContext().getApplicationContext(), "added_to_cart", null);
+
+            /*
             CastledInboxDisplayConfig styleConfig = new CastledInboxDisplayConfig();
             styleConfig.setEmptyMessageViewText("There are no inbox items");
             styleConfig.setEmptyMessageViewTextColor("#195190");
@@ -62,6 +65,7 @@ public class FirstFragment extends Fragment {
             styleConfig.setTabBarSelectedTextColor("#00539C");
             styleConfig.setTabBarIndicatorBackgroundColor("#0000FF");
             CastledNotifications.showAppInbox(view.getContext(), styleConfig);
+            */
         });
 
         

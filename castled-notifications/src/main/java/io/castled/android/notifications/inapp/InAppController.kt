@@ -139,7 +139,7 @@ internal class InAppController(context: Context) {
         try {
             inAppViewDecorator =
                 InAppViewDecorator(context, inAppSelectedForDisplay, inAppViewLifecycleListener)
-            inAppViewDecorator?.let { inAppViewDecorator!!.show(true) }
+            inAppViewDecorator?.show(true)
         } catch (e: Exception) {
             logger.error("In-app display failed!", e)
         }
@@ -150,11 +150,14 @@ internal class InAppController(context: Context) {
     }
 
     fun updateInAppForOrientationChanges(context: Context) {
+        if (inAppViewDecorator != null) {
+            return
+        }
         currentInAppBeingDisplayed?.let {
             try {
                 inAppViewDecorator = InAppViewDecorator(
                     context,
-                    currentInAppBeingDisplayed!!,
+                    it,
                     inAppViewLifecycleListener
                 )
                 inAppViewDecorator?.show(false)
@@ -168,11 +171,8 @@ internal class InAppController(context: Context) {
     fun dismissDialogIfAny() {
         currentInAppBeingDisplayed?.let {
             try {
-                inAppViewDecorator?.let {
-                    it.dismissDialog()
-                    inAppViewDecorator = null
-                }
-
+                inAppViewDecorator?.dismissDialog()
+                inAppViewDecorator = null
             } catch (e: Exception) {
                 logger.error("In-app dismiss failed!", e)
             }

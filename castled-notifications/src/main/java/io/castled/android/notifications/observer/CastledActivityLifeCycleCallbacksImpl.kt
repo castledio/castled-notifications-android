@@ -22,7 +22,7 @@ class CastledActivityLifeCycleCallbacksImpl(private val lifeCycleListeners: List
         if (isCastledInternalActivity(activity)) {
             return
         }
-        lifeCycleListeners.forEach { it.onActivityStarted(activity) }
+        lifeCycleListeners.forEach { it.onActivityStarted(activity, isActivityChangingConfigurations) }
         if (++activityReferences == 1 && !isActivityChangingConfigurations) {
             // App enters foreground
             CastledSharedStore.isAppInBackground = false
@@ -38,8 +38,8 @@ class CastledActivityLifeCycleCallbacksImpl(private val lifeCycleListeners: List
         if (isCastledInternalActivity(activity)) {
             return
         }
-        lifeCycleListeners.forEach { it.onActivityStopped(activity) }
         isActivityChangingConfigurations = activity.isChangingConfigurations
+        lifeCycleListeners.forEach { it.onActivityStopped(activity, isActivityChangingConfigurations) }
         if (--activityReferences == 0 && !isActivityChangingConfigurations) {
             CastledSharedStore.isAppInBackground = true
             lifeCycleListeners.forEach { it.onAppMovedToBackground(activity) }

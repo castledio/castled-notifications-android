@@ -10,14 +10,17 @@ import kotlinx.coroutines.launch
 class InAppAppLifeCycleListener(private val castledScope: CoroutineScope) :
     CastledAppLifeCycleListener {
 
-    override fun onActivityStarted(activity: Activity) {
+    override fun onActivityStarted(activity: Activity, isOrientationChange: Boolean) {
         InAppNotification.setCurrentActivity(activity)
-        InAppNotification.checkForOrientationChange(activity)
-        InAppNotification.logAppEvent(
-            activity,
-            AppEvents.APP_PAGE_VIEWED,
-            mapOf("name" to activity.componentName.shortClassName.drop(1))
-        )
+        if (isOrientationChange) {
+            InAppNotification.checkForOrientationChange(activity)
+        } else {
+            InAppNotification.logAppEvent(
+                activity,
+                AppEvents.APP_PAGE_VIEWED,
+                mapOf("name" to activity.componentName.shortClassName.drop(1))
+            )
+        }
     }
 
     override fun onAppMovedToForeground(activity: Activity) {
@@ -27,8 +30,8 @@ class InAppAppLifeCycleListener(private val castledScope: CoroutineScope) :
         }
     }
 
-    override fun onActivityStopped(activity: Activity) {
-        if (activity.isChangingConfigurations) {
+    override fun onActivityStopped(activity: Activity, isOrientationChange: Boolean) {
+        if (isOrientationChange) {
             InAppNotification.dismissInAppDialogsIfAny()
         }
         InAppNotification.clearCurrentActivity()
