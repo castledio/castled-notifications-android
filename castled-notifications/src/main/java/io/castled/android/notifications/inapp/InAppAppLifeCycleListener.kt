@@ -11,6 +11,7 @@ class InAppAppLifeCycleListener(private val castledScope: CoroutineScope) :
     CastledAppLifeCycleListener {
     override fun onActivityCreated(activity: Activity) {
         if (!isCastledInternalActivity(activity)) {
+            InAppNotification.setCurrentActivity(activity)
             InAppNotification.onOrientationChange(activity)
         }
     }
@@ -34,6 +35,7 @@ class InAppAppLifeCycleListener(private val castledScope: CoroutineScope) :
 
     override fun onActivityDestroyed(activity: Activity) {
         if (!isCastledInternalActivity(activity)) {
+            InAppNotification.clearCurrentActivity()
             InAppNotification.dismissInAppDialogsIfAny()
         }
     }

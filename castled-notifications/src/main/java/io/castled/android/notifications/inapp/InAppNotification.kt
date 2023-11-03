@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 import java.util.concurrent.TimeUnit
 
 internal object InAppNotification : CastledSharedStoreListener {
@@ -87,6 +88,14 @@ internal object InAppNotification : CastledSharedStoreListener {
 
     override fun onStoreUserIdSet(context: Context) {
         startCampaignJob()
+    }
+
+    internal fun setCurrentActivity(activity: Activity) {
+        inAppController.currentActivityReference = WeakReference(activity)
+    }
+
+    internal fun clearCurrentActivity() {
+        inAppController.currentActivityReference?.clear()
     }
 
 }
