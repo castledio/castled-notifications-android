@@ -75,7 +75,11 @@ internal object InAppNotification : CastledSharedStoreListener {
 
     fun dismissInAppDialogsIfAny() = inAppController.dismissDialogIfAny()
 
-    suspend fun refreshCampaigns() = inAppController.refreshLiveCampaigns()
+    suspend fun refreshCampaigns() {
+        CastledSharedStore.getUserId()?.let {
+            inAppController.refreshLiveCampaigns()
+        }
+    }
 
     fun onOrientationChange(activity: Activity) =
         inAppController.updateInAppForOrientationChanges(activity)
