@@ -9,6 +9,8 @@ interface CastledAppLifeCycleListener {
 
     fun onActivityStarted(activity: Activity) {}
 
+    fun onActivityStopped(activity: Activity) {}
+
     fun onAppMovedToBackground(activity: Activity) {}
 
     fun onActivityDestroyed(activity: Activity) {}
