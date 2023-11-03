@@ -81,7 +81,7 @@ internal object InAppNotification : CastledSharedStoreListener {
         }
     }
 
-    fun checkForOrientationChange(activity: Activity) =
+    fun onOrientationChange(activity: Activity) =
         inAppController.updateInAppForOrientationChanges(activity)
 
     override fun onStoreInitialized(context: Context) {

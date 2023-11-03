@@ -13,7 +13,7 @@ class InAppAppLifeCycleListener(private val castledScope: CoroutineScope) :
     override fun onActivityStarted(activity: Activity, isOrientationChange: Boolean) {
         InAppNotification.setCurrentActivity(activity)
         if (isOrientationChange) {
-            InAppNotification.checkForOrientationChange(activity)
+            InAppNotification.onOrientationChange(activity)
         } else {
             InAppNotification.logAppEvent(
                 activity,
