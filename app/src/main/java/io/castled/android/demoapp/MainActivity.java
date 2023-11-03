@@ -21,7 +21,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import io.castled.android.demoapp.databinding.ActivityMainBinding;
 import io.castled.android.demoapp.databinding.ContentMainBinding;
-import io.castled.android.notifications.CastledNotifications;
 
 public class MainActivity extends AppCompatActivity {
 
