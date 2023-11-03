@@ -1,5 +1,6 @@
 package io.castled.android.notifications.inapp
 
+import android.app.Activity
 import android.content.Context
 import io.castled.android.notifications.inapp.CampaignResponseConverter.toCampaign
 import io.castled.android.notifications.inapp.service.InAppRepository
@@ -16,6 +17,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.decodeFromJsonElement
+import java.lang.ref.WeakReference
+
 
 internal class InAppController(context: Context) {
 
@@ -24,8 +27,8 @@ internal class InAppController(context: Context) {
     private var currentInAppBeingDisplayed: Campaign? = null
     private val inAppViewLifecycleListener = InAppLifeCycleListenerImpl(this)
     private var inAppViewDecorator: InAppViewDecorator? = null
-
     private val currentInAppLock = Any()
+    internal var currentActivityReference: WeakReference<Activity>? = null
 
     suspend fun refreshLiveCampaigns() {
         val liveCampaignResponse = inAppRepository.fetchLiveCampaigns() ?: return

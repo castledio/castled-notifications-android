@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 import java.util.concurrent.TimeUnit
 
 internal object InAppNotification : CastledSharedStoreListener {
@@ -61,7 +62,15 @@ internal object InAppNotification : CastledSharedStoreListener {
             logger.debug("Ignoring app event, In-App disabled")
             return@launch
         }
-        inAppController.findAndLaunchInApp(context, eventName, eventParams)
+        inAppController.currentActivityReference?.let {
+            it.get()?.let { activityContext ->
+                inAppController.findAndLaunchInApp(
+                    activityContext,
+                    eventName,
+                    eventParams
+                )
+            }
+        }
     }
 
     fun reportInAppEvent(request: CastledInAppEventRequest) = externalScope.launch(Default) {
@@ -87,6 +96,14 @@ internal object InAppNotification : CastledSharedStoreListener {
 
     override fun onStoreUserIdSet(context: Context) {
         startCampaignJob()
+    }
+
+    internal fun setCurrentActivity(activity: Activity) {
+        inAppController.currentActivityReference = WeakReference(activity)
+    }
+
+    internal fun clearCurrentActivity() {
+        inAppController.currentActivityReference?.clear()
     }
 
 }
