@@ -38,7 +38,7 @@ internal object AppInbox : CastledSharedStoreListener {
     }
 
     suspend fun refreshInbox() {
-        inboxRepository.refreshInbox()
+        CastledSharedStore.getUserId()?.let { inboxRepository.refreshInbox() }
     }
 
     private fun startInboxJob() {
