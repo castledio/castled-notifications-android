@@ -128,7 +128,7 @@ internal class InAppController(context: Context) {
                         (it.displayConfig.minIntervalBtwDisplaysGlobal == 0L ||
                                 it.displayConfig.minIntervalBtwDisplaysGlobal * 1000 <= System.currentTimeMillis() - latestCampaignViewTs)
             }
-            .takeUnless { it.isNullOrEmpty() }
+            .takeUnless { it.isEmpty() }
             ?.maxBy { it.priority }
         return triggeredInApp
     }
@@ -157,9 +157,10 @@ internal class InAppController(context: Context) {
                     currentInAppBeingDisplayed!!,
                     inAppViewLifecycleListener
                 )
-                inAppViewDecorator?.let { inAppViewDecorator!!.show(false) }
+                inAppViewDecorator?.show(false)
             } catch (e: Exception) {
                 logger.error("In-app display failed after orientation!", e)
+                clearCurrentInApp()
             }
         }
     }
@@ -168,7 +169,7 @@ internal class InAppController(context: Context) {
         currentInAppBeingDisplayed?.let {
             try {
                 inAppViewDecorator?.let {
-                    inAppViewDecorator!!.dismissDialog()
+                    it.dismissDialog()
                     inAppViewDecorator = null
                 }
 
