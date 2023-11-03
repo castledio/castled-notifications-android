@@ -130,9 +130,9 @@ internal object PushNotification : CastledSharedStoreListener {
 
     suspend fun onTokenFetch(token: String?, tokenType: PushTokenType) {
         val oldToken = CastledSharedStore.getToken(tokenType)
-        logger.info("push token: $token, old token: $oldToken type: $tokenType")
         if (CastledSharedStore.getToken(tokenType) != token) {
             // New token
+            logger.info("Setting push token: $token, type: $tokenType")
             CastledSharedStore.setToken(token, tokenType)
             val userId = CastledSharedStore.getUserId()
             if (!userId.isNullOrEmpty() && !token.isNullOrEmpty()) {

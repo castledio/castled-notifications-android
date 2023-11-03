@@ -49,6 +49,9 @@ internal object CastledSharedStore {
         this.configs = configs
         listeners?.let { this.listeners.addAll(listeners) }
         this.externalScope = externalScope
+        sharedPreferences = getSharedPreference(context)
+        // Restore from shared store
+        userId = sharedPreferences.getString(PrefStoreKeys.USER_ID, null)
         externalScope.launch { initPreferenceStore(context) }
     }
 
@@ -57,7 +60,6 @@ internal object CastledSharedStore {
             withContext(Dispatchers.IO) {
                 val sharedPref = getSharedPreference(context)
                 // Restore from shared store
-                userId = sharedPref.getString(PrefStoreKeys.USER_ID, null)
                 deviceId = sharedPref.getString(PrefStoreKeys.DEVICE_ID, null)
 
                 userToken = sharedPref.getString(PrefStoreKeys.USER_TOKEN, null)
