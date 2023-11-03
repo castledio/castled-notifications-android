@@ -60,11 +60,16 @@ internal class InAppController(context: Context) {
         }
         val triggeredInApp = findTriggeredInApp(eventName, params) ?: return
         try {
-            if (updateCurrentInApp(triggeredInApp)) {
-                launchInApp(context, triggeredInApp)
-            } else {
-                logger.debug("Skipping in-app display. Another currently being shown")
+            currentActivityReference?.let {
+                it.get()?.let { activityContext ->
+                    if (updateCurrentInApp(triggeredInApp)) {
+                        launchInApp(activityContext, triggeredInApp)
+                    } else {
+                        logger.debug("Skipping in-app display. Another currently being shown")
+                    }
+                }
             }
+
         } catch (e: Exception) {
             logger.error("In-app launch failed!", e)
         }
