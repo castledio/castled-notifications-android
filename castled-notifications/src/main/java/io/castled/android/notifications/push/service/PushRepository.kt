@@ -63,10 +63,10 @@ internal class PushRepository(context: Context) {
             if (response.isSuccessful) {
                 return response.body() ?: listOf()
             } else {
-                logger.debug(response.errorBody()?.string() ?: "Unknown error")
+                logger.error(response.errorBody()?.string() ?: "Unknown error")
             }
         } catch (e: Exception) {
-            logger.debug(e.message ?: "Unknown error")
+            logger.error(e.message ?: "Unknown error")
         }
         return listOf()
     }
