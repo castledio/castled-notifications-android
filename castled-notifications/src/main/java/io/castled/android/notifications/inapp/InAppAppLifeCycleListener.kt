@@ -9,10 +9,17 @@ import kotlinx.coroutines.launch
 
 class InAppAppLifeCycleListener(private val castledScope: CoroutineScope) :
     CastledAppLifeCycleListener {
-    override fun onActivityCreated(activity: Activity) {
-        if (!isCastledInternalActivity(activity)) {
-            InAppNotification.setCurrentActivity(activity)
+
+    override fun onActivityStarted(activity: Activity, isOrientationChange: Boolean) {
+        InAppNotification.setCurrentActivity(activity)
+        if (isOrientationChange) {
             InAppNotification.onOrientationChange(activity)
+        } else {
+            InAppNotification.logAppEvent(
+                activity,
+                AppEvents.APP_PAGE_VIEWED,
+                mapOf("name" to activity.componentName.shortClassName.drop(1))
+            )
         }
     }
 
@@ -23,23 +30,11 @@ class InAppAppLifeCycleListener(private val castledScope: CoroutineScope) :
         }
     }
 
-    override fun onActivityStarted(activity: Activity) {
-        if (!isCastledInternalActivity(activity)) {
-            InAppNotification.logAppEvent(
-                activity,
-                AppEvents.APP_PAGE_VIEWED,
-                mapOf("name" to activity.componentName.shortClassName.drop(1))
-            )
-        }
-    }
-
-    override fun onActivityDestroyed(activity: Activity) {
-        if (!isCastledInternalActivity(activity)) {
-            InAppNotification.clearCurrentActivity()
+    override fun onActivityStopped(activity: Activity, isOrientationChange: Boolean) {
+        if (isOrientationChange) {
             InAppNotification.dismissInAppDialogsIfAny()
         }
+        InAppNotification.clearCurrentActivity()
     }
 
-    private fun isCastledInternalActivity(activity: Activity) =
-        activity.componentName.shortClassName.contains("CastledNotificationReceiverAct")
 }

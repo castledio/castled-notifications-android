@@ -7,7 +7,9 @@ interface CastledAppLifeCycleListener {
 
     fun onAppMovedToForeground(activity: Activity) {}
 
-    fun onActivityStarted(activity: Activity) {}
+    fun onActivityStarted(activity: Activity, isOrientationChange: Boolean) {}
+
+    fun onActivityStopped(activity: Activity, isOrientationChange: Boolean) {}
 
     fun onAppMovedToBackground(activity: Activity) {}
 

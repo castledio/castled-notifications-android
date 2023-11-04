@@ -128,7 +128,7 @@ internal class InAppController(context: Context) {
                         (it.displayConfig.minIntervalBtwDisplaysGlobal == 0L ||
                                 it.displayConfig.minIntervalBtwDisplaysGlobal * 1000 <= System.currentTimeMillis() - latestCampaignViewTs)
             }
-            .takeUnless { it.isNullOrEmpty() }
+            .takeUnless { it.isEmpty() }
             ?.maxBy { it.priority }
         return triggeredInApp
     }
@@ -139,7 +139,7 @@ internal class InAppController(context: Context) {
         try {
             inAppViewDecorator =
                 InAppViewDecorator(context, inAppSelectedForDisplay, inAppViewLifecycleListener)
-            inAppViewDecorator?.let { inAppViewDecorator!!.show(true) }
+            inAppViewDecorator?.show(true)
         } catch (e: Exception) {
             logger.error("In-app display failed!", e)
         }
@@ -150,16 +150,20 @@ internal class InAppController(context: Context) {
     }
 
     fun updateInAppForOrientationChanges(context: Context) {
+        if (inAppViewDecorator != null) {
+            return
+        }
         currentInAppBeingDisplayed?.let {
             try {
                 inAppViewDecorator = InAppViewDecorator(
                     context,
-                    currentInAppBeingDisplayed!!,
+                    it,
                     inAppViewLifecycleListener
                 )
-                inAppViewDecorator?.let { inAppViewDecorator!!.show(false) }
+                inAppViewDecorator?.show(false)
             } catch (e: Exception) {
                 logger.error("In-app display failed after orientation!", e)
+                clearCurrentInApp()
             }
         }
     }
@@ -167,11 +171,8 @@ internal class InAppController(context: Context) {
     fun dismissDialogIfAny() {
         currentInAppBeingDisplayed?.let {
             try {
-                inAppViewDecorator?.let {
-                    inAppViewDecorator!!.dismissDialog()
-                    inAppViewDecorator = null
-                }
-
+                inAppViewDecorator?.dismissDialog()
+                inAppViewDecorator = null
             } catch (e: Exception) {
                 logger.error("In-app dismiss failed!", e)
             }

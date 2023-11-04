@@ -19,8 +19,8 @@ class MyApplicationClass : MultiDexApplication() {
         CastledNotifications.initialize(
             this,
             CastledConfigs.Builder()
-                .appId("e8a4f68bfb6a58b40a77a0e6150eca0b")
-                .location(CastledConfigs.CastledLocation.TEST)
+                .appId("829c38e2e359d94372a2e0d35e1f74df")
+                .location(CastledConfigs.CastledLocation.US)
                 .enablePush(true)
                 .enableAppInbox(true)
                 .enableInApp(true)
@@ -33,7 +33,7 @@ class MyApplicationClass : MultiDexApplication() {
         )
 
         // User-id needs to set after login flow of your app is complete
-        CastledNotifications.setUserId(this, "antony@castled.io")
+        CastledNotifications.setUserId(this, "frank@castled.io")
 
         // Listening to push notification events
         CastledNotifications.subscribeToPushNotificationEvents(object :
