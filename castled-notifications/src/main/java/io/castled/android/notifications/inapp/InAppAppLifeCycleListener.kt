@@ -34,7 +34,7 @@ class InAppAppLifeCycleListener(private val castledScope: CoroutineScope) :
         if (isOrientationChange) {
             InAppNotification.dismissInAppDialogsIfAny()
         }
-        InAppNotification.clearCurrentActivity()
+        InAppNotification.clearCurrentActivity(activity)
     }
 
 }
