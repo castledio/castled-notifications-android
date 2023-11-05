@@ -35,14 +35,14 @@ internal class CastledPushWorkManager private constructor(context: Context) {
     fun startPushBoostSync() {
         val refreshTokenRequest: PeriodicWorkRequest =
             PeriodicWorkRequestBuilder<CastledPushBoostSyncWorker>(
-                repeatInterval = 15,
-                repeatIntervalTimeUnit = TimeUnit.MINUTES
+                repeatInterval = 4,
+                repeatIntervalTimeUnit = TimeUnit.HOURS
             ).setConstraints(constraints)
                 .build()
 
         workManager.enqueueUniquePeriodicWork(
             CASTLED_PUSH_BOOST_SYNC_WORK,
-            ExistingPeriodicWorkPolicy.REPLACE,
+            ExistingPeriodicWorkPolicy.KEEP,
             refreshTokenRequest
         )
     }

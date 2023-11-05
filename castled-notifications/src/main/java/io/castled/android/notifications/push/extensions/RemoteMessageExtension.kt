@@ -27,7 +27,7 @@ fun RemoteMessage.toCastledPushMessage(): CastledPushMessage? {
             smallIconResourceId = data["smallIconResourceId"],
             largeIconUri = data["largeIconUri"],
             pushMessageFrames =  json.decodeFromString(data["msgFrames"]!!),
-            castledActionButtons = data["actionButtons"]?.let { Json.decodeFromString(it) },
+            actionButtons = data["actionButtons"]?.let { Json.decodeFromString(it) },
             ttl = data["ttl"]?.toLong()
         )
     } catch (e: Exception) {

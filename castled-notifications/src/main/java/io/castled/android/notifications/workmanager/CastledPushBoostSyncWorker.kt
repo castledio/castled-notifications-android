@@ -23,8 +23,8 @@ class CastledPushBoostSyncWorker(
                 Result.success()
             }
             val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-            val startDndHour = 22  // 10 PM
-            val endDndHour = 6     // 6 AM
+            val startDndHour = 22 // 10 PM
+            val endDndHour = 6    // 6 AM
 
             // Check if the current time is within "Do Not Disturb" hours
             if (currentHour in endDndHour until startDndHour) {
