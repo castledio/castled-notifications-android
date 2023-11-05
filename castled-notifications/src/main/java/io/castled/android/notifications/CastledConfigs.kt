@@ -4,6 +4,7 @@ data class CastledConfigs(
     val appId: String,
     val location: CastledLocation,
     val enablePush: Boolean,
+    val enablePushBoost: Boolean,
     val enableInApp: Boolean,
     val enableTracking: Boolean,
     val enableAppInbox: Boolean,
@@ -16,6 +17,7 @@ data class CastledConfigs(
     class Builder {
         private lateinit var appId: String
         private var enablePush: Boolean = false
+        private var enablePushBoost: Boolean = false
         private var enableInApp: Boolean = false
         private var enableTracking: Boolean = false
         private var enableAppInbox: Boolean = false
@@ -34,6 +36,7 @@ data class CastledConfigs(
         }
 
         fun enablePush(enablePush: Boolean) = apply { this.enablePush = enablePush }
+        fun enablePushBoost(enablePushBoost: Boolean) = apply { this.enablePushBoost = enablePushBoost }
         fun enableTracking(enableTracking: Boolean) = apply { this.enableTracking = enableTracking }
         fun enableInApp(enableInApp: Boolean) = apply { this.enableInApp = enableInApp }
         fun enableAppInbox(enableAppInbox: Boolean) = apply { this.enableAppInbox = enableAppInbox }
@@ -57,6 +60,7 @@ data class CastledConfigs(
             appId,
             castledLocation,
             enablePush,
+            enablePushBoost,
             enableInApp,
             enableTracking,
             enableAppInbox,

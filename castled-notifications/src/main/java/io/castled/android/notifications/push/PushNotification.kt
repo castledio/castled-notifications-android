@@ -18,7 +18,7 @@ import io.castled.android.notifications.push.models.PushTokenType
 import io.castled.android.notifications.push.service.PushRepository
 import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.store.CastledSharedStoreListener
-import io.castled.android.notifications.workmanager.CastledTokenRefreshWorkManager
+import io.castled.android.notifications.workmanager.CastledPushWorkManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,7 +32,7 @@ internal object PushNotification : CastledSharedStoreListener {
     private lateinit var pushRepository: PushRepository
     private var enabled = false
 
-    private const val MAX_CACHE_SIZE = 24
+    private const val MAX_PUSH_MESSAGE_CACHE_SIZE = 32
     private var pushMessageCache: CastledLinkedHashCache<Int, CastledPushMessage>? = null
     private var pushNotificationListener: CastledPushNotificationListener? = null
 
@@ -91,7 +91,7 @@ internal object PushNotification : CastledSharedStoreListener {
     }
 
     fun subscribeToPushNotificationEvents(listener: CastledPushNotificationListener) {
-        pushMessageCache = CastledLinkedHashCache(MAX_CACHE_SIZE)
+        pushMessageCache = CastledLinkedHashCache(MAX_PUSH_MESSAGE_CACHE_SIZE)
         pushNotificationListener = listener
     }
 
@@ -124,15 +124,16 @@ internal object PushNotification : CastledSharedStoreListener {
     }
 
     private fun startPeriodicTokenRefreshTask(context: Context) =
-        externalScope.launch(Dispatchers.Default) {
-            CastledTokenRefreshWorkManager.getInstance(context).start()
-        }
+        CastledPushWorkManager.getInstance(context).startTokenRefresh()
+
+    private fun startPushBoostSyncTask(context: Context) =
+        CastledPushWorkManager.getInstance(context).startPushBoostSync()
 
     suspend fun onTokenFetch(token: String?, tokenType: PushTokenType) {
         val oldToken = CastledSharedStore.getToken(tokenType)
         if (CastledSharedStore.getToken(tokenType) != token) {
             // New token
-            logger.info("Setting push token: $token, type: $tokenType")
+            logger.debug("Updating push token: $token, type: $tokenType")
             CastledSharedStore.setToken(token, tokenType)
             val userId = CastledSharedStore.getUserId()
             if (!userId.isNullOrEmpty() && !token.isNullOrEmpty()) {
@@ -184,10 +185,17 @@ internal object PushNotification : CastledSharedStoreListener {
     fun isCastledPushMessage(remoteMessage: RemoteMessage): Boolean =
         PushNotificationManager.isCastledNotification(remoteMessage)
 
+    suspend fun getPushMessages() : List<CastledPushMessage> {
+        return pushRepository.getPushMessages()
+    }
+
     override fun onStoreInitialized(context: Context) {
         initTokenProviders(context)
         refreshPushTokens(context)
         startPeriodicTokenRefreshTask(context)
+        if (CastledSharedStore.configs.enablePushBoost) {
+            startPushBoostSyncTask(context)
+        }
     }
 
     override fun onStoreUserIdSet(context: Context) {
