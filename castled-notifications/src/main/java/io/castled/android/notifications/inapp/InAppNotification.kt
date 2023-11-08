@@ -98,8 +98,8 @@ internal object InAppNotification : CastledSharedStoreListener {
         inAppController.currentActivityReference = WeakReference(activity)
     }
 
-    internal fun clearCurrentActivity() {
-        inAppController.currentActivityReference?.clear()
+    internal fun clearCurrentActivity(activity: Activity) {
+        inAppController.currentActivityReference?.takeIf { it.get() == activity }?.clear()
     }
 
 }

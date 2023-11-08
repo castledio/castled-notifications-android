@@ -28,7 +28,7 @@ fun MiPushMessage.toCastledPushMessage(): CastledPushMessage? {
             channelDescription = extra["channelDescription"],
             smallIconResourceId = extra["smallIconResourceId"],
             largeIconUri = extra["largeIconUri"],
-            castledActionButtons = extra["actionButtons"]?.let { Json.decodeFromString(it) },
+            actionButtons = extra["actionButtons"]?.let { Json.decodeFromString(it) },
             ttl = extra["ttl"]?.toLong()
         )
     } catch (e: Exception) {

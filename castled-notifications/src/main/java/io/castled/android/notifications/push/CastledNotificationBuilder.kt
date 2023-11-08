@@ -235,7 +235,7 @@ internal class CastledNotificationBuilder(private val context: Context) {
         notificationBuilder: NotificationCompat.Builder,
         payload: CastledPushMessage
     ) {
-        payload.castledActionButtons?.forEach { actionButton ->
+        payload.actionButtons?.forEach { actionButton ->
             val event = NotificationActionContext(
                 notificationId = payload.notificationId,
                 teamId = payload.teamId,

@@ -20,6 +20,7 @@ import org.json.JSONObject
 internal object CastledSharedStore {
 
     private const val PREFERENCE_FILE_KEY = "io.castled.android.notifications"
+    private const val PUSH_MESSAGE_SLIDING_WINDOW_SIZE = 64
     private val logger = CastledLogger.getInstance(LogTags.STORE)
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var externalScope: CoroutineScope
@@ -47,7 +48,6 @@ internal object CastledSharedStore {
     ) {
         this.appId = configs.appId
         this.configs = configs
-        listeners?.let { this.listeners.addAll(listeners) }
         this.externalScope = externalScope
         sharedPreferences = getSharedPreference(context)
         // Restore from shared store
@@ -122,7 +122,7 @@ internal object CastledSharedStore {
             if (id in recentDisplayedPushIds) {
                 return true
             }
-            while (recentDisplayedPushIds.size >= 20) {
+            while (recentDisplayedPushIds.size >= PUSH_MESSAGE_SLIDING_WINDOW_SIZE) {
                 recentDisplayedPushIds.removeFirst()
             }
             recentDisplayedPushIds.add(id)
