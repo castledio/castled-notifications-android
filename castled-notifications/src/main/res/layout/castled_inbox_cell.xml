@@ -79,6 +79,7 @@
                         android:textColor="@android:color/black"
                         android:textSize="13sp"
                         android:ellipsize="end"
+                        android:lineSpacingExtra="5dp"
                         android:textStyle="normal"></TextView>
 
                     <LinearLayout
