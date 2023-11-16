@@ -30,9 +30,7 @@ internal object DeviceInfo : CastledSharedStoreListener {
 
 
     private fun updateDeviceInfo() {
-
-
-        externalScope.launch(Dispatchers.Default) {
+      externalScope.launch(Dispatchers.Default) {
             try {
                 val deviceInfoMap = mapOf(
                     "sdkVersion" to BuildConfig.SDK_VERSION,

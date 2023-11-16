@@ -75,6 +75,10 @@ internal object InAppNotification : CastledSharedStoreListener {
 
     fun dismissInAppDialogsIfAny() = inAppController.dismissDialogIfAny()
 
+    fun checkPendingNotificationsIfAny()= externalScope.launch(Default) {
+        inAppController.triggerPendingNotificationsIfAny()
+    }
+
     suspend fun refreshCampaigns() {
         CastledSharedStore.getUserId()?.let {
             inAppController.refreshLiveCampaigns()

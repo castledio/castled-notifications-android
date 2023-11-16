@@ -170,6 +170,7 @@ internal class InAppViewDecorator(
     override fun close() {
         dismissDialog()
         inAppViewLifecycleListener.onClosed(inAppMessage)
+        InAppNotification.checkPendingNotificationsIfAny()
     }
 
     internal fun dismissDialog() {

@@ -2,11 +2,14 @@ package io.castled.android.notifications.inapp
 
 import android.app.Activity
 import android.content.Context
+import io.castled.android.notifications.commons.CastledManifestInfo
 import io.castled.android.notifications.inapp.CampaignResponseConverter.toCampaign
 import io.castled.android.notifications.inapp.service.InAppRepository
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
+import io.castled.android.notifications.network.CastledRetrofitClient
 import io.castled.android.notifications.store.models.Campaign
+import io.castled.android.notifications.tracking.events.service.TrackEventApi
 import io.castled.android.notifications.trigger.EventFilterEvaluator
 import io.castled.android.notifications.trigger.enums.JoinType
 import io.castled.android.notifications.trigger.models.GroupFilter
@@ -27,7 +30,9 @@ internal class InAppController(context: Context) {
     private var currentInAppBeingDisplayed: Campaign? = null
     private val inAppViewLifecycleListener = InAppLifeCycleListenerImpl(this)
     private var inAppViewDecorator: InAppViewDecorator? = null
+    private var pendingInapps = mutableListOf<Campaign>()
     private val currentInAppLock = Any()
+    private val excludedActivities by lazy { CastledManifestInfo(context).getExcludedActivities() }
     internal var currentActivityReference: WeakReference<Activity>? = null
 
     suspend fun refreshLiveCampaigns() {
@@ -58,23 +63,81 @@ internal class InAppController(context: Context) {
         if (currentInAppBeingDisplayed != null) {
             return
         }
-        val triggeredInApp = findTriggeredInApp(eventName, params) ?: return
-        try {
-            currentActivityReference?.let {
-                it.get()?.let { activityContext ->
-                    if (updateCurrentInApp(triggeredInApp)) {
-                        launchInApp(activityContext, triggeredInApp)
-                    } else {
-                        logger.debug("Skipping in-app display. Another currently being shown")
-                    }
-                }
-            }
+        val triggeredInApps = findTriggeredInApp(eventName, params) ?: return
+        validateInappsBeforeDisplay(triggeredInApps)
+     }
 
-        } catch (e: Exception) {
-            logger.error("In-app launch failed!", e)
-        }
+    private fun isSatisfiedWithGlobalIntervalBtwDisplays(campaign: Campaign, inAppCampaigns: List<Campaign>) : Boolean{
+          val latestCampaignViewTs =
+            inAppCampaigns.maxByOrNull { it.lastDisplayedTime }?.lastDisplayedTime
+                ?: 0
+        val result = (campaign.displayConfig.minIntervalBtwDisplaysGlobal == 0L ||
+                campaign.displayConfig.minIntervalBtwDisplaysGlobal * 1000 <= System.currentTimeMillis() - latestCampaignViewTs)
+        println("inapps validation  isSatisfiedWithGlobalIntervalBtwDisplays result $result ${campaign.notificationId} global time $latestCampaignViewTs cam time ${campaign.displayConfig.minIntervalBtwDisplaysGlobal}")
+
+        return result
+     }
+
+    private suspend fun validateInappsBeforeDisplay(inApps:List<Campaign>){
+        val inAppCampaigns = inAppRepository.getCampaigns()
+        val triggeredInapps =  inApps.toMutableList()
+        println("inapps validation  validateInappsBeforeDisplay ${triggeredInapps.map { it.notificationId }}")
+
+        triggeredInapps.indexOfFirst { item ->
+            isSatisfiedWithGlobalIntervalBtwDisplays(item,inAppCampaigns) && canShowInActivity()
+        }.takeIf { satisfiedIndex -> satisfiedIndex != -1 }?.let { satisfiedIndex ->
+            val  triggeredInApp = triggeredInapps[satisfiedIndex]
+             try {
+                 currentActivityReference?.let {
+                     it.get()?.let { activityContext ->
+                         if (updateCurrentInApp(triggeredInApp)) {
+                             launchInApp(activityContext, triggeredInApp)
+                             pendingInapps.removeIf {pendingItem -> pendingItem.notificationId == triggeredInApp.notificationId }
+
+                             println("inapps validation before display ${triggeredInapps.map { it.notificationId }}")
+                             triggeredInapps.removeAt(satisfiedIndex)
+                             println("$satisfiedIndex inapps validation after delete ${triggeredInapps.map { it.notificationId }}")
+
+                         } else {
+                             logger.debug("Skipping in-app display. Another currently being shown")
+                         }
+                     }
+                 }
+
+             } catch (e: Exception) {
+                 logger.error("In-app launch failed!", e)
+             }
+
+         }
+        enqueuePendingItems(triggeredInapps)
     }
 
+    private fun enqueuePendingItems(items:List<Campaign>){
+        println("inapps validation enqueuePendingItems before ${pendingInapps.map { it.notificationId }}")
+
+        pendingInapps.addAll(items)
+        println("inapps validation enqueuePendingItems after appending ${pendingInapps.map { it.notificationId }}")
+
+        pendingInapps = pendingInapps.distinct().toMutableList()
+        println("inapps validation enqueuePendingItems after duplicates ${pendingInapps.map { it.notificationId }}")
+
+    }
+
+    private fun canShowInActivity():Boolean{
+        currentActivityReference?.let {
+         val activityName =    it.get()?.componentName?.shortClassName?.drop(1)
+            activityName?.let {
+                return !excludedActivities.contains(activityName)
+            }
+        }
+        return false
+    }
+
+    suspend fun triggerPendingNotificationsIfAny(){
+        if (pendingInapps.isNotEmpty()) {
+            validateInappsBeforeDisplay(pendingInapps)
+        }
+    }
     fun clearCurrentInApp() {
         synchronized(currentInAppLock) {
             currentInAppBeingDisplayed = null
@@ -107,12 +170,8 @@ internal class InAppController(context: Context) {
     private suspend fun findTriggeredInApp(
         eventName: String,
         params: Map<String, Any>?
-    ): Campaign? {
+    ): List<Campaign>? {
         val inAppCampaigns = inAppRepository.getCampaigns()
-        val latestCampaignViewTs =
-            inAppCampaigns.maxByOrNull { it.lastDisplayedTime }?.lastDisplayedTime
-                ?: 0
-
         val triggeredInApp = inAppCampaigns
             .filter {
                 // Trigger params filter
@@ -124,12 +183,11 @@ internal class InAppController(context: Context) {
                 // Display config filter
                 it.timesDisplayed < it.displayConfig.displayLimit &&
                         (it.displayConfig.minIntervalBtwDisplays == 0L ||
-                                it.displayConfig.minIntervalBtwDisplays * 1000 <= System.currentTimeMillis() - it.lastDisplayedTime) &&
-                        (it.displayConfig.minIntervalBtwDisplaysGlobal == 0L ||
-                                it.displayConfig.minIntervalBtwDisplaysGlobal * 1000 <= System.currentTimeMillis() - latestCampaignViewTs)
+                                it.displayConfig.minIntervalBtwDisplays * 1000 <= System.currentTimeMillis() - it.lastDisplayedTime)
             }
             .takeUnless { it.isEmpty() }
-            ?.maxBy { it.priority }
+            ?.sortedBy { it.priority }
+
         return triggeredInApp
     }
 
