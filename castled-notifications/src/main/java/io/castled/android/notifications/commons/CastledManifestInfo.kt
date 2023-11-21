@@ -35,7 +35,7 @@ internal class CastledManifestInfo(private val context: Context) {
 
     fun getExcludedActivities(): List<String> {
         return try {
-            context.getString(R.string.io_castled_excluded_inapp_activities)!!.split(",")
+            context.getString(R.string.io_castled_inapp_excluded_activities)!!.split(",")
         } catch (e: Exception) {
             emptyList()
         }

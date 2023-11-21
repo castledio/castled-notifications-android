@@ -13,6 +13,8 @@ import io.castled.android.notifications.trigger.enums.JoinType
 import io.castled.android.notifications.trigger.models.GroupFilter
 import io.castled.android.notifications.workmanager.models.CastledInAppEventRequest
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -29,6 +31,7 @@ internal class InAppController(context: Context) {
     private val inAppViewLifecycleListener = InAppLifeCycleListenerImpl(this)
     private var inAppViewDecorator: InAppViewDecorator? = null
     private var pendingInapps = mutableListOf<Campaign>()
+    private val inappMutex = Mutex()
     private val currentInAppLock = Any()
     private val excludedActivities by lazy { CastledManifestInfo(context).getExcludedActivities() }
     internal var currentActivityReference: WeakReference<Activity>? = null
@@ -83,7 +86,7 @@ internal class InAppController(context: Context) {
                     it.get()?.let { activityContext ->
                         if (updateCurrentInApp(triggeredInApp)) {
                             launchInApp(activityContext, triggeredInApp)
-                            pendingInapps.removeIf { pendingItem -> pendingItem.notificationId == triggeredInApp.notificationId }
+                            removeCampaignFromPendingItems(triggeredInApp)
                             triggeredInapps.removeAt(satisfiedIndex)
 
                         } else {
@@ -100,9 +103,24 @@ internal class InAppController(context: Context) {
         enqueuePendingItems(triggeredInapps)
     }
 
-    private fun enqueuePendingItems(items: List<Campaign>) {
-        pendingInapps.addAll(items)
-        pendingInapps = pendingInapps.distinct().toMutableList()
+    private suspend fun enqueuePendingItems(items: List<Campaign>) {
+        inappMutex.withLock {
+            pendingInapps.addAll(items)
+            val distinctList = pendingInapps.distinct()
+            pendingInapps.clear()
+            pendingInapps.addAll(distinctList)
+        }
+
+    }
+
+    private suspend fun removeCampaignFromPendingItems(triggeredInApp: Campaign) {
+        inappMutex.withLock {
+            pendingInapps.removeIf { it.notificationId == triggeredInApp.notificationId }
+        }
+    }
+
+    fun getPendingListItems(): List<Campaign> {
+        return ArrayList(pendingInapps)
     }
 
     private fun canShowInActivity(): Boolean {
@@ -117,7 +135,7 @@ internal class InAppController(context: Context) {
 
     suspend fun triggerPendingNotificationsIfAny() {
         if (pendingInapps.isNotEmpty()) {
-            validateInappsBeforeDisplay(pendingInapps)
+            validateInappsBeforeDisplay(getPendingListItems())
         }
     }
 
