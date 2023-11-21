@@ -10,4 +10,7 @@
     <string name="io_castled_push_default_channel_desc">Test Channel for Castled Notifications</string>
     <integer name="io_castled_push_default_channel_importance">5</integer>
 
+    <string name="io_castled_excluded_inapp_activities">SplashScreenActivity,IntroPageActivity</string>
+
+
 </resources>

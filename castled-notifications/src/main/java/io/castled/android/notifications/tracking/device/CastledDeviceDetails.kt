@@ -69,4 +69,23 @@ internal class CastledDeviceDetails(context: Context) {
         }
 
     }
+    internal fun getPackageName(context: Context) : String{
+        return try {
+            context.packageName
+        }
+        catch (e:Exception){
+            ""
+        }
+    }
+    internal fun getAppName(context: Context) : String{
+        return try {
+            val applicationInfo = context.applicationInfo
+             context.packageManager.getApplicationLabel(applicationInfo).toString()
+         }
+        catch (e:Exception){
+            ""
+        }
+    }
+
+
 }

@@ -34,6 +34,8 @@ internal object DeviceInfo : CastledSharedStoreListener {
             try {
                 val deviceInfoMap = mapOf(
                     "sdkVersion" to BuildConfig.SDK_VERSION,
+                    "bundleId" to deviceInfo.getPackageName(applicationContext),
+                    "appName" to deviceInfo.getAppName(applicationContext),
                     "appVersion" to deviceInfo.getAppVersion(),
                     "model" to deviceInfo.getModel(),
                     "pushPermission" to if (deviceInfo.checkNotificationPermissions(

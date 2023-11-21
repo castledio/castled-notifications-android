@@ -18,10 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Castlednotificationsandroid"
         tools:targetApi="33">
-<!--        <meta-data-->
-<!--            android:name="CASTLED_EXCLUDED_INAPPS"-->
-<!--            android:value="MainActivity" />-->
-        <activity
+         <activity
             android:name="io.castled.android.demoapp.SecondActivity"
             android:exported="false" />
         <activity
