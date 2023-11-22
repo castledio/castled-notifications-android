@@ -15,7 +15,7 @@ internal class CastledDeviceDetails(context: Context) {
 
     private val packageManager by lazy { context.packageManager }
     private val packageName by lazy { context.packageName }
- 
+
     internal fun getAppVersion(): String {
         return try {
             val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -33,8 +33,7 @@ internal class CastledDeviceDetails(context: Context) {
 
     fun checkNotificationPermissions(context: Context): Boolean {
         if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
+                context, Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             return false
@@ -58,7 +57,6 @@ internal class CastledDeviceDetails(context: Context) {
         return Locale.getDefault().toString()
     }
 
-    // You can obtain a unique device ID using various methods, such as the device's secure Android ID
     internal fun getDeviceId(): String {
         CastledSharedStore.getDeviceId()?.let {
             return it
@@ -67,25 +65,5 @@ internal class CastledDeviceDetails(context: Context) {
             CastledSharedStore.setDeviceId(randomString)
             return randomString
         }
-
     }
-    internal fun getPackageName(context: Context) : String{
-        return try {
-            context.packageName
-        }
-        catch (e:Exception){
-            ""
-        }
-    }
-    internal fun getAppName(context: Context) : String{
-        return try {
-            val applicationInfo = context.applicationInfo
-             context.packageManager.getApplicationLabel(applicationInfo).toString()
-         }
-        catch (e:Exception){
-            ""
-        }
-    }
-
-
 }

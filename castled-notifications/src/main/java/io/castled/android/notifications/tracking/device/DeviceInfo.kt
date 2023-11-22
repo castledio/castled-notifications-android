@@ -11,6 +11,7 @@ import io.castled.android.notifications.tracking.events.service.DeviceInfoReposi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.TimeZone
 
 
 internal object DeviceInfo : CastledSharedStoreListener {
@@ -30,12 +31,11 @@ internal object DeviceInfo : CastledSharedStoreListener {
 
 
     private fun updateDeviceInfo() {
-      externalScope.launch(Dispatchers.Default) {
+        externalScope.launch(Dispatchers.Default) {
             try {
                 val deviceInfoMap = mapOf(
                     "sdkVersion" to BuildConfig.SDK_VERSION,
-                    "bundleId" to deviceInfo.getPackageName(applicationContext),
-                    "appName" to deviceInfo.getAppName(applicationContext),
+                    "timeZone" to TimeZone.getDefault().displayName,
                     "appVersion" to deviceInfo.getAppVersion(),
                     "model" to deviceInfo.getModel(),
                     "pushPermission" to if (deviceInfo.checkNotificationPermissions(

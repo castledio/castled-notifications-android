@@ -2,7 +2,7 @@ package io.castled.android.notifications.inapp
 
 import android.app.Activity
 import android.content.Context
-import io.castled.android.notifications.commons.CastledManifestInfo
+import io.castled.android.notifications.R
 import io.castled.android.notifications.inapp.CampaignResponseConverter.toCampaign
 import io.castled.android.notifications.inapp.service.InAppRepository
 import io.castled.android.notifications.logger.CastledLogger
@@ -33,8 +33,14 @@ internal class InAppController(context: Context) {
     private var pendingInapps = mutableListOf<Campaign>()
     private val inappMutex = Mutex()
     private val currentInAppLock = Any()
-    private val excludedActivities by lazy { CastledManifestInfo(context).getExcludedActivities() }
     internal var currentActivityReference: WeakReference<Activity>? = null
+    private val excludedActivities: List<String> by lazy {
+        try {
+            context.getString(R.string.io_castled_inapp_excluded_activities)!!.split(",")
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
 
     suspend fun refreshLiveCampaigns() {
         val liveCampaignResponse = inAppRepository.fetchLiveCampaigns() ?: return
@@ -105,12 +111,10 @@ internal class InAppController(context: Context) {
 
     private suspend fun enqueuePendingItems(items: List<Campaign>) {
         inappMutex.withLock {
-            pendingInapps.addAll(items)
-            val distinctList = pendingInapps.distinct()
-            pendingInapps.clear()
-            pendingInapps.addAll(distinctList)
+            pendingInapps.addAll(items.filter { newItem ->
+                pendingInapps.none { existingItem -> existingItem.notificationId == newItem.notificationId }
+            })
         }
-
     }
 
     private suspend fun removeCampaignFromPendingItems(triggeredInApp: Campaign) {
