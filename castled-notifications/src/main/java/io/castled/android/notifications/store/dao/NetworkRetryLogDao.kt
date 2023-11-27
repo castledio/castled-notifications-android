@@ -6,7 +6,7 @@ import io.castled.android.notifications.store.models.NetworkRetryLog
 @Dao
 internal interface NetworkRetryLogDao {
 
-    @Query("SELECT * FROM network_retry_log")
+    @Query("SELECT * FROM network_retry_log order by id asc")
     suspend fun getAllRetryLogs(): List<NetworkRetryLog>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

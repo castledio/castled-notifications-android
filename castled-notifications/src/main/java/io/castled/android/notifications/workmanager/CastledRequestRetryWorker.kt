@@ -12,7 +12,7 @@ import kotlinx.coroutines.sync.withLock
 
 internal class CastledRequestRetryWorker(appContext: Context, workerParams: WorkerParameters) :
     CoroutineWorker(appContext, workerParams) {
-
+    private val MAX_ENTRIES_LIMIT = 5000
     private val logger = CastledLogger.getInstance(LogTags.RETRY_WORKER)
 
     private val requestHandlerRegistry = mapOf(
@@ -47,7 +47,11 @@ internal class CastledRequestRetryWorker(appContext: Context, workerParams: Work
                             failedRequests.addAll(entries)
                         })
                 }
+                retryRequests.removeAll(processedRequests)
                 networkRetryRepository.deleteRetryRequests(processedRequests)
+                if (retryRequests.count() > MAX_ENTRIES_LIMIT) {
+                    cleanupOldEntries(retryRequests)
+                }
             }
         } catch (e: Exception) {
             logger.error("work with id: $id failed!", e)
@@ -58,5 +62,9 @@ internal class CastledRequestRetryWorker(appContext: Context, workerParams: Work
             "total requests to retry: ${retryRequests.size}, " + "processed: ${processedRequests.size}, failed: ${failedRequests.size}"
         )
         return if (failedRequests.size > 0) Result.retry() else Result.success()
+    }
+
+    private suspend fun cleanupOldEntries(retryRequests: List<NetworkRetryLog>) {
+        networkRetryRepository.deleteRetryRequests(retryRequests.take(retryRequests.count() - MAX_ENTRIES_LIMIT))
     }
 }
