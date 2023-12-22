@@ -34,6 +34,7 @@ import java.io.Serializable
 
 internal class CastledInboxActivity : AppCompatActivity(),
     CoroutineScope by CoroutineScope(Dispatchers.Main) {
+    private  val SELECTED_COLOR = "#3366CC"
     private val viewModel: InboxViewModel by viewModels()
     private val allString = "All"
     private lateinit var binding: ActivityCastledInboxBinding
@@ -41,11 +42,11 @@ internal class CastledInboxActivity : AppCompatActivity(),
     private var categories = mutableListOf<String>()
     private lateinit var categoriesTab: TabLayout
     private lateinit var viewPager: ViewPager2
-    private var selectedTabColor = Color.BLACK
+    private var selectedTabColor = Color.WHITE
     private var unselectedTabColor = Color.WHITE
-    private var selectedTabTextColor = 0XFF0000
-    private var unselectedTabTextColor = 0X0000FF
-    private var selectedIndicatorColor = 0X0000FF
+    private var selectedTabTextColor = Color.parseColor(SELECTED_COLOR)
+    private var unselectedTabTextColor = Color.BLACK
+    private var selectedIndicatorColor =  Color.parseColor(SELECTED_COLOR)
     private var marginInPixels = 5
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -123,7 +124,7 @@ internal class CastledInboxActivity : AppCompatActivity(),
         )
         selectedTabTextColor = ColorUtils.parseColor(
             displayConfig.tabBarSelectedTextColor,
-            Color.parseColor("#3366CC")
+            Color.parseColor(SELECTED_COLOR)
         )
         unselectedTabTextColor = ColorUtils.parseColor(
             displayConfig.tabBarDefaultTextColor,
@@ -131,7 +132,7 @@ internal class CastledInboxActivity : AppCompatActivity(),
         )
         selectedIndicatorColor = ColorUtils.parseColor(
             displayConfig.tabBarIndicatorBackgroundColor,
-            Color.parseColor("#3366CC")
+            Color.parseColor(SELECTED_COLOR)
         )
 
         binding.toolbar.setBackgroundColor(
@@ -162,31 +163,27 @@ internal class CastledInboxActivity : AppCompatActivity(),
 
         val actionBar = supportActionBar
         actionBar?.let {
-            if (displayConfig.hideNavigationBar) {
-                actionBar.hide()
-            } else {
-                actionBar.setBackgroundDrawable(
-                    ColorDrawable(
-                        ColorUtils.parseColor(
-                            displayConfig.navigationBarBackgroundColor,
-                            (android.R.attr.colorPrimary)
-                        )
+            actionBar.setBackgroundDrawable(
+                ColorDrawable(
+                    ColorUtils.parseColor(
+                        displayConfig.navigationBarBackgroundColor,
+                        (android.R.attr.colorPrimary)
                     )
                 )
-                val text: Spannable = SpannableString(displayConfig.navigationBarTitle)
-                text.setSpan(
-                    ForegroundColorSpan(
-                        ColorUtils.parseColor(
-                            displayConfig.navigationBarTitleColor,
-                            Color.WHITE
-                        )
-                    ),
-                    0,
-                    text.length,
-                    Spannable.SPAN_INCLUSIVE_INCLUSIVE
-                )
-                actionBar.title = text
-            }
+            )
+            val text: Spannable = SpannableString(displayConfig.navigationBarTitle)
+            text.setSpan(
+                ForegroundColorSpan(
+                    ColorUtils.parseColor(
+                        displayConfig.navigationBarTitleColor,
+                        Color.WHITE
+                    )
+                ),
+                0,
+                text.length,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+            actionBar.title = text
             binding.toolbar.visibility = View.GONE
         }
     }
