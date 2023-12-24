@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/view_bg"
+    android:fitsSystemWindows="true"
     tools:context="io.castled.android.notifications.inbox.views.CastledInboxActivity">
     <!-- Include the custom ActionBar layout at the top of the layout -->
     <androidx.appcompat.widget.Toolbar
