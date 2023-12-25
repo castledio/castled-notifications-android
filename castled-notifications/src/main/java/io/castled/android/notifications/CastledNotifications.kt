@@ -17,6 +17,7 @@ import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.network.CastledRetrofitClient
 import io.castled.android.notifications.observer.CastledLifeCycleObserver
 import io.castled.android.notifications.push.PushNotification
+import io.castled.android.notifications.push.extensions.toCastledPushMessage
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.PushTokenType
 import io.castled.android.notifications.store.CastledSharedStore
@@ -143,20 +144,22 @@ object CastledNotifications {
 
     @JvmStatic
     fun logAppPageViewedEvent(context: Context, screenName: String) {
-        if (isInited()) {
-            InAppNotification.logAppEvent(
-                context,
-                AppEvents.APP_PAGE_VIEWED,
-                mapOf("name" to screenName)
-            )
+        if (!isInited()) {
+            return
         }
+        InAppNotification.logAppEvent(
+            context,
+            AppEvents.APP_PAGE_VIEWED,
+            mapOf("name" to screenName)
+        )
     }
 
     @JvmStatic
     fun logAppOpenedEvent(context: Context) {
-        if (isInited()) {
-            InAppNotification.logAppEvent(context, AppEvents.APP_OPENED, null)
+        if (!isInited()) {
+            return
         }
+        InAppNotification.logAppEvent(context, AppEvents.APP_OPENED, null)
     }
 
     @JvmStatic
@@ -164,30 +167,48 @@ object CastledNotifications {
         context: Context,
         eventName: String,
         eventParams: Map<String, Any>? = null
-    ) =
-        castledScope.launch(Dispatchers.Default) {
-            if (isInited()) {
-                InAppNotification.logAppEvent(context, eventName, eventParams)
-                EventsTracker.logCustomEvent(eventName, eventParams)
-            }
+    ) {
+        if (!isInited()) {
+            return;
         }
+        if (getCastledConfigs().enableInApp) {
+            InAppNotification.logAppEvent(context, eventName, eventParams)
+        }
+        castledScope.launch(Dispatchers.Default) {
+            EventsTracker.logCustomEvent(eventName, eventParams)
+        }
+    }
 
     @JvmStatic
-    fun setUserAttributes(context: Context, attributes: CastledUserAttributes) =
-        castledScope.launch(Dispatchers.Default) {
-            if (isInited()) {
-                EventsTracker.logUserTrackingEvent(attributes)
-            }
+    fun setUserAttributes(context: Context, attributes: CastledUserAttributes) {
+        if (!isInited()) {
+            return
         }
+        castledScope.launch(Dispatchers.Default) {
+            EventsTracker.logUserTrackingEvent(attributes)
+        }
+    }
 
+    @JvmStatic
     fun handlePushNotification(context: Context, pushMessage: CastledPushMessage?) {
         PushNotification.handlePushNotification(context, pushMessage)
     }
 
+    @JvmStatic
+    fun handlePushNotification(context: Context, remoteMessage: RemoteMessage) {
+        if (!isCastledPushMessage(remoteMessage)) {
+            logger.error("Push message not from Castled!")
+            return
+        }
+        PushNotification.handlePushNotification(context, remoteMessage.toCastledPushMessage())
+    }
+
+    @JvmStatic
     fun isCastledPushMessage(remoteMessage: RemoteMessage): Boolean {
         return PushNotification.isCastledPushMessage(remoteMessage)
     }
 
+    @JvmStatic
     fun subscribeToPushNotificationEvents(pushNotificationListener: CastledPushNotificationListener) {
         PushNotification.subscribeToPushNotificationEvents(pushNotificationListener)
     }
