@@ -11,7 +11,7 @@ import kotlinx.serialization.json.JsonObject
 internal object TrackEventUtils {
 
     fun getTrackEvent(
-        eventName: String, properties: Map<String, Any>
+        eventName: String, properties: Map<String, Any?>
     ): CastledTrackEventRequest {
 
         val event = CastledTrackEvent(
@@ -27,7 +27,7 @@ internal object TrackEventUtils {
     }
 
     fun getUserEvent(
-        traits: Map<String, Any>
+        traits: Map<String, Any?>
     ): CastledUserTrackingEventRequest {
 
         val event = CastledUserTrackingEventRequest(

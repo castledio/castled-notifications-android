@@ -56,7 +56,7 @@ internal object InAppNotification : CastledSharedStoreListener {
     internal fun logAppEvent(
         context: Context,
         eventName: String,
-        eventParams: Map<String, Any>?
+        eventParams: Map<String, Any?>?
     ) = externalScope.launch(Default) {
         if (!enabled) {
             logger.debug("Ignoring app event, In-App disabled")

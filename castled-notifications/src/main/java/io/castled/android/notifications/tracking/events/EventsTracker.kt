@@ -18,7 +18,7 @@ internal object EventsTracker {
         enabled = true
     }
 
-    suspend fun logCustomEvent(event: String, properties: Map<String, Any>?) {
+    suspend fun logCustomEvent(event: String, properties: Map<String, Any?>?) {
         if (!enabled) {
             logger.debug("Ignoring custom app event, tracking disabled!")
             return

@@ -53,7 +53,7 @@ internal class InAppController(context: Context) {
     internal suspend fun findAndLaunchInApp(
         context: Context,
         eventName: String,
-        params: Map<String, Any>?
+        params: Map<String, Any?>?
     ) {
         if (currentInAppBeingDisplayed != null) {
             return
@@ -106,7 +106,7 @@ internal class InAppController(context: Context) {
 
     private suspend fun findTriggeredInApp(
         eventName: String,
-        params: Map<String, Any>?
+        params: Map<String, Any?>?
     ): Campaign? {
         val inAppCampaigns = inAppRepository.getCampaigns()
         val latestCampaignViewTs =
