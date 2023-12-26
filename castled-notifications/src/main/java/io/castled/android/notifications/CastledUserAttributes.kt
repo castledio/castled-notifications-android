@@ -16,45 +16,45 @@ class CastledUserAttributes {
         const val COUNTRY = "country"
     }
 
-    private val attributes = mutableMapOf<String, Any>()
+    private val attributes = mutableMapOf<String, Any?>()
 
-    fun setName(name: String) {
+    fun setName(name: String?) {
         attributes[NAME] = name
     }
 
-    fun setFirstName(firstName: String) {
+    fun setFirstName(firstName: String?) {
         attributes[FIRST_NAME] = firstName
     }
 
-    fun setLastName(lastName: String) {
+    fun setLastName(lastName: String?) {
         attributes[LAST_NAME] = lastName
     }
 
-    fun setEmail(email: String) {
+    fun setEmail(email: String?) {
         attributes[EMAIL] = email
     }
 
-    fun setDOB(dob: Date) {
+    fun setDOB(dob: Date?) {
         attributes[DOB] = dob
     }
 
-    fun setGender(gender: String) {
+    fun setGender(gender: String?) {
         attributes[GENDER] = gender
     }
 
-    fun setPhone(phone: String) {
+    fun setPhone(phone: String?) {
         attributes[PHONE_NUMBER] = phone
     }
 
-    fun setCity(city: String) {
+    fun setCity(city: String?) {
         attributes[CITY] = city
     }
 
-    fun setCountry(country: String) {
+    fun setCountry(country: String?) {
         attributes[COUNTRY] = country
     }
 
-    fun setCustomAttribute(key: String, value: Any) {
+    fun setCustomAttribute(key: String, value: Any?) {
         attributes[key] = value
     }
 

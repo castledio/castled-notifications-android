@@ -166,7 +166,7 @@ object CastledNotifications {
     fun logCustomAppEvent(
         context: Context,
         eventName: String,
-        eventParams: Map<String, Any>? = null
+        eventParams: Map<String, Any?>? = null
     ) {
         if (!isInited()) {
             return;
