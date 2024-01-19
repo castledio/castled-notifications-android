@@ -14,7 +14,7 @@ object Versions {
     // Retrofit
     const val retrofit = "2.9.0"
 
-    const val material = "1.9.0"
+    const val material = "1.6.0"
 
     // Firebase Messaging
     const val firebase = "23.1.1"
@@ -27,7 +27,7 @@ object Versions {
     const val extJUnit = "1.1.4"
 
     // Default Android Dependencies
-    const val appCompat = "1.6.1"
+    const val appCompat = "1.5.1"
     const val lifecycleProcess = "2.5.1"
     const val constraintLayout = "2.1.4"
 
