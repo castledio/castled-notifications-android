@@ -3,7 +3,6 @@ package io.castled.android.notifications.observer
 import android.app.Application
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
-import io.castled.android.notifications.store.CastledSharedStore
 
 internal object CastledLifeCycleObserver {
 
@@ -14,20 +13,25 @@ internal object CastledLifeCycleObserver {
         LogTags.ALC_OBS
     )
 
+    @Synchronized
     fun start(application: Application) {
-        if (!started && (CastledSharedStore.configs.enableAppInbox || CastledSharedStore.configs.enableInApp)) {
-            logger.debug("Starting lifecycle listeners...")
-            application.registerActivityLifecycleCallbacks(
-                CastledActivityLifeCycleCallbacksImpl(
-                    lifeCycleListeners
-                )
-            )
+        if (started) {
+            return
         }
+        logger.debug("Starting lifecycle listeners...")
+        application.registerActivityLifecycleCallbacks(
+            CastledActivityLifeCycleCallbacksImpl(
+                lifeCycleListeners
+            )
+        )
         started = true
     }
 
+    @Synchronized
     fun registerListener(listener: CastledAppLifeCycleListener) {
-        this.lifeCycleListeners.add(listener)
+        if (listener !in lifeCycleListeners) {
+            this.lifeCycleListeners.add(listener)
+        }
     }
 
 }

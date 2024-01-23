@@ -1,7 +1,6 @@
 package io.castled.android.notifications.workmanager
 
 import android.content.Context
-import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import io.castled.android.notifications.globals.CastledGlobals
 import io.castled.android.notifications.logger.CastledLogger
@@ -11,7 +10,7 @@ import io.castled.android.notifications.workmanager.models.CastledNetworkRequest
 import kotlinx.coroutines.sync.withLock
 
 internal class CastledRequestRetryWorker(appContext: Context, workerParams: WorkerParameters) :
-    CoroutineWorker(appContext, workerParams) {
+    CastledCoroutineWorker(appContext, workerParams) {
 
     private val logger = CastledLogger.getInstance(LogTags.RETRY_WORKER)
 

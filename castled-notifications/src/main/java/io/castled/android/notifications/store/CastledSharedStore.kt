@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
 internal object CastledSharedStore {
@@ -76,10 +77,26 @@ internal object CastledSharedStore {
                         it.toIntOrNull()?.let { num -> recentDisplayedPushIds.add(num) }
                     }
                 }
+                sharedPref.edit()
+                    .putString(PrefStoreKeys.CONFIGS, Json.encodeToString(CastledConfigs.serializer(), configs)
+                ).apply()
             }
             logger.debug("Store initialization completed")
             listeners.forEach { it.onStoreInitialized(context) }
         }
+
+    fun getCachedConfigs(
+        context: Context
+    ) : CastledConfigs? {
+        val sharedPref = context.getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE)
+        val storedConfigs = sharedPref.getString(PrefStoreKeys.CONFIGS, null) ?: return null
+        return try {
+            Json.decodeFromString(CastledConfigs.serializer(), storedConfigs)
+        } catch(e : Exception) {
+            logger.error("Deserializing config: $storedConfigs failed!")
+            null
+        }
+    }
 
     suspend fun setUserId(context: Context, userId: String?, userToken: String?) {
         storeMutex.withLock {
