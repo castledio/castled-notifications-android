@@ -1,5 +1,8 @@
 package io.castled.android.notifications
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class CastledConfigs(
     val appId: String,
     val location: CastledLocation,

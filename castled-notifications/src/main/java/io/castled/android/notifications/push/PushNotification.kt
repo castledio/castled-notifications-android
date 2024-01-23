@@ -130,7 +130,6 @@ internal object PushNotification : CastledSharedStoreListener {
         CastledPushWorkManager.getInstance(context).startPushBoostSync()
 
     suspend fun onTokenFetch(token: String?, tokenType: PushTokenType) {
-        val oldToken = CastledSharedStore.getToken(tokenType)
         if (CastledSharedStore.getToken(tokenType) != token) {
             // New token
             logger.debug("Updating push token: $token, type: $tokenType")

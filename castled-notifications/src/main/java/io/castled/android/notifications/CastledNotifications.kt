@@ -46,8 +46,8 @@ object CastledNotifications {
             logger.verbose("Not main process...!")
             return
         }
-        if (this::appId.isInitialized) {
-            logger.error("Sdk already initialized!")
+        if (isInited()) {
+            logger.debug("Sdk already initialized!")
             return
         }
         if (configs.appId.isBlank()) {
@@ -82,6 +82,15 @@ object CastledNotifications {
         logger.info("Sdk initialized successfully")
     }
 
+    @Synchronized
+    internal fun initializeInternal(application: Application) {
+        if (isInited()) {
+            return
+        }
+        val configs = CastledSharedStore.getCachedConfigs(application) ?: return
+        initialize(application, configs)
+    }
+
     private fun isMainProcess(context: Context): Boolean {
         val pid = Process.myPid()
         val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
@@ -104,7 +113,7 @@ object CastledNotifications {
         try {
             saveUserId(context, userId, userToken)
         } catch (e: Exception) {
-            logger.verbose("skipping userId set. $e")
+            logger.error("skipping userId set. $e")
         }
     }
 
@@ -133,10 +142,10 @@ object CastledNotifications {
     fun onTokenFetch(token: String?, pushTokenType: PushTokenType) =
         castledScope.launch(Dispatchers.Default) {
             if (!isInited()) {
-                logger.debug("Sdk not yet initialized!")
+                logger.error("Sdk not yet initialized!")
                 return@launch
             } else if (!CastledSharedStore.configs.enablePush) {
-                logger.debug("Push not enabled!")
+                logger.error("Push not enabled!")
                 return@launch
             }
             PushNotification.onTokenFetch(token, pushTokenType)
@@ -169,7 +178,7 @@ object CastledNotifications {
         eventParams: Map<String, Any?>? = null
     ) {
         if (!isInited()) {
-            return;
+            return
         }
         if (getCastledConfigs().enableInApp) {
             InAppNotification.logAppEvent(context, eventName, eventParams)
@@ -191,6 +200,13 @@ object CastledNotifications {
 
     @JvmStatic
     fun handlePushNotification(context: Context, pushMessage: CastledPushMessage?) {
+        // In React Native, SDK init happens outside of onCreate
+        // So its possible SDK not inited when push message arrives
+        initializeInternal(context.applicationContext as Application)
+        if (!isInited()) {
+            // Init
+            return
+        }
         PushNotification.handlePushNotification(context, pushMessage)
     }
 
@@ -200,7 +216,7 @@ object CastledNotifications {
             logger.error("Push message not from Castled!")
             return
         }
-        PushNotification.handlePushNotification(context, remoteMessage.toCastledPushMessage())
+        handlePushNotification(context, remoteMessage.toCastledPushMessage())
     }
 
     @JvmStatic
@@ -264,6 +280,11 @@ object CastledNotifications {
                 AppInbox.getInboxUnreadCount()
             )
         }
+
+    @JvmStatic
+    fun startObserver(application: Application) {
+        CastledLifeCycleObserver.start(application)
+    }
 
     fun getCastledConfigs() = CastledSharedStore.configs
 

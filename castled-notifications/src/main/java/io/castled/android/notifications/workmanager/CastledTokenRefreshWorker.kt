@@ -1,7 +1,6 @@
 package io.castled.android.notifications.workmanager
 
 import android.content.Context
-import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.firebase.messaging.FirebaseMessaging
 import io.castled.android.notifications.logger.CastledLogger
@@ -17,7 +16,7 @@ class CastledTokenRefreshWorker(
     private val appContext: Context,
     workerParams: WorkerParameters
 ) :
-    CoroutineWorker(appContext, workerParams) {
+    CastledCoroutineWorker(appContext, workerParams) {
     private val logger = CastledLogger.getInstance(LogTags.PUSH)
     override suspend fun doWork(): Result {
         return try {
@@ -31,11 +30,11 @@ class CastledTokenRefreshWorker(
                     )
                     logger.debug("Fcm token refresh completed")
                 } else {
-                    logger.debug("Fcm token refresh user is empty!!!!!")
+                    logger.debug("Fcm token refresh user is empty!")
                 }
                 Result.success()
             } else {
-                logger.debug("FCM registration token is empty!")
+                logger.debug("Fcm registration token is empty!")
                 Result.success()
             }
         } catch (e: Exception) {
