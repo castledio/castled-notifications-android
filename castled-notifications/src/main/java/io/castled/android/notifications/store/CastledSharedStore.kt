@@ -219,8 +219,10 @@ internal object CastledSharedStore {
     }
 
     fun clearSavedItems() {
-        sharedPreferences.edit().remove(PrefStoreKeys.USER_ID).apply()
-        sharedPreferences.edit().remove(PrefStoreKeys.RECENT_DISPLAYED_PUSH_IDS).apply()
+        sharedPreferences.edit()
+            .remove(PrefStoreKeys.USER_ID)
+            .remove(PrefStoreKeys.RECENT_DISPLAYED_PUSH_IDS)
+            .apply()
         userId = null
     }
 }

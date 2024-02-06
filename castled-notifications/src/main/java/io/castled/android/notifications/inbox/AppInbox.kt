@@ -15,6 +15,7 @@ import io.castled.android.notifications.workmanager.models.CastledInboxEventRequ
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
@@ -53,14 +54,14 @@ internal object AppInbox : CastledSharedStoreListener {
                     if (!CastledSharedStore.isAppInBackground) {
                         inboxRepository.refreshInbox()
                     }
-                } while (fetchJob!!.isActive)
+                } while (true)
             }
         }
     }
 
-    internal fun cancelInboxJob() {
+    internal suspend fun cancelInboxJob() {
         if (fetchJob != null && fetchJob!!.isActive) {
-            fetchJob!!.cancel()
+            fetchJob!!.cancelAndJoin()
         }
     }
 

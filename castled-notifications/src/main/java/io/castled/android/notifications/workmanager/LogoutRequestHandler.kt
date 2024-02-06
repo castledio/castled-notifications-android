@@ -1,13 +1,13 @@
 package io.castled.android.notifications.workmanager
 
 import android.content.Context
+import io.castled.android.notifications.push.service.PushRepository
 import io.castled.android.notifications.store.models.NetworkRetryLog
-import io.castled.android.notifications.user_life_cycle.services.UserLifeCycletRepository
 import io.castled.android.notifications.workmanager.models.CastledLogoutRequest
 
 internal class LogoutRequestHandler(appContext: Context) : NetworkRequestHandler {
 
-    private val userLifeCycletRepository by lazy { UserLifeCycletRepository(appContext) }
+    private val pushRepository by lazy { PushRepository(appContext) }
 
     override suspend fun handleRequest(
         requests: List<NetworkRetryLog>,
@@ -16,7 +16,7 @@ internal class LogoutRequestHandler(appContext: Context) : NetworkRequestHandler
     ) {
         for (entry in requests) {
             try {
-                val response = userLifeCycletRepository.logoutNoRetry(
+                val response = pushRepository.logoutNoRetry(
                     (entry.request as CastledLogoutRequest).userId,
                     entry.request.tokens
                 )

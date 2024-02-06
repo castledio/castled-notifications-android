@@ -4,12 +4,13 @@ import android.content.Context
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.network.CastledRetrofitClient.Companion.create
-import io.castled.android.notifications.push.models.NotificationActionContext
 import io.castled.android.notifications.push.extensions.toCastledPushEventRequest
 import io.castled.android.notifications.push.models.CastledPushMessage
+import io.castled.android.notifications.push.models.NotificationActionContext
 import io.castled.android.notifications.push.models.PushTokenInfo
 import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.workmanager.CastledNetworkWorkManager
+import io.castled.android.notifications.workmanager.models.CastledLogoutRequest
 import io.castled.android.notifications.workmanager.models.CastledPushEventRequest
 import io.castled.android.notifications.workmanager.models.CastledPushRegisterRequest
 import retrofit2.Response
@@ -59,7 +60,8 @@ internal class PushRepository(context: Context) {
 
     suspend fun getPushMessages(): List<CastledPushMessage> {
         try {
-            val response = pushApi.getMessages(CastledSharedStore.getAppId(), CastledSharedStore.getUserId())
+            val response =
+                pushApi.getMessages(CastledSharedStore.getAppId(), CastledSharedStore.getUserId())
             if (response.isSuccessful) {
                 return response.body() ?: listOf()
             } else {
@@ -70,5 +72,25 @@ internal class PushRepository(context: Context) {
         }
         return listOf()
     }
+
+    suspend fun logoutUser(userId: String, tokens: List<PushTokenInfo>) {
+        networkWorkManager.apiCallWithRetry(
+            request = CastledLogoutRequest(userId, tokens),
+            apiCall = {
+                return@apiCallWithRetry pushApi.logout(
+                    CastledSharedStore.getAppId(),
+                    it as CastledLogoutRequest
+                )
+            }
+        )
+    }
+
+    suspend fun logoutNoRetry(userId: String, tokens: List<PushTokenInfo>): Response<Void?> {
+        return pushApi.logout(
+            CastledSharedStore.getAppId(),
+            CastledLogoutRequest(userId, tokens)
+        )
+    }
+
 
 }

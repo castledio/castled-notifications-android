@@ -24,10 +24,8 @@ import io.castled.android.notifications.store.CastledDbBuilder
 import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.tracking.device.DeviceInfo
 import io.castled.android.notifications.tracking.events.EventsTracker
-import io.castled.android.notifications.user_life_cycle.UserLifeCycle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -139,18 +137,19 @@ object CastledNotifications {
     @JvmStatic
     fun logout() {
         CastledSharedStore.getUserId()?.let { userId ->
-            GlobalScope.launch(Dispatchers.Default) {
+            castledScope.launch(Dispatchers.Default) {
                 CastledDbBuilder.getDbInstance(application.applicationContext).clearAllTables()
                 CastledSharedStore.clearSavedItems()
-                UserLifeCycle.init(application.applicationContext)
-                UserLifeCycle.logoutUser(userId)
-                cancelRunnignJobs()
+                cancelRunningJobs()
+                if (getCastledConfigs().enablePush) {
+                    PushNotification.logoutUser(userId)
+                }
                 logger.verbose("$userId has been logged out successfully.")
             }
         }
     }
 
-    private fun cancelRunnignJobs() {
+    private suspend fun cancelRunningJobs() {
         if (getCastledConfigs().enableInApp) {
             InAppNotification.cancelCampaignJob()
         }
@@ -158,7 +157,7 @@ object CastledNotifications {
             AppInbox.cancelInboxJob()
         }
     }
-    
+
     @JvmStatic
     fun onTokenFetch(token: String?, pushTokenType: PushTokenType) =
         castledScope.launch(Dispatchers.Default) {
