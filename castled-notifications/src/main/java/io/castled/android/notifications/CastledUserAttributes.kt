@@ -60,4 +60,6 @@ class CastledUserAttributes {
 
     fun getAttributes() = attributes
 
+    fun setAttributes(attrs: Map<String, Any?>) = attributes.putAll(attrs)
+
 }
