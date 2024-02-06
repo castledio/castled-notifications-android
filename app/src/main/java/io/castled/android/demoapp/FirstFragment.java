@@ -63,6 +63,9 @@ public class FirstFragment extends Fragment {
             styleConfig.setTabBarIndicatorBackgroundColor("#0000FF");
             CastledNotifications.showAppInbox(view.getContext(), styleConfig);
         });
+        binding.btnLogout.setOnClickListener(btnLogout -> {
+            CastledNotifications.logout();
+        });
 
         
         /*

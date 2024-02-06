@@ -20,4 +20,6 @@ object LogTags {
     const val RETRY_WORKER = "CastledNotifications-RetryWorker"
     const val TRIGGER_EVAL = "CastledNotifications-TriggerEvaluator"
     const val IN_APP_VIEW_LIFECYCLE = "CastledNotifications-InAppViewLifeCycle"
+    const val LOGOUT = "CastledNotifications-Logout"
+
 }

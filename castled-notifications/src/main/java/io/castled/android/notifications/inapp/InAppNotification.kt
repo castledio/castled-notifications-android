@@ -48,8 +48,14 @@ internal object InAppNotification : CastledSharedStoreListener {
                     if (!CastledSharedStore.isAppInBackground) {
                         inAppController.refreshLiveCampaigns()
                     }
-                } while (true)
+                } while (fetchJob!!.isActive)
             }
+        }
+    }
+
+    internal fun cancelCampaignJob() {
+        if (fetchJob != null && fetchJob!!.isActive) {
+            fetchJob!!.cancel()
         }
     }
 

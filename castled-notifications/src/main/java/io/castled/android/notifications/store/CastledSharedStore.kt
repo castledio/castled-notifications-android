@@ -78,8 +78,10 @@ internal object CastledSharedStore {
                     }
                 }
                 sharedPref.edit()
-                    .putString(PrefStoreKeys.CONFIGS, Json.encodeToString(CastledConfigs.serializer(), configs)
-                ).apply()
+                    .putString(
+                        PrefStoreKeys.CONFIGS,
+                        Json.encodeToString(CastledConfigs.serializer(), configs)
+                    ).apply()
             }
             logger.debug("Store initialization completed")
             listeners.forEach { it.onStoreInitialized(context) }
@@ -87,12 +89,12 @@ internal object CastledSharedStore {
 
     fun getCachedConfigs(
         context: Context
-    ) : CastledConfigs? {
+    ): CastledConfigs? {
         val sharedPref = context.getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE)
         val storedConfigs = sharedPref.getString(PrefStoreKeys.CONFIGS, null) ?: return null
         return try {
             Json.decodeFromString(CastledConfigs.serializer(), storedConfigs)
-        } catch(e : Exception) {
+        } catch (e: Exception) {
             logger.error("Deserializing config: $storedConfigs failed!")
             null
         }
@@ -214,5 +216,11 @@ internal object CastledSharedStore {
 
     fun clearUserId() {
         sharedPreferences.edit().remove(PrefStoreKeys.USER_ID).apply()
+    }
+
+    fun clearSavedItems() {
+        sharedPreferences.edit().remove(PrefStoreKeys.USER_ID).apply()
+        sharedPreferences.edit().remove(PrefStoreKeys.RECENT_DISPLAYED_PUSH_IDS).apply()
+        userId = null
     }
 }

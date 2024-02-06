@@ -20,11 +20,14 @@ import io.castled.android.notifications.push.PushNotification
 import io.castled.android.notifications.push.extensions.toCastledPushMessage
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.PushTokenType
+import io.castled.android.notifications.store.CastledDbBuilder
 import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.tracking.device.DeviceInfo
 import io.castled.android.notifications.tracking.events.EventsTracker
+import io.castled.android.notifications.user_life_cycle.UserLifeCycle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -117,11 +120,6 @@ object CastledNotifications {
         }
     }
 
-    @JvmStatic
-    fun logout(context: Context) {
-        CastledSharedStore.clearUserId()
-    }
-
     private suspend fun saveUserId(context: Context, userId: String, userToken: String?) {
         if (!isMainProcess(context)) {
             // In case there are services that are not run from main process, skip init
@@ -138,6 +136,29 @@ object CastledNotifications {
         }
     }
 
+    @JvmStatic
+    fun logout() {
+        CastledSharedStore.getUserId()?.let { userId ->
+            GlobalScope.launch(Dispatchers.Default) {
+                CastledDbBuilder.getDbInstance(application.applicationContext).clearAllTables()
+                CastledSharedStore.clearSavedItems()
+                UserLifeCycle.init(application.applicationContext)
+                UserLifeCycle.logoutUser(userId)
+                cancelRunnignJobs()
+                logger.verbose("$userId has been logged out successfully.")
+            }
+        }
+    }
+
+    private fun cancelRunnignJobs() {
+        if (getCastledConfigs().enableInApp) {
+            InAppNotification.cancelCampaignJob()
+        }
+        if (getCastledConfigs().enableAppInbox) {
+            AppInbox.cancelInboxJob()
+        }
+    }
+    
     @JvmStatic
     fun onTokenFetch(token: String?, pushTokenType: PushTokenType) =
         castledScope.launch(Dispatchers.Default) {

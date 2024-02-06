@@ -53,8 +53,14 @@ internal object AppInbox : CastledSharedStoreListener {
                     if (!CastledSharedStore.isAppInBackground) {
                         inboxRepository.refreshInbox()
                     }
-                } while (true)
+                } while (fetchJob!!.isActive)
             }
+        }
+    }
+
+    internal fun cancelInboxJob() {
+        if (fetchJob != null && fetchJob!!.isActive) {
+            fetchJob!!.cancel()
         }
     }
 
