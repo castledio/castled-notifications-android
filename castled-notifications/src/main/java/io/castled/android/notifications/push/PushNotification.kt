@@ -184,7 +184,7 @@ internal object PushNotification : CastledSharedStoreListener {
     fun isCastledPushMessage(remoteMessage: RemoteMessage): Boolean =
         PushNotificationManager.isCastledNotification(remoteMessage)
 
-    suspend fun getPushMessages() : List<CastledPushMessage> {
+    suspend fun getPushMessages(): List<CastledPushMessage> {
         return pushRepository.getPushMessages()
     }
 
@@ -203,5 +203,18 @@ internal object PushNotification : CastledSharedStoreListener {
         }
     }
 
+    suspend fun logoutUser(userId: String) {
+        pushRepository.logoutUser(userId, getTokens())
+    }
+
+    private fun getTokens(): List<PushTokenInfo> {
+        val tokens = mutableListOf<PushTokenInfo>()
+        PushTokenType.values().forEach { tokenType ->
+            CastledSharedStore.getToken(tokenType)?.let { tokenVal ->
+                tokens.add(PushTokenInfo(tokenVal, tokenType))
+            }
+        }
+        return tokens
+    }
 
 }

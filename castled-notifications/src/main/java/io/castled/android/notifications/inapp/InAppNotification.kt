@@ -13,6 +13,7 @@ import io.castled.android.notifications.workmanager.models.CastledInAppEventRequ
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
@@ -50,6 +51,12 @@ internal object InAppNotification : CastledSharedStoreListener {
                     }
                 } while (true)
             }
+        }
+    }
+
+    internal suspend fun cancelCampaignJob() {
+        if (fetchJob != null && fetchJob!!.isActive) {
+            fetchJob!!.cancelAndJoin()
         }
     }
 
