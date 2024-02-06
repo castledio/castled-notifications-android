@@ -26,6 +26,7 @@ import io.castled.android.notifications.databinding.ActivityCastledInboxBinding
 import io.castled.android.notifications.inbox.model.CastledInboxDisplayConfig
 import io.castled.android.notifications.inbox.viewmodel.InboxRepository
 import io.castled.android.notifications.inbox.viewmodel.InboxViewModel
+import io.castled.android.notifications.store.CastledSharedStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,7 +35,7 @@ import java.io.Serializable
 
 internal class CastledInboxActivity : AppCompatActivity(),
     CoroutineScope by CoroutineScope(Dispatchers.Main) {
-    private  val SELECTED_COLOR = "#3366CC"
+    private val SELECTED_COLOR = "#3366CC"
     private val viewModel: InboxViewModel by viewModels()
     private val allString = "All"
     private lateinit var binding: ActivityCastledInboxBinding
@@ -46,7 +47,7 @@ internal class CastledInboxActivity : AppCompatActivity(),
     private var unselectedTabColor = Color.WHITE
     private var selectedTabTextColor = Color.parseColor(SELECTED_COLOR)
     private var unselectedTabTextColor = Color.BLACK
-    private var selectedIndicatorColor =  Color.parseColor(SELECTED_COLOR)
+    private var selectedIndicatorColor = Color.parseColor(SELECTED_COLOR)
     private var marginInPixels = 5
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -80,7 +81,8 @@ internal class CastledInboxActivity : AppCompatActivity(),
 
         if (shouldRefresh) {
             launch(Dispatchers.Default) {
-                inboxRepository.refreshInbox()
+                CastledSharedStore.getUserId()?.let { inboxRepository.refreshInbox() }
+
             }
         }
         launch(Dispatchers.IO) {
