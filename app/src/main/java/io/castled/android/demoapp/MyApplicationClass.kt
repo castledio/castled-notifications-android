@@ -19,7 +19,7 @@ class MyApplicationClass : MultiDexApplication() {
         CastledNotifications.initialize(
             this,
             CastledConfigs.Builder()
-                .appId("718c38e2e359d94367a2e0d35e1fd4df")
+                .appId("829c38e2e359d94372a2e0d35e1f74df")
                 .location(CastledConfigs.CastledLocation.US)
                 .enablePush(true)
                 .enablePushBoost(true)
@@ -31,7 +31,7 @@ class MyApplicationClass : MultiDexApplication() {
         )
 
         // User-id needs to set after login flow of your app is complete
-        CastledNotifications.setUserId(this, "antony@castled.io")
+        CastledNotifications.setUserId(this, "frank@castled.io")
 
         // Listening to push notification events
         CastledNotifications.subscribeToPushNotificationEvents(object :
@@ -39,18 +39,18 @@ class MyApplicationClass : MultiDexApplication() {
             val logger = CastledLogger.getInstance("CastledNotifications-DemoApp")
 
             override fun onCastledPushReceived(pushMessage: CastledPushMessage) {
-                logger.debug("Received push message with id: ${pushMessage.getNotificationDisplayId()}")
+                logger.debug("Received push message with id: ${pushMessage.notificationId}")
             }
 
             override fun onCastledPushClicked(
                 pushMessage: CastledPushMessage,
                 actionContext: CastledActionContext
             ) {
-                logger.debug("User clicked push message with id: ${pushMessage.getNotificationDisplayId()}")
+                logger.debug("User clicked push message with id: ${pushMessage.notificationId}")
             }
 
             override fun onCastledPushDismissed(pushMessage: CastledPushMessage) {
-                logger.debug("Dismissed push message with id: ${pushMessage.getNotificationDisplayId()}")
+                logger.debug("Dismissed push message with id: ${pushMessage.notificationId}")
             }
         })
     }

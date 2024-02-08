@@ -38,8 +38,8 @@ object CastledNotifications {
     private val castledCoroutineContext by lazy { Job() }
     private val castledScope = CoroutineScope(castledCoroutineContext)
 
-
     @JvmStatic
+    @Synchronized
     fun initialize(application: Application, configs: CastledConfigs) {
         if (!isMainProcess(application)) {
             // In case there are services that are not run from main process, skip init
@@ -83,7 +83,6 @@ object CastledNotifications {
         logger.info("Sdk initialized successfully")
     }
 
-    @Synchronized
     internal fun initializeInternal(application: Application) {
         if (isInited()) {
             return

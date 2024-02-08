@@ -28,7 +28,7 @@ fun RemoteMessage.toCastledPushMessage(): CastledPushMessage? {
             largeIconUri = data["largeIconUri"],
             pushMessageFrames =  json.decodeFromString(data["msgFrames"]!!),
             actionButtons = data["actionButtons"]?.let { Json.decodeFromString(it) },
-            ttl = data["ttl"]?.toLong()
+            inboxCopyEnabled = (data["iCp"] as String?)?.toBoolean()
         )
     } catch (e: Exception) {
         CastledLogger.getInstance(LogTags.PUSH).debug("Parsing fcm push payload failed! error:${e.message}")
