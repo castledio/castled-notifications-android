@@ -16,7 +16,6 @@ fun MiPushMessage.toCastledPushMessage(): CastledPushMessage? {
         return CastledPushMessage(
             notificationId = notifyId,
             sourceContext = extra["srcCtx"]!!,
-            teamId = extra["tId"]?.toLong()!!,
             title = title,
             body = content,
             summary = description,

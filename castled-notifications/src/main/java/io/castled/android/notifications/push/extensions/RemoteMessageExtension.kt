@@ -15,7 +15,6 @@ fun RemoteMessage.toCastledPushMessage(): CastledPushMessage? {
         return CastledPushMessage(
             notificationId = (data["nId"] as String).toInt(),
             sourceContext = data["srcCtx"] as String,
-            teamId = (data["tId"] as String).toLong(),
             title = data["title"],
             body = data["body"],
             summary = data["summary"],

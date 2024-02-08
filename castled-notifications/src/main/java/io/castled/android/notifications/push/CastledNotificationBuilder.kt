@@ -219,7 +219,6 @@ internal class CastledNotificationBuilder(private val context: Context) {
         val pendingIntent = createNotificationIntent(
             NotificationActionContext(
                 notificationId = payload.notificationId,
-                teamId = payload.teamId,
                 sourceContext = payload.sourceContext,
                 eventType = NotificationEventType.CLICKED.toString(),
                 actionUri = actionUri,
@@ -238,7 +237,6 @@ internal class CastledNotificationBuilder(private val context: Context) {
         payload.actionButtons?.forEach { actionButton ->
             val event = NotificationActionContext(
                 notificationId = payload.notificationId,
-                teamId = payload.teamId,
                 sourceContext = payload.sourceContext,
                 eventType = if (actionButton.clickAction == CastledClickAction.DISMISS_NOTIFICATION) {
                     NotificationEventType.DISCARDED.toString()
@@ -269,7 +267,6 @@ internal class CastledNotificationBuilder(private val context: Context) {
         val pendingIntent = createDiscardIntent(
             NotificationActionContext(
                 notificationId = payload.notificationId,
-                teamId = payload.teamId,
                 sourceContext = payload.sourceContext,
                 eventType = NotificationEventType.DISCARDED.toString(),
                 actionUri = null,

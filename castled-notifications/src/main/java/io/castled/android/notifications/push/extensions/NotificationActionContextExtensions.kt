@@ -9,7 +9,6 @@ import java.util.*
 
 internal fun NotificationActionContext.toCastledPushEventRequest(): CastledPushEventRequest {
     val event = CastledPushEvent(
-        teamId = teamId,
         sourceContext = sourceContext,
         actionLabel = actionLabel,
         actionType = actionType,

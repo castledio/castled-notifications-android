@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 data class CastledPushMessage(
     val notificationId: Int,
     val sourceContext: String,
-    val teamId: Long,
     val title: String? = null,
     val body: String? = null,
     val summary: String? = null,

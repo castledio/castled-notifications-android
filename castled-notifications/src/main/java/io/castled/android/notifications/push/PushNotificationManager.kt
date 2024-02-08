@@ -38,7 +38,6 @@ internal object PushNotificationManager {
         PushNotification.reportPushEvent(
             NotificationActionContext(
                 notificationId = pushMessage.notificationId,
-                teamId = pushMessage.teamId,
                 sourceContext = pushMessage.sourceContext,
                 eventType = NotificationEventType.RECEIVED.toString(),
                 actionLabel = null,
