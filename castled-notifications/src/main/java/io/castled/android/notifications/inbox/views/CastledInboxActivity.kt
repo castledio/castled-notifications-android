@@ -105,7 +105,6 @@ internal class CastledInboxActivity : AppCompatActivity(),
                 }
             }
         }
-
     }
 
     internal fun refreshTabsAfterDBChanges() {

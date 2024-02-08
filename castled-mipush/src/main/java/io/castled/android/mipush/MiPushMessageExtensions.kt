@@ -16,7 +16,6 @@ fun MiPushMessage.toCastledPushMessage(): CastledPushMessage? {
         return CastledPushMessage(
             notificationId = notifyId,
             sourceContext = extra["srcCtx"]!!,
-            teamId = extra["tId"]?.toLong()!!,
             title = title,
             body = content,
             summary = description,
@@ -29,7 +28,7 @@ fun MiPushMessage.toCastledPushMessage(): CastledPushMessage? {
             smallIconResourceId = extra["smallIconResourceId"],
             largeIconUri = extra["largeIconUri"],
             actionButtons = extra["actionButtons"]?.let { Json.decodeFromString(it) },
-            ttl = extra["ttl"]?.toLong()
+            inboxCopyEnabled = (extra["iCp"] as String?)?.toBoolean()
         )
     } catch (e: Exception) {
         CastledLogger.getInstance(LogTags.PUSH).error("Parsing xiaomi push payload failed!", e)
