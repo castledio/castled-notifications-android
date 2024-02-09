@@ -202,6 +202,30 @@ internal object CastledSharedStore {
         sharedPreferences.edit().putString(PrefStoreKeys.DEVICE_ID, deviceId).apply()
     }
 
+    fun <T : Any> getValue(key: String, defaultValue: T): T {
+        return when (defaultValue) {
+            is String -> sharedPreferences.getString(key, defaultValue) as T
+            is Int -> sharedPreferences.getInt(key, defaultValue) as T
+            is Long -> sharedPreferences.getLong(key, defaultValue) as T
+            is Float -> sharedPreferences.getFloat(key, defaultValue) as T
+            is Boolean -> sharedPreferences.getBoolean(key, defaultValue) as T
+            else -> throw IllegalArgumentException("Unsupported preference type")
+        }
+    }
+
+    fun <T : Any> setValue(key: String, value: T) {
+        val editor = sharedPreferences.edit()
+        when (value) {
+            is String -> editor.putString(key, value)
+            is Int -> editor.putInt(key, value)
+            is Long -> editor.putLong(key, value)
+            is Float -> editor.putFloat(key, value)
+            is Boolean -> editor.putBoolean(key, value)
+            else -> throw IllegalArgumentException("Unsupported preference type")
+        }
+        editor.apply()
+    }
+
     fun getAppId() = appId
 
     fun getUserId() = userId
@@ -222,7 +246,13 @@ internal object CastledSharedStore {
         sharedPreferences.edit()
             .remove(PrefStoreKeys.USER_ID)
             .remove(PrefStoreKeys.RECENT_DISPLAYED_PUSH_IDS)
+            .remove(PrefStoreKeys.SESSION_ID)
+            .remove(PrefStoreKeys.SESSION_IS_FIRST)
+            .remove(PrefStoreKeys.SESSION_START_TIME)
+            .remove(PrefStoreKeys.SESSION_END_TIME)
+            .remove(PrefStoreKeys.SESSION_DURATION)
             .apply()
         userId = null
+
     }
 }

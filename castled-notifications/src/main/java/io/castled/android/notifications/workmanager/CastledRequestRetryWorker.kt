@@ -22,7 +22,9 @@ internal class CastledRequestRetryWorker(appContext: Context, workerParams: Work
         CastledNetworkRequestType.INBOX_EVENT to InboxEventRequestHandler(appContext),
         CastledNetworkRequestType.USER_TRACKING to UserTrackingRequestHandler(appContext),
         CastledNetworkRequestType.DEVICE_INFO to DeviceInfoRequestHandler(appContext),
-        CastledNetworkRequestType.LOGOUT to LogoutRequestHandler(appContext)
+        CastledNetworkRequestType.LOGOUT to LogoutRequestHandler(appContext),
+        CastledNetworkRequestType.SESSION to SessionsRequestHandler(appContext)
+
     )
 
     private val networkRetryRepository = NetworkRetryRepository(appContext)

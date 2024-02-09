@@ -18,7 +18,8 @@ internal class LogoutRequestHandler(appContext: Context) : NetworkRequestHandler
             try {
                 val response = pushRepository.logoutNoRetry(
                     (entry.request as CastledLogoutRequest).userId,
-                    entry.request.tokens
+                    entry.request.tokens,
+                    entry.request.sessionId
                 )
                 if (!response.isSuccessful) {
                     onError(listOf(entry))

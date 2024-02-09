@@ -25,8 +25,10 @@ class MyApplicationClass : MultiDexApplication() {
                 .enablePushBoost(true)
                 .enableAppInbox(true)
                 .enableInApp(true)
+                .enableSessionTracking(true)
                 .enableTracking(true)
                 .inAppFetchIntervalSec(60)
+                .sessionTimeOutSec(30)
                 .build()
         )
 

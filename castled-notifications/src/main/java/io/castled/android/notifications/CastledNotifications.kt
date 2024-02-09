@@ -20,6 +20,7 @@ import io.castled.android.notifications.push.PushNotification
 import io.castled.android.notifications.push.extensions.toCastledPushMessage
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.PushTokenType
+import io.castled.android.notifications.sessions.Sessions
 import io.castled.android.notifications.store.CastledDbBuilder
 import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.tracking.device.DeviceInfo
@@ -63,6 +64,9 @@ object CastledNotifications {
         }
         if (configs.enableInApp) {
             InAppNotification.init(application, castledScope)
+        }
+        if (configs.enableSessionTracking) {
+            Sessions.init(application, castledScope)
         }
         if (configs.enableTracking) {
             EventsTracker.init(application)

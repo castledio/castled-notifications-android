@@ -7,12 +7,17 @@ import java.util.TimeZone
 
 internal class DateTimeUtils {
     companion object {
-        private const val defaultPattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        private const val defaultPattern = "yyyy-MM-dd'T'HH:mm:ss'Z'"
 
         internal fun getCurrentTimeFormatted(customPattern: String? = null): String {
+            return getStringFromDate(Date(), customPattern)
+        }
+
+        internal fun getStringFromDate(date: Date, customPattern: String? = null): String {
             val patternToUse = customPattern ?: defaultPattern
             val dateFormat = SimpleDateFormat(patternToUse, Locale.US)
-            return dateFormat.format(Date())
+            dateFormat.timeZone = TimeZone.getTimeZone("UTC") // Set timezone to UTC
+            return dateFormat.format(date)
         }
 
         internal fun getDateFromEpochTime(timestamp: Long): Date {

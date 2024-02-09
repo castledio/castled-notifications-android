@@ -9,7 +9,8 @@ internal data class CastledDeviceInfoRequest(
     val userId: String,
     val deviceInfo: JsonObject,
     @SerialName("trackReqType")
-    val type: String
+    val type: String,
+    val sessionId: String? = null
 ) : CastledNetworkRequest() {
     override val requestType = CastledNetworkRequestType.DEVICE_INFO
 }
