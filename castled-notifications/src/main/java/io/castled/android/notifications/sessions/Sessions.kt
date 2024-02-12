@@ -17,6 +17,9 @@ import io.castled.android.notifications.workmanager.models.CastledSessionRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 import java.util.Date
 import java.util.UUID
@@ -29,12 +32,13 @@ internal object Sessions : CastledSharedStoreListener {
     private lateinit var externalScope: CoroutineScope
     private lateinit var deviceInfo: CastledDeviceDetails
 
-    var sessionId: String = ""
+    var sessionId: String? = null
     private var sessionStartTime: Long = 0L
     private var sessionEndTime: Long = 0L
     private var sessionDuration: Long = 0L
     private var isFirstSession: Boolean = true
     private var currentStartTime: Long = 0L
+    private val sessionMutex = Mutex()
 
     fun init(application: Application, externalScope: CoroutineScope) {
         Sessions.externalScope = externalScope
@@ -44,15 +48,17 @@ internal object Sessions : CastledSharedStoreListener {
         CastledSharedStore.registerListener(this)
     }
 
-    fun startCastledSession() {
-        externalScope.launch(Dispatchers.Default) {
-            currentStartTime = System.currentTimeMillis() / 1000
-            initializeSessionDetails()
-            if (!isInCurrentSession()) {
-                //new session
-                createNewSession()
-                resetTheValuesForNewSession()
+    suspend fun startCastledSession() {
+        sessionMutex.withLock {
+            withContext(Dispatchers.Default) {
+                currentStartTime = System.currentTimeMillis() / 1000
+                initializeSessionDetails()
+                if (!isInCurrentSession()) {
+                    //new session
+                    createNewSession()
+                    resetTheValuesForNewSession()
 
+                }
             }
         }
     }
@@ -68,12 +74,12 @@ internal object Sessions : CastledSharedStoreListener {
                 "deviceId" to deviceInfo.getDeviceId().toJsonElement()
             )
         )
-        if (sessionId.isNotEmpty()) {
+        if (!sessionId.isNullOrEmpty()) {
             val dateEnded =
                 Date((if (sessionEndTime == 0L) System.currentTimeMillis() / 1000 else sessionEndTime).toLong() * 1000)
             val event = CastledSessionEvent(
-                sessionId = sessionId,
-                sessionEventType = "session_ended",
+                sessionId = sessionId!!,
+                sessionEventType = SessionType.ENDED.type,
                 userId = CastledSharedStore.getUserId() ?: "",
                 timestamp = DateTimeUtils.getStringFromDate(dateEnded),
                 duration = sessionDuration,
@@ -92,8 +98,8 @@ internal object Sessions : CastledSharedStoreListener {
         val dateStarted =
             Date((currentStartTime).toLong() * 1000)
         val event = CastledSessionEvent(
-            sessionId = sessionId,
-            sessionEventType = "session_started",
+            sessionId = sessionId!!,
+            sessionEventType = SessionType.STARTED.type,
             userId = CastledSharedStore.getUserId() ?: "",
             firstSession = isFirstSession,
             timestamp = DateTimeUtils.getStringFromDate(dateStarted),
@@ -104,16 +110,17 @@ internal object Sessions : CastledSharedStoreListener {
     }
 
     private fun resetTheValuesForNewSession() {
-        CastledSharedStore.setValue(PrefStoreKeys.SESSION_ID, sessionId)
+        CastledSharedStore.setValue(PrefStoreKeys.SESSION_ID, sessionId!!)
         CastledSharedStore.setValue(PrefStoreKeys.SESSION_DURATION, sessionDuration)
         CastledSharedStore.setValue(PrefStoreKeys.SESSION_START_TIME, sessionStartTime)
         CastledSharedStore.setValue(PrefStoreKeys.SESSION_END_TIME, sessionEndTime)
-        CastledSharedStore.setValue(PrefStoreKeys.SESSION_ID, sessionId)
     }
 
     fun didEnterForeground() {
-        CastledSharedStore.getUserId()?.let {
-            startCastledSession()
+        externalScope.launch(Dispatchers.Default) {
+            CastledSharedStore.getUserId()?.let {
+                startCastledSession()
+            }
         }
     }
 
@@ -135,13 +142,17 @@ internal object Sessions : CastledSharedStoreListener {
     }
 
     override fun onStoreInitialized(context: Context) {
-        CastledSharedStore.getUserId()?.let {
-            startCastledSession()
+        externalScope.launch(Dispatchers.Default) {
+            CastledSharedStore.getUserId()?.let {
+                startCastledSession()
+            }
         }
     }
 
     override fun onStoreUserIdSet(context: Context) {
-        startCastledSession()
+        externalScope.launch(Dispatchers.Default) {
+            startCastledSession()
+        }
     }
 
     private fun getCastledSessionId() = UUID.randomUUID().toString()

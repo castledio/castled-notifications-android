@@ -8,7 +8,6 @@ import io.castled.android.notifications.push.extensions.toCastledPushEventReques
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.NotificationActionContext
 import io.castled.android.notifications.push.models.PushTokenInfo
-import io.castled.android.notifications.sessions.Sessions
 import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.workmanager.CastledNetworkWorkManager
 import io.castled.android.notifications.workmanager.models.CastledLogoutRequest
@@ -74,12 +73,10 @@ internal class PushRepository(context: Context) {
         return listOf()
     }
 
-    suspend fun logoutUser(userId: String, tokens: List<PushTokenInfo>) {
+    suspend fun logoutUser(userId: String, tokens: List<PushTokenInfo>, sessionId: String?) {
         networkWorkManager.apiCallWithRetry(
             request = CastledLogoutRequest(
-                userId, tokens,
-                if (CastledSharedStore.configs.enableSessionTracking)
-                    Sessions.sessionId else null
+                userId, tokens, sessionId
             ),
             apiCall = {
                 return@apiCallWithRetry pushApi.logout(

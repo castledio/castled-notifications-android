@@ -203,8 +203,8 @@ internal object PushNotification : CastledSharedStoreListener {
         }
     }
 
-    suspend fun logoutUser(userId: String) {
-        pushRepository.logoutUser(userId, getTokens())
+    suspend fun logoutUser(userId: String, sessionId: String?) {
+        pushRepository.logoutUser(userId, getTokens(), sessionId)
     }
 
     private fun getTokens(): List<PushTokenInfo> {

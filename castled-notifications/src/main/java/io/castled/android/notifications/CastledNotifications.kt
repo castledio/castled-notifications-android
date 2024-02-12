@@ -145,7 +145,9 @@ object CastledNotifications {
                 CastledSharedStore.clearSavedItems()
                 cancelRunningJobs()
                 if (getCastledConfigs().enablePush) {
-                    PushNotification.logoutUser(userId)
+                    PushNotification.logoutUser(
+                        userId, Sessions.sessionId
+                    )
                 }
                 logger.verbose("$userId has been logged out successfully.")
             }

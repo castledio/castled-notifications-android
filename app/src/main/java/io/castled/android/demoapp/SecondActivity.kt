@@ -6,6 +6,7 @@ import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
 import io.castled.android.demoapp.databinding.ActivitySecondBinding
 import io.castled.android.notifications.CastledNotifications
+import io.castled.android.notifications.CastledUserAttributes
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -43,9 +44,24 @@ class SecondActivity : AppCompatActivity() {
         binding.btnLogCustomEvent.setOnClickListener {
             CastledNotifications.logCustomAppEvent(
                 this,
-                "batch wo_params_android ${getCurrentTimeFormatted("dd- MM HH:mm:ss")}",
+                "Android${getCurrentTimeFormatted("ddMMHHmmss")}",
                 null
             )
+
+            val userAttributes = CastledUserAttributes();
+// Predefined attributes
+            userAttributes.setFirstName("John");
+            userAttributes.setLastName("Doe");
+            userAttributes.setCity("Sanfrancisco");
+            userAttributes.setCountry("US");
+            userAttributes.setEmail("jdoe@email.com");
+            userAttributes.setGender("M");
+            userAttributes.setPhone("+13156227533");
+// Custom Attributes
+            userAttributes.setCustomAttribute("prime_member", true);
+            userAttributes.setCustomAttribute("occupation", "artist");
+
+            CastledNotifications.setUserAttributes(this, userAttributes)
         }
 
         binding.btnLogCustomEventWithParam.setOnClickListener {
@@ -56,7 +72,7 @@ class SecondActivity : AppCompatActivity() {
             eventParams["orDates"] = Date()
             CastledNotifications.logCustomAppEvent(
                 this,
-                "batch android event - ${getCurrentTimeFormatted("dd- MM HH:mm:ss")}",
+                "Android${getCurrentTimeFormatted("ddMMHHmmss")}",
                 eventParams
             )
 
