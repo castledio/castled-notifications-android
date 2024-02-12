@@ -73,9 +73,11 @@ internal class PushRepository(context: Context) {
         return listOf()
     }
 
-    suspend fun logoutUser(userId: String, tokens: List<PushTokenInfo>) {
+    suspend fun logoutUser(userId: String, tokens: List<PushTokenInfo>, sessionId: String?) {
         networkWorkManager.apiCallWithRetry(
-            request = CastledLogoutRequest(userId, tokens),
+            request = CastledLogoutRequest(
+                userId, tokens, sessionId
+            ),
             apiCall = {
                 return@apiCallWithRetry pushApi.logout(
                     CastledSharedStore.getAppId(),
@@ -85,10 +87,14 @@ internal class PushRepository(context: Context) {
         )
     }
 
-    suspend fun logoutNoRetry(userId: String, tokens: List<PushTokenInfo>): Response<Void?> {
+    suspend fun logoutNoRetry(
+        userId: String,
+        tokens: List<PushTokenInfo>,
+        sessionId: String?
+    ): Response<Void?> {
         return pushApi.logout(
             CastledSharedStore.getAppId(),
-            CastledLogoutRequest(userId, tokens)
+            CastledLogoutRequest(userId, tokens, sessionId)
         )
     }
 

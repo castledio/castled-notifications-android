@@ -16,5 +16,12 @@ internal class PrefStoreKeys {
         const val OS_VERSION = "osVersion"
         const val SDK_VERSION = "sdkVersion"
         const val RECENT_DISPLAYED_PUSH_IDS = "recentDisplayedPushIds"
+
+        const val SESSION_ID = "sessionId"
+        const val SESSION_DURATION = "sessionDuration"
+        const val SESSION_START_TIME = "sessionStarTime"
+        const val SESSION_END_TIME = "sessionEndTime"
+        const val SESSION_IS_FIRST = "sessionIsFirst"
+
     }
 }

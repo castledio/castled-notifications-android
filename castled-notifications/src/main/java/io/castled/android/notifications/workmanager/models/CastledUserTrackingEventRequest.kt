@@ -7,7 +7,8 @@ import kotlinx.serialization.json.JsonObject
 internal data class CastledUserTrackingEventRequest(
     val userId: String,
     val traits: JsonObject,
-    val timestamp: String
+    val timestamp: String,
+    val sessionId: String? = null,
 ) : CastledNetworkRequest() {
     override val requestType = CastledNetworkRequestType.USER_TRACKING
 }

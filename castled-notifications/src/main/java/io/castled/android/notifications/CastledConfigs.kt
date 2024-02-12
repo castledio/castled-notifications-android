@@ -11,8 +11,10 @@ data class CastledConfigs(
     val enableInApp: Boolean,
     val enableTracking: Boolean,
     val enableAppInbox: Boolean,
+    val enableSessionTracking: Boolean,
     val inAppFetchIntervalSec: Long,
     val inBoxFetchIntervalSec: Long,
+    val sessionTimeOutSec: Long,
     val xiaomiAppId: String?,
     val xiaomiAppKey: String?,
     val xiaomiRegion: XiaomiRegion?
@@ -24,9 +26,11 @@ data class CastledConfigs(
         private var enableInApp: Boolean = false
         private var enableTracking: Boolean = false
         private var enableAppInbox: Boolean = false
+        private var enableSessionTracking: Boolean = false
 
         private var inAppFetchIntervalSec = 600L
         private var inBoxFetchIntervalSec = 600L
+        private var sessionTimeOutSec = 900L
 
         private var castledLocation = CastledLocation.US
         private var xiaomiAppId: String? = null
@@ -39,16 +43,23 @@ data class CastledConfigs(
         }
 
         fun enablePush(enablePush: Boolean) = apply { this.enablePush = enablePush }
-        fun enablePushBoost(enablePushBoost: Boolean) = apply { this.enablePushBoost = enablePushBoost }
+        fun enablePushBoost(enablePushBoost: Boolean) =
+            apply { this.enablePushBoost = enablePushBoost }
+
         fun enableTracking(enableTracking: Boolean) = apply { this.enableTracking = enableTracking }
         fun enableInApp(enableInApp: Boolean) = apply { this.enableInApp = enableInApp }
         fun enableAppInbox(enableAppInbox: Boolean) = apply { this.enableAppInbox = enableAppInbox }
+        fun enableSessionTracking(enableSessionTracking: Boolean) =
+            apply { this.enableSessionTracking = enableSessionTracking }
 
         fun inAppFetchIntervalSec(inAppFetchIntervalSec: Long) =
             apply { this.inAppFetchIntervalSec = inAppFetchIntervalSec }
 
         fun inBoxFetchIntervalSec(inBoxFetchIntervalSec: Long) =
             apply { this.inBoxFetchIntervalSec = inBoxFetchIntervalSec }
+
+        fun sessionTimeOutSec(sessionTimeOutSec: Long) =
+            apply { this.sessionTimeOutSec = sessionTimeOutSec }
 
         fun location(castledLocation: CastledLocation) =
             apply { this.castledLocation = castledLocation }
@@ -67,8 +78,10 @@ data class CastledConfigs(
             enableInApp,
             enableTracking,
             enableAppInbox,
+            enableSessionTracking,
             inAppFetchIntervalSec,
             inBoxFetchIntervalSec,
+            sessionTimeOutSec,
             xiaomiAppId,
             xiaomiAppKey,
             xiaomiRegion

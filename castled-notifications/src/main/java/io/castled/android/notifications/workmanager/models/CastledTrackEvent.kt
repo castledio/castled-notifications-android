@@ -9,5 +9,6 @@ internal data class CastledTrackEvent(
     val userId: String,
     val event: String,
     val properties: JsonObject? = null,
-    val timestamp: String
+    val timestamp: String,
+    var sessionId: String? = null
 )
