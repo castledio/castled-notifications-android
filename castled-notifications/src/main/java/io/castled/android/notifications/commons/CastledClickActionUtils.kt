@@ -1,5 +1,6 @@
 package io.castled.android.notifications.commons
 
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -21,6 +22,7 @@ object CastledClickActionUtils {
                 }
         } catch (e: Exception) {
             logger.error("Couldn't load  the  Activity!", e)
+            handleDefaultAction(context)
         }
 
     }
@@ -42,6 +44,7 @@ object CastledClickActionUtils {
             }
         } catch (e: Exception) {
             logger.error("Couldn't load  the  Activity!", e)
+            handleDefaultAction(context)
         }
 
     }
@@ -57,5 +60,5 @@ object CastledClickActionUtils {
         }
 
     }
-
+    
 }

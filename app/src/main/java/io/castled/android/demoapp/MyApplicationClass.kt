@@ -7,7 +7,6 @@ import io.castled.android.notifications.CastledConfigs
 import io.castled.android.notifications.CastledNotifications
 import io.castled.android.notifications.CastledPushNotificationListener
 import io.castled.android.notifications.logger.CastledLogger
-import io.castled.android.notifications.push.extensions.getNotificationDisplayId
 import io.castled.android.notifications.push.models.CastledActionContext
 import io.castled.android.notifications.push.models.CastledPushMessage
 
@@ -19,11 +18,11 @@ class MyApplicationClass : MultiDexApplication() {
         CastledNotifications.initialize(
             this,
             CastledConfigs.Builder()
-                .appId("829c38e2e359d94372a2e0d35e1f74df")
+                .appId("718c38e2e359d94367a2e0d35e1fd4df")
                 .location(CastledConfigs.CastledLocation.US)
                 .enablePush(true)
                 .enablePushBoost(true)
-                .enableAppInbox(true)
+                .enableAppInbox(false)
                 .enableInApp(true)
                 .enableSessionTracking(true)
                 .enableTracking(true)
@@ -33,7 +32,7 @@ class MyApplicationClass : MultiDexApplication() {
         )
 
         // User-id needs to set after login flow of your app is complete
-        CastledNotifications.setUserId(this, "frank@castled.io")
+        CastledNotifications.setUserId(this, "antony@castled.io")
 
         // Listening to push notification events
         CastledNotifications.subscribeToPushNotificationEvents(object :

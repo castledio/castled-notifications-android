@@ -280,30 +280,39 @@ object CastledNotifications {
     @JvmStatic
     fun logInboxItemClicked(inboxItem: CastledInboxItem, buttonTitle: String) =
         castledScope.launch(Dispatchers.Default) {
-            AppInbox.reportEventWith(
-                inboxItem, buttonTitle, "CLICKED"
-            )
+            if (isInited() && getCastledConfigs().enableAppInbox)
+                AppInbox.reportEventWith(
+                    inboxItem, buttonTitle, "CLICKED"
+                )
         }
 
     @JvmStatic
     fun logInboxItemsRead(inboxItems: List<CastledInboxItem>) =
         castledScope.launch(Dispatchers.Default) {
-            AppInbox.reportReadEventsWithItems(inboxItems)
+            if (isInited() && getCastledConfigs().enableAppInbox)
+                AppInbox.reportReadEventsWithItems(inboxItems)
         }
 
     @JvmStatic
     fun deleteInboxItem(
         inboxItem: CastledInboxItem
     ) {
-        AppInbox.deleteInboxItem(inboxItem)
+        if (isInited() && getCastledConfigs().enableAppInbox)
+            AppInbox.deleteInboxItem(inboxItem)
     }
 
     @JvmStatic
     fun getInboxUnreadCount(onCompletion: (Int) -> Unit) =
         castledScope.launch(Dispatchers.Default) {
-            onCompletion(
-                AppInbox.getInboxUnreadCount()
-            )
+            if (isInited() && getCastledConfigs().enableAppInbox) {
+                onCompletion(
+                    AppInbox.getInboxUnreadCount()
+                )
+            } else {
+                onCompletion(
+                    0
+                )
+            }
         }
 
     @JvmStatic

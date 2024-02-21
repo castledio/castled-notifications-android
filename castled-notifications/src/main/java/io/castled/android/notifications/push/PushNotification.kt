@@ -104,6 +104,8 @@ internal object PushNotification : CastledSharedStoreListener {
                 this.tokenProviders[it]?.register(context)
             } catch (e: ClassNotFoundException) {
                 logger.debug("Class ${it.providerClassName} not found!")
+            } catch (e: Exception) {
+                logger.debug("$e")
             }
         }
     }
