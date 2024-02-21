@@ -1,16 +1,19 @@
 package io.castled.android.notifications.commons
 
-import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
+import io.castled.android.notifications.store.CastledSharedStore
 
 object CastledClickActionUtils {
     private val logger = CastledLogger.getInstance(LogTags.IN_APP_TRIGGER)
 
     fun handleDeeplinkAction(context: Context, actionUri: String, keyVals: Map<String, String>?) {
+        if (CastledSharedStore.configs.skipUrlHandling) {
+            return
+        }
         try {
             val uri = keyVals?.let { CastledMapUtils.mapToQueryParams(actionUri, it) } ?: actionUri
             Intent(Intent.ACTION_VIEW, Uri.parse(uri))
@@ -32,6 +35,9 @@ object CastledClickActionUtils {
         actionClassName: String,
         keyVals: Map<String, String>?
     ) {
+        if (CastledSharedStore.configs.skipUrlHandling) {
+            return
+        }
         try {
             Intent(context, Class.forName(actionClassName)).apply {
                 keyVals?.let { keyVals ->
@@ -60,5 +66,5 @@ object CastledClickActionUtils {
         }
 
     }
-    
+
 }
