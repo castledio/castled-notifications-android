@@ -6,6 +6,7 @@ import io.castled.android.notifications.commons.ClickActionParams
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.CastledClickAction
+import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.store.models.Campaign
 
 internal class InAppLifeCycleListenerImpl(private val inAppController: InAppController) :
@@ -41,11 +42,13 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                 }
 
                 CastledClickAction.DEEP_LINKING, CastledClickAction.RICH_LANDING -> {
-                    CastledClickActionUtils.handleDeeplinkAction(
-                        context,
-                        actionParams.uri!!,
-                        actionParams.keyVals
-                    )
+                    if (!CastledSharedStore.configs.skipUrlHandling) {
+                        CastledClickActionUtils.handleDeeplinkAction(
+                            context,
+                            actionParams.uri!!,
+                            actionParams.keyVals
+                        )
+                    }
                     InAppNotification.reportInAppEvent(
                         InAppEventUtils.getClickedEvent(
                             inAppMessage,
@@ -66,11 +69,13 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                 }
 
                 CastledClickAction.NAVIGATE_TO_SCREEN -> {
-                    CastledClickActionUtils.handleNavigationAction(
-                        context,
-                        actionParams.uri!!,
-                        actionParams.keyVals
-                    )
+                    if (!CastledSharedStore.configs.skipUrlHandling) {
+                        CastledClickActionUtils.handleNavigationAction(
+                            context,
+                            actionParams.uri!!,
+                            actionParams.keyVals
+                        )
+                    }
                     InAppNotification.reportInAppEvent(
                         InAppEventUtils.getClickedEvent(
                             inAppMessage,
@@ -101,11 +106,13 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
         try {
             when (actionParams.action) {
                 CastledClickAction.DEEP_LINKING, CastledClickAction.RICH_LANDING -> {
-                    CastledClickActionUtils.handleDeeplinkAction(
-                        context,
-                        actionParams.uri!!,
-                        actionParams.keyVals
-                    )
+                    if (!CastledSharedStore.configs.skipUrlHandling) {
+                        CastledClickActionUtils.handleDeeplinkAction(
+                            context,
+                            actionParams.uri!!,
+                            actionParams.keyVals
+                        )
+                    }
                     InAppNotification.reportInAppEvent(
                         InAppEventUtils.getClickedEvent(
                             inAppMessage,
@@ -124,11 +131,13 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                 }
 
                 CastledClickAction.NAVIGATE_TO_SCREEN -> {
-                    CastledClickActionUtils.handleNavigationAction(
-                        context,
-                        actionParams.uri!!,
-                        actionParams.keyVals
-                    )
+                    if (!CastledSharedStore.configs.skipUrlHandling) {
+                        CastledClickActionUtils.handleNavigationAction(
+                            context,
+                            actionParams.uri!!,
+                            actionParams.keyVals
+                        )
+                    }
                     InAppNotification.reportInAppEvent(
                         InAppEventUtils.getClickedEvent(
                             inAppMessage,

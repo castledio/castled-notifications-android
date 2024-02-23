@@ -11,9 +11,6 @@ object CastledClickActionUtils {
     private val logger = CastledLogger.getInstance(LogTags.IN_APP_TRIGGER)
 
     fun handleDeeplinkAction(context: Context, actionUri: String, keyVals: Map<String, String>?) {
-        if (CastledSharedStore.configs.skipUrlHandling) {
-            return
-        }
         try {
             val uri = keyVals?.let { CastledMapUtils.mapToQueryParams(actionUri, it) } ?: actionUri
             Intent(Intent.ACTION_VIEW, Uri.parse(uri))
@@ -35,9 +32,7 @@ object CastledClickActionUtils {
         actionClassName: String,
         keyVals: Map<String, String>?
     ) {
-        if (CastledSharedStore.configs.skipUrlHandling) {
-            return
-        }
+         
         try {
             Intent(context, Class.forName(actionClassName)).apply {
                 keyVals?.let { keyVals ->

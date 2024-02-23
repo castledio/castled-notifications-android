@@ -11,6 +11,7 @@ import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.CastledClickAction
 import io.castled.android.notifications.push.models.NotificationActionContext
 import io.castled.android.notifications.push.models.PushConstants
+import io.castled.android.notifications.store.CastledSharedStore
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
@@ -44,20 +45,25 @@ class CastledNotificationReceiverAct : AppCompatActivity() {
             when (clickedAction) {
                 CastledClickAction.DEEP_LINKING, CastledClickAction.RICH_LANDING -> {
                     val uri = notificationContext.actionUri ?: return
-                    CastledClickActionUtils.handleDeeplinkAction(
-                        context,
-                        uri,
-                        notificationContext.keyVals
-                    )
+                    if (!CastledSharedStore.configs.skipUrlHandling) {
+                        CastledClickActionUtils.handleDeeplinkAction(
+                            context,
+                            uri,
+                            notificationContext.keyVals
+                        )
+                    }
+
                 }
 
                 CastledClickAction.NAVIGATE_TO_SCREEN -> {
                     val className = notificationContext.actionUri ?: return
-                    CastledClickActionUtils.handleNavigationAction(
-                        context,
-                        className,
-                        notificationContext.keyVals
-                    )
+                    if (!CastledSharedStore.configs.skipUrlHandling) {
+                        CastledClickActionUtils.handleNavigationAction(
+                            context,
+                            className,
+                            notificationContext.keyVals
+                        )
+                    }
                 }
 
                 CastledClickAction.DEFAULT -> {

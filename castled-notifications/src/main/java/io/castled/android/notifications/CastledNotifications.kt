@@ -273,32 +273,44 @@ object CastledNotifications {
             onCompletion(
                 if (isInited() && getCastledConfigs().enableAppInbox)
                     AppInbox.getInboxItems()
-                else listOf()
+                else {
+                    logger.debug("Castled inbox disabled/ UserId not configured")
+                    listOf()
+                }
             )
         }
 
     @JvmStatic
     fun logInboxItemClicked(inboxItem: CastledInboxItem, buttonTitle: String) =
         castledScope.launch(Dispatchers.Default) {
-            if (isInited() && getCastledConfigs().enableAppInbox)
+            if (isInited() && getCastledConfigs().enableAppInbox) {
                 AppInbox.reportEventWith(
                     inboxItem, buttonTitle, "CLICKED"
                 )
+            } else {
+                logger.debug("Ignoring inbox event, Castled inbox disabled/ UserId not configured")
+            }
         }
 
     @JvmStatic
     fun logInboxItemsRead(inboxItems: List<CastledInboxItem>) =
         castledScope.launch(Dispatchers.Default) {
-            if (isInited() && getCastledConfigs().enableAppInbox)
+            if (isInited() && getCastledConfigs().enableAppInbox) {
                 AppInbox.reportReadEventsWithItems(inboxItems)
+            } else {
+                logger.debug("Ignoring inbox event, Castled inbox disabled/ UserId not configured")
+            }
         }
 
     @JvmStatic
     fun deleteInboxItem(
         inboxItem: CastledInboxItem
     ) {
-        if (isInited() && getCastledConfigs().enableAppInbox)
+        if (isInited() && getCastledConfigs().enableAppInbox) {
             AppInbox.deleteInboxItem(inboxItem)
+        } else {
+            logger.debug("Ignoring inbox event, Castled inbox disabled/ UserId not configured")
+        }
     }
 
     @JvmStatic
@@ -309,6 +321,7 @@ object CastledNotifications {
                     AppInbox.getInboxUnreadCount()
                 )
             } else {
+                logger.debug("Castled inbox disabled/ UserId not configured")
                 onCompletion(
                     0
                 )

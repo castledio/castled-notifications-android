@@ -25,7 +25,7 @@ class MyApplicationClass : MultiDexApplication() {
                 .enableAppInbox(false)
                 .enableInApp(true)
                 .enableSessionTracking(true)
-                .skipUrlHandling(true)
+//                .skipUrlHandling(true)
                 .enableTracking(true)
                 .inAppFetchIntervalSec(60)
                 .sessionTimeOutSec(30)
