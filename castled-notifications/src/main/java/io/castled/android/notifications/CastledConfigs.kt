@@ -11,10 +11,11 @@ data class CastledConfigs(
     val enableInApp: Boolean,
     val enableTracking: Boolean,
     val enableAppInbox: Boolean,
-    val enableSessionTracking: Boolean,
+    val skipUrlHandling: Boolean = false,
+    val enableSessionTracking: Boolean = true,
     val inAppFetchIntervalSec: Long,
     val inBoxFetchIntervalSec: Long,
-    val sessionTimeOutSec: Long,
+    val sessionTimeOutSec: Long = 900L,
     val xiaomiAppId: String?,
     val xiaomiAppKey: String?,
     val xiaomiRegion: XiaomiRegion?
@@ -26,7 +27,8 @@ data class CastledConfigs(
         private var enableInApp: Boolean = false
         private var enableTracking: Boolean = false
         private var enableAppInbox: Boolean = false
-        private var enableSessionTracking: Boolean = false
+        private var skipUrlHandling: Boolean = false
+        private var enableSessionTracking: Boolean = true
 
         private var inAppFetchIntervalSec = 600L
         private var inBoxFetchIntervalSec = 600L
@@ -49,6 +51,9 @@ data class CastledConfigs(
         fun enableTracking(enableTracking: Boolean) = apply { this.enableTracking = enableTracking }
         fun enableInApp(enableInApp: Boolean) = apply { this.enableInApp = enableInApp }
         fun enableAppInbox(enableAppInbox: Boolean) = apply { this.enableAppInbox = enableAppInbox }
+        fun skipUrlHandling(skipUrlHandling: Boolean) =
+            apply { this.skipUrlHandling = skipUrlHandling }
+
         fun enableSessionTracking(enableSessionTracking: Boolean) =
             apply { this.enableSessionTracking = enableSessionTracking }
 
@@ -78,6 +83,7 @@ data class CastledConfigs(
             enableInApp,
             enableTracking,
             enableAppInbox,
+            skipUrlHandling,
             enableSessionTracking,
             inAppFetchIntervalSec,
             inBoxFetchIntervalSec,

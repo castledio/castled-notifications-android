@@ -7,6 +7,7 @@ import io.castled.android.notifications.inbox.model.InboxResponseConverter.toInb
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.CastledClickAction
+import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.store.models.Inbox
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -55,9 +56,11 @@ internal class InboxLifeCycleListenerImpl(private val context: Context) {
             }
 
             CastledClickAction.DEEP_LINKING, CastledClickAction.RICH_LANDING -> {
-                CastledClickActionUtils.handleDeeplinkAction(
-                    context, uri, keyVals
-                )
+                if (!CastledSharedStore.configs.skipUrlHandling) {
+                    CastledClickActionUtils.handleDeeplinkAction(
+                        context, uri, keyVals
+                    )
+                }
             }
 
             CastledClickAction.DISMISS_NOTIFICATION -> {
@@ -65,9 +68,11 @@ internal class InboxLifeCycleListenerImpl(private val context: Context) {
             }
 
             CastledClickAction.NAVIGATE_TO_SCREEN -> {
-                CastledClickActionUtils.handleNavigationAction(
-                    context, uri, keyVals
-                )
+                if (!CastledSharedStore.configs.skipUrlHandling) {
+                    CastledClickActionUtils.handleNavigationAction(
+                        context, uri, keyVals
+                    )
+                }
             }
 
             else -> {

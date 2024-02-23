@@ -11,6 +11,7 @@ import io.castled.android.notifications.tracking.events.service.DeviceInfoReposi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.TimeZone
 
 
 internal object DeviceInfo : CastledSharedStoreListener {
@@ -46,7 +47,8 @@ internal object DeviceInfo : CastledSharedStoreListener {
                     "osVersion" to deviceInfo.getOSVersion(),
                     "locale" to deviceInfo.getLocale(),
                     "deviceId" to deviceInfo.getDeviceId(),
-                    "platform" to "MOBILE_ANDROID"
+                    "timeZone" to TimeZone.getDefault().displayName,
+                    "platform" to "MOBILE_ANDROID",
                 )
                 if (deviceInfoMap != CastledSharedStore.getDeviceInfo()) {
                     CastledSharedStore.setDeviceInfo(deviceInfoMap)
