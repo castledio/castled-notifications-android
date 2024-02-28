@@ -2,7 +2,7 @@ package io.castled.android.notifications.workmanager
 
 import android.content.Context
 import io.castled.android.notifications.store.models.NetworkRetryLog
-import io.castled.android.notifications.tracking.events.service.DeviceInfoRepository
+import io.castled.android.notifications.tracking.device.service.DeviceInfoRepository
 import io.castled.android.notifications.workmanager.models.CastledDeviceInfoRequest
 
 internal class DeviceInfoRequestHandler(appContext: Context) : NetworkRequestHandler {

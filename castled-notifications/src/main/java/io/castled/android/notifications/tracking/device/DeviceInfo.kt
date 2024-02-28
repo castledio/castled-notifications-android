@@ -7,7 +7,7 @@ import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.store.CastledSharedStoreListener
-import io.castled.android.notifications.tracking.events.service.DeviceInfoRepository
+import io.castled.android.notifications.tracking.device.service.DeviceInfoRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
