@@ -53,6 +53,7 @@ internal object CastledSharedStore {
         sharedPreferences = getSharedPreference(context)
         // Restore from shared store
         userId = sharedPreferences.getString(PrefStoreKeys.USER_ID, null)
+        userToken = sharedPreferences.getString(PrefStoreKeys.USER_TOKEN, null)
         externalScope.launch { initPreferenceStore(context) }
     }
 
@@ -62,8 +63,6 @@ internal object CastledSharedStore {
                 val sharedPref = getSharedPreference(context)
                 // Restore from shared store
                 deviceId = sharedPref.getString(PrefStoreKeys.DEVICE_ID, null)
-
-                userToken = sharedPref.getString(PrefStoreKeys.USER_TOKEN, null)
                 deviceInfo = fetchDeviceInfo()
                 tokens[PushTokenType.FCM] =
                     sharedPref.getString(PrefStoreKeys.FCM_TOKEN, null)
@@ -102,7 +101,8 @@ internal object CastledSharedStore {
 
     suspend fun setUserId(context: Context, userId: String?, userToken: String?) {
         storeMutex.withLock {
-            if (userId == CastledSharedStore.userId) {
+            if (userId == CastledSharedStore.userId &&
+                userToken == CastledSharedStore.userToken) {
                 logger.debug("Ignoring userId set. Already set")
                 return
             }
@@ -245,6 +245,7 @@ internal object CastledSharedStore {
     fun clearSavedItems() {
         sharedPreferences.edit()
             .remove(PrefStoreKeys.USER_ID)
+            .remove(PrefStoreKeys.USER_TOKEN)
             .remove(PrefStoreKeys.RECENT_DISPLAYED_PUSH_IDS)
             .remove(PrefStoreKeys.SESSION_ID)
             .remove(PrefStoreKeys.SESSION_IS_FIRST)
