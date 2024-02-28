@@ -7,8 +7,5 @@ import retrofit2.http.*
 internal interface SessionsApi {
 
     @POST("external/v1/collections/session-events/lists")
-    suspend fun reportEvent(
-        @HeaderMap headers: Map<String, String>,
-        @Body request: CastledSessionRequest
-    ): Response<Void?>
+    suspend fun reportEvent(@Body request: CastledSessionRequest): Response<Void?>
 }
