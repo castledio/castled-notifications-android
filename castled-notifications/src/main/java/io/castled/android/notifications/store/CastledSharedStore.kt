@@ -63,7 +63,6 @@ internal object CastledSharedStore {
                 val sharedPref = getSharedPreference(context)
                 // Restore from shared store
                 deviceId = sharedPref.getString(PrefStoreKeys.DEVICE_ID, null)
-                userToken = sharedPref.getString(PrefStoreKeys.USER_TOKEN, null)
                 deviceInfo = fetchDeviceInfo()
                 tokens[PushTokenType.FCM] =
                     sharedPref.getString(PrefStoreKeys.FCM_TOKEN, null)
