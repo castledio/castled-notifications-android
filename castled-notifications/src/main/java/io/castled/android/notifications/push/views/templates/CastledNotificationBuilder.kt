@@ -1,4 +1,4 @@
-package io.castled.android.notifications.push
+package io.castled.android.notifications.push.views.templates
 
 import android.app.Notification
 import android.app.PendingIntent
@@ -10,26 +10,78 @@ import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.IconCompat
-import io.castled.android.notifications.push.models.CastledPushMessage
-import io.castled.android.notifications.push.models.NotificationEventType
 import io.castled.android.notifications.R
+import io.castled.android.notifications.commons.CastledIdUtils
 import io.castled.android.notifications.logger.CastledLogger.Companion.getInstance
 import io.castled.android.notifications.logger.LogTags
-import io.castled.android.notifications.push.models.*
-import io.castled.android.notifications.commons.CastledIdUtils
+import io.castled.android.notifications.push.CastledNotificationReceiver
+import io.castled.android.notifications.push.CastledNotificationReceiverAct
+import io.castled.android.notifications.push.PushNotificationManager
+import io.castled.android.notifications.push.models.CastledClickAction
+import io.castled.android.notifications.push.models.CastledPushMessage
+import io.castled.android.notifications.push.models.CastledPushPriority
+import io.castled.android.notifications.push.models.NotificationActionContext
+import io.castled.android.notifications.push.models.NotificationEventType
 import io.castled.android.notifications.push.models.PushConstants
+import io.castled.android.notifications.push.views.PushBaseBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.net.URL
 
-internal class CastledNotificationBuilder(private val context: Context) {
+internal class CastledNotificationBuilder(
+    context: Context,
+    pushMessage: CastledPushMessage
+) : PushBaseBuilder(context, pushMessage) {
+
+    override lateinit var notificationBuilder: NotificationCompat.Builder
+
+    override suspend fun build() {
+
+        notificationBuilder = NotificationCompat.Builder(
+            context, getChannelId(pushMessage)
+        )
+        notificationBuilder.setContentTitle(pushMessage.title)
+
+        // Priority
+        setPriority(notificationBuilder, pushMessage)
+
+        // Small Icon
+        setSmallIcon(notificationBuilder, pushMessage)
+
+        // Large icon
+        setLargeIcon(notificationBuilder, pushMessage)
+
+        setSummaryAndBody(notificationBuilder, pushMessage)
+
+        // Image
+        setImage(notificationBuilder, pushMessage)
+
+        // Channel
+        setChannel(notificationBuilder, pushMessage)
+
+        setTimeout(notificationBuilder, pushMessage)
+
+        notificationBuilder.setAutoCancel(true)
+
+
+    }
+
+    override suspend fun display() {
+        NotificationManagerCompat.from(context)
+            .notify(pushMessage.notificationId, notificationBuilder.build())
+    }
+
+    override suspend fun close() {
+        TODO("Not yet implemented")
+    }
 
     suspend fun buildNotification(pushMessage: CastledPushMessage): Notification {
-        val notificationBuilder = NotificationCompat.Builder(
+        notificationBuilder = NotificationCompat.Builder(
             context, getChannelId(pushMessage)
         )
 
@@ -110,6 +162,7 @@ internal class CastledNotificationBuilder(private val context: Context) {
             resourceId > 0 -> {
                 notificationBuilder.setSmallIcon(resourceId)
             }
+
             else -> {
                 val appIcon = IconCompat.createWithBitmap(
                     getBitmapFromDrawable(
@@ -163,6 +216,7 @@ internal class CastledNotificationBuilder(private val context: Context) {
             !largeIconUrl.isNullOrBlank() -> {
                 notificationBuilder.setLargeIcon(getBitmapFromUrl(largeIconUrl))
             }
+
             largeIconResourceId > 0 -> {
                 val image = BitmapFactory.decodeResource(
                     context.resources,
@@ -170,6 +224,7 @@ internal class CastledNotificationBuilder(private val context: Context) {
                 )
                 notificationBuilder.setLargeIcon(image)
             }
+
             else -> {
                 // Nothing to do
             }
@@ -320,7 +375,7 @@ internal class CastledNotificationBuilder(private val context: Context) {
             ?: PushConstants.CASTLED_DEFAULT_CHANNEL_ID
         val channelDesc = payload.channelDescription.takeUnless { it.isNullOrBlank() }
             ?: context.getString(R.string.io_castled_push_default_channel_desc)
-         notificationBuilder.setChannelId(
+        notificationBuilder.setChannelId(
             PushNotificationManager.getOrCreateNotificationChannel(
                 context,
                 channelId,

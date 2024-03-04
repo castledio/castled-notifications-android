@@ -2,5 +2,9 @@
 <resources>
     <color name="castled_inapp_container_light">#F2F4F4</color>
     <color name="castled_light_gray">#D7D7D7</color>
-
+    <color name="small_background_color">#FF5733</color>
+    <color name="large_background_color">#33FF57</color>
+    <color name="orange">#FFA500</color> <!-- Orange -->
+    <color name="red">#FF0000</color> <!-- Red -->
+    <color name="blue">#0000FF</color> <!-- Blue -->
 </resources>
