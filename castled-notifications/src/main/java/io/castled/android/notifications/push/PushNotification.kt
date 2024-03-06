@@ -151,7 +151,7 @@ internal object PushNotification : CastledSharedStoreListener {
                 return@launch
             }
             pushMessageCache?.set(pushMessage.notificationId, pushMessage)
-            PushNotificationManager.displayNotification(context, pushMessage)
+            PushNotificationManager.displayNotification(context, pushMessage, externalScope)
         }
     }
 

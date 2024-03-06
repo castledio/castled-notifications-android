@@ -1,0 +1,47 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/push_timer_small_box_height">
+
+    <LinearLayout
+        android:id="@+id/title_container"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/txt_elapsed_time"
+        android:orientation="vertical">
+        <!-- Title -->
+        <TextView
+            android:id="@+id/txt_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/push_timer_small_default_title_font_size"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txt_body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/push_timer_small_default_title_font_size" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_elapsed_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="@dimen/push_timer_small_box_horizontal_spacing"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/push_timer_small_default_time_font_size"
+        android:textStyle="bold" />
+
+    <!-- Time Views Container -->
+</RelativeLayout>

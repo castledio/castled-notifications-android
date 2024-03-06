@@ -4,7 +4,66 @@
 
     <style name="Castled.InApp" />
 
+    <style name="Castled.Push" />
+
     <!-- Castled in-app generic components -->
+
+    <style name="Castled.Push.TimerLayout">
+        <!--        <item name="android:gravity">center_horizontal|center_vertical</item>-->
+        <item name="android:gravity">center</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="Castled.Push.TimerLayout.Small">
+        <item name="android:layout_width">@dimen/push_timer_small_box_width</item>
+        <item name="android:layout_height">@dimen/push_timer_small_box_height</item>
+    </style>
+
+    <style name="Castled.Push.TimerLayout.Large">
+        <item name="android:layout_width">@dimen/push_timer_large_box_width</item>
+        <item name="android:layout_height">@dimen/push_timer_large_box_height</item>
+    </style>
+
+    <style name="Castled.Push.Timer" />
+
+    <style name="Castled.Push.Timer.PlaceholderText">
+        <item name="android:gravity">center_horizontal|center_vertical</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">8sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_width">@dimen/push_timer_small_box_width</item>
+        <item name="android:layout_height">@dimen/push_timer_small_box_time_placeholder_height
+        </item>
+    </style>
+
+    <style name="Castled.Push.Timer.TimeText">
+        <item name="android:layout_width">@dimen/push_timer_small_box_width</item>
+        <item name="android:layout_height">@dimen/push_timer_small_box_width</item>
+        <item name="android:gravity">center_horizontal|center_vertical</item>
+        <item name="android:textSize">@dimen/push_timer_small_box_time_font_size</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:background">@drawable/push_timer_rounded</item>
+    </style>
+
+    <style name="Castled.Push.Timer.TimeText.Large">
+        <item name="android:layout_width">@dimen/push_timer_large_box_width</item>
+        <item name="android:layout_height">@dimen/push_timer_large_box_width</item>
+        <item name="android:textSize">@dimen/push_timer_large_box_time_font_size</item>
+
+    </style>
+
+    <style name="Castled.Push.Timer.PlaceholderText.Large">
+        <item name="android:gravity">center_horizontal|center_vertical</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:layout_width">@dimen/push_timer_large_box_width</item>
+        <item name="android:layout_height">@dimen/push_timer_large_box_time_placeholder_height
+        </item>
+        <item name="android:textAllCaps">true</item>
+
+    </style>
 
     <style name="Castled.InApp.Buttons">
         <item name="android:gravity">center</item>

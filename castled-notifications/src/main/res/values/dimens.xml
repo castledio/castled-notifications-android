@@ -17,5 +17,24 @@
     <dimen name="inbox_buttons_padding">10dp</dimen>
     <dimen name="inbox_buttons_top_margin">5dp</dimen>
 
+    <dimen name="push_timer_small_box_width">30dp</dimen>
+    <dimen name="push_timer_small_box_height">40dp</dimen>
+    <dimen name="push_timer_large_box_width">35dp</dimen>
+    <dimen name="push_timer_large_box_height">48dp</dimen>
+
+    <dimen name="push_timer_small_box_time_placeholder_height">10dp</dimen>
+    <dimen name="push_timer_small_box_horizontal_spacing">5dp</dimen>
+    <dimen name="push_timer_large_box_time_placeholder_height">12dp</dimen>
+    <dimen name="push_timer_large_vertical_spacing">5dp</dimen>
+
+    <dimen name="push_timer_small_default_time_font_size">16sp</dimen>
+    <dimen name="push_timer_small_default_title_font_size">14sp</dimen>
+    <dimen name="push_timer_small_box_time_font_size">16sp</dimen>
+    <dimen name="push_timer_small_box_title_font_size">14sp</dimen>
+
+    <dimen name="push_timer_large_default_time_font_size">18sp</dimen>
+    <dimen name="push_timer_large_default_title_font_size">16sp</dimen>
+    <dimen name="push_timer_large_box_time_font_size">16sp</dimen>
+    <dimen name="push_timer_large_box_title_font_size">14sp</dimen>
 
 </resources>

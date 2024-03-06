@@ -1,6 +1,7 @@
 package io.castled.android.notifications.commons
 
 import android.graphics.Color
+import android.widget.RemoteViews
 
 
 internal class ColorUtils {
@@ -11,6 +12,17 @@ internal class ColorUtils {
             } catch (e: IllegalArgumentException) {
                 defaultColor
             }
+        }
+
+        internal fun setRemoteViewBackgroundColor(
+            remoteView: RemoteViews?,
+            viewId: Int,
+            color: Int
+        ) {
+            remoteView?.setInt(
+                viewId, "setBackgroundColor",
+                color
+            );
         }
     }
 
