@@ -146,6 +146,7 @@ internal object PushNotification : CastledSharedStoreListener {
 
     fun handlePushNotification(context: Context, pushMessage: CastledPushMessage?) {
         pushMessage ?: return
+
         externalScope.launch(Dispatchers.Default) {
             if (!shouldDisplayPushMessage(context, pushMessage)) {
                 return@launch
