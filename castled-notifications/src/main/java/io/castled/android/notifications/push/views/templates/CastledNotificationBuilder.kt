@@ -41,7 +41,7 @@ internal class CastledNotificationBuilder(
             .notify(pushMessage.notificationId, notificationBuilder.build())
     }
 
-    override suspend fun close() {
+    override fun close() {
         TODO("Not yet implemented")
     }
 
@@ -69,7 +69,7 @@ internal class CastledNotificationBuilder(
 
         configurator.setImage()
     }
- 
+
 
     private fun getChannelId(payload: CastledPushMessage): String {
         return payload.channelId.takeUnless { it.isNullOrBlank() }

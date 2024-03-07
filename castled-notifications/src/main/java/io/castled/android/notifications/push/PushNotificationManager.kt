@@ -14,11 +14,14 @@ import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.NotificationActionContext
 import io.castled.android.notifications.push.models.NotificationEventType
 import io.castled.android.notifications.push.models.PushConstants
+import io.castled.android.notifications.push.views.PushBaseBuilder
 import io.castled.android.notifications.push.views.PushBuilderFactory
 import kotlinx.coroutines.CoroutineScope
 
 internal object PushNotificationManager {
     private val logger = getInstance(LogTags.PUSH)
+    var displayedNotificaions: HashMap<Int, PushBaseBuilder> = HashMap()
+
     fun isCastledNotification(remoteMessage: RemoteMessage): Boolean {
         if (remoteMessage.data.containsKey(CastledNotificationFieldConsts.CASTLED_KEY)) {
             return true
@@ -37,6 +40,7 @@ internal object PushNotificationManager {
 
         val pushBuilder = PushBuilderFactory.createPushBuilder(context, pushMessage, externalScope)
         pushBuilder?.let {
+            displayedNotificaions[pushMessage.notificationId] = it
             it.build()
             it.display()
         }
@@ -78,5 +82,16 @@ internal object PushNotificationManager {
         }
         return channelId
     }
-    
+
+    internal fun cancelTimerIfAny(notiifcationId: Int) {
+        try {
+            val pushBuilder = displayedNotificaions[notiifcationId]
+            pushBuilder?.let {
+                it.close()
+                displayedNotificaions.remove(notiifcationId)
+            }
+        } catch (e: Exception) {
+
+        }
+    }
 }

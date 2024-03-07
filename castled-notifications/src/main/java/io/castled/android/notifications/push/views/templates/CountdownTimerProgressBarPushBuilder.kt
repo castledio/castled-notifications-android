@@ -23,8 +23,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URL
 import java.util.concurrent.TimeUnit
+import kotlin.math.ceil
 
-class CountdownTimerBoxPushBuilder(
+class CountdownTimerProgressBarPushBuilder(
     context: Context,
     pushMessage: CastledPushMessage,
     externalScope: CoroutineScope
@@ -33,6 +34,8 @@ class CountdownTimerBoxPushBuilder(
     private lateinit var configurator: PushBuilderConfigurator
     private lateinit var notificationManager: NotificationManagerCompat
     private lateinit var notification: Notification
+    private var startTimeInMillis = 0L
+    private var endTimeInMillis = 0L
 
     private var countDownTimer: CountDownTimer? = null
     override lateinit var notificationBuilder: NotificationCompat.Builder
@@ -52,11 +55,13 @@ class CountdownTimerBoxPushBuilder(
 
         notificationBuilder.setOnlyAlertOnce(true)
         // Set custom layout for large notification
-        largeLayout = RemoteViews(context.packageName, R.layout.countdown_notification_box_large)
+        largeLayout =
+            RemoteViews(context.packageName, R.layout.countdown_notification_progress_bar_large)
         notificationBuilder.setCustomBigContentView(largeLayout)
 
         // Set custom layout for small notification
-        smallLayout = RemoteViews(context.packageName, R.layout.countdown_notification_box_small)
+        smallLayout =
+            RemoteViews(context.packageName, R.layout.countdown_notification_progress_bar_small)
         notificationBuilder.setCustomContentView(smallLayout)
         notificationBuilder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
 
@@ -68,14 +73,15 @@ class CountdownTimerBoxPushBuilder(
 
     override suspend fun display() {
         val currentTimeMillis = System.currentTimeMillis()
-        val futureTimeInMillis = currentTimeMillis + TimeUnit.SECONDS.toMillis(40)
-        handlePushNotification(futureTimeInMillis)
+        startTimeInMillis = currentTimeMillis + TimeUnit.SECONDS.toMillis(15)
+        endTimeInMillis = currentTimeMillis + TimeUnit.SECONDS.toMillis(48 * 60 * 60)
+
+        handlePushNotification(endTimeInMillis)
     }
 
     override fun close() {
         countDownTimer?.cancel()
     }
-
 
     fun handlePushNotification(futureTimeInMillis: Long) {
         // Initialize notification manager
@@ -96,6 +102,17 @@ class CountdownTimerBoxPushBuilder(
                 }
 
                 override fun onFinish() {
+                    RemoteViewUtils.setProgressViewProgress(
+                        smallLayout,
+                        R.id.progress_bar_elapsed_time,
+                        100
+                    )
+                    RemoteViewUtils.setProgressViewProgress(
+                        largeLayout,
+                        R.id.progress_bar_elapsed_time,
+                        100
+                    )
+
                     // notificationManager.cancel(pushMessage.notificationId)
                 }
             }.start()
@@ -125,7 +142,6 @@ class CountdownTimerBoxPushBuilder(
 
     }
 
-
     private fun updateNotification(millisUntilFinished: Long) {
         // Update countdown timer views in custom layouts
         updateCountdownTimerViews(smallLayout, millisUntilFinished)
@@ -143,9 +159,20 @@ class CountdownTimerBoxPushBuilder(
             val seconds =
                 TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % TimeUnit.MINUTES.toSeconds(1)
 
-            setTextViewText(R.id.txt_hours, String.format("%02d", hours))
-            setTextViewText(R.id.txt_minutes, String.format("%02d", minutes))
-            setTextViewText(R.id.txt_seconds, String.format("%02d", seconds))
+            setTextViewText(
+                R.id.txt_elapsed_time,
+                String.format("%02d:%02d:%02d", hours, minutes, seconds)
+            )
+            val progress = ceil(
+                ((System.currentTimeMillis() - startTimeInMillis).coerceAtLeast(0) * 100 / (endTimeInMillis - startTimeInMillis)).coerceAtMost(
+                    100
+                ).toFloat()
+            ).toInt()
+            RemoteViewUtils.setProgressViewProgress(
+                layout,
+                R.id.progress_bar_elapsed_time,
+                progress
+            )
         }
     }
 
@@ -164,14 +191,39 @@ class CountdownTimerBoxPushBuilder(
             largeLayout?.setViewVisibility(R.id.img_large, View.GONE)
         }
 
-        val timeColor = ColorUtils.parseColor("#990011", Color.MAGENTA)
-        RemoteViewUtils.setRemoteViewBackgroundColor(largeLayout, R.id.txt_seconds, timeColor)
-        RemoteViewUtils.setRemoteViewBackgroundColor(largeLayout, R.id.txt_minutes, timeColor)
-        RemoteViewUtils.setRemoteViewBackgroundColor(largeLayout, R.id.txt_hours, timeColor)
-        RemoteViewUtils.setRemoteViewBackgroundColor(smallLayout, R.id.txt_seconds, timeColor)
-        RemoteViewUtils.setRemoteViewBackgroundColor(smallLayout, R.id.txt_minutes, timeColor)
-        RemoteViewUtils.setRemoteViewBackgroundColor(smallLayout, R.id.txt_hours, timeColor)
+        val timeColor = ColorUtils.parseColor("#990011", Color.BLACK)
+        smallLayout?.setTextColor(R.id.txt_elapsed_time, timeColor)
+        smallLayout?.setTextColor(R.id.txt_title, timeColor)
+        largeLayout?.setTextColor(R.id.txt_title, timeColor)
+        largeLayout?.setTextColor(R.id.txt_elapsed_time, timeColor)
 
+        largeLayout?.setProgressBar(R.id.progress_bar_elapsed_time, 100, 0, false)
+        smallLayout?.setProgressBar(R.id.progress_bar_elapsed_time, 100, 0, false)
+
+        RemoteViewUtils.setProgressViewTintColor(
+            largeLayout,
+            R.id.progress_bar_elapsed_time,
+            timeColor
+        )
+        RemoteViewUtils.setProgressViewTintColor(
+            smallLayout,
+            R.id.progress_bar_elapsed_time,
+            timeColor
+        )
+
+        RemoteViewUtils.setProgressViewBackgroundColor(
+            largeLayout,
+            R.id.progress_bar_elapsed_time,
+            timeColor
+        )
+        RemoteViewUtils.setProgressViewBackgroundColor(
+            smallLayout,
+            R.id.progress_bar_elapsed_time,
+            timeColor
+        )
+
+        RemoteViewUtils.setProgressViewProgress(smallLayout, R.id.progress_bar_elapsed_time, 0)
+        RemoteViewUtils.setProgressViewProgress(largeLayout, R.id.progress_bar_elapsed_time, 0)
     }
 
     fun getChannelId(payload: CastledPushMessage): String {

@@ -14,5 +14,5 @@ abstract class PushBaseBuilder(
     abstract val notificationBuilder: NotificationCompat.Builder
     abstract suspend fun build()
     abstract suspend fun display()
-    abstract suspend fun close()
+    abstract fun close()
 }

@@ -73,7 +73,7 @@ class CountdownTimerDefaultPushBuilder(
         handlePushNotification(futureTimeInMillis)
     }
 
-    override suspend fun close() {
+    override fun close() {
         countDownTimer?.cancel()
     }
 

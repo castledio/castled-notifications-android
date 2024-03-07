@@ -17,6 +17,8 @@
     <dimen name="inbox_buttons_padding">10dp</dimen>
     <dimen name="inbox_buttons_top_margin">5dp</dimen>
 
+    <dimen name="push_timer_small_layout_maxm_height">48dp</dimen>
+
     <dimen name="push_timer_small_box_width">30dp</dimen>
     <dimen name="push_timer_small_box_height">40dp</dimen>
     <dimen name="push_timer_large_box_width">35dp</dimen>
