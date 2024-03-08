@@ -42,7 +42,6 @@ internal class CastledNotificationBuilder(
     }
 
     override fun close() {
-        TODO("Not yet implemented")
     }
 
     private suspend fun configureNotification() {
