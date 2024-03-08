@@ -1,12 +1,9 @@
 package io.castled.android.notifications.push.views.templates
 
-import android.app.Notification
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.IBinder
 import android.view.View
@@ -22,11 +19,8 @@ import io.castled.android.notifications.push.views.PushBaseBuilder
 import io.castled.android.notifications.push.views.PushBuilderConfigurator
 import io.castled.android.notifications.push.views.PushCountdownServiceListener
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.net.URL
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 
@@ -41,7 +35,6 @@ class CountdownTimerProgressBarPushBuilder(
     private lateinit var serviceConnection: ServiceConnection
     private lateinit var configurator: PushBuilderConfigurator
     private lateinit var notificationManager: NotificationManagerCompat
-    private lateinit var notification: Notification
     private var startTimeInMillis = 0L
     private var endTimeInMillis = 0L
     override lateinit var notificationBuilder: NotificationCompat.Builder
@@ -50,19 +43,23 @@ class CountdownTimerProgressBarPushBuilder(
 
     override suspend fun build() {
 
-        showNotification()
+        createNotification()
 
         val currentTimeMillis = System.currentTimeMillis()
+
         startTimeInMillis = currentTimeMillis + TimeUnit.SECONDS.toMillis(15)
         endTimeInMillis = currentTimeMillis + TimeUnit.SECONDS.toMillis(48 * 60 * 60)
 
+        
+        val serviceIntent = Intent(context, PushCountdownService::class.java)
         serviceConnection = object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
                 println("onServiceConnected")
                 val binder = service as PushCountdownService.PushCountdownServiceBinder
                 pushTimerService = binder.getService()
                 pushTimerService?.setServiceListener(this@CountdownTimerProgressBarPushBuilder)
-                pushTimerService?.notificationInitialized(notificationBuilder)
+                context.startService(serviceIntent)
+
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {
@@ -71,15 +68,15 @@ class CountdownTimerProgressBarPushBuilder(
             }
         }
 
-        val serviceIntent = Intent(context, PushCountdownService::class.java)
         serviceIntent.putExtra(PushConstants.CASTLED_PUSH_MESSAGE, Json.encodeToString(pushMessage))
         context.bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
-        context.startService(serviceIntent)
+
     }
 
     override suspend fun display() {
 
     }
+
 
     override fun close() {
         pushTimerService?.stopPushService()
@@ -89,6 +86,9 @@ class CountdownTimerProgressBarPushBuilder(
 
     //SERVICE LISTENERS
     override fun onServiceStarted() {
+        println("onServiceStarted")
+        pushTimerService?.startForeground(pushMessage.notificationId, notificationBuilder)
+
         //showNotification()
     }
 
@@ -99,6 +99,7 @@ class CountdownTimerProgressBarPushBuilder(
     override fun onTimerFinished() {
         timerFinished()
     }
+
 
     private fun timerFinished() {
         RemoteViewUtils.setProgressViewProgress(
@@ -113,7 +114,7 @@ class CountdownTimerProgressBarPushBuilder(
         )
     }
 
-    suspend fun showNotification() {
+    suspend fun createNotification() {
 
         notificationManager = NotificationManagerCompat.from(context)
 
@@ -137,7 +138,6 @@ class CountdownTimerProgressBarPushBuilder(
         notificationBuilder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
 
         configureNotification()
-        notification = notificationBuilder.build()
 
         customizeViews()
 
@@ -208,7 +208,10 @@ class CountdownTimerProgressBarPushBuilder(
 
         val imageUrl = pushMessage.pushMessageFrames[0].imageUrl
         if (!imageUrl.isNullOrBlank()) {
-            largeLayout?.setImageViewBitmap(R.id.img_large, getRemoteViewBitmapFrom(imageUrl))
+            largeLayout?.setImageViewBitmap(
+                R.id.img_large,
+                RemoteViewUtils.getRemoteViewBitmapFrom(imageUrl)
+            )
 
         } else {
             largeLayout?.setViewVisibility(R.id.img_large, View.GONE)
@@ -249,34 +252,9 @@ class CountdownTimerProgressBarPushBuilder(
         RemoteViewUtils.setProgressViewProgress(largeLayout, R.id.progress_bar_elapsed_time, 0)
     }
 
+
     fun getChannelId(payload: CastledPushMessage): String {
         return payload.channelId.takeUnless { it.isNullOrBlank() }
             ?: PushConstants.CASTLED_DEFAULT_CHANNEL_ID
     }
-
-    private suspend fun getRemoteViewBitmapFrom(imageUrl: String?): Bitmap? =
-        withContext(Dispatchers.IO) {
-            try {
-                val url = URL(imageUrl)
-                val connection = url.openConnection()
-                connection.connectTimeout = 10000 // 10 seconds
-                connection.readTimeout = 15000 // 15 seconds
-                val bitmapOptions = BitmapFactory.Options()
-                bitmapOptions.inSampleSize = 4
-                /* inSampleSize with a value superior to one, shrink the image. With an inSampleSize = 4
-                 ,we get an image that is 1/4 of the width/height of the image
-                The total Bitmap memory used by the RemoteViews object cannot exceed that required to
-                 fill the screen 1.5 times,
-                ie. (screen width x screen height x 4 x 1.5) bytes.*/
-
-                connection.getInputStream().use { inputStream ->
-                    return@withContext BitmapFactory.decodeStream(inputStream, null, bitmapOptions)
-                }
-            } catch (e: Exception) { // Catch general exceptions
-                // CastledNotificationBuilder.logger.debug("Bitmap fetch failed, reason: ${e.message}")
-            }
-            return@withContext null
-        }
-
-
 }

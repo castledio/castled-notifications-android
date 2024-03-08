@@ -26,15 +26,15 @@ class PushCountdownService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         println("onStartCommand")
-
         context = applicationContext
         val contextJson =
             intent?.extras?.getString(PushConstants.CASTLED_PUSH_MESSAGE)
         pushMessage = Json.decodeFromString(contextJson!!) as CastledPushMessage
         countDownTimer?.cancel()
+
         stopForeground(STOP_FOREGROUND_REMOVE)
         serviceListener?.onServiceStarted()
-        handlePushNotification()
+        setupCountdownTimer()
         return START_STICKY
     }
 
@@ -53,7 +53,12 @@ class PushCountdownService : Service() {
         return binder
     }
 
+    //LISTENER
+    fun setServiceListener(listener: PushCountdownServiceListener) {
+        serviceListener = listener
+    }
 
+    //CUSTOM METHODS
     fun stopPushService() {
         countDownTimer?.cancel()
         countDownTimer = null
@@ -62,15 +67,12 @@ class PushCountdownService : Service() {
         stopSelf()
     }
 
-    fun notificationInitialized(notificationBuilder: NotificationCompat.Builder) {
-        startForeground(pushMessage.notificationId, notificationBuilder.build())
+    fun startForeground(notificationId: Int, notificationBuilder: NotificationCompat.Builder) {
+        startForeground(notificationId, notificationBuilder.build())
     }
 
-    fun setServiceListener(listener: PushCountdownServiceListener) {
-        serviceListener = listener
-    }
-
-    private fun handlePushNotification() {
+    //COUNTDOWN RELATED
+    private fun setupCountdownTimer() {
 
         val currentTimeMillis = System.currentTimeMillis()
         endTimeInMillis = currentTimeMillis + TimeUnit.SECONDS.toMillis(48 * 60 * 60)
