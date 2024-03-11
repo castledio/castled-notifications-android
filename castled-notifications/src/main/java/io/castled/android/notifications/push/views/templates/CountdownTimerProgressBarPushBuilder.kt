@@ -14,6 +14,7 @@ import io.castled.android.notifications.R
 import io.castled.android.notifications.commons.ColorUtils
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.PushConstants
+import io.castled.android.notifications.push.utils.CastledPushMessageUtils.getChannelId
 import io.castled.android.notifications.push.utils.RemoteViewUtils
 import io.castled.android.notifications.push.views.PushBaseBuilder
 import io.castled.android.notifications.push.views.PushBuilderConfigurator
@@ -35,31 +36,28 @@ class CountdownTimerProgressBarPushBuilder(
     private lateinit var serviceConnection: ServiceConnection
     private lateinit var configurator: PushBuilderConfigurator
     private lateinit var notificationManager: NotificationManagerCompat
-    private var startTimeInMillis = 0L
-    private var endTimeInMillis = 0L
     override lateinit var notificationBuilder: NotificationCompat.Builder
     private var smallLayout: RemoteViews? = null
     private var largeLayout: RemoteViews? = null
+    private var startTimeInMillis = 0L
+    private var endTimeInMillis = 0L
 
     override suspend fun build() {
 
-        createNotification()
-
         val currentTimeMillis = System.currentTimeMillis()
-
         startTimeInMillis = currentTimeMillis + TimeUnit.SECONDS.toMillis(15)
         endTimeInMillis = currentTimeMillis + TimeUnit.SECONDS.toMillis(48 * 60 * 60)
 
-        
+        createNotification()
+
         val serviceIntent = Intent(context, PushCountdownService::class.java)
         serviceConnection = object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                println("onServiceConnected")
+
                 val binder = service as PushCountdownService.PushCountdownServiceBinder
                 pushTimerService = binder.getService()
                 pushTimerService?.setServiceListener(this@CountdownTimerProgressBarPushBuilder)
                 context.startService(serviceIntent)
-
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {
@@ -74,9 +72,8 @@ class CountdownTimerProgressBarPushBuilder(
     }
 
     override suspend fun display() {
-
+        notificationManager.notify(pushMessage.notificationId, notificationBuilder.build())
     }
-
 
     override fun close() {
         pushTimerService?.stopPushService()
@@ -86,10 +83,7 @@ class CountdownTimerProgressBarPushBuilder(
 
     //SERVICE LISTENERS
     override fun onServiceStarted() {
-        println("onServiceStarted")
         pushTimerService?.startForeground(pushMessage.notificationId, notificationBuilder)
-
-        //showNotification()
     }
 
     override fun onTimerUpdated(millisUntilFinished: Long) {
@@ -112,60 +106,19 @@ class CountdownTimerProgressBarPushBuilder(
             R.id.progress_bar_elapsed_time,
             100
         )
+        smallLayout?.setTextViewText(
+            R.id.txt_elapsed_time,
+            "00:00:00"
+        )
+        largeLayout?.setTextViewText(
+            R.id.txt_elapsed_time,
+            "00:00:00"
+        )
+        notificationManager.notify(pushMessage.notificationId, notificationBuilder.build())
     }
 
-    suspend fun createNotification() {
-
-        notificationManager = NotificationManagerCompat.from(context)
-
-        // Initialize notification builder
-        notificationBuilder =
-            NotificationCompat.Builder(context, getChannelId(pushMessage))
-                .setSmallIcon(R.drawable.io_castled_push_default_small_icon)
-
-        configurator = PushBuilderConfigurator(context, pushMessage, notificationBuilder)
-
-        notificationBuilder.setOnlyAlertOnce(true)
-        // Set custom layout for large notification
-        largeLayout =
-            RemoteViews(context.packageName, R.layout.countdown_notification_progress_bar_large)
-        notificationBuilder.setCustomBigContentView(largeLayout)
-
-        // Set custom layout for small notification
-        smallLayout =
-            RemoteViews(context.packageName, R.layout.countdown_notification_progress_bar_small)
-        notificationBuilder.setCustomContentView(smallLayout)
-        notificationBuilder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
-
-        configureNotification()
-
-        customizeViews()
-
-    }
-
-    private fun configureNotification() {
-        println("configureNotification")
-        configurator.setChannel()
-
-        // Notification click action
-        configurator.addNotificationAction()
-
-        // Action buttons
-        configurator.addActionButtons()
-
-        // Dismiss action
-        configurator.addDiscardAction()
-
-        configurator.setTimeout()
-
-        configurator.setPriority()
-
-        configurator.setSummaryAndBody()
-
-    }
 
     private fun updateNotification(millisUntilFinished: Long) {
-
         // Update countdown timer views in custom layouts
         updateCountdownTimerViews(smallLayout, millisUntilFinished)
         updateCountdownTimerViews(largeLayout, millisUntilFinished)
@@ -199,12 +152,77 @@ class CountdownTimerProgressBarPushBuilder(
         }
     }
 
-    private suspend fun customizeViews() {
+    private suspend fun createNotification() {
 
+        notificationManager = NotificationManagerCompat.from(context)
+
+        // Initialize notification builder
+        notificationBuilder =
+            NotificationCompat.Builder(context, pushMessage.getChannelId())
+                .setSmallIcon(R.drawable.io_castled_push_default_small_icon)
+
+        configurator = PushBuilderConfigurator(context, pushMessage, notificationBuilder)
+
+        notificationBuilder.setOnlyAlertOnce(true)
+        // Set custom layout for large notification
+        largeLayout =
+            RemoteViews(context.packageName, R.layout.countdown_notification_progress_bar_large)
+        notificationBuilder.setCustomBigContentView(largeLayout)
+
+        // Set custom layout for small notification
+        smallLayout =
+            RemoteViews(context.packageName, R.layout.countdown_notification_progress_bar_small)
+        notificationBuilder.setCustomContentView(smallLayout)
+        notificationBuilder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
+
+        configureNotification()
+
+        customizeViews()
+
+    }
+
+    private fun configureNotification() {
+        configurator.setChannel()
+
+        // Notification click action
+        configurator.addNotificationAction()
+
+        // Action buttons
+        configurator.addActionButtons()
+
+        // Dismiss action
+        configurator.addDiscardAction()
+
+        configurator.setTimeout()
+
+        configurator.setPriority()
+
+        configurator.setSummaryAndBody()
+
+    }
+
+    private suspend fun customizeViews() {
         smallLayout?.setTextViewText(R.id.txt_title, pushMessage.title)
         smallLayout?.setTextViewText(R.id.txt_body, pushMessage.body)
+
         largeLayout?.setTextViewText(R.id.txt_title, pushMessage.title)
         largeLayout?.setTextViewText(R.id.txt_body, pushMessage.body)
+
+        smallLayout?.setTextViewText(
+            R.id.txt_elapsed_time,
+            "00:00:00"
+        )
+        largeLayout?.setTextViewText(
+            R.id.txt_elapsed_time,
+            "00:00:00"
+        )
+
+        largeLayout?.setProgressBar(R.id.progress_bar_elapsed_time, 100, 0, false)
+        smallLayout?.setProgressBar(R.id.progress_bar_elapsed_time, 100, 0, false)
+
+        RemoteViewUtils.setProgressViewProgress(smallLayout, R.id.progress_bar_elapsed_time, 0)
+        RemoteViewUtils.setProgressViewProgress(largeLayout, R.id.progress_bar_elapsed_time, 0)
+
 
         val imageUrl = pushMessage.pushMessageFrames[0].imageUrl
         if (!imageUrl.isNullOrBlank()) {
@@ -220,11 +238,8 @@ class CountdownTimerProgressBarPushBuilder(
         val timeColor = ColorUtils.parseColor("#990011", Color.BLACK)
         smallLayout?.setTextColor(R.id.txt_elapsed_time, timeColor)
         smallLayout?.setTextColor(R.id.txt_title, timeColor)
-        largeLayout?.setTextColor(R.id.txt_title, timeColor)
         largeLayout?.setTextColor(R.id.txt_elapsed_time, timeColor)
-
-        largeLayout?.setProgressBar(R.id.progress_bar_elapsed_time, 100, 0, false)
-        smallLayout?.setProgressBar(R.id.progress_bar_elapsed_time, 100, 0, false)
+        largeLayout?.setTextColor(R.id.txt_title, timeColor)
 
         RemoteViewUtils.setProgressViewTintColor(
             largeLayout,
@@ -248,13 +263,5 @@ class CountdownTimerProgressBarPushBuilder(
             timeColor
         )
 
-        RemoteViewUtils.setProgressViewProgress(smallLayout, R.id.progress_bar_elapsed_time, 0)
-        RemoteViewUtils.setProgressViewProgress(largeLayout, R.id.progress_bar_elapsed_time, 0)
-    }
-
-
-    fun getChannelId(payload: CastledPushMessage): String {
-        return payload.channelId.takeUnless { it.isNullOrBlank() }
-            ?: PushConstants.CASTLED_DEFAULT_CHANNEL_ID
     }
 }

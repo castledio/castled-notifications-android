@@ -75,7 +75,7 @@ class PushCountdownService : Service() {
     private fun setupCountdownTimer() {
 
         val currentTimeMillis = System.currentTimeMillis()
-        endTimeInMillis = currentTimeMillis + TimeUnit.SECONDS.toMillis(48 * 60 * 60)
+        endTimeInMillis = currentTimeMillis + TimeUnit.SECONDS.toMillis(30)
         // Calculate the time difference
         val timeDifferenceInMillis = endTimeInMillis - System.currentTimeMillis()
 
