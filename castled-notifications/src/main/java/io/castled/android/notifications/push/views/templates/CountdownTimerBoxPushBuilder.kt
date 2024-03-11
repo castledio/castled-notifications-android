@@ -1,11 +1,8 @@
 package io.castled.android.notifications.push.views.templates
 
-import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Color
-import android.os.IBinder
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
@@ -13,15 +10,13 @@ import androidx.core.app.NotificationManagerCompat
 import io.castled.android.notifications.R
 import io.castled.android.notifications.commons.ColorUtils
 import io.castled.android.notifications.push.models.CastledPushMessage
-import io.castled.android.notifications.push.models.PushConstants
 import io.castled.android.notifications.push.utils.CastledPushMessageUtils.getChannelId
 import io.castled.android.notifications.push.utils.RemoteViewUtils
 import io.castled.android.notifications.push.views.PushBaseBuilder
 import io.castled.android.notifications.push.views.PushBuilderConfigurator
 import io.castled.android.notifications.push.views.PushCountdownServiceListener
+import io.castled.android.notifications.push.views.PushServiceBinder
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import java.util.concurrent.TimeUnit
 
 class CountdownTimerBoxPushBuilder(
@@ -30,6 +25,7 @@ class CountdownTimerBoxPushBuilder(
     externalScope: CoroutineScope
 ) : PushBaseBuilder(context, pushMessage, externalScope), PushCountdownServiceListener {
 
+    private lateinit var pushServiceBinder: PushServiceBinder
     private var pushTimerService: PushCountdownService? = null
     private lateinit var serviceConnection: ServiceConnection
     private lateinit var configurator: PushBuilderConfigurator
@@ -38,27 +34,11 @@ class CountdownTimerBoxPushBuilder(
     private var smallLayout: RemoteViews? = null
     private var largeLayout: RemoteViews? = null
 
-
     override suspend fun build() {
         createNotification()
-        val serviceIntent = Intent(context, PushCountdownService::class.java)
-        serviceConnection = object : ServiceConnection {
-            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
 
-                val binder = service as PushCountdownService.PushCountdownServiceBinder
-                pushTimerService = binder.getService()
-                pushTimerService?.setServiceListener(this@CountdownTimerBoxPushBuilder)
-                context.startService(serviceIntent)
-            }
-
-            override fun onServiceDisconnected(name: ComponentName?) {
-                pushTimerService = null
-                // Handle service disconnection
-            }
-        }
-
-        serviceIntent.putExtra(PushConstants.CASTLED_PUSH_MESSAGE, Json.encodeToString(pushMessage))
-        context.bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
+        pushServiceBinder = PushServiceBinder(context, this, pushMessage, notificationBuilder)
+        pushServiceBinder.bindService()
     }
 
     override suspend fun display() {
@@ -66,20 +46,25 @@ class CountdownTimerBoxPushBuilder(
     }
 
     override fun close() {
-        pushTimerService?.stopPushService()
-        serviceConnection?.let { context.unbindService(it) }
+        pushServiceBinder.unbindService()
     }
 
     //SERVICE LISTENERS
-    override fun onServiceStarted() {
-        pushTimerService?.startForeground(pushMessage.notificationId, notificationBuilder.build())
+    override fun onServiceConnected() {
     }
 
-    override fun onTimerUpdated(millisUntilFinished: Long) {
+    override fun onServiceDisconnected() {
+    }
+
+    override fun onServiceStarted() {
+        pushServiceBinder.onServiceStarted()
+    }
+
+    override fun onServiceTimerUpdated(millisUntilFinished: Long) {
         updateNotification(millisUntilFinished)
     }
 
-    override fun onTimerFinished() {
+    override fun onServiceTimerFinished() {
         timerFinished()
     }
 
@@ -198,6 +183,4 @@ class CountdownTimerBoxPushBuilder(
         RemoteViewUtils.setRemoteViewBackgroundColor(smallLayout, R.id.txt_minutes, timeColor)
         RemoteViewUtils.setRemoteViewBackgroundColor(smallLayout, R.id.txt_hours, timeColor)
     }
-
-
 }

@@ -6,7 +6,7 @@ import androidx.core.app.NotificationManagerCompat
 import io.castled.android.notifications.logger.CastledLogger.Companion.getInstance
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.CastledPushMessage
-import io.castled.android.notifications.push.models.PushConstants
+import io.castled.android.notifications.push.utils.CastledPushMessageUtils.getChannelId
 import io.castled.android.notifications.push.views.PushBaseBuilder
 import io.castled.android.notifications.push.views.PushBuilderConfigurator
 import kotlinx.coroutines.CoroutineScope
@@ -24,7 +24,7 @@ internal class CastledNotificationBuilder(
     override suspend fun build() {
 
         notificationBuilder = NotificationCompat.Builder(
-            context, getChannelId(pushMessage)
+            context, pushMessage.getChannelId()
         )
         configurator = PushBuilderConfigurator(context, pushMessage, notificationBuilder)
 
@@ -67,12 +67,6 @@ internal class CastledNotificationBuilder(
         configurator.setSummaryAndBody()
 
         configurator.setImage()
-    }
-
-
-    private fun getChannelId(payload: CastledPushMessage): String {
-        return payload.channelId.takeUnless { it.isNullOrBlank() }
-            ?: PushConstants.CASTLED_DEFAULT_CHANNEL_ID
     }
 
     companion object {

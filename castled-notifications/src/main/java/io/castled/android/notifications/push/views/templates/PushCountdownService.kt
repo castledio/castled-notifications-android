@@ -11,8 +11,6 @@ import androidx.core.app.NotificationCompat
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.PushConstants
 import io.castled.android.notifications.push.views.PushCountdownServiceListener
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import java.util.concurrent.TimeUnit
 
 class PushCountdownService : Service() {
@@ -25,11 +23,10 @@ class PushCountdownService : Service() {
     private var countDownTimer: CountDownTimer? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        println("onStartCommand")
         context = applicationContext
-        val contextJson =
-            intent?.extras?.getString(PushConstants.CASTLED_PUSH_MESSAGE)
-        pushMessage = Json.decodeFromString(contextJson!!) as CastledPushMessage
+        //  val contextJson =
+        intent?.extras?.getString(PushConstants.CASTLED_PUSH_MESSAGE)
+        // pushMessage = Json.decodeFromString(contextJson!!) as CastledPushMessage
         countDownTimer?.cancel()
 
         stopForeground(STOP_FOREGROUND_REMOVE)
@@ -75,7 +72,7 @@ class PushCountdownService : Service() {
     private fun setupCountdownTimer() {
 
         val currentTimeMillis = System.currentTimeMillis()
-        endTimeInMillis = currentTimeMillis + TimeUnit.SECONDS.toMillis(30)
+        endTimeInMillis = currentTimeMillis + TimeUnit.SECONDS.toMillis(48 * 60 * 60)
         // Calculate the time difference
         val timeDifferenceInMillis = endTimeInMillis - System.currentTimeMillis()
 
@@ -86,14 +83,13 @@ class PushCountdownService : Service() {
     private fun startCountdown(timeDifferenceInMillis: Long) {
         countDownTimer = object : CountDownTimer(timeDifferenceInMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                serviceListener?.onTimerUpdated(millisUntilFinished)
+                serviceListener?.onServiceTimerUpdated(millisUntilFinished)
             }
 
             override fun onFinish() {
-                serviceListener?.onTimerFinished()
+                serviceListener?.onServiceTimerFinished()
                 stopSelf()
             }
         }.start()
     }
-
 }
