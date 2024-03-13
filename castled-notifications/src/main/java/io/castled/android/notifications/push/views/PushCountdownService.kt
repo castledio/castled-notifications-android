@@ -1,4 +1,4 @@
-package io.castled.android.notifications.push.views.templates
+package io.castled.android.notifications.push.views
 
 // CountdownService.kt
 import android.app.Service
@@ -10,12 +10,13 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.PushConstants
-import io.castled.android.notifications.push.views.PushCountdownServiceListener
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import java.util.concurrent.TimeUnit
 
 class PushCountdownService : Service() {
 
-    private var serviceListener: PushCountdownServiceListener? = null
+    private var serviceListener: PushServiceListener? = null
     private val binder = PushCountdownServiceBinder()
     private lateinit var context: Context
     private lateinit var pushMessage: CastledPushMessage
@@ -24,11 +25,10 @@ class PushCountdownService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         context = applicationContext
-        //  val contextJson =
-        intent?.extras?.getString(PushConstants.CASTLED_PUSH_MESSAGE)
-        // pushMessage = Json.decodeFromString(contextJson!!) as CastledPushMessage
+        val contextJson =
+            intent?.extras?.getString(PushConstants.CASTLED_PUSH_MESSAGE)
+        pushMessage = Json.decodeFromString(contextJson!!) as CastledPushMessage
         countDownTimer?.cancel()
-
         stopForeground(STOP_FOREGROUND_REMOVE)
         serviceListener?.onServiceStarted()
         setupCountdownTimer()
@@ -38,7 +38,6 @@ class PushCountdownService : Service() {
     override fun onDestroy() {
         stopPushService()
         super.onDestroy()
-
     }
 
     inner class PushCountdownServiceBinder : Binder() {
@@ -51,14 +50,13 @@ class PushCountdownService : Service() {
     }
 
     //LISTENER
-    fun setServiceListener(listener: PushCountdownServiceListener) {
+    fun setServiceListener(listener: PushServiceListener) {
         serviceListener = listener
     }
 
     //CUSTOM METHODS
     fun stopPushService() {
-        countDownTimer?.cancel()
-        countDownTimer = null
+        invalidateTimer()
         stopForeground(STOP_FOREGROUND_REMOVE)
         serviceListener = null
         stopSelf()
@@ -69,27 +67,44 @@ class PushCountdownService : Service() {
     }
 
     //COUNTDOWN RELATED
+    private fun invalidateTimer() {
+        countDownTimer?.cancel()
+        countDownTimer = null
+    }
+
     private fun setupCountdownTimer() {
-
         val currentTimeMillis = System.currentTimeMillis()
-        endTimeInMillis = currentTimeMillis + TimeUnit.SECONDS.toMillis(48 * 60 * 60)
-        // Calculate the time difference
-        val timeDifferenceInMillis = endTimeInMillis - System.currentTimeMillis()
-
-        // Start countdown timer
-        startCountdown(timeDifferenceInMillis)
+        endTimeInMillis = currentTimeMillis + TimeUnit.SECONDS.toMillis(70)
+        if (isTimeExceeded()) {
+            serviceListener?.onServiceTimerFinished()
+            stopSelf()
+        } else {
+            // Calculate the time difference
+            val timeDifferenceInMillis = endTimeInMillis - System.currentTimeMillis()
+            // Start countdown timer
+            startCountdown(timeDifferenceInMillis)
+        }
     }
 
     private fun startCountdown(timeDifferenceInMillis: Long) {
         countDownTimer = object : CountDownTimer(timeDifferenceInMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                serviceListener?.onServiceTimerUpdated(millisUntilFinished)
+                if (isTimeExceeded()) {
+                    invalidateTimer()
+                    serviceListener?.onServiceTimerFinished()
+                    stopSelf()
+                } else {
+                    serviceListener?.onServiceTimerUpdated(millisUntilFinished)
+                }
             }
 
             override fun onFinish() {
+                invalidateTimer()
                 serviceListener?.onServiceTimerFinished()
                 stopSelf()
             }
         }.start()
     }
+
+    private fun isTimeExceeded(): Boolean = System.currentTimeMillis() > endTimeInMillis
 }

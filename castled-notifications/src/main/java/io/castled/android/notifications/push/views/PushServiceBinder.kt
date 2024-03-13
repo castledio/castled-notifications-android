@@ -7,11 +7,13 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import io.castled.android.notifications.push.models.CastledPushMessage
-import io.castled.android.notifications.push.views.templates.PushCountdownService
+import io.castled.android.notifications.push.models.PushConstants
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 internal class PushServiceBinder(
     private val context: Context,
-    private val serviceListener: PushCountdownServiceListener,
+    private val serviceListener: PushServiceListener,
     private val pushMessage: CastledPushMessage,
     private val notificationBuilder: NotificationCompat.Builder
 ) {
@@ -21,28 +23,24 @@ internal class PushServiceBinder(
     fun bindService() {
         try {
             val serviceIntent = Intent(context, PushCountdownService::class.java)
-
             serviceConnection = object : ServiceConnection {
                 override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
                     val binder = service as PushCountdownService.PushCountdownServiceBinder
                     pushTimerService = binder.getService()
                     pushTimerService?.setServiceListener(serviceListener)
-                    serviceListener.onServiceConnected()
+                    serviceListener.onBinderServiceConnected()
                     context.startService(serviceIntent)
                 }
 
                 override fun onServiceDisconnected(name: ComponentName?) {
                     pushTimerService = null
-                    serviceListener.onServiceDisconnected()
+                    serviceListener.onBinderServiceDisconnected()
                 }
             }
-//            serviceIntent.putExtra(
-//                PushConstants.CASTLED_PUSH_MESSAGE,
-//                Json.encodeToString(pushMessage)
-//            )
-//            val jsonString = Json.encodeToString(pushMessage)
-//            Log.d("PushMessageSize", "Size of pushMessage JSON: ${jsonString.length} bytes")
-
+            serviceIntent.putExtra(
+                PushConstants.CASTLED_PUSH_MESSAGE,
+                Json.encodeToString(pushMessage)
+            )
             context.bindService(serviceIntent, serviceConnection!!, Context.BIND_AUTO_CREATE)
         } catch (_: Exception) {
         }
@@ -61,10 +59,13 @@ internal class PushServiceBinder(
     }
 
     fun onServiceStarted() {
-        pushTimerService?.startForeground(
-            pushMessage.notificationId,
-            notificationBuilder
-        )
+        try {
+            pushTimerService?.startForeground(
+                pushMessage.notificationId,
+                notificationBuilder
+            )
+        } catch (_: Exception) {
+        }
     }
 }
 

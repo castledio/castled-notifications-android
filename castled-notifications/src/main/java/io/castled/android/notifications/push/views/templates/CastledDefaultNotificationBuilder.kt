@@ -1,6 +1,7 @@
 package io.castled.android.notifications.push.views.templates
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import io.castled.android.notifications.logger.CastledLogger.Companion.getInstance
@@ -11,13 +12,14 @@ import io.castled.android.notifications.push.views.PushBaseBuilder
 import io.castled.android.notifications.push.views.PushBuilderConfigurator
 import kotlinx.coroutines.CoroutineScope
 
-internal class CastledNotificationBuilder(
+internal class CastledDefaultNotificationBuilder(
     context: Context,
     pushMessage: CastledPushMessage,
     externalScope: CoroutineScope
 
 ) : PushBaseBuilder(context, pushMessage, externalScope) {
 
+    override val coverImageBitmap: Bitmap? = null
     override lateinit var notificationBuilder: NotificationCompat.Builder
     private lateinit var configurator: PushBuilderConfigurator
 
@@ -34,9 +36,10 @@ internal class CastledNotificationBuilder(
 
         configureNotification()
 
+        display()
     }
 
-    override suspend fun display() {
+    override fun display() {
         NotificationManagerCompat.from(context)
             .notify(pushMessage.notificationId, notificationBuilder.build())
     }

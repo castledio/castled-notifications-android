@@ -16,7 +16,7 @@
         </service>
 
         <service
-            android:name="io.castled.android.notifications.push.views.templates.PushCountdownService"
+            android:name="io.castled.android.notifications.push.views.PushCountdownService"
             android:enabled="true"
             android:exported="true">
 

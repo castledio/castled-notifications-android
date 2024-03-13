@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.widget.RemoteViews
+import io.castled.android.notifications.push.models.CastledPushMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
@@ -75,9 +76,13 @@ internal class RemoteViewUtils {
             }
         }
 
-        suspend fun getRemoteViewBitmapFrom(imageUrl: String?): Bitmap? =
+        suspend fun getRemoteViewBitmapFrom(pushMessage: CastledPushMessage): Bitmap? =
             withContext(Dispatchers.IO) {
                 try {
+                    val imageUrl = pushMessage.pushMessageFrames[0].imageUrl
+                    if (imageUrl.isNullOrBlank()) {
+                        return@withContext null
+                    }
                     val url = URL(imageUrl)
                     val connection = url.openConnection()
                     connection.connectTimeout = 10000 // 10 seconds
@@ -102,6 +107,7 @@ internal class RemoteViewUtils {
                 }
                 return@withContext null
             }
+
 
     }
 

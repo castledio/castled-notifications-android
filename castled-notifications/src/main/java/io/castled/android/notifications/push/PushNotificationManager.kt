@@ -42,7 +42,6 @@ internal object PushNotificationManager {
         pushBuilder?.let {
             displayedNotificaions[pushMessage.notificationId] = it
             it.build()
-            it.display()
         }
 
         PushNotification.reportPushEvent(
@@ -87,8 +86,8 @@ internal object PushNotificationManager {
         try {
             val pushBuilder = displayedNotificaions[notiifcationId]
             pushBuilder?.let {
-                it.close()
                 displayedNotificaions.remove(notiifcationId)
+                it.close()
             }
         } catch (e: Exception) {
 

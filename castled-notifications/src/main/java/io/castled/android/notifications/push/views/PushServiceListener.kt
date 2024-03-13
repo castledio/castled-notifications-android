@@ -1,9 +1,9 @@
 package io.castled.android.notifications.push.views
 
-interface PushCountdownServiceListener {
+interface PushServiceListener {
     fun onServiceStarted()
     fun onServiceTimerUpdated(millisUntilFinished: Long)
     fun onServiceTimerFinished()
-    fun onServiceConnected()
-    fun onServiceDisconnected()
+    fun onBinderServiceConnected()
+    fun onBinderServiceDisconnected()
 }

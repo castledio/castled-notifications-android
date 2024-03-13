@@ -1,6 +1,7 @@
 package io.castled.android.notifications.push.views
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.core.app.NotificationCompat
 import io.castled.android.notifications.push.models.CastledPushMessage
 import kotlinx.coroutines.CoroutineScope
@@ -12,7 +13,8 @@ abstract class PushBaseBuilder(
 
 ) {
     abstract val notificationBuilder: NotificationCompat.Builder
+    abstract val coverImageBitmap: Bitmap?
     abstract suspend fun build()
-    abstract suspend fun display()
+    abstract fun display()
     abstract fun close()
 }

@@ -2,7 +2,7 @@ package io.castled.android.notifications.push.views
 
 import android.content.Context
 import io.castled.android.notifications.push.models.CastledPushMessage
-import io.castled.android.notifications.push.views.templates.CountdownTimerProgressBarPushBuilder
+import io.castled.android.notifications.push.views.templates.CastledDefaultNotificationBuilder
 import kotlinx.coroutines.CoroutineScope
 
 internal object PushBuilderFactory {
@@ -12,7 +12,6 @@ internal object PushBuilderFactory {
         externalScope: CoroutineScope
     ): PushBaseBuilder? {
 
-        return CountdownTimerProgressBarPushBuilder(context, pushMessage, externalScope)
-        // return CastledNotificationBuilder(context, pushMessage)
+        return CastledDefaultNotificationBuilder(context, pushMessage, externalScope)
     }
 }
