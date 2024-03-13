@@ -13,7 +13,6 @@ import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.utils.RemoteViewUtils
 import io.castled.android.notifications.push.views.CastledRemoteNotificationBuilder
 import io.castled.android.notifications.push.views.PushBaseBuilder
-import io.castled.android.notifications.push.views.PushBuilderConfigurator
 import io.castled.android.notifications.push.views.PushServiceBinder
 import io.castled.android.notifications.push.views.PushServiceListener
 import kotlinx.coroutines.CoroutineScope
@@ -152,20 +151,4 @@ class CountdownTimerDefaultPushBuilder(
         largeLayout?.setTextColor(R.id.txt_title, timeColor)
         largeLayout?.setTextColor(R.id.txt_elapsed_time, timeColor)
     }
-
-    private fun configureNotification() {
-        val configurator = PushBuilderConfigurator(context, pushMessage, notificationBuilder)
-
-        configurator.setChannel()
-        // Notification click action
-        configurator.addNotificationAction()
-        // Action buttons
-        configurator.addActionButtons()
-        // Dismiss action
-        configurator.addDiscardAction()
-        configurator.setTimeout()
-        configurator.setPriority()
-        configurator.setSummaryAndBody()
-    }
-
 }
