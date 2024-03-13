@@ -73,6 +73,7 @@ class PushCountdownService : Service() {
     }
 
     private fun setupCountdownTimer() {
+
         val currentTimeMillis = System.currentTimeMillis()
         endTimeInMillis = currentTimeMillis + TimeUnit.SECONDS.toMillis(70)
         if (isTimeExceeded()) {

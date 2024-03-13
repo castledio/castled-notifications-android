@@ -10,10 +10,9 @@ import androidx.core.app.NotificationManagerCompat
 import io.castled.android.notifications.R
 import io.castled.android.notifications.commons.ColorUtils
 import io.castled.android.notifications.push.models.CastledPushMessage
-import io.castled.android.notifications.push.utils.CastledPushMessageUtils.getChannelId
 import io.castled.android.notifications.push.utils.RemoteViewUtils
+import io.castled.android.notifications.push.views.CastledRemoteNotificationBuilder
 import io.castled.android.notifications.push.views.PushBaseBuilder
-import io.castled.android.notifications.push.views.PushBuilderConfigurator
 import io.castled.android.notifications.push.views.PushServiceBinder
 import io.castled.android.notifications.push.views.PushServiceListener
 import kotlinx.coroutines.CoroutineScope
@@ -27,19 +26,12 @@ class CountdownTimerBoxPushBuilder(
 
     override var coverImageBitmap: Bitmap? = null
     private lateinit var pushServiceBinder: PushServiceBinder
-    private lateinit var configurator: PushBuilderConfigurator
     override lateinit var notificationBuilder: NotificationCompat.Builder
 
     override suspend fun build() {
         coverImageBitmap = RemoteViewUtils.getRemoteViewBitmapFrom(pushMessage)
         // Initialize notification builder
-        notificationBuilder =
-            NotificationCompat.Builder(context, pushMessage.getChannelId())
-                .setSmallIcon(R.drawable.io_castled_push_default_small_icon)
-        notificationBuilder.setOnlyAlertOnce(true)
-        notificationBuilder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
-
-        configureNotification()
+        notificationBuilder = CastledRemoteNotificationBuilder(context, pushMessage)
 
         createNotification(0L)
 
@@ -155,22 +147,5 @@ class CountdownTimerBoxPushBuilder(
         RemoteViewUtils.setRemoteViewBackgroundColor(smallLayout, R.id.txt_minutes, timeColor)
         RemoteViewUtils.setRemoteViewBackgroundColor(smallLayout, R.id.txt_hours, timeColor)
     }
-
-    private fun configureNotification() {
-        val configurator = PushBuilderConfigurator(context, pushMessage, notificationBuilder)
-
-        configurator.setChannel()
-        // Notification click action
-        configurator.addNotificationAction()
-        // Action buttons
-        configurator.addActionButtons()
-        // Dismiss action
-        configurator.addDiscardAction()
-        configurator.setTimeout()
-        configurator.setPriority()
-        configurator.setSummaryAndBody()
-
-
-    }
-
+    
 }

@@ -22,6 +22,7 @@ import io.castled.android.notifications.push.models.CastledPushPriority
 import io.castled.android.notifications.push.models.NotificationActionContext
 import io.castled.android.notifications.push.models.NotificationEventType
 import io.castled.android.notifications.push.models.PushConstants
+import io.castled.android.notifications.push.utils.CastledPushMessageUtils.getChannelId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
@@ -137,8 +138,7 @@ internal class PushBuilderConfigurator(
     }
 
     fun setChannel() {
-        val channelId = pushMessage.channelId.takeUnless { it.isNullOrBlank() }
-            ?: PushConstants.CASTLED_DEFAULT_CHANNEL_ID
+        val channelId = pushMessage.getChannelId()
         val channelDesc = pushMessage.channelDescription.takeUnless { it.isNullOrBlank() }
             ?: context.getString(R.string.io_castled_push_default_channel_desc)
         notificationBuilder.setChannelId(
