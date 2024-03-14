@@ -10,6 +10,8 @@ class CastledInboxDisplayConfig : Serializable {
     var navigationBarTitle: String = "App Inbox"
     var navigationBarTitleColor: String = "#ffffff"
     var hideNavigationBar: Boolean = false
+    var hideBackButton: Boolean = false
+    var backButtonResourceId: Int? = null
 
     // Tabbar Configuraitions
     var showCategoriesTab: Boolean = true

@@ -22,7 +22,7 @@ class MyApplicationClass : MultiDexApplication() {
                 .location(CastledConfigs.CastledLocation.US)
                 .enablePush(true)
                 .enablePushBoost(true)
-                .enableAppInbox(false)
+                .enableAppInbox(true)
                 .enableInApp(true)
                 .enableSessionTracking(true)
 //                .skipUrlHandling(true)
