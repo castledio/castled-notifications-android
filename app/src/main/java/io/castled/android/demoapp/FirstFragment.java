@@ -55,6 +55,11 @@ public class FirstFragment extends Fragment {
             styleConfig.setNavigationBarTitle("Castled Inbox");
             styleConfig.setHideNavigationBar(false);
 
+//            styleConfig.setHideBackButton(true);
+//            int resId = getContext().getResources().getIdentifier("back_btn1", "drawable", getContext().getPackageName());
+//            styleConfig.setBackButtonResourceId(resId);
+
+
             styleConfig.setShowCategoriesTab(true);
             styleConfig.setTabBarDefaultBackgroundColor("#FFFFFF");
             styleConfig.setTabBarSelectedBackgroundColor("#FFFFFF");

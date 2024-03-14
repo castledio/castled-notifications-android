@@ -11,6 +11,7 @@ import io.castled.android.notifications.inapp.models.consts.AppEvents
 import io.castled.android.notifications.inbox.AppInbox
 import io.castled.android.notifications.inbox.model.CastledInboxDisplayConfig
 import io.castled.android.notifications.inbox.model.CastledInboxItem
+import io.castled.android.notifications.inbox.model.InboxConstants
 import io.castled.android.notifications.inbox.views.CastledInboxActivity
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
@@ -259,7 +260,12 @@ object CastledNotifications {
         castledScope.launch(Dispatchers.Default) {
             if (isInited() && getCastledConfigs().enableAppInbox) {
                 val intent = Intent(context, CastledInboxActivity::class.java)
-                displayConfig?.let { intent.putExtra("displayConfig", displayConfig) }
+                displayConfig?.let {
+                    intent.putExtra(
+                        InboxConstants.CASTLED_DISPLAY_CONFIGS,
+                        displayConfig
+                    )
+                }
                 context.startActivity(intent)
 
             } else {
