@@ -212,7 +212,8 @@ internal class CastledInboxActivity : AppCompatActivity(),
     override fun onPause() {
         super.onPause()
         if (viewModel.displayedItems.isNotEmpty()) {
-            viewModel.inboxViewLifecycleListener.registerReadEvents(viewModel.displayedItems)
+            viewModel.inboxViewLifecycleListener.registerReadEvents(viewModel.displayedItems.toMutableSet())
+            viewModel.displayedItems.clear()
         }
         // Perform actions when the fragment is no longer visible
     }
