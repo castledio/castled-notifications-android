@@ -1,6 +1,5 @@
 package io.castled.android.notifications.push
 
-import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -37,11 +36,6 @@ class CastledNotificationReceiverAct : AppCompatActivity() {
                 notificationContext.actionType?.let { CastledClickAction.valueOf(it) }
                     ?: CastledClickAction.NONE
 
-            // Cancel the notification
-            val notificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.cancel(notificationContext.notificationId)
-
             when (clickedAction) {
                 CastledClickAction.DEEP_LINKING, CastledClickAction.RICH_LANDING -> {
                     val uri = notificationContext.actionUri ?: return
@@ -52,7 +46,6 @@ class CastledNotificationReceiverAct : AppCompatActivity() {
                             notificationContext.keyVals
                         )
                     }
-
                 }
 
                 CastledClickAction.NAVIGATE_TO_SCREEN -> {

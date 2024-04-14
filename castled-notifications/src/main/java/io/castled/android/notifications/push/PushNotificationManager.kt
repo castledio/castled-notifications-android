@@ -28,7 +28,7 @@ internal object PushNotificationManager {
     }
 
     @SuppressLint("MissingPermission")
-    suspend fun displayNotification(context: Context, pushMessage: CastledPushMessage) {
+    fun displayNotification(context: Context, pushMessage: CastledPushMessage) {
         logger.debug("Building castled notification...")
         val notification =
             CastledNotificationBuilder(context).buildNotification(pushMessage)
