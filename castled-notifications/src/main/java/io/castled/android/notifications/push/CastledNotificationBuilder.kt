@@ -21,6 +21,7 @@ import io.castled.android.notifications.push.models.*
 import io.castled.android.notifications.commons.CastledIdUtils
 import io.castled.android.notifications.push.models.PushConstants
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -28,12 +29,13 @@ import java.net.URL
 
 internal class CastledNotificationBuilder(private val context: Context) {
 
-    suspend fun buildNotification(pushMessage: CastledPushMessage): Notification {
+    fun buildNotification(pushMessage: CastledPushMessage): Notification {
         val notificationBuilder = NotificationCompat.Builder(
             context, getChannelId(pushMessage)
         )
 
         notificationBuilder.setContentTitle(pushMessage.title)
+        notificationBuilder.setAutoCancel(true)
 
         // Priority
         setPriority(notificationBuilder, pushMessage)
@@ -77,6 +79,7 @@ internal class CastledNotificationBuilder(private val context: Context) {
             notificationBuilder.setSubText(summary)
         }
         notificationBuilder.setContentText(body)
+        notificationBuilder.setStyle(NotificationCompat.BigTextStyle().bigText(body))
     }
 
     private fun setPriority(
@@ -89,10 +92,10 @@ internal class CastledNotificationBuilder(private val context: Context) {
         }
     }
 
-    private suspend fun setSmallIcon(
+    private fun setSmallIcon(
         notificationBuilder: NotificationCompat.Builder,
         payload: CastledPushMessage
-    ) = withContext(Dispatchers.IO) {
+    ) {
         val resources = context.resources
         val smallIcon = payload.smallIconResourceId
         val resourceId = if (!smallIcon.isNullOrBlank()) {
@@ -147,10 +150,10 @@ internal class CastledNotificationBuilder(private val context: Context) {
         return bmp
     }
 
-    private suspend fun setLargeIcon(
+    private fun setLargeIcon(
         notificationBuilder: NotificationCompat.Builder,
         payload: CastledPushMessage
-    ) = withContext(Dispatchers.IO) {
+    ) {
         val largeIconUrl = payload.largeIconUri
         val largeIconResourceId =
             if (drawableExistsAndDefined(context, R.drawable.io_castled_push_default_large_icon)) {
@@ -176,36 +179,37 @@ internal class CastledNotificationBuilder(private val context: Context) {
         }
     }
 
-    private suspend fun setImage(
+    private fun setImage(
         notificationBuilder: NotificationCompat.Builder,
         payload: CastledPushMessage
     ) {
         val imageUrl = payload.pushMessageFrames[0].imageUrl
-        val body = payload.body
-        val title = payload.title
-        if (!imageUrl.isNullOrBlank()) {
-            val bitmap = getBitmapFromUrl(imageUrl)
-            val style = NotificationCompat.BigPictureStyle()
-                .bigPicture(bitmap)
-                .setSummaryText(body)
-                .setBigContentTitle(title)
-            notificationBuilder.setStyle(style)
+        if (imageUrl.isNullOrBlank()) {
+            return
         }
+        val bitmap = getBitmapFromUrl(imageUrl) ?: return
+        val style = NotificationCompat.BigPictureStyle()
+            .bigPicture(bitmap)
+            .setSummaryText(payload.body)
+            .setBigContentTitle(payload.title)
+        notificationBuilder.setStyle(style)
     }
 
-    private suspend fun getBitmapFromUrl(imageUrl: String?): Bitmap? = withContext(Dispatchers.IO) {
-        try {
-            val url = URL(imageUrl)
-            val connection = url.openConnection()
-            connection.connectTimeout = 10000 // 10 seconds
-            connection.readTimeout = 15000 // 15 seconds
-            connection.getInputStream().use { inputStream ->
-                return@withContext BitmapFactory.decodeStream(inputStream)
+    private fun getBitmapFromUrl(imageUrl: String?): Bitmap? = runBlocking {
+        withContext(Dispatchers.IO) {
+            try {
+                val url = URL(imageUrl)
+                val connection = url.openConnection()
+                connection.connectTimeout = 1500 // 1.5 seconds
+                connection.readTimeout = 2500 // 2.5 seconds
+                connection.getInputStream().use { inputStream ->
+                    return@withContext BitmapFactory.decodeStream(inputStream)
+                }
+            } catch (e: Exception) { // Catch general exceptions
+                logger.debug("Bitmap fetch failed, reason: ${e.message}")
             }
-        } catch (e: Exception) { // Catch general exceptions
-            logger.debug("Bitmap fetch failed, reason: ${e.message}")
+            return@withContext null
         }
-        return@withContext null
     }
 
     private fun addNotificationAction(
@@ -320,7 +324,7 @@ internal class CastledNotificationBuilder(private val context: Context) {
             ?: PushConstants.CASTLED_DEFAULT_CHANNEL_ID
         val channelDesc = payload.channelDescription.takeUnless { it.isNullOrBlank() }
             ?: context.getString(R.string.io_castled_push_default_channel_desc)
-         notificationBuilder.setChannelId(
+        notificationBuilder.setChannelId(
             PushNotificationManager.getOrCreateNotificationChannel(
                 context,
                 channelId,

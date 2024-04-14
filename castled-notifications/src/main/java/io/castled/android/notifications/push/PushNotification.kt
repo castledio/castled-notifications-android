@@ -1,9 +1,6 @@
 package io.castled.android.notifications.push
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
-import androidx.core.app.ActivityCompat
 import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.CastledPushNotificationListener
 import io.castled.android.notifications.commons.CastledLinkedHashCache
@@ -22,6 +19,8 @@ import io.castled.android.notifications.workmanager.CastledPushWorkManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlin.reflect.full.primaryConstructor
 
 internal object PushNotification : CastledSharedStoreListener {
@@ -146,41 +145,20 @@ internal object PushNotification : CastledSharedStoreListener {
 
     fun handlePushNotification(context: Context, pushMessage: CastledPushMessage?) {
         pushMessage ?: return
-        externalScope.launch(Dispatchers.Default) {
-            if (!shouldDisplayPushMessage(context, pushMessage)) {
-                return@launch
+        val pushAlreadyDisplayed = runBlocking {
+            withContext(Dispatchers.IO) {
+                return@withContext CastledSharedStore.checkAndSetRecentDisplayedPushId(
+                    context,
+                    pushMessage.notificationId
+                )
             }
-            pushMessageCache?.set(pushMessage.notificationId, pushMessage)
-            PushNotificationManager.displayNotification(context, pushMessage)
         }
-    }
-
-    private suspend fun shouldDisplayPushMessage(
-        context: Context,
-        pushMessage: CastledPushMessage?
-    ): Boolean {
-        // Payload from Castled server
-        pushMessage ?: run {
-            logger.debug("Castled push notification empty! skipping notification handling...")
-            return false
+        if (pushAlreadyDisplayed) {
+            // push already displayed
+            return
         }
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            logger.debug("Do not have push permission!")
-            return false
-        }
-        if (CastledSharedStore.checkAndSetRecentDisplayedPushId(
-                context,
-                pushMessage.notificationId
-            )
-        ) {
-            logger.debug("Message already displayed!")
-            return false
-        }
-        return true
+        pushMessageCache?.set(pushMessage.notificationId, pushMessage)
+        PushNotificationManager.displayNotification(context, pushMessage)
     }
 
     fun isCastledPushMessage(remoteMessage: RemoteMessage): Boolean =
