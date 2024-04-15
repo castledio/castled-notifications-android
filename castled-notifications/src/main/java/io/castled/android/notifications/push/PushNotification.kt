@@ -84,9 +84,7 @@ internal object PushNotification : CastledSharedStoreListener {
                 pushMessageCache?.remove(actionContext.notificationId)
             }
         }
-        externalScope.launch(Dispatchers.Default) {
-            pushRepository.reportEvent(actionContext)
-        }
+        pushRepository.enqueueEvent(actionContext)
     }
 
     fun subscribeToPushNotificationEvents(listener: CastledPushNotificationListener) {
