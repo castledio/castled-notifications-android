@@ -45,6 +45,10 @@ internal class PushRepository(context: Context) {
         )
     }
 
+    fun enqueueEvent(event: NotificationActionContext) {
+        networkWorkManager.enqueueRequest(event.toCastledPushEventRequest())
+    }
+
     suspend fun registerNoRetry(userId: String, tokens: List<PushTokenInfo>): Response<Void?> {
         return pushApi.register(
             CastledSharedStore.getAppId(),

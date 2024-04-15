@@ -113,6 +113,7 @@ internal class CastledNotificationBuilder(private val context: Context) {
             resourceId > 0 -> {
                 notificationBuilder.setSmallIcon(resourceId)
             }
+
             else -> {
                 val appIcon = IconCompat.createWithBitmap(
                     getBitmapFromDrawable(
@@ -164,8 +165,9 @@ internal class CastledNotificationBuilder(private val context: Context) {
 
         when {
             !largeIconUrl.isNullOrBlank() -> {
-                notificationBuilder.setLargeIcon(getBitmapFromUrl(largeIconUrl))
+                getBitmapFromUrl(largeIconUrl)?.let { notificationBuilder.setLargeIcon(it) }
             }
+
             largeIconResourceId > 0 -> {
                 val image = BitmapFactory.decodeResource(
                     context.resources,
@@ -173,6 +175,7 @@ internal class CastledNotificationBuilder(private val context: Context) {
                 )
                 notificationBuilder.setLargeIcon(image)
             }
+
             else -> {
                 // Nothing to do
             }

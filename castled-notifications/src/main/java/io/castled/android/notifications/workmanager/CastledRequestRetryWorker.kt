@@ -36,7 +36,7 @@ internal class CastledRequestRetryWorker(appContext: Context, workerParams: Work
 
         try {
             // Synchronize the database operation using the Mutex
-            CastledGlobals.retryDbMutex.withLock {
+            CastledGlobals.networkWorkDbMutex.withLock {
                 retryRequests.addAll(networkRetryRepository.getRetryRequests())
                 val requestsByType = retryRequests.groupBy { it.request.requestType }
                 requestsByType.forEach {
