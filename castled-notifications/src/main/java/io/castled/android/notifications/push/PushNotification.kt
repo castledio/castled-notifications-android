@@ -62,11 +62,12 @@ internal object PushNotification : CastledSharedStoreListener {
             return
         }
 
+        val eventType = NotificationEventType.valueOf(actionContext.eventType)
+
         // Listener callbacks
         pushNotificationListener?.let {
             val pushMessage = pushMessageCache?.get(actionContext.notificationId)
             pushMessage ?: return
-            val eventType = NotificationEventType.valueOf(actionContext.eventType)
             when (eventType) {
                 NotificationEventType.RECEIVED -> it.onCastledPushReceived(pushMessage)
                 NotificationEventType.CLICKED ->
@@ -84,7 +85,16 @@ internal object PushNotification : CastledSharedStoreListener {
                 pushMessageCache?.remove(actionContext.notificationId)
             }
         }
-        pushRepository.enqueueEvent(actionContext)
+
+        if (eventType == NotificationEventType.RECEIVED) {
+            // If received event, this is being run from the main thread of fcm listener.
+            // So enqueue first to maximize event delivery chance
+            pushRepository.enqueueEvent(actionContext)
+        } else {
+            externalScope.launch(Dispatchers.Default) {
+                pushRepository.reportEvent(actionContext)
+            }
+        }
     }
 
     fun subscribeToPushNotificationEvents(listener: CastledPushNotificationListener) {

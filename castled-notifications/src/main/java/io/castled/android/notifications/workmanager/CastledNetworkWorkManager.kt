@@ -3,6 +3,7 @@ package io.castled.android.notifications.workmanager
 import android.content.Context
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
@@ -37,7 +38,9 @@ internal class CastledNetworkWorkManager private constructor(context: Context) {
                     TimeUnit.MILLISECONDS
                 ).build()
         logger.debug("enqueuing work-id: ${workRequest.id}")
-        workManager.enqueue(workRequest)
+        workManager.beginUniqueWork(
+            CASTLED_NETWORK_WORK, ExistingWorkPolicy.REPLACE, workRequest
+        ).enqueue()
     }
 
     fun enqueueRequest(request: CastledNetworkRequest) {
@@ -52,7 +55,9 @@ internal class CastledNetworkWorkManager private constructor(context: Context) {
                     TimeUnit.MILLISECONDS
                 ).build()
         logger.debug("enqueuing work-id: ${workRequest.id}")
-        workManager.enqueue(workRequest)
+        workManager.beginUniqueWork(
+            CASTLED_NETWORK_WORK, ExistingWorkPolicy.REPLACE, workRequest
+        ).enqueue()
     }
 
     suspend fun <T> apiCallWithRetry(
@@ -78,6 +83,8 @@ internal class CastledNetworkWorkManager private constructor(context: Context) {
     }
 
     companion object {
+
+        private const val CASTLED_NETWORK_WORK = "castled_network_work"
 
         private val logger = CastledLogger.getInstance(LogTags.WORK_MANAGER)
 
