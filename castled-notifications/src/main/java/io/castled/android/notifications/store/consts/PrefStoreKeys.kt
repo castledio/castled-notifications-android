@@ -12,6 +12,7 @@ internal class PrefStoreKeys {
         const val USER_ID_UNREGISTERED = "userIdUnregistered"
         const val FCM_TOKEN = "fcmToken"
         const val MI_TOKEN = "miToken"
+        const val IS_PUSH_GRANTED = "isPushGranted"
         const val FCM_TOKEN_UNREGISTERED = "fcmTokenUnregistered"
         const val OS_VERSION = "osVersion"
         const val SDK_VERSION = "sdkVersion"
