@@ -203,6 +203,7 @@ internal object CastledSharedStore {
         deviceId = deviceID
         sharedPreferences.edit().putString(PrefStoreKeys.DEVICE_ID, deviceId).apply()
     }
+
     fun setPushPermission(isGranted: Boolean) {
         isPushGranted = isGranted
         sharedPreferences.edit().putBoolean(PrefStoreKeys.IS_PUSH_GRANTED, isPushGranted).apply()
