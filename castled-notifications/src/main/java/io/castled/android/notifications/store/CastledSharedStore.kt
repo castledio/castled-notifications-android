@@ -35,6 +35,7 @@ internal object CastledSharedStore {
     private var userId: String? = null
     private var deviceId: String? = null
     private var deviceInfo: Map<String, String>? = null
+    private var isPushGranted: Boolean = false
 
     private var userToken: String? = null
     private val tokens = mutableMapOf<PushTokenType, String?>()
@@ -63,6 +64,7 @@ internal object CastledSharedStore {
                 val sharedPref = getSharedPreference(context)
                 // Restore from shared store
                 deviceId = sharedPref.getString(PrefStoreKeys.DEVICE_ID, null)
+                isPushGranted = sharedPref.getBoolean(PrefStoreKeys.IS_PUSH_GRANTED,false)
                 deviceInfo = fetchDeviceInfo()
                 tokens[PushTokenType.FCM] =
                     sharedPref.getString(PrefStoreKeys.FCM_TOKEN, null)
@@ -202,6 +204,10 @@ internal object CastledSharedStore {
         sharedPreferences.edit().putString(PrefStoreKeys.DEVICE_ID, deviceId).apply()
     }
 
+    fun setPushPermission(isGranted: Boolean) {
+        isPushGranted = isGranted
+        sharedPreferences.edit().putBoolean(PrefStoreKeys.IS_PUSH_GRANTED, isPushGranted).apply()
+    }
     fun <T : Any> getValue(key: String, defaultValue: T): T {
         return when (defaultValue) {
             is String -> sharedPreferences.getString(key, defaultValue) as T
@@ -237,6 +243,8 @@ internal object CastledSharedStore {
     fun getDeviceInfo() = deviceInfo
 
     fun getDeviceId() = deviceId
+
+    fun getPushPermission() = isPushGranted
 
     fun clearUserId() {
         sharedPreferences.edit().remove(PrefStoreKeys.USER_ID).apply()
