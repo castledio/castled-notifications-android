@@ -175,7 +175,7 @@ internal class InAppController(context: Context) {
     }
 
     private suspend fun findTriggeredInApp(
-        eventName: String, params: Map<String, Any>?
+        eventName: String, params: Map<String, Any?>?
     ): List<Campaign>? {
         val inAppCampaigns = inAppRepository.getCampaigns()
         val triggeredInApp = inAppCampaigns.filter {

@@ -69,7 +69,7 @@ internal object InAppNotification : CastledSharedStoreListener {
             logger.debug("Ignoring app event, In-App disabled")
             return@launch
         }
-        inAppController.findAndLaunchInApp(eventName, eventParams)
+        inAppController.findAndLaunchInApp(context,eventName, eventParams)
     }
 
     fun reportInAppEvent(request: CastledInAppEventRequest) = externalScope.launch(Default) {
