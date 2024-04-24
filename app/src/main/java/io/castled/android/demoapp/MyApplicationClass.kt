@@ -7,7 +7,6 @@ import io.castled.android.notifications.CastledConfigs
 import io.castled.android.notifications.CastledNotifications
 import io.castled.android.notifications.CastledPushNotificationListener
 import io.castled.android.notifications.logger.CastledLogger
-import io.castled.android.notifications.push.extensions.getNotificationDisplayId
 import io.castled.android.notifications.push.models.CastledActionContext
 import io.castled.android.notifications.push.models.CastledPushMessage
 
@@ -19,17 +18,17 @@ class MyApplicationClass : MultiDexApplication() {
         CastledNotifications.initialize(
             this,
             CastledConfigs.Builder()
-                .appId("e8a4f68bfb6a58b40a77a0e6150eca0b")
-                .location(CastledConfigs.CastledLocation.TEST)
+                .appId("718c38e2e359d94367a2e0d35e1fd4df")
+                .location(CastledConfigs.CastledLocation.US)
                 .enablePush(true)
                 .enablePushBoost(true)
                 .enableAppInbox(true)
                 .enableInApp(true)
+                .enableSessionTracking(true)
+//                .skipUrlHandling(true)
                 .enableTracking(true)
                 .inAppFetchIntervalSec(60)
-                .xiaomiAppId("2882303761522058544")
-                .xiaomiAppKey("5302205887544")
-                .xiaomiRegion(CastledConfigs.XiaomiRegion.India)
+                .sessionTimeOutSec(30)
                 .build()
         )
 
@@ -42,18 +41,18 @@ class MyApplicationClass : MultiDexApplication() {
             val logger = CastledLogger.getInstance("CastledNotifications-DemoApp")
 
             override fun onCastledPushReceived(pushMessage: CastledPushMessage) {
-                logger.debug("Received push message with id: ${pushMessage.getNotificationDisplayId()}")
+                logger.debug("Received push message with id: ${pushMessage.notificationId}")
             }
 
             override fun onCastledPushClicked(
                 pushMessage: CastledPushMessage,
                 actionContext: CastledActionContext
             ) {
-                logger.debug("User clicked push message with id: ${pushMessage.getNotificationDisplayId()}")
+                logger.debug("User clicked push message with id: ${pushMessage.notificationId}")
             }
 
             override fun onCastledPushDismissed(pushMessage: CastledPushMessage) {
-                logger.debug("Dismissed push message with id: ${pushMessage.getNotificationDisplayId()}")
+                logger.debug("Dismissed push message with id: ${pushMessage.notificationId}")
             }
         })
     }

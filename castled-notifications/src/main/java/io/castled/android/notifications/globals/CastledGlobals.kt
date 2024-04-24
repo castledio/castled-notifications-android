@@ -4,5 +4,5 @@ import kotlinx.coroutines.sync.Mutex
 
 internal object CastledGlobals {
 
-    val retryDbMutex = Mutex()
+    val networkWorkDbMutex = Mutex()
 }

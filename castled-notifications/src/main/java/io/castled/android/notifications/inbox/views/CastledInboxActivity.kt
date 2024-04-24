@@ -9,11 +9,12 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -24,8 +25,10 @@ import io.castled.android.notifications.R
 import io.castled.android.notifications.commons.ColorUtils
 import io.castled.android.notifications.databinding.ActivityCastledInboxBinding
 import io.castled.android.notifications.inbox.model.CastledInboxDisplayConfig
+import io.castled.android.notifications.inbox.model.InboxConstants
 import io.castled.android.notifications.inbox.viewmodel.InboxRepository
 import io.castled.android.notifications.inbox.viewmodel.InboxViewModel
+import io.castled.android.notifications.store.CastledSharedStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,7 +37,7 @@ import java.io.Serializable
 
 internal class CastledInboxActivity : AppCompatActivity(),
     CoroutineScope by CoroutineScope(Dispatchers.Main) {
-    private  val SELECTED_COLOR = "#3366CC"
+    private val SELECTED_COLOR = "#3366CC"
     private val viewModel: InboxViewModel by viewModels()
     private val allString = "All"
     private lateinit var binding: ActivityCastledInboxBinding
@@ -46,10 +49,9 @@ internal class CastledInboxActivity : AppCompatActivity(),
     private var unselectedTabColor = Color.WHITE
     private var selectedTabTextColor = Color.parseColor(SELECTED_COLOR)
     private var unselectedTabTextColor = Color.BLACK
-    private var selectedIndicatorColor =  Color.parseColor(SELECTED_COLOR)
+    private var selectedIndicatorColor = Color.parseColor(SELECTED_COLOR)
     private var marginInPixels = 5
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -61,7 +63,7 @@ internal class CastledInboxActivity : AppCompatActivity(),
         viewPager.isUserInputEnabled = false
         binding.imgClose.setOnClickListener { finishAfterTransition() }
         val displayConfig = getSerializable(
-            this, "displayConfig",
+            this, InboxConstants.CASTLED_DISPLAY_CONFIGS,
             CastledInboxDisplayConfig::class.java
         )
         displayConfig?.let {
@@ -80,7 +82,8 @@ internal class CastledInboxActivity : AppCompatActivity(),
 
         if (shouldRefresh) {
             launch(Dispatchers.Default) {
-                inboxRepository.refreshInbox()
+                CastledSharedStore.getUserId()?.let { inboxRepository.refreshInbox() }
+
             }
         }
         launch(Dispatchers.IO) {
@@ -103,7 +106,6 @@ internal class CastledInboxActivity : AppCompatActivity(),
                 }
             }
         }
-
     }
 
     internal fun refreshTabsAfterDBChanges() {
@@ -161,6 +163,21 @@ internal class CastledInboxActivity : AppCompatActivity(),
         binding.toolbar.visibility =
             if (displayConfig.hideNavigationBar) View.GONE else View.VISIBLE
 
+        binding.imgClose.setOnClickListener { dismissInboxActivity() }
+
+        if (displayConfig.hideBackButton) {
+            binding.imgClose.visibility = View.GONE
+            binding.toolbarTitle.setPadding(
+                0,
+                binding.toolbarTitle.paddingTop,
+                binding.toolbarTitle.paddingRight,
+                binding.toolbarTitle.paddingBottom
+            )
+        }
+
+        val backButtonResourceId = getBackButtonResId(displayConfig.backButtonResourceId)
+
+        binding.imgClose.setImageResource(backButtonResourceId)
         val actionBar = supportActionBar
         actionBar?.let {
             actionBar.setBackgroundDrawable(
@@ -184,6 +201,10 @@ internal class CastledInboxActivity : AppCompatActivity(),
                 Spannable.SPAN_INCLUSIVE_INCLUSIVE
             )
             actionBar.title = text
+            if (!displayConfig.hideBackButton) {
+                it.setDisplayHomeAsUpEnabled(true);
+                actionBar.setHomeAsUpIndicator(backButtonResourceId)
+            }
             binding.toolbar.visibility = View.GONE
         }
     }
@@ -191,10 +212,26 @@ internal class CastledInboxActivity : AppCompatActivity(),
     override fun onPause() {
         super.onPause()
         if (viewModel.displayedItems.isNotEmpty()) {
-            viewModel.inboxViewLifecycleListener.registerReadEvents(viewModel.displayedItems)
+            viewModel.inboxViewLifecycleListener.registerReadEvents(viewModel.displayedItems.toMutableSet())
+            viewModel.displayedItems.clear()
         }
         // Perform actions when the fragment is no longer visible
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks here.
+        val id = item.itemId
+
+        // Handle the up button
+        if (id == android.R.id.home) {
+            // Perform your desired action here (e.g., navigating up or closing the activity)
+            dismissInboxActivity()
+            return true
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
 
     private fun <T : Serializable?> getSerializable(
         activity: Activity,
@@ -299,4 +336,29 @@ internal class CastledInboxActivity : AppCompatActivity(),
             return CastledCategoryTabFragment.newInstance(position, categories[position])
         }
     }
+
+    private fun dismissInboxActivity() {
+        finishAfterTransition()
+    }
+
+    private fun getBackButtonResId(resourceId: Int?): Int {
+        return if (resourceId != null && isValidResourceId(resourceId)) {
+            resourceId // Return the provided resource ID if it's not null and valid
+        } else {
+            R.drawable.castled_default_back // Return the default (invalid) resource ID
+        }
+    }
+
+    private fun isValidResourceId(resourceId: Int): Boolean {
+        return try {
+            // Attempt to retrieve the resource
+            val drawable = ResourcesCompat.getDrawable(resources, resourceId, null)
+            // Check if the resource is not null
+            drawable != null
+        } catch (e: Resources.NotFoundException) {
+            // Catch the exception if the resource is not found
+            false
+        }
+    }
+
 }

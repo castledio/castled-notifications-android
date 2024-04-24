@@ -1,9 +1,6 @@
 package io.castled.android.notifications.push
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
-import androidx.core.app.ActivityCompat
 import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.CastledPushNotificationListener
 import io.castled.android.notifications.commons.CastledLinkedHashCache
@@ -22,6 +19,8 @@ import io.castled.android.notifications.workmanager.CastledPushWorkManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlin.reflect.full.primaryConstructor
 
 internal object PushNotification : CastledSharedStoreListener {
@@ -63,11 +62,12 @@ internal object PushNotification : CastledSharedStoreListener {
             return
         }
 
+        val eventType = NotificationEventType.valueOf(actionContext.eventType)
+
         // Listener callbacks
         pushNotificationListener?.let {
             val pushMessage = pushMessageCache?.get(actionContext.notificationId)
             pushMessage ?: return
-            val eventType = NotificationEventType.valueOf(actionContext.eventType)
             when (eventType) {
                 NotificationEventType.RECEIVED -> it.onCastledPushReceived(pushMessage)
                 NotificationEventType.CLICKED ->
@@ -85,8 +85,15 @@ internal object PushNotification : CastledSharedStoreListener {
                 pushMessageCache?.remove(actionContext.notificationId)
             }
         }
-        externalScope.launch(Dispatchers.Default) {
-            pushRepository.reportEvent(actionContext)
+
+        if (eventType == NotificationEventType.RECEIVED) {
+            // If received event, this is being run from the main thread of fcm listener.
+            // So enqueue first to maximize event delivery chance
+            pushRepository.enqueueEvent(actionContext)
+        } else {
+            externalScope.launch(Dispatchers.Default) {
+                pushRepository.reportEvent(actionContext)
+            }
         }
     }
 
@@ -104,6 +111,8 @@ internal object PushNotification : CastledSharedStoreListener {
                 this.tokenProviders[it]?.register(context)
             } catch (e: ClassNotFoundException) {
                 logger.debug("Class ${it.providerClassName} not found!")
+            } catch (e: Exception) {
+                logger.debug("$e")
             }
         }
     }
@@ -130,7 +139,6 @@ internal object PushNotification : CastledSharedStoreListener {
         CastledPushWorkManager.getInstance(context).startPushBoostSync()
 
     suspend fun onTokenFetch(token: String?, tokenType: PushTokenType) {
-        val oldToken = CastledSharedStore.getToken(tokenType)
         if (CastledSharedStore.getToken(tokenType) != token) {
             // New token
             logger.debug("Updating push token: $token, type: $tokenType")
@@ -145,47 +153,26 @@ internal object PushNotification : CastledSharedStoreListener {
 
     fun handlePushNotification(context: Context, pushMessage: CastledPushMessage?) {
         pushMessage ?: return
-        externalScope.launch(Dispatchers.Default) {
-            if (!shouldDisplayPushMessage(context, pushMessage)) {
-                return@launch
+        val pushAlreadyDisplayed = runBlocking {
+            withContext(Dispatchers.IO) {
+                return@withContext CastledSharedStore.checkAndSetRecentDisplayedPushId(
+                    context,
+                    pushMessage.notificationId
+                )
             }
-            pushMessageCache?.set(pushMessage.notificationId, pushMessage)
-            PushNotificationManager.displayNotification(context, pushMessage)
         }
-    }
-
-    private suspend fun shouldDisplayPushMessage(
-        context: Context,
-        pushMessage: CastledPushMessage?
-    ): Boolean {
-        // Payload from Castled server
-        pushMessage ?: run {
-            logger.debug("Castled push notification empty! skipping notification handling...")
-            return false
+        if (pushAlreadyDisplayed) {
+            // push already displayed
+            return
         }
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            logger.debug("Do not have push permission!")
-            return false
-        }
-        if (CastledSharedStore.checkAndSetRecentDisplayedPushId(
-                context,
-                pushMessage.notificationId
-            )
-        ) {
-            logger.debug("Message already displayed!")
-            return false
-        }
-        return true
+        pushMessageCache?.set(pushMessage.notificationId, pushMessage)
+        PushNotificationManager.displayNotification(context, pushMessage)
     }
 
     fun isCastledPushMessage(remoteMessage: RemoteMessage): Boolean =
         PushNotificationManager.isCastledNotification(remoteMessage)
 
-    suspend fun getPushMessages() : List<CastledPushMessage> {
+    suspend fun getPushMessages(): List<CastledPushMessage> {
         return pushRepository.getPushMessages()
     }
 
@@ -204,5 +191,18 @@ internal object PushNotification : CastledSharedStoreListener {
         }
     }
 
+    suspend fun logoutUser(userId: String, sessionId: String?) {
+        pushRepository.logoutUser(userId, getTokens(), sessionId)
+    }
+
+    private fun getTokens(): List<PushTokenInfo> {
+        val tokens = mutableListOf<PushTokenInfo>()
+        PushTokenType.values().forEach { tokenType ->
+            CastledSharedStore.getToken(tokenType)?.let { tokenVal ->
+                tokens.add(PushTokenInfo(tokenVal, tokenType))
+            }
+        }
+        return tokens
+    }
 
 }

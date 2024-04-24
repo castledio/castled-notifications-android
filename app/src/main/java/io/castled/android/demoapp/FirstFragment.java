@@ -55,6 +55,11 @@ public class FirstFragment extends Fragment {
             styleConfig.setNavigationBarTitle("Castled Inbox");
             styleConfig.setHideNavigationBar(false);
 
+//            styleConfig.setHideBackButton(true);
+//            int resId = getContext().getResources().getIdentifier("back_btn1", "drawable", getContext().getPackageName());
+//            styleConfig.setBackButtonResourceId(resId);
+
+
             styleConfig.setShowCategoriesTab(true);
             styleConfig.setTabBarDefaultBackgroundColor("#FFFFFF");
             styleConfig.setTabBarSelectedBackgroundColor("#FFFFFF");
@@ -62,6 +67,9 @@ public class FirstFragment extends Fragment {
             styleConfig.setTabBarSelectedTextColor("#00539C");
             styleConfig.setTabBarIndicatorBackgroundColor("#0000FF");
             CastledNotifications.showAppInbox(view.getContext(), styleConfig);
+        });
+        binding.btnLogout.setOnClickListener(btnLogout -> {
+            CastledNotifications.logout();
         });
 
         

@@ -30,7 +30,9 @@ class CastledActivityLifeCycleCallbacksImpl(private val lifeCycleListeners: List
         }
     }
 
-    override fun onActivityResumed(activity: Activity) {}
+    override fun onActivityResumed(activity: Activity) {
+        lifeCycleListeners.forEach { it.onActivityResumed(activity) }
+    }
 
     override fun onActivityPaused(activity: Activity) {}
 

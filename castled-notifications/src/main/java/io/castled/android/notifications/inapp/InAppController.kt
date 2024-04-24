@@ -63,7 +63,9 @@ internal class InAppController(context: Context) {
         inAppRepository.reportEvent(request)
 
     internal suspend fun findAndLaunchInApp(
-        eventName: String, params: Map<String, Any>?
+        context: Context,
+        eventName: String,
+        params: Map<String, Any?>?
     ) {
         if (currentInAppBeingDisplayed != null) {
             return

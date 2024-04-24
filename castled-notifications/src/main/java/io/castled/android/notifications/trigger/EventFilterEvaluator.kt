@@ -13,8 +13,8 @@ internal object EventFilterEvaluator {
         PropertyType.date to DateConditionEvaluator(),
         PropertyType.string to StringConditionEvaluator()
     )
-     fun evaluate(eventFilter: GroupFilter, params: Map<String, Any>?): Boolean {
-         if (eventFilter.filters == null || eventFilter.filters.isEmpty()) {
+     fun evaluate(eventFilter: GroupFilter, params: Map<String, Any?>?): Boolean {
+         if (eventFilter.filters.isNullOrEmpty()) {
              return true
          }
          if (params == null) {
@@ -30,7 +30,7 @@ internal object EventFilterEvaluator {
 
     private fun evaluateAnd(
         propertyFilters: List<PropertyFilter>,
-        properties: Map<String, Any>
+        properties: Map<String, Any?>
     ): Boolean {
         for (propertyFilter in propertyFilters) {
             if (!evaluatePropertyFilter(propertyFilter, properties)) {
@@ -42,7 +42,7 @@ internal object EventFilterEvaluator {
 
     private fun evaluateOr(
         propertyFilters: List<PropertyFilter>,
-        properties: Map<String, Any>
+        properties: Map<String, Any?>
     ): Boolean {
         for (propertyFilter in propertyFilters) {
             if (evaluatePropertyFilter(propertyFilter, properties)) {
@@ -54,7 +54,7 @@ internal object EventFilterEvaluator {
 
     private fun evaluatePropertyFilter(
         propertyFilter: PropertyFilter,
-        params: Map<String, Any>
+        params: Map<String, Any?>
     ): Boolean {
         val paramsConditionEvaluator = paramsEvaluators[propertyFilter.operation.propertyType]
         return paramsConditionEvaluator?.evaluateCondition(

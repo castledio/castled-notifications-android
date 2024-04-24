@@ -28,7 +28,7 @@ internal object PushNotificationManager {
     }
 
     @SuppressLint("MissingPermission")
-    suspend fun displayNotification(context: Context, pushMessage: CastledPushMessage) {
+    fun displayNotification(context: Context, pushMessage: CastledPushMessage) {
         logger.debug("Building castled notification...")
         val notification =
             CastledNotificationBuilder(context).buildNotification(pushMessage)
@@ -38,7 +38,6 @@ internal object PushNotificationManager {
         PushNotification.reportPushEvent(
             NotificationActionContext(
                 notificationId = pushMessage.notificationId,
-                teamId = pushMessage.teamId,
                 sourceContext = pushMessage.sourceContext,
                 eventType = NotificationEventType.RECEIVED.toString(),
                 actionLabel = null,

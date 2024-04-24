@@ -13,6 +13,7 @@ import io.castled.android.notifications.workmanager.models.CastledInAppEventRequ
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
@@ -53,8 +54,16 @@ internal object InAppNotification : CastledSharedStoreListener {
         }
     }
 
+    internal suspend fun cancelCampaignJob() {
+        if (fetchJob != null && fetchJob!!.isActive) {
+            fetchJob!!.cancelAndJoin()
+        }
+    }
+
     internal fun logAppEvent(
-        context: Context, eventName: String, eventParams: Map<String, Any>?
+        context: Context,
+        eventName: String,
+        eventParams: Map<String, Any?>?
     ) = externalScope.launch(Default) {
         if (!enabled) {
             logger.debug("Ignoring app event, In-App disabled")

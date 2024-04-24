@@ -1,7 +1,6 @@
 package io.castled.android.notifications.workmanager
 
 import android.content.Context
-import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import io.castled.android.notifications.globals.CastledGlobals
 import io.castled.android.notifications.logger.CastledLogger
@@ -11,8 +10,8 @@ import io.castled.android.notifications.workmanager.models.CastledNetworkRequest
 import kotlinx.coroutines.sync.withLock
 
 internal class CastledRequestRetryWorker(appContext: Context, workerParams: WorkerParameters) :
-    CoroutineWorker(appContext, workerParams) {
-    private val MAX_ENTRIES_LIMIT = 5000
+    CastledCoroutineWorker(appContext, workerParams) {
+
     private val logger = CastledLogger.getInstance(LogTags.RETRY_WORKER)
 
     private val requestHandlerRegistry = mapOf(
@@ -22,7 +21,9 @@ internal class CastledRequestRetryWorker(appContext: Context, workerParams: Work
         CastledNetworkRequestType.TRACK_EVENT to TrackEventRequestHandler(appContext),
         CastledNetworkRequestType.INBOX_EVENT to InboxEventRequestHandler(appContext),
         CastledNetworkRequestType.USER_TRACKING to UserTrackingRequestHandler(appContext),
-        CastledNetworkRequestType.DEVICE_INFO to DeviceInfoRequestHandler(appContext)
+        CastledNetworkRequestType.DEVICE_INFO to DeviceInfoRequestHandler(appContext),
+        CastledNetworkRequestType.LOGOUT to LogoutRequestHandler(appContext),
+        CastledNetworkRequestType.SESSION to SessionsRequestHandler(appContext)
 
     )
 
@@ -35,7 +36,7 @@ internal class CastledRequestRetryWorker(appContext: Context, workerParams: Work
 
         try {
             // Synchronize the database operation using the Mutex
-            CastledGlobals.retryDbMutex.withLock {
+            CastledGlobals.networkWorkDbMutex.withLock {
                 retryRequests.addAll(networkRetryRepository.getRetryRequests())
                 val requestsByType = retryRequests.groupBy { it.request.requestType }
                 requestsByType.forEach {
@@ -47,11 +48,7 @@ internal class CastledRequestRetryWorker(appContext: Context, workerParams: Work
                             failedRequests.addAll(entries)
                         })
                 }
-                retryRequests.removeAll(processedRequests)
                 networkRetryRepository.deleteRetryRequests(processedRequests)
-                if (retryRequests.count() > MAX_ENTRIES_LIMIT) {
-                    cleanupOldEntries(retryRequests)
-                }
             }
         } catch (e: Exception) {
             logger.error("work with id: $id failed!", e)
@@ -64,7 +61,4 @@ internal class CastledRequestRetryWorker(appContext: Context, workerParams: Work
         return if (failedRequests.size > 0) Result.retry() else Result.success()
     }
 
-    private suspend fun cleanupOldEntries(retryRequests: List<NetworkRetryLog>) {
-        networkRetryRepository.deleteRetryRequests(retryRequests.take(retryRequests.count() - MAX_ENTRIES_LIMIT))
-    }
 }

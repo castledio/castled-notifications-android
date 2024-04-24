@@ -58,7 +58,7 @@
             android:textAllCaps="false" />
 
         <Button
-            android:id="@+id/btn_launch_slideup_popup"
+            android:id="@+id/btn_logout"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
@@ -66,7 +66,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:padding="4dp"
-            android:text="Launch Slide Up Popup"
+            android:text="Logout"
             android:textAllCaps="false" />
 
 

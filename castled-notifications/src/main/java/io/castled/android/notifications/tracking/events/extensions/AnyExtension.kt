@@ -7,7 +7,7 @@ fun Any?.toJsonElement(): JsonElement {
     return when (this) {
         is Number -> JsonPrimitive(this)
         is Boolean -> JsonPrimitive(this)
-        null -> JsonPrimitive("null")
+        null -> JsonPrimitive(null as String?)
         else -> JsonPrimitive(this.toString())
     }
 }
