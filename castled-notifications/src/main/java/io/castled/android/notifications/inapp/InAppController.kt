@@ -36,7 +36,7 @@ internal class InAppController(context: Context) {
     internal var currentActivityReference: WeakReference<Activity>? = null
     private val excludedActivities: List<String> by lazy {
         try {
-            context.getString(R.string.io_castled_inapp_excluded_activities)!!.split(",")
+            context.getString(R.string.io_castled_inapp_excluded_activities).split(",")
         } catch (e: Exception) {
             emptyList()
         }
@@ -67,9 +67,6 @@ internal class InAppController(context: Context) {
         eventName: String,
         params: Map<String, Any?>?
     ) {
-//        if (currentInAppBeingDisplayed != null) {
-//            return
-//        }
         findTriggeredInApp(eventName, params)?.let { validateInappsBeforeDisplay(it) }
             ?: run { triggerPendingNotificationsIfAny() }
     }

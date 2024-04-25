@@ -20,6 +20,7 @@ import io.castled.android.notifications.inapp.views.InAppViewUtils
 import io.castled.android.notifications.inapp.views.InAppWebViewLayout
 import io.castled.android.notifications.inapp.views.toActionParams
 import io.castled.android.notifications.push.models.CastledClickAction
+import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.store.models.Campaign
 import kotlinx.serialization.json.jsonObject
 
@@ -171,8 +172,12 @@ internal class InAppViewDecorator(
     override fun close(action: CastledClickAction) {
         dismissDialog()
         inAppViewLifecycleListener.onClosed(inAppMessage)
-        if (action != CastledClickAction.NAVIGATE_TO_SCREEN){
-          InAppNotification.checkPendingNotificationsIfAny()
+        if ((action == CastledClickAction.NAVIGATE_TO_SCREEN || action == CastledClickAction.DEEP_LINKING)) {
+            if (CastledSharedStore.configs.skipUrlHandling) {
+                InAppNotification.checkPendingNotificationsIfAny()
+            }
+        } else {
+            InAppNotification.checkPendingNotificationsIfAny()
         }
     }
 
