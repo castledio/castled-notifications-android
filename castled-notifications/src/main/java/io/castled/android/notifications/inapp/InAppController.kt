@@ -67,9 +67,9 @@ internal class InAppController(context: Context) {
         eventName: String,
         params: Map<String, Any?>?
     ) {
-        if (currentInAppBeingDisplayed != null) {
-            return
-        }
+//        if (currentInAppBeingDisplayed != null) {
+//            return
+//        }
         findTriggeredInApp(eventName, params)?.let { validateInappsBeforeDisplay(it) }
             ?: run { triggerPendingNotificationsIfAny() }
     }
@@ -186,6 +186,9 @@ internal class InAppController(context: Context) {
         }.filter {
             // Display config filter
             it.timesDisplayed < it.displayConfig.displayLimit && (it.displayConfig.minIntervalBtwDisplays == 0L || it.displayConfig.minIntervalBtwDisplays * 1000 <= System.currentTimeMillis() - it.lastDisplayedTime)
+        }.filterNot {
+            // Exclude the currentCampaign
+            it.notificationId == currentInAppBeingDisplayed?.notificationId
         }.takeUnless { it.isEmpty() }?.sortedByDescending { it.priority }
 
         return triggeredInApp

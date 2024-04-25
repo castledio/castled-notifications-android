@@ -19,6 +19,7 @@ import io.castled.android.notifications.inapp.views.InAppViewFactory
 import io.castled.android.notifications.inapp.views.InAppViewUtils
 import io.castled.android.notifications.inapp.views.InAppWebViewLayout
 import io.castled.android.notifications.inapp.views.toActionParams
+import io.castled.android.notifications.push.models.CastledClickAction
 import io.castled.android.notifications.store.models.Campaign
 import kotlinx.serialization.json.jsonObject
 
@@ -167,10 +168,12 @@ internal class InAppViewDecorator(
         handleAutoDismissal(withApiCall)
     }
 
-    override fun close() {
+    override fun close(action: CastledClickAction) {
         dismissDialog()
         inAppViewLifecycleListener.onClosed(inAppMessage)
-        InAppNotification.checkPendingNotificationsIfAny()
+        if (action != CastledClickAction.NAVIGATE_TO_SCREEN){
+          InAppNotification.checkPendingNotificationsIfAny()
+        }
     }
 
     internal fun dismissDialog() {
@@ -249,7 +252,7 @@ internal class InAppViewDecorator(
 
         if (inappAutoDismissalTime > 0) {
             val task = Runnable {
-                close()
+                close(CastledClickAction.NONE)
             }
             autoDismissalHandler.postDelayed(task, inappAutoDismissalTime)
         }
