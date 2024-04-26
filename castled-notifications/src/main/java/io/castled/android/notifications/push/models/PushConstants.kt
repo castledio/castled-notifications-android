@@ -3,6 +3,7 @@ package io.castled.android.notifications.push.models
 internal object PushConstants {
     const val CASTLED_EXTRA_NOTIF_CONTEXT = "castled_extra_notif_context"
     const val CASTLED_DEFAULT_CHANNEL_ID = "castled_default_channel"
+    const val CASTLED_PUSH_MESSAGE = "castled_push_message"
 
     const val CASTLED_EXTRA_CLICK_ACTION = "castled_extra_click_action"
     const val CASTLED_EXTRA_URI = "castled_extra_uri"

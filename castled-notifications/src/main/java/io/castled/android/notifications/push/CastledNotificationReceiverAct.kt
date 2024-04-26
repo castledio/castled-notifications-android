@@ -38,6 +38,7 @@ class CastledNotificationReceiverAct : AppCompatActivity() {
                     ?: CastledClickAction.NONE
 
             // Cancel the notification
+            PushNotificationManager.cancelTimerIfAny(notificationContext.notificationId)
             val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.cancel(notificationContext.notificationId)
