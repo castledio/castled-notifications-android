@@ -1,11 +1,9 @@
 package io.castled.android.notifications.push
 
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.R
 import io.castled.android.notifications.logger.CastledLogger.Companion.getInstance
@@ -15,9 +13,12 @@ import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.NotificationActionContext
 import io.castled.android.notifications.push.models.NotificationEventType
 import io.castled.android.notifications.push.models.PushConstants
+import io.castled.android.notifications.push.views.PushBaseBuilder
+import io.castled.android.notifications.push.views.PushBuilderFactory
 
 internal object PushNotificationManager {
     private val logger = getInstance(LogTags.PUSH)
+    private var displayedNotifications: HashMap<Int, PushBaseBuilder> = HashMap()
 
     fun isCastledNotification(remoteMessage: RemoteMessage): Boolean {
         if (remoteMessage.data.containsKey(CastledNotificationFieldConsts.CASTLED_KEY)) {
@@ -27,25 +28,30 @@ internal object PushNotificationManager {
         return false
     }
 
-    @SuppressLint("MissingPermission")
     fun displayNotification(context: Context, pushMessage: CastledPushMessage) {
         logger.debug("Building castled notification...")
-        val notification =
-            CastledNotificationBuilder(context).buildNotification(pushMessage)
-        NotificationManagerCompat.from(context)
-            .notify(pushMessage.notificationId, notification)
-
-        PushNotification.reportPushEvent(
-            NotificationActionContext(
-                notificationId = pushMessage.notificationId,
-                sourceContext = pushMessage.sourceContext,
-                eventType = NotificationEventType.RECEIVED.toString(),
-                actionLabel = null,
-                actionType = null,
-                actionUri = null,
-                keyVals = null
+        try {
+            val pushBuilder =
+                PushBuilderFactory.createPushBuilder(context, pushMessage)
+            pushBuilder.let {
+                displayedNotifications[pushMessage.notificationId] = it
+                it.build()
+            }
+            PushNotification.reportPushEvent(
+                NotificationActionContext(
+                    notificationId = pushMessage.notificationId,
+                    sourceContext = pushMessage.sourceContext,
+                    eventType = NotificationEventType.RECEIVED.toString(),
+                    actionLabel = null,
+                    actionType = null,
+                    actionUri = null,
+                    keyVals = null
+                )
             )
-        )
+        } catch (_: Exception) {
+
+        }
+
     }
 
     fun getOrCreateNotificationChannel(
@@ -71,6 +77,18 @@ internal object PushNotificationManager {
             }
         }
         return channelId
+    }
+
+    internal fun cancelTimerIfAny(notificationId: Int) {
+        try {
+            val pushBuilder = displayedNotifications[notificationId]
+            pushBuilder?.let {
+                displayedNotifications.remove(notificationId)
+                it.close()
+            }
+        } catch (_: Exception) {
+
+        }
     }
 
 }

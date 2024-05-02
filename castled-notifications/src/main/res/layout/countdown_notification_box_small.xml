@@ -1,0 +1,106 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/push_timer_small_box_height">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/push_timer_small_box_horizontal_spacing"
+        android:layout_toStartOf="@id/time_container"
+        android:orientation="vertical">
+        <!-- Title -->
+        <TextView
+            android:id="@+id/txt_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/push_timer_small_box_title_font_size"
+            android:textStyle="bold" />
+
+        <!-- Body -->
+        <TextView
+            android:id="@+id/txt_body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/push_timer_small_box_title_font_size" />
+    </LinearLayout>
+
+
+    <!-- Time Views Container -->
+    <LinearLayout
+        android:id="@+id/time_container"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/push_timer_small_box_height"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/push_timer_small_box_horizontal_spacing"
+        android:orientation="horizontal">
+
+        <!-- Hours Box -->
+        <LinearLayout
+            android:id="@+id/layout_hours"
+            style="@style/Castled.Push.TimerLayout.Small">
+
+
+            <!-- Hours TextView -->
+            <TextView
+                android:id="@+id/txt_hours"
+                style="@style/Castled.Push.Timer.TimeText"
+                android:background="@android:color/holo_blue_dark" />
+
+            <!-- Hours Label -->
+            <TextView
+                android:id="@+id/txt_placeholder_hours"
+                style="@style/Castled.Push.Timer.PlaceholderText"
+                android:text="Hrs" />
+        </LinearLayout>
+
+        <!-- Minutes Box -->
+        <LinearLayout
+            android:id="@+id/layout_minutes"
+            style="@style/Castled.Push.TimerLayout.Small"
+            android:layout_marginStart="@dimen/push_timer_small_box_horizontal_spacing">
+
+            <!-- Minutes TextView -->
+            <TextView
+                android:id="@+id/txt_minutes"
+                style="@style/Castled.Push.Timer.TimeText"
+                android:background="@android:color/holo_red_dark" />
+
+            <!-- Minutes Label -->
+            <TextView
+                android:id="@+id/txt_placeholder_minutes"
+                style="@style/Castled.Push.Timer.PlaceholderText"
+                android:text="Mins" />
+        </LinearLayout>
+
+        <!-- Seconds Box -->
+        <LinearLayout
+            android:id="@+id/layout_seconds"
+            style="@style/Castled.Push.TimerLayout.Small"
+            android:layout_marginStart="@dimen/push_timer_small_box_horizontal_spacing">
+
+            <!-- Seconds TextView -->
+            <TextView
+                android:id="@+id/txt_seconds"
+                style="@style/Castled.Push.Timer.TimeText"
+                android:background="@android:color/holo_orange_dark" />
+
+            <!-- Seconds Label -->
+            <TextView
+                android:id="@+id/txt_placeholder_seconds"
+                style="@style/Castled.Push.Timer.PlaceholderText"
+                android:text="Sec" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

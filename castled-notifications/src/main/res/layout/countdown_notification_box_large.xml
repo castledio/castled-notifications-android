@@ -1,0 +1,112 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:maxHeight="252dp">
+
+    <TextView
+        android:id="@+id/txt_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/push_timer_small_box_horizontal_spacing"
+        android:layout_toStartOf="@id/time_container"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:minHeight="@dimen/push_timer_large_box_height"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/push_timer_large_box_title_font_size"
+        android:textStyle="bold" />
+
+
+    <!-- Time Views Container -->
+    <LinearLayout
+        android:id="@+id/time_container"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/push_timer_large_box_height"
+        android:layout_alignParentEnd="true"
+        android:orientation="horizontal">
+
+        <!-- Hours Box -->
+        <LinearLayout
+            android:id="@+id/layout_hours"
+            style="@style/Castled.Push.TimerLayout.Large">
+
+
+            <!-- Hours TextView -->
+            <TextView
+                android:id="@+id/txt_hours"
+                style="@style/Castled.Push.Timer.TimeText.Large"
+                android:background="@android:color/holo_blue_dark" />
+
+            <!-- Hours Label -->
+            <TextView
+                android:id="@+id/txt_placeholder_hours"
+                style="@style/Castled.Push.Timer.PlaceholderText.Large"
+                android:text="Hrs" />
+        </LinearLayout>
+
+        <!-- Minutes Box -->
+        <LinearLayout
+            android:id="@+id/layout_minutes"
+            style="@style/Castled.Push.TimerLayout.Large"
+            android:layout_marginStart="@dimen/push_timer_small_box_horizontal_spacing">
+
+            <!-- Minutes TextView -->
+            <TextView
+                android:id="@+id/txt_minutes"
+                style="@style/Castled.Push.Timer.TimeText.Large"
+                android:background="@android:color/holo_red_dark" />
+
+            <!-- Minutes Label -->
+            <TextView
+                android:id="@+id/txt_placeholder_minutes"
+                style="@style/Castled.Push.Timer.PlaceholderText.Large"
+                android:text="Mins" />
+        </LinearLayout>
+
+        <!-- Seconds Box -->
+        <LinearLayout
+            android:id="@+id/layout_seconds"
+            style="@style/Castled.Push.TimerLayout.Large"
+            android:layout_marginStart="@dimen/push_timer_small_box_horizontal_spacing">
+
+            <!-- Seconds TextView -->
+            <TextView
+                android:id="@+id/txt_seconds"
+                style="@style/Castled.Push.Timer.TimeText.Large"
+                android:background="@android:color/holo_orange_dark" />
+
+            <!-- Seconds Label -->
+            <TextView
+                android:id="@+id/txt_placeholder_seconds"
+                style="@style/Castled.Push.Timer.PlaceholderText.Large"
+                android:text="Sec" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txt_title"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="@dimen/push_timer_large_vertical_spacing"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:textColor="@android:color/black"
+
+        android:textSize="@dimen/push_timer_large_box_title_font_size" />
+
+    <ImageView
+        android:id="@+id/img_large"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@id/txt_body"
+        android:layout_marginTop="@dimen/push_timer_large_vertical_spacing"
+        android:maxHeight="126dp"
+        android:scaleType="centerCrop" />
+
+</RelativeLayout>
+
+
+
