@@ -23,32 +23,32 @@
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:paddingHorizontal="16dp">
-
+            
             <!-- Image view for the back button -->
             <ImageView
-                android:id="@+id/img_close"
-                android:layout_width="24dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:scaleType="fitCenter"
-                android:src="@drawable/castled_default_back" />
-
+            android:id="@+id/img_close"
+            android:layout_width="24dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:scaleType="fitCenter"
+            android:src="@drawable/castled_default_back" />
+            
             <!-- Title TextView -->
             <TextView
-                android:id="@+id/toolbar_title"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:contentDescription="@string/default_content_description"
-                android:gravity="start|center_vertical"
-                android:paddingHorizontal="16dp"
-                android:text="App Inbox"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+            android:id="@+id/toolbar_title"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="@string/default_content_description"
+            android:gravity="start|center_vertical"
+            android:paddingHorizontal="16dp"
+            android:text="App Inbox"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
-
+    
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -61,27 +61,27 @@
             app:cardBackgroundColor="@android:color/transparent"
             app:cardCornerRadius="0dp"
             app:cardElevation="4dp">
-
+            
             <com.google.android.material.tabs.TabLayout
-                android:id="@+id/categories_tab"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:color/transparent"
-                app:tabGravity="fill"
-                app:tabMode="scrollable"
-                app:tabSelectedTextColor="@android:color/holo_blue_light"
-                app:tabTextColor="@android:color/holo_blue_light" />
-        </androidx.cardview.widget.CardView>
-
-        <!-- ViewPager for the RecyclerView fragments -->
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/categories_view_pager"
+            android:id="@+id/categories_tab"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/categories_tab_parent_view"
-            android:layout_marginVertical="@dimen/inbox_buttons_top_margin"
-            android:background="@android:color/transparent" />
+            android:background="@android:color/transparent"
+            app:tabGravity="fill"
+            app:tabMode="scrollable"
+            app:tabSelectedTextColor="@android:color/holo_blue_light"
+            app:tabTextColor="@android:color/holo_blue_light" />
+        </androidx.cardview.widget.CardView>
+        
+        <!-- ViewPager for the RecyclerView fragments -->
+        <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/categories_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/categories_tab_parent_view"
+        android:layout_marginVertical="@dimen/inbox_buttons_top_margin"
+        android:background="@android:color/transparent" />
     </RelativeLayout>
-
-
+    
+    
 </RelativeLayout>

@@ -69,7 +69,7 @@ internal object InAppNotification : CastledSharedStoreListener {
             logger.debug("Ignoring app event, In-App disabled")
             return@launch
         }
-        inAppController.findAndLaunchInApp(context, eventName, eventParams)
+        inAppController.findAndLaunchInApp(context,eventName, eventParams)
     }
 
     fun reportInAppEvent(request: CastledInAppEventRequest) = externalScope.launch(Default) {
@@ -81,6 +81,10 @@ internal object InAppNotification : CastledSharedStoreListener {
     }
 
     fun dismissInAppDialogsIfAny() = inAppController.dismissDialogIfAny()
+
+    fun checkPendingNotificationsIfAny() = externalScope.launch(Default) {
+        inAppController.triggerPendingNotificationsIfAny()
+    }
 
     suspend fun refreshCampaigns() {
         CastledSharedStore.getUserId()?.let {

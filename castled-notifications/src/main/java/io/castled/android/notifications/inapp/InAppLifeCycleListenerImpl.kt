@@ -38,7 +38,6 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                             actionParams
                         )
                     )
-                    inAppViewBaseDecorator.close()
                 }
 
                 CastledClickAction.DEEP_LINKING, CastledClickAction.RICH_LANDING -> {
@@ -55,7 +54,6 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                             actionParams
                         )
                     )
-                    inAppViewBaseDecorator.close()
                 }
 
                 CastledClickAction.DISMISS_NOTIFICATION -> {
@@ -64,7 +62,6 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                             inAppMessage
                         )
                     )
-                    inAppViewBaseDecorator.close()
                     logger.debug("In-App with notification id:${inAppMessage.notificationId} dismissed!")
                 }
 
@@ -82,15 +79,15 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                             actionParams
                         )
                     )
-                    inAppViewBaseDecorator.close()
                 }
 
                 else -> {
                     logger.debug("Unexpected action:${actionParams.action} for notification:${inAppMessage.notificationId}, button:${actionParams.actionLabel}")
                 }
             }
+            inAppViewBaseDecorator.close(actionParams.action)
         } catch (e: Exception) {
-            inAppViewBaseDecorator.close()
+            inAppViewBaseDecorator.close(CastledClickAction.NONE)
             logger.debug("Click action: ${actionParams.action} handling failed. reason: ${e.message}")
         }
         logger.debug("In-App with notification id:${inAppMessage.notificationId} clicked!")
@@ -172,11 +169,13 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                     logger.debug("Unexpected action:${actionParams.action} for notification:${inAppMessage.notificationId}, button:${actionParams.actionLabel}")
                 }
             }
+            inAppViewBaseDecorator.close(actionParams.action)
+
         } catch (e: Exception) {
+            inAppViewBaseDecorator.close(CastledClickAction.DISMISS_NOTIFICATION)
             logger.debug("Button click action: ${actionParams.action} handling failed. reason: ${e.message}")
         }
         // Close in-app irrespective of the click action
-        inAppViewBaseDecorator.close()
     }
 
 
@@ -185,7 +184,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
         inAppViewBaseDecorator: InAppViewBaseDecorator,
         inAppMessage: Campaign
     ) {
-        inAppViewBaseDecorator.close()
+        inAppViewBaseDecorator.close(CastledClickAction.DISMISS_NOTIFICATION)
         InAppNotification.reportInAppEvent(InAppEventUtils.getDismissedEvent(inAppMessage))
         logger.debug("In-App with notification id:${inAppMessage.notificationId} dismissed!")
     }

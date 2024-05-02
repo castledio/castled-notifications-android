@@ -60,4 +60,5 @@ internal class CastledRequestRetryWorker(appContext: Context, workerParams: Work
         )
         return if (failedRequests.size > 0) Result.retry() else Result.success()
     }
+
 }

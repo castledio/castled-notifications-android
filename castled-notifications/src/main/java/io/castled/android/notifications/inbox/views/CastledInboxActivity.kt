@@ -61,7 +61,7 @@ internal class CastledInboxActivity : AppCompatActivity(),
         categoriesTab = binding.categoriesTab
         viewPager = binding.categoriesViewPager
         viewPager.isUserInputEnabled = false
-
+        binding.imgClose.setOnClickListener { finishAfterTransition() }
         val displayConfig = getSerializable(
             this, InboxConstants.CASTLED_DISPLAY_CONFIGS,
             CastledInboxDisplayConfig::class.java

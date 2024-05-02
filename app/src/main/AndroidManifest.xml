@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Castlednotificationsandroid"
         tools:targetApi="33">
-        <activity
+         <activity
             android:name="io.castled.android.demoapp.SecondActivity"
             android:exported="false" />
         <activity
