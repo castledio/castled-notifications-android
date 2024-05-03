@@ -13,7 +13,7 @@ internal class CastledRequestRetryWorker(appContext: Context, workerParams: Work
     CastledCoroutineWorker(appContext, workerParams) {
 
     private val logger = CastledLogger.getInstance(LogTags.RETRY_WORKER)
-    private val MAX_ENTRIES_LIMIT = 2
+    private val MAX_ENTRIES_LIMIT = 5000
 
     private val requestHandlerRegistry = mapOf(
         CastledNetworkRequestType.PUSH_REGISTER to PushRegisterRequestHandler(appContext),
