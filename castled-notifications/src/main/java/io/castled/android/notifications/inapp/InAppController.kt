@@ -67,8 +67,12 @@ internal class InAppController(context: Context) {
         eventName: String,
         params: Map<String, Any?>?
     ) {
+        logger.debug("Looking for in-app with trigger condition '$eventName'")
         findTriggeredInApp(eventName, params)?.let { validateInappsBeforeDisplay(it) }
-            ?: run { triggerPendingNotificationsIfAny() }
+            ?: run {
+                logger.debug("No in-apps found with trigger condition $eventName. Checking for any pending in-apps")
+                triggerPendingNotificationsIfAny()
+            }
     }
 
     private fun isSatisfiedWithGlobalIntervalBtwDisplays(
@@ -76,10 +80,14 @@ internal class InAppController(context: Context) {
     ): Boolean {
         val latestCampaignViewTs =
             inAppCampaigns.maxByOrNull { it.lastDisplayedTime }?.lastDisplayedTime ?: 0
-        return (campaign.displayConfig.minIntervalBtwDisplaysGlobal == 0L || campaign.displayConfig.minIntervalBtwDisplaysGlobal * 1000 <= System.currentTimeMillis() - latestCampaignViewTs)
+        val isSatisfied =
+            (campaign.displayConfig.minIntervalBtwDisplaysGlobal == 0L || campaign.displayConfig.minIntervalBtwDisplaysGlobal * 1000 <= System.currentTimeMillis() - latestCampaignViewTs)
+        logger.debug("Global interval is ${if (isSatisfied) "satisfied" else "not satisfied"}\"")
+        return isSatisfied
     }
 
     private suspend fun validateInappsBeforeDisplay(inApps: List<Campaign>) {
+        logger.debug("${inApps.count()} in-apps found. Validating...")
         val inAppCampaigns = inAppRepository.getCampaigns()
         val triggeredInapps = inApps.toMutableList()
         triggeredInapps.indexOfFirst { item ->
@@ -98,12 +106,16 @@ internal class InAppController(context: Context) {
                             logger.debug("Skipping in-app display. Another currently being shown")
                         }
                     }
+                } ?: run {
+                    logger.debug("Skipping in-app display. currentActivityReference is null")
                 }
 
             } catch (e: Exception) {
                 logger.error("In-app launch failed!", e)
             }
 
+        } ?: run {
+            logger.debug("In-app validation failed.")
         }
         enqueuePendingItems(triggeredInapps)
     }
@@ -130,8 +142,16 @@ internal class InAppController(context: Context) {
         currentActivityReference?.let {
             val activityName = it.get()?.componentName?.shortClassName?.drop(1)
             activityName?.let {
-                return !excludedActivities.contains(activityName)
+                val isExcluded = excludedActivities.contains(activityName)
+                if (isExcluded) {
+                    logger.debug("Unable to display the in-app as $activityName is excluded")
+                }
+                return !isExcluded
+            } ?: run {
+                logger.debug("ActivityName is null")
             }
+        } ?: run {
+            logger.debug("currentActivityReference is null")
         }
         return false
     }
@@ -139,6 +159,8 @@ internal class InAppController(context: Context) {
     suspend fun triggerPendingNotificationsIfAny() {
         if (pendingInapps.isNotEmpty()) {
             validateInappsBeforeDisplay(getPendingListItems())
+        } else {
+            logger.debug("No pending in-apps found.")
         }
     }
 

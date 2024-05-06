@@ -19,6 +19,8 @@ import io.castled.android.notifications.inapp.views.InAppViewFactory
 import io.castled.android.notifications.inapp.views.InAppViewUtils
 import io.castled.android.notifications.inapp.views.InAppWebViewLayout
 import io.castled.android.notifications.inapp.views.toActionParams
+import io.castled.android.notifications.logger.CastledLogger
+import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.CastledClickAction
 import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.store.models.Campaign
@@ -31,7 +33,7 @@ internal class InAppViewDecorator(
     private val inAppMessage: Campaign,
     private val inAppViewLifecycleListener: InAppViewLifecycleListener
 ) : InAppViewBaseDecorator {
-
+    private val logger = CastledLogger.getInstance(LogTags.IN_APP)
     private var dialog = Dialog(context)
     private val inAppViewLayout: InAppBaseViewLayout? =
         InAppViewFactory.createView(context, inAppMessage)
@@ -45,6 +47,8 @@ internal class InAppViewDecorator(
             } else {
                 inAppViewLayout.webView?.let { loadJSInterface() }
             }
+        } else {
+            logger.debug("inAppViewLayout is null")
         }
 
     }
@@ -118,6 +122,7 @@ internal class InAppViewDecorator(
 
     override fun show(withApiCall: Boolean) {
         if (inAppViewLayout == null) {
+            logger.debug("Skipping in-app display. inAppViewLayout is null")
             return
         }
         when (InAppMessageUtils.getMessageType(inAppMessage.message)) {
