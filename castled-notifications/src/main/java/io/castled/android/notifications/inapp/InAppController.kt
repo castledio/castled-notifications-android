@@ -106,15 +106,14 @@ internal class InAppController(context: Context) {
             if (checkAndUpdateCurrentInApp(it)) {
                 launchInApp(currentActivity, it)
                 removeCampaignFromPendingItems(it)
-                enqueuePendingItems(triggeredInApps.filter { inApp -> inApp.notificationId != it.notificationId })
                 setLastInAppDisplayTs(System.currentTimeMillis())
             } else {
                 logger.debug("Skipping in-app display. Another currently being shown")
             }
         } ?: run {
             logger.debug("No in-apps to show from the triggered list")
-            enqueuePendingItems(triggeredInApps)
         }
+        enqueuePendingItems(triggeredInApps.filter { inApp -> inAppToShow?.notificationId != inApp.notificationId })
     }
 
     private suspend fun enqueuePendingItems(items: List<Campaign>) {
