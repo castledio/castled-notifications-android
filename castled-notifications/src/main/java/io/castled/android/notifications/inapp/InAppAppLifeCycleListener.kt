@@ -27,7 +27,7 @@ class InAppAppLifeCycleListener(private val castledScope: CoroutineScope) :
                 AppEvents.APP_PAGE_VIEWED,
                 mapOf("name" to activityName)
             )
-            logger.debug("Activity:$activityName started")
+            logger.debug("Activity: $activityName started")
         }
     }
 
@@ -44,7 +44,7 @@ class InAppAppLifeCycleListener(private val castledScope: CoroutineScope) :
             InAppNotification.dismissInAppDialogsIfAny()
         }
         InAppNotification.clearCurrentActivity(activity)
-        logger.debug("Activity:${activity.componentName.shortClassName.drop(1)} stopped")
+        logger.debug("Activity: ${activity.componentName.shortClassName.drop(1)} stopped")
     }
 
 }
