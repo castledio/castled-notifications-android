@@ -100,20 +100,22 @@ internal class InAppController(context: Context) {
         val inAppToShow =
             triggeredInApps.firstOrNull {
                 isSatisfiedWithGlobalIntervalBtwDisplays(it) &&
-                        canShowInActivity(currentActivity.componentName.shortClassName.drop(1))
+                        canShowInActivity(currentActivity.javaClass.simpleName)
             }
         inAppToShow?.let {
             if (checkAndUpdateCurrentInApp(it)) {
                 launchInApp(currentActivity, it)
                 removeCampaignFromPendingItems(it)
                 setLastInAppDisplayTs(System.currentTimeMillis())
+                enqueuePendingItems(triggeredInApps.filter { inApp -> it.notificationId != inApp.notificationId })
             } else {
+                enqueuePendingItems(triggeredInApps)
                 logger.debug("Skipping in-app display. Another currently being shown")
             }
         } ?: run {
+            enqueuePendingItems(triggeredInApps)
             logger.debug("No in-apps to show from the triggered list")
         }
-        enqueuePendingItems(triggeredInApps.filter { inApp -> inAppToShow?.notificationId != inApp.notificationId })
     }
 
     private suspend fun enqueuePendingItems(items: List<Campaign>) {

@@ -16,7 +16,7 @@ class InAppAppLifeCycleListener(private val castledScope: CoroutineScope) :
 
     override fun onActivityStarted(activity: Activity, isOrientationChange: Boolean) {
         InAppNotification.setCurrentActivity(activity)
-        val activityName = activity.componentName.shortClassName.drop(1)
+        val activityName = activity.javaClass.simpleName
         if (isOrientationChange) {
             InAppNotification.onOrientationChange(activity)
             logger.debug("Orientation changed for :$activityName")
@@ -44,7 +44,7 @@ class InAppAppLifeCycleListener(private val castledScope: CoroutineScope) :
             InAppNotification.dismissInAppDialogsIfAny()
         }
         InAppNotification.clearCurrentActivity(activity)
-        logger.debug("Activity: ${activity.componentName.shortClassName.drop(1)} stopped")
+        logger.debug("Activity: ${activity.javaClass.simpleName} stopped")
     }
 
 }
