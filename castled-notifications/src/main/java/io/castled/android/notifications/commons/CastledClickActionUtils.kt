@@ -5,7 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
-import io.castled.android.notifications.store.CastledSharedStore
+
 
 object CastledClickActionUtils {
     private val logger = CastledLogger.getInstance(LogTags.IN_APP_TRIGGER)
@@ -32,7 +32,7 @@ object CastledClickActionUtils {
         actionClassName: String,
         keyVals: Map<String, String>?
     ) {
-         
+
         try {
             Intent(context, Class.forName(actionClassName)).apply {
                 keyVals?.let { keyVals ->
@@ -61,5 +61,4 @@ object CastledClickActionUtils {
         }
 
     }
-
 }

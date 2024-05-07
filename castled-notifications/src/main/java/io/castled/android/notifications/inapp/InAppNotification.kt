@@ -45,10 +45,10 @@ internal object InAppNotification : CastledSharedStoreListener {
         if (fetchJob == null || !fetchJob!!.isActive) {
             fetchJob = externalScope.launch(Default) {
                 do {
-                    delay(TimeUnit.SECONDS.toMillis(CastledSharedStore.configs.inAppFetchIntervalSec))
                     if (!CastledSharedStore.isAppInBackground) {
                         inAppController.refreshLiveCampaigns()
                     }
+                    delay(TimeUnit.SECONDS.toMillis(CastledSharedStore.configs.inAppFetchIntervalSec))
                 } while (true)
             }
         }
@@ -113,4 +113,7 @@ internal object InAppNotification : CastledSharedStoreListener {
         inAppController.currentActivityReference?.takeIf { it.get() == activity }?.clear()
     }
 
+    internal fun getCurrentActivity(): Activity? {
+        return inAppController.currentActivityReference?.get()
+    }
 }

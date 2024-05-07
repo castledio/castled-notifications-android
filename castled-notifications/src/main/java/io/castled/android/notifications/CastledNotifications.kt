@@ -1,10 +1,16 @@
 package io.castled.android.notifications
 
+import android.Manifest
+import android.app.Activity
 import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Process
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.firebase.messaging.RemoteMessage
 import io.castled.android.notifications.inapp.InAppNotification
 import io.castled.android.notifications.inapp.models.consts.AppEvents
@@ -176,6 +182,28 @@ object CastledNotifications {
             }
             PushNotification.onTokenFetch(token, pushTokenType)
         }
+
+    @JvmStatic
+    fun requestPushPermission(activity: Activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    activity,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) ==
+                PackageManager.PERMISSION_GRANTED
+            ) {
+                logger.debug("PERMISSION_GRANTED")
+            } else {
+
+                // Directly ask for the permission
+                ActivityCompat.requestPermissions(
+                    activity,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    101
+                )
+            }
+        }
+    }
 
     @JvmStatic
     fun logAppPageViewedEvent(context: Context, screenName: String) {
