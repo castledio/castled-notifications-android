@@ -85,5 +85,5 @@ class CastledActivityLifeCycleCallbacksImpl(private val lifeCycleListeners: List
     }
 
     private fun isCastledInternalActivity(activity: Activity) =
-        activity.componentName.javaClass.simpleName.contains("CastledNotificationReceiverAct")
+        activity.javaClass.simpleName.contains("CastledNotificationReceiverAct")
 }
