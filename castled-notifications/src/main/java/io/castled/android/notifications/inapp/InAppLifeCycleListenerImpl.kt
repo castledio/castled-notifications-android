@@ -1,6 +1,7 @@
 package io.castled.android.notifications.inapp
 
 import android.content.Context
+import io.castled.android.notifications.CastledNotifications
 import io.castled.android.notifications.commons.CastledClickActionUtils
 import io.castled.android.notifications.commons.ClickActionParams
 import io.castled.android.notifications.logger.CastledLogger
@@ -154,7 +155,9 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                             actionParams
                         )
                     )
-                    CastledClickActionUtils.handlePushPermissionAction()
+                    InAppNotification.getCurrentActivity()?.let {
+                        CastledNotifications.requestPushPermission(it)
+                    }
                 }
 
                 CastledClickAction.CUSTOM -> {
