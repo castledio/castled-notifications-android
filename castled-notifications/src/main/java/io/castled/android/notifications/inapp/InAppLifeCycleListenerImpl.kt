@@ -38,6 +38,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                             actionParams
                         )
                     )
+                    inAppViewBaseDecorator.close(actionParams.action)
                 }
 
                 CastledClickAction.DEEP_LINKING, CastledClickAction.RICH_LANDING -> {
@@ -54,6 +55,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                             actionParams
                         )
                     )
+                    inAppViewBaseDecorator.close(actionParams.action)
                 }
 
                 CastledClickAction.DISMISS_NOTIFICATION -> {
@@ -62,6 +64,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                             inAppMessage
                         )
                     )
+                    inAppViewBaseDecorator.close(actionParams.action)
                     logger.debug("In-App with notification id:${inAppMessage.notificationId} dismissed!")
                 }
 
@@ -79,13 +82,14 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                             actionParams
                         )
                     )
+                    inAppViewBaseDecorator.close(actionParams.action)
+
                 }
 
                 else -> {
                     logger.debug("Unexpected action:${actionParams.action} for notification:${inAppMessage.notificationId}, button:${actionParams.actionLabel}")
                 }
             }
-            inAppViewBaseDecorator.close(actionParams.action)
         } catch (e: Exception) {
             inAppViewBaseDecorator.close(CastledClickAction.NONE)
             logger.debug("Click action: ${actionParams.action} handling failed. reason: ${e.message}")
@@ -150,8 +154,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                             actionParams
                         )
                     )
-
-                    // TODO:  Not implemented!
+                    CastledClickActionUtils.handlePushPermissionAction()
                 }
 
                 CastledClickAction.CUSTOM -> {

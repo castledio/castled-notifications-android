@@ -1,11 +1,17 @@
 package io.castled.android.notifications.commons
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import io.castled.android.notifications.inapp.InAppNotification
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
-import io.castled.android.notifications.store.CastledSharedStore
+
 
 object CastledClickActionUtils {
     private val logger = CastledLogger.getInstance(LogTags.IN_APP_TRIGGER)
@@ -32,7 +38,7 @@ object CastledClickActionUtils {
         actionClassName: String,
         keyVals: Map<String, String>?
     ) {
-         
+
         try {
             Intent(context, Class.forName(actionClassName)).apply {
                 keyVals?.let { keyVals ->
@@ -62,4 +68,24 @@ object CastledClickActionUtils {
 
     }
 
+    fun handlePushPermissionAction() {
+        InAppNotification.getCurrentActivity()?.let {
+            // This is only necessary for API level >= 33 (TIRAMISU)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(it, Manifest.permission.POST_NOTIFICATIONS) ==
+                    PackageManager.PERMISSION_GRANTED
+                ) {
+                    logger.debug("PERMISSION_GRANTED")
+                } else {
+
+                    // Directly ask for the permission
+                    ActivityCompat.requestPermissions(
+                        it,
+                        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                        101
+                    )
+                }
+            }
+        }
+    }
 }

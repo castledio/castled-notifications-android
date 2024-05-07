@@ -50,10 +50,10 @@ internal object AppInbox : CastledSharedStoreListener {
         if (fetchJob == null || !fetchJob!!.isActive) {
             fetchJob = externalScope.launch(Dispatchers.Default) {
                 do {
-                    delay(TimeUnit.SECONDS.toMillis(CastledSharedStore.configs.inBoxFetchIntervalSec))
                     if (!CastledSharedStore.isAppInBackground) {
                         inboxRepository.refreshInbox()
                     }
+                    delay(TimeUnit.SECONDS.toMillis(CastledSharedStore.configs.inBoxFetchIntervalSec))
                 } while (true)
             }
         }
