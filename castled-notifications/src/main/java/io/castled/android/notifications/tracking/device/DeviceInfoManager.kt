@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import io.castled.android.notifications.BuildConfig
 import io.castled.android.notifications.CastledNotifications
+import io.castled.android.notifications.commons.CastledUUIDUtils
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.observer.CastledLifeCycleObserver
@@ -14,21 +15,19 @@ import io.castled.android.notifications.tracking.device.service.DeviceInfoReposi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.TimeZone
 
-
-internal object DeviceInfo : CastledSharedStoreListener {
+internal object DeviceInfoManager : CastledSharedStoreListener {
 
     private lateinit var deviceInfoRepository: DeviceInfoRepository
     private val logger: CastledLogger = CastledLogger.getInstance(LogTags.TRACK_EVENT_REPOSITORY)
     private lateinit var externalScope: CoroutineScope
-    private lateinit var deviceInfo: CastledDeviceDetails
+    private lateinit var deviceInfoDetails: CastledDeviceDetails
     private lateinit var applicationContext: Application
     fun init(application: Application, externalScope: CoroutineScope) {
-        DeviceInfo.externalScope = externalScope
+        DeviceInfoManager.externalScope = externalScope
         applicationContext = application
         deviceInfoRepository = DeviceInfoRepository(application)
-        deviceInfo = CastledDeviceDetails(application)
+        deviceInfoDetails = CastledDeviceDetails(application)
         CastledSharedStore.registerListener(this)
     }
 
@@ -36,17 +35,20 @@ internal object DeviceInfo : CastledSharedStoreListener {
         externalScope.launch(Dispatchers.Default) {
             try {
                 val isPushGranted = isPushPermissionGranted()
+                deviceInfoDetails.getDeviceId() ?: run {
+                    CastledSharedStore.setDeviceId(CastledUUIDUtils.getIdBase64())
+                }
                 val deviceInfoMap = mapOf(
                     "sdkVersion" to BuildConfig.SDK_VERSION,
-                    "appVersion" to deviceInfo.getAppVersion(),
-                    "model" to deviceInfo.getModel(),
+                    "appVersion" to deviceInfoDetails.getAppVersion(),
+                    "model" to deviceInfoDetails.getModel(),
                     "pushPermission" to if (isPushGranted
                     ) "1" else "0",
-                    "make" to deviceInfo.getMake(),
-                    "osVersion" to deviceInfo.getOSVersion(),
-                    "locale" to deviceInfo.getLocale(),
-                    "deviceId" to deviceInfo.getDeviceId(),
-                    "timeZone" to deviceInfo.getTimeZone(),
+                    "make" to deviceInfoDetails.getMake(),
+                    "osVersion" to deviceInfoDetails.getOSVersion(),
+                    "locale" to deviceInfoDetails.getLocale(),
+                    "deviceId" to deviceInfoDetails.getDeviceId()!!,
+                    "timeZone" to deviceInfoDetails.getTimeZone(),
                     "platform" to "MOBILE_ANDROID",
                 )
                 if (deviceInfoMap != CastledSharedStore.getDeviceInfo()) {
@@ -57,7 +59,6 @@ internal object DeviceInfo : CastledSharedStoreListener {
                     )
                     CastledSharedStore.setPushPermission(isPushGranted)
                     CastledSharedStore.setDeviceInfo(deviceInfoMap)
-
                 }
             } catch (e: Exception) {
                 logger.error("Couldn't load  the  device info!", e)
@@ -76,9 +77,8 @@ internal object DeviceInfo : CastledSharedStoreListener {
         updateDeviceInfo()
     }
 
-
     internal fun isPushPermissionGranted(): Boolean {
-        return deviceInfo.checkNotificationPermissions(applicationContext)
+        return deviceInfoDetails.checkNotificationPermissions(applicationContext)
     }
 
     private fun listenForPushPermissionChanges() {

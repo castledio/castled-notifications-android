@@ -10,8 +10,6 @@ import androidx.core.content.pm.PackageInfoCompat
 import io.castled.android.notifications.store.CastledSharedStore
 import java.util.Locale
 import java.util.TimeZone
-import kotlin.random.Random
-
 
 internal class CastledDeviceDetails(context: Context) {
 
@@ -34,81 +32,70 @@ internal class CastledDeviceDetails(context: Context) {
     }
 
     fun checkNotificationPermissions(context: Context): Boolean {
-      try {
-          val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-              // For Android 13 and above
-              if (manager.areNotificationsEnabled() && ContextCompat.checkSelfPermission(
-                      context,
-                      Manifest.permission.POST_NOTIFICATIONS
-                  ) == PackageManager.PERMISSION_GRANTED
-              ) {
-                  return true
-              }
-          } else {
-              // For Android 12 and below
-              if (manager.areNotificationsEnabled()) {
-                  return true
-              }
-          }
-      }
-      catch (_ : Exception){
+        try {
+            val manager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                // For Android 13 and above
+                if (manager.areNotificationsEnabled() && ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    return true
+                }
+            } else {
+                // For Android 12 and below
+                if (manager.areNotificationsEnabled()) {
+                    return true
+                }
+            }
+        } catch (_: Exception) {
 
-      }
+        }
         return false
     }
 
     internal fun getModel(): String {
         return try {
             Build.MODEL
+        } catch (_: Exception) {
+            ""
         }
-        catch (_ : Exception)
-        { "" }
     }
 
     internal fun getMake(): String {
         return try {
             Build.MANUFACTURER
+        } catch (_: Exception) {
+            ""
         }
-        catch (_ : Exception)
-        { "" }
-     }
+    }
 
     internal fun getOSVersion(): String {
         return try {
             Build.VERSION.RELEASE
-        }
-        catch (_ : Exception)
-        {
+        } catch (_: Exception) {
             ""
         }
-     }
+    }
 
     internal fun getLocale(): String {
         return try {
             Locale.getDefault().toString()
+        } catch (_: Exception) {
+            ""
         }
-        catch (_ : Exception)
-        { "" }
-     }
-
-    // You can obtain a unique device ID using various methods, such as the device's secure Android ID
-    internal fun getDeviceId(): String {
-        CastledSharedStore.getDeviceId()?.let {
-            return it
-        } ?: run {
-            val randomString = Random.nextInt(1, Int.MAX_VALUE).toString()
-            CastledSharedStore.setDeviceId(randomString)
-            return randomString
-        }
-
     }
+
+    internal fun getDeviceId(): String? = CastledSharedStore.getDeviceId()
+
     internal fun getTimeZone(): String {
         return try {
             TimeZone.getDefault().displayName
+        } catch (_: Exception) {
+            ""
         }
-        catch (_ : Exception)
-        { "" }
     }
 
 

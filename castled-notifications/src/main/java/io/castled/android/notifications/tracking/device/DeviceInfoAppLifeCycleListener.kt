@@ -12,9 +12,9 @@ class DeviceInfoAppLifeCycleListener(private val castledScope: CoroutineScope) :
     override fun onActivityResumed(activity: Activity) {
         castledScope.launch {
             CastledSharedStore.getUserId()?.let {
-                val isPushGranted = DeviceInfo.isPushPermissionGranted()
+                val isPushGranted = DeviceInfoManager.isPushPermissionGranted()
                 if (CastledSharedStore.getPushPermission() != isPushGranted) {
-                    DeviceInfo.updateDeviceInfo()
+                    DeviceInfoManager.updateDeviceInfo()
                 }
             }
         }
