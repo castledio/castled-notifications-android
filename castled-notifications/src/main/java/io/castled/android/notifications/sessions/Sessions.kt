@@ -21,7 +21,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 import java.util.Date
 
@@ -56,15 +55,12 @@ internal object Sessions : CastledSharedStoreListener {
             !deviceInfo.getDeviceId().isNullOrEmpty()
         }
         sessionMutex.withLock {
-            withContext(Dispatchers.Default) {
-                currentStartTime = System.currentTimeMillis() / 1000
-                initializeSessionDetails()
-                if (!isInCurrentSession()) {
-                    //new session
-                    createNewSession()
-                    resetTheValuesForNewSession()
-
-                }
+            currentStartTime = System.currentTimeMillis() / 1000
+            initializeSessionDetails()
+            if (!isInCurrentSession()) {
+                //new session
+                createNewSession()
+                resetTheValuesForNewSession()
             }
         }
     }
@@ -101,14 +97,12 @@ internal object Sessions : CastledSharedStoreListener {
         currentStartTime = sessionStartTime
         sessionEndTime = sessionStartTime
 
-        val dateStarted =
-            Date(currentStartTime * 1000)
         val event = CastledSessionEvent(
             sessionId = sessionId!!,
             sessionEventType = SessionType.STARTED.type,
             userId = CastledSharedStore.getUserId() ?: "",
             firstSession = isFirstSession,
-            timestamp = DateTimeUtils.getStringFromDate(dateStarted),
+            timestamp = DateTimeUtils.getStringFromDate(Date(currentStartTime * 1000)),
             properties = deviceId
         )
         sessionDetails.add(event)
