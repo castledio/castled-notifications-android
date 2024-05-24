@@ -2,6 +2,8 @@ package io.castled.android.notifications.sessions
 
 import android.app.Application
 import android.content.Context
+import io.castled.android.notifications.commons.CastledDelayUtils
+import io.castled.android.notifications.commons.CastledUUIDUtils
 import io.castled.android.notifications.commons.DateTimeUtils
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
@@ -22,7 +24,6 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 import java.util.Date
-import java.util.UUID
 
 
 internal object Sessions : CastledSharedStoreListener {
@@ -48,7 +49,12 @@ internal object Sessions : CastledSharedStoreListener {
         CastledSharedStore.registerListener(this)
     }
 
-    suspend fun startCastledSession() {
+    private suspend fun startCastledSession() {
+        CastledDelayUtils.waitForCondition(500, 120 * 1000) {
+            // Wait until device id is set (immediately after store init)
+            // Once wait timeouts, proceed anyway
+            !deviceInfo.getDeviceId().isNullOrEmpty()
+        }
         sessionMutex.withLock {
             withContext(Dispatchers.Default) {
                 currentStartTime = System.currentTimeMillis() / 1000
@@ -96,7 +102,7 @@ internal object Sessions : CastledSharedStoreListener {
         sessionEndTime = sessionStartTime
 
         val dateStarted =
-            Date((currentStartTime).toLong() * 1000)
+            Date(currentStartTime * 1000)
         val event = CastledSessionEvent(
             sessionId = sessionId!!,
             sessionEventType = SessionType.STARTED.type,
@@ -141,19 +147,11 @@ internal object Sessions : CastledSharedStoreListener {
         sessionEndTime = CastledSharedStore.getValue(PrefStoreKeys.SESSION_END_TIME, 0L)
     }
 
-    override fun onStoreInitialized(context: Context) {
-        externalScope.launch(Dispatchers.Default) {
-            CastledSharedStore.getUserId()?.let {
-                startCastledSession()
-            }
-        }
-    }
-
     override fun onStoreUserIdSet(context: Context) {
         externalScope.launch(Dispatchers.Default) {
             startCastledSession()
         }
     }
 
-    private fun getCastledSessionId() = UUID.randomUUID().toString()
+    private fun getCastledSessionId() = CastledUUIDUtils.getIdBase64()
 }

@@ -30,7 +30,7 @@ import io.castled.android.notifications.push.models.PushTokenType
 import io.castled.android.notifications.sessions.Sessions
 import io.castled.android.notifications.store.CastledDbBuilder
 import io.castled.android.notifications.store.CastledSharedStore
-import io.castled.android.notifications.tracking.device.DeviceInfo
+import io.castled.android.notifications.tracking.device.DeviceInfoManager
 import io.castled.android.notifications.tracking.events.EventsTracker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -81,7 +81,7 @@ object CastledNotifications {
         if (configs.enableAppInbox) {
             AppInbox.init(application, castledScope)
         }
-        DeviceInfo.init(application, castledScope)
+        DeviceInfoManager.init(application, castledScope)
         CastledSharedStore.init(
             application,
             configs,
