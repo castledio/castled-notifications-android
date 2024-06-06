@@ -8,7 +8,7 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import io.castled.android.notifications.commons.isSuccessfulOrIgnoredError
+import io.castled.android.notifications.commons.extenstions.isSuccessfulOrIgnoredError
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.store.models.NetworkRetryLog

@@ -1,4 +1,4 @@
-package io.castled.android.notifications.commons
+package io.castled.android.notifications.commons.extenstions
 
 import retrofit2.Response
 

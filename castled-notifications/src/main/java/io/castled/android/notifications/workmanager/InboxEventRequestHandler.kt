@@ -1,7 +1,7 @@
 package io.castled.android.notifications.workmanager
 
 import android.content.Context
-import io.castled.android.notifications.commons.isSuccessfulOrIgnoredError
+import io.castled.android.notifications.commons.extenstions.isSuccessfulOrIgnoredError
 import io.castled.android.notifications.inbox.viewmodel.InboxRepository
 import io.castled.android.notifications.store.models.NetworkRetryLog
 import io.castled.android.notifications.workmanager.models.CastledInboxEvent
