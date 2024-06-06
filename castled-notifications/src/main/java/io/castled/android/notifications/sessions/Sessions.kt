@@ -39,6 +39,7 @@ internal object Sessions : CastledSharedStoreListener {
     private var sessionDuration: Long = 0L
     private var isFirstSession: Boolean = true
     private var currentStartTime: Long = 0L
+    private var isSessionStarted: Boolean = false
     private val sessionMutex = Mutex()
 
     fun init(application: Application, externalScope: CoroutineScope) {
@@ -65,6 +66,7 @@ internal object Sessions : CastledSharedStoreListener {
                     resetTheValuesForNewSession()
 
                 }
+                isSessionStarted = true
             }
         }
     }
@@ -131,11 +133,15 @@ internal object Sessions : CastledSharedStoreListener {
     }
 
     fun didEnterBackground() {
+        if (!isSessionStarted || currentStartTime == 0L) {
+            return
+        }
         CastledSharedStore.getUserId()?.let {
             sessionEndTime = System.currentTimeMillis() / 1000
             sessionDuration += sessionEndTime - currentStartTime
             CastledSharedStore.setValue(PrefStoreKeys.SESSION_DURATION, sessionDuration)
             CastledSharedStore.setValue(PrefStoreKeys.SESSION_END_TIME, sessionEndTime)
+            currentStartTime = sessionEndTime
         }
     }
 
