@@ -13,7 +13,7 @@ internal class CastledRequestRetryWorker(appContext: Context, workerParams: Work
     CastledCoroutineWorker(appContext, workerParams) {
 
     private val logger = CastledLogger.getInstance(LogTags.RETRY_WORKER)
-
+    private val MAX_ENTRIES_LIMIT = 5000
     private val requestHandlerRegistry = mapOf(
         CastledNetworkRequestType.PUSH_REGISTER to PushRegisterRequestHandler(appContext),
         CastledNetworkRequestType.PUSH_EVENT to PushEventRequestHandler(appContext),
@@ -49,6 +49,10 @@ internal class CastledRequestRetryWorker(appContext: Context, workerParams: Work
                         })
                 }
                 networkRetryRepository.deleteRetryRequests(processedRequests)
+                retryRequests.removeAll(processedRequests)
+                if (retryRequests.count() > MAX_ENTRIES_LIMIT) {
+                    cleanupOldEntries(retryRequests)
+                }
             }
         } catch (e: Exception) {
             logger.error("work with id: $id failed!", e)
@@ -61,4 +65,7 @@ internal class CastledRequestRetryWorker(appContext: Context, workerParams: Work
         return if (failedRequests.size > 0) Result.retry() else Result.success()
     }
 
+    private suspend fun cleanupOldEntries(retryRequests: List<NetworkRetryLog>) {
+        networkRetryRepository.deleteRetryRequests(retryRequests.take(retryRequests.count() - MAX_ENTRIES_LIMIT))
+    }
 }

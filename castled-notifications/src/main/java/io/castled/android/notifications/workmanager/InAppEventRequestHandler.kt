@@ -1,6 +1,7 @@
 package io.castled.android.notifications.workmanager
 
 import android.content.Context
+import io.castled.android.notifications.commons.extenstions.isSuccessfulOrIgnoredError
 import io.castled.android.notifications.inapp.service.InAppRepository
 import io.castled.android.notifications.store.models.NetworkRetryLog
 import io.castled.android.notifications.workmanager.models.CastledInAppEvent
@@ -20,7 +21,7 @@ internal class InAppEventRequestHandler(appContext: Context) : NetworkRequestHan
         try {
             val response =
                 inAppRepository.reportEventNoRetry(CastledInAppEventRequest(batchedEvents))
-            if (!response.isSuccessful) {
+            if (!response.isSuccessfulOrIgnoredError()) {
                 onError(requests)
             } else {
                 onSuccess(requests)

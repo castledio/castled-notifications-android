@@ -1,6 +1,7 @@
 package io.castled.android.notifications.workmanager
 
 import android.content.Context
+import io.castled.android.notifications.commons.extenstions.isSuccessfulOrIgnoredError
 import io.castled.android.notifications.push.service.PushRepository
 import io.castled.android.notifications.store.models.NetworkRetryLog
 import io.castled.android.notifications.workmanager.models.CastledLogoutRequest
@@ -21,7 +22,7 @@ internal class LogoutRequestHandler(appContext: Context) : NetworkRequestHandler
                     entry.request.tokens,
                     entry.request.sessionId
                 )
-                if (!response.isSuccessful) {
+                if (!response.isSuccessfulOrIgnoredError()) {
                     onError(listOf(entry))
                 } else {
                     onSuccess(listOf(entry))

@@ -1,6 +1,7 @@
 package io.castled.android.notifications.workmanager
 
 import android.content.Context
+import io.castled.android.notifications.commons.extenstions.isSuccessfulOrIgnoredError
 import io.castled.android.notifications.store.models.NetworkRetryLog
 import io.castled.android.notifications.tracking.device.service.DeviceInfoRepository
 import io.castled.android.notifications.workmanager.models.CastledDeviceInfoRequest
@@ -16,7 +17,7 @@ internal class DeviceInfoRequestHandler(appContext: Context) : NetworkRequestHan
             try {
                 val response =
                     trackDeviceRepository.reportDeviceInfoNoRetry((entry.request as CastledDeviceInfoRequest))
-                if (!response.isSuccessful) {
+                if (!response.isSuccessfulOrIgnoredError()) {
                     onError(listOf(entry))
                 } else {
                     onSuccess(listOf(entry))
