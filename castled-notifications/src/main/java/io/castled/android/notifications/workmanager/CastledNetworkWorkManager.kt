@@ -8,6 +8,7 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import io.castled.android.notifications.commons.isSuccessfulOrIgnoredError
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.store.models.NetworkRetryLog
@@ -67,7 +68,9 @@ internal class CastledNetworkWorkManager private constructor(context: Context) {
         try {
             val response = apiCall(request)
             if (!response.isSuccessful) {
-                enqueueFailedRequest(request)
+                if (!response.isSuccessfulOrIgnoredError()) {
+                    enqueueFailedRequest(request)
+                }
                 logger.error(
                     "error code:${response.code()} message: ${
                         response.errorBody()?.string() ?: response.message()

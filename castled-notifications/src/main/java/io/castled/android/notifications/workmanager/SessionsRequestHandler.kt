@@ -1,6 +1,7 @@
 package io.castled.android.notifications.workmanager
 
 import android.content.Context
+import io.castled.android.notifications.commons.isSuccessfulOrIgnoredError
 import io.castled.android.notifications.sessions.events.CastledSessionEvent
 import io.castled.android.notifications.sessions.service.SessionsRepository
 import io.castled.android.notifications.store.models.NetworkRetryLog
@@ -20,7 +21,7 @@ internal class SessionsRequestHandler(appContext: Context) : NetworkRequestHandl
         try {
             val response =
                 sessionsRepository.reportSessionEventNoRetry(CastledSessionRequest(batchedEvents))
-            if (!response.isSuccessful) {
+            if (!response.isSuccessfulOrIgnoredError()) {
                 onError(requests)
             } else {
                 onSuccess(requests)

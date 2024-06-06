@@ -28,7 +28,7 @@ class MyApplicationClass : MultiDexApplication() {
 //                .skipUrlHandling(true)
                 .enableTracking(true)
                 .inAppFetchIntervalSec(60)
-                .sessionTimeOutSec(30)
+                .sessionTimeOutSec(10)
                 .build()
         )
 

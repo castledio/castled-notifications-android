@@ -1,6 +1,7 @@
 package io.castled.android.notifications.workmanager
 
 import android.content.Context
+import io.castled.android.notifications.commons.isSuccessfulOrIgnoredError
 import io.castled.android.notifications.push.service.PushRepository
 import io.castled.android.notifications.store.models.NetworkRetryLog
 import io.castled.android.notifications.workmanager.models.CastledPushRegisterRequest
@@ -19,7 +20,7 @@ internal class PushRegisterRequestHandler(appContext: Context) : NetworkRequestH
                 val response = pushRepository.registerNoRetry(
                     (entry.request as CastledPushRegisterRequest).userId, entry.request.tokens
                 )
-                if (!response.isSuccessful) {
+                if (!response.isSuccessfulOrIgnoredError()) {
                     onError(listOf(entry))
                 } else {
                     onSuccess(listOf(entry))
