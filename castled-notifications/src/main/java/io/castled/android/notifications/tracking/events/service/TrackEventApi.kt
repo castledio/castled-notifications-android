@@ -7,12 +7,12 @@ import retrofit2.http.*
 
 internal interface TrackEventApi {
 
-    @POST("external/v1/collections/events/lists?apiSource=app")
+    @POST("external/v1/collections/events/lists?apiSource=app&pf=android")
     suspend fun reportEvent(
         @Body request: CastledTrackEventRequest
     ): Response<Void?>
 
-    @POST("external/v1/collections/users?apiSource=app")
+    @POST("external/v1/collections/users?apiSource=app&pf=android")
     suspend fun reportUserTrackingEvent(
         @Body request: CastledUserTrackingEventRequest,
     ): Response<Void?>
