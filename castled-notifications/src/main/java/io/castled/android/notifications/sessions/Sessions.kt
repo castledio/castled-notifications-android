@@ -77,9 +77,11 @@ internal object Sessions : CastledSharedStoreListener {
 
     private suspend fun createNewSession() {
         val sessionDetails = mutableListOf<CastledSessionEvent>()
-        val deviceId = JsonObject(
+        val properties = JsonObject(
             mapOf(
-                "deviceId" to deviceInfo.getDeviceId().toJsonElement()
+                "deviceId" to deviceInfo.getDeviceId().toJsonElement(),
+                "platform" to "android".toJsonElement()
+
             )
         )
         if (!sessionId.isNullOrEmpty()) {
@@ -91,7 +93,7 @@ internal object Sessions : CastledSharedStoreListener {
                 userId = CastledSharedStore.getUserId() ?: "",
                 timestamp = DateTimeUtils.getStringFromDate(dateEnded),
                 duration = sessionDuration,
-                properties = deviceId
+                properties = properties
             )
             sessionDetails.add(event)
             CastledSharedStore.setValue(PrefStoreKeys.SESSION_IS_FIRST, false)
@@ -111,7 +113,7 @@ internal object Sessions : CastledSharedStoreListener {
             userId = CastledSharedStore.getUserId() ?: "",
             firstSession = isFirstSession,
             timestamp = DateTimeUtils.getStringFromDate(dateStarted),
-            properties = deviceId
+            properties = properties
         )
         sessionDetails.add(event)
         sessionsRepository.reportSessionEvent(CastledSessionRequest(sessionDetails))
