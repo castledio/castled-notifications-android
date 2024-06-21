@@ -19,7 +19,6 @@ internal class LogoutRequestHandler(appContext: Context) : NetworkRequestHandler
         for (entry in requests) {
             try {
                 if ((entry.request as CastledLogoutRequest).userId == CastledSharedStore.getUserId()) {
-                    onSuccess(listOf(entry))
                     // adding this condition to prevent retrying for a previous user who logged in with the same user ID.
                     onSuccess(listOf(entry))
                     continue
