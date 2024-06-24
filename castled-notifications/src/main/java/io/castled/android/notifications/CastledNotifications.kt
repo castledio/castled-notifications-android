@@ -287,13 +287,13 @@ object CastledNotifications {
     }
 
     @JvmStatic
-    fun subscribeToInappNotificationEvents(inappListener: CastledInappNotificationListener) {
-        InAppNotification.subscribeToInappNotificationEvents(inappListener)
+    fun subscribeToInappEvents(inappListener: CastledInappNotificationListener) {
+        InAppNotification.subscribeToInappEvents(inappListener)
     }
 
     @JvmStatic
-    fun subscribeToInboxNotificationEvents(inboxListener: CastledInboxListener) {
-        AppInbox.subscribeToInboxNotificationEvents(inboxListener)
+    fun subscribeToInboxEvents(inboxListener: CastledInboxListener) {
+        AppInbox.subscribeToInboxEvents(inboxListener)
     }
 
     @JvmStatic

@@ -2,7 +2,7 @@ package io.castled.android.notifications.inbox
 
 import android.content.Context
 import io.castled.android.notifications.commons.CastledClickActionUtils
-import io.castled.android.notifications.inbox.extensions.toCastledActionContext
+import io.castled.android.notifications.inbox.model.InboxActionUtils
 import io.castled.android.notifications.inbox.model.InboxEventType
 import io.castled.android.notifications.inbox.model.InboxResponseConverter.toInboxItem
 import io.castled.android.notifications.logger.CastledLogger
@@ -30,7 +30,9 @@ internal class InboxLifeCycleListenerImpl(private val context: Context) {
     fun onClicked(
         inboxItem: Inbox, actionParams: Map<String, Any>
     ) {
-        val actionContext = actionParams.toCastledActionContext()
+        val actionContext = InboxActionUtils.getCastledActionContextFromActionParams(
+            actionParams
+        )
         val uri = actionContext.actionUri ?: ""
         val keyVals = actionContext.keyVals
 

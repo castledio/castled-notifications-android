@@ -59,7 +59,7 @@ class MyApplicationClass : MultiDexApplication() {
         })
 
         // Listening to inapp notification clicks
-        CastledNotifications.subscribeToInappNotificationEvents(object :
+        CastledNotifications.subscribeToInappEvents(object :
             CastledInappNotificationListener {
             val logger = CastledLogger.getInstance("CastledInappNotifications-DemoApp")
             override fun onCastledInappClicked(actionContext: CastledActionContext) {
@@ -69,7 +69,7 @@ class MyApplicationClass : MultiDexApplication() {
         })
 
         // Listening to inbox notification clicks
-        CastledNotifications.subscribeToInboxNotificationEvents(object :
+        CastledNotifications.subscribeToInboxEvents(object :
             CastledInboxListener {
             val logger = CastledLogger.getInstance("CastledInboxNotifications-DemoApp")
             override fun onCastledInboxClicked(actionContext: CastledActionContext) {

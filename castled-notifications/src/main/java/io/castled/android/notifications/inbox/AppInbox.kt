@@ -175,7 +175,7 @@ internal object AppInbox : CastledSharedStoreListener {
         startInboxJob()
     }
 
-    fun subscribeToInboxNotificationEvents(listener: CastledInboxListener) {
+    fun subscribeToInboxEvents(listener: CastledInboxListener) {
         if (!enabled) {
             logger.debug("Ignoring inbox listener, Inbox disabled")
             return
