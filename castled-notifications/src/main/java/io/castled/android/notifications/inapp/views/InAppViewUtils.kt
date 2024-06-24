@@ -66,12 +66,23 @@ object InAppViewUtils {
         return ClickActionParams(
             actionLabel = null,
             action = CastledClickAction.valueOf(
-                modal["defaultClickAction"]?.jsonPrimitive?.content ?: "CUSTOM"
+                modal["defaultClickAction"]?.jsonPrimitive?.content
+                    ?: modal["clickAction"]?.jsonPrimitive?.content // for banner body click
+                    ?: CastledClickAction.NONE.toString()
             ),
             uri = modal["url"]?.jsonPrimitive?.content ?: "",
             keyVals = (modal["keyVals"] as? JsonObject)?.jsonObject?.entries?.associate { (key, value) ->
                 key to (value as JsonPrimitive).content
             }
+        )
+    }
+
+    fun getInAppDismissedActionParams(): ClickActionParams {
+        return ClickActionParams(
+            actionLabel = null,
+            action = CastledClickAction.DISMISS_NOTIFICATION,
+            uri = "",
+            keyVals = null
         )
     }
 
@@ -92,7 +103,7 @@ object InAppViewUtils {
         )
     }
 
-    fun getWebViewButtonActionParams(modal: JsonObject): ClickActionParams? {
+    fun getWebViewButtonActionParams(modal: JsonObject): ClickActionParams {
         val keyVals = modal["keyVals"]?.jsonObject
         return ClickActionParams(
             actionLabel = modal["keyVals"]?.jsonObject?.get("button_title")?.jsonPrimitive?.content

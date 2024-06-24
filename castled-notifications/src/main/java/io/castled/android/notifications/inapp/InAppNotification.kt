@@ -3,6 +3,8 @@ package io.castled.android.notifications.inapp
 import android.app.Activity
 import android.app.Application
 import android.content.Context
+import io.castled.android.notifications.commons.ClickActionParams
+import io.castled.android.notifications.commons.extenstions.toCastledActionContext
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.observer.CastledLifeCycleObserver
@@ -27,6 +29,7 @@ internal object InAppNotification : CastledSharedStoreListener {
 
     private var enabled = false
     private var fetchJob: Job? = null
+    private var inAppNotificationListener: CastledInappNotificationListener? = null
 
     fun init(application: Application, externalScope: CoroutineScope) {
         InAppNotification.externalScope = externalScope
@@ -72,9 +75,15 @@ internal object InAppNotification : CastledSharedStoreListener {
         inAppController.findAndLaunchInApp(context, eventName, eventParams)
     }
 
-    fun reportInAppEvent(request: CastledInAppEventRequest) = externalScope.launch(Default) {
-        inAppController.reportEvent(request)
-    }
+    fun reportInAppEvent(request: CastledInAppEventRequest, actionParams: ClickActionParams?) =
+        externalScope.launch(Default) {
+            inAppController.reportEvent(request)
+            inAppNotificationListener?.let { listener ->
+                actionParams?.let {
+                    listener.onCastledInappClicked(actionParams.toCastledActionContext())
+                }
+            }
+        }
 
     fun updateInAppDisplayStats(inApp: Campaign) = externalScope.launch(Default) {
         inAppController.updateInAppDisplayStats(inApp)
@@ -115,5 +124,13 @@ internal object InAppNotification : CastledSharedStoreListener {
 
     internal fun getCurrentActivity(): Activity? {
         return inAppController.currentActivityReference?.get()
+    }
+
+    fun subscribeToInappNotificationEvents(listener: CastledInappNotificationListener) {
+        if (!enabled) {
+            logger.debug("Ignoring inapp listerner, In-App disabled")
+            return
+        }
+        inAppNotificationListener = listener
     }
 }

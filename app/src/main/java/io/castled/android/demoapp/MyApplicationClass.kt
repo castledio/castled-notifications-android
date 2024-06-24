@@ -6,6 +6,7 @@ import androidx.multidex.MultiDexApplication
 import io.castled.android.notifications.CastledConfigs
 import io.castled.android.notifications.CastledNotifications
 import io.castled.android.notifications.CastledPushNotificationListener
+import io.castled.android.notifications.inapp.CastledInappNotificationListener
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.push.models.CastledActionContext
 import io.castled.android.notifications.push.models.CastledPushMessage
@@ -54,6 +55,16 @@ class MyApplicationClass : MultiDexApplication() {
             override fun onCastledPushDismissed(pushMessage: CastledPushMessage) {
                 logger.debug("Dismissed push message with id: ${pushMessage.notificationId}")
             }
+        })
+
+        // Listening to inapp notification clicks
+        CastledNotifications.subscribeToInappNotificationEvents(object :
+            CastledInappNotificationListener {
+            val logger = CastledLogger.getInstance("CastledInappNotifications-DemoApp")
+            override fun onCastledInappClicked(actionContext: CastledActionContext) {
+                logger.debug("Inapp Notificaiton clicked: ${actionContext}")
+            }
+
         })
     }
 

@@ -12,6 +12,7 @@ import android.os.Process
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.firebase.messaging.RemoteMessage
+import io.castled.android.notifications.inapp.CastledInappNotificationListener
 import io.castled.android.notifications.inapp.InAppNotification
 import io.castled.android.notifications.inapp.models.consts.AppEvents
 import io.castled.android.notifications.inbox.AppInbox
@@ -281,6 +282,11 @@ object CastledNotifications {
     @JvmStatic
     fun subscribeToPushNotificationEvents(pushNotificationListener: CastledPushNotificationListener) {
         PushNotification.subscribeToPushNotificationEvents(pushNotificationListener)
+    }
+
+    @JvmStatic
+    fun subscribeToInappNotificationEvents(inappListener: CastledInappNotificationListener) {
+        InAppNotification.subscribeToInappNotificationEvents(inappListener)
     }
 
     @JvmStatic
