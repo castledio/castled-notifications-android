@@ -2,31 +2,22 @@ package io.castled.android.notifications.inbox
 
 import android.content.Context
 import io.castled.android.notifications.commons.CastledClickActionUtils
-import io.castled.android.notifications.commons.toMapString
+import io.castled.android.notifications.inbox.extensions.toCastledActionContext
+import io.castled.android.notifications.inbox.model.InboxEventType
 import io.castled.android.notifications.inbox.model.InboxResponseConverter.toInboxItem
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.CastledClickAction
 import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.store.models.Inbox
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
 
 internal class InboxLifeCycleListenerImpl(private val context: Context) {
-
-    private fun getClickAction(action: String): CastledClickAction {
-        return try {
-            action.let { CastledClickAction.valueOf(it) }
-        } catch (e: Exception) {
-            CastledClickAction.NONE
-        }
-    }
 
     fun deleteItem(
         inboxItem: Inbox
     ) {
         AppInbox.reportEventWith(
-            inboxItem.toInboxItem(), "", "DELETED"
+            inboxItem.toInboxItem(), "", InboxEventType.DELETED.toString(), null
         )
     }
 
@@ -39,18 +30,11 @@ internal class InboxLifeCycleListenerImpl(private val context: Context) {
     fun onClicked(
         inboxItem: Inbox, actionParams: Map<String, Any>
     ) {
-        val clickAction = getClickAction(
-            (actionParams["clickAction"] as? JsonPrimitive?)?.content
-                ?: (actionParams["clickAction"] as? String) ?: "NONE"
-        )
-        val uri =
-            (actionParams["url"] as? JsonPrimitive?)?.content ?: (actionParams["url"] as? String)
-            ?: ""
-        val keyVals = ((actionParams["keyVals"] as? JsonObject)?.toMapString())
-        AppInbox.reportEventWith(
-            inboxItem.toInboxItem(), (actionParams["label"] as? String) ?: "", "CLICKED"
-        )
-        when (clickAction) {
+        val actionContext = actionParams.toCastledActionContext()
+        val uri = actionContext.actionUri ?: ""
+        val keyVals = actionContext.keyVals
+
+        when (actionContext.actionType) {
             CastledClickAction.NONE -> {
                 // Do nothing
             }
@@ -61,6 +45,12 @@ internal class InboxLifeCycleListenerImpl(private val context: Context) {
                         context, uri, keyVals
                     )
                 }
+                AppInbox.reportEventWith(
+                    inboxItem.toInboxItem(),
+                    actionContext.actionLabel ?: "",
+                    InboxEventType.CLICKED.toString(),
+                    actionContext
+                )
             }
 
             CastledClickAction.DISMISS_NOTIFICATION -> {
@@ -73,11 +63,17 @@ internal class InboxLifeCycleListenerImpl(private val context: Context) {
                         context, uri, keyVals
                     )
                 }
+                AppInbox.reportEventWith(
+                    inboxItem.toInboxItem(),
+                    actionContext.actionLabel ?: "",
+                    InboxEventType.CLICKED.toString(),
+                    actionContext
+                )
             }
 
             else -> {
                 logger.debug(
-                    "Unexpected action:${clickAction} for notification:" + "${inboxItem.messageId}, button:${actionParams["label"]}"
+                    "Unexpected action:${actionContext.actionType} for notification:" + "${inboxItem.messageId}, button:${actionParams["label"]}"
                 )
             }
         }

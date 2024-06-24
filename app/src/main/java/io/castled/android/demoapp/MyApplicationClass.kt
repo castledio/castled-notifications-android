@@ -7,6 +7,7 @@ import io.castled.android.notifications.CastledConfigs
 import io.castled.android.notifications.CastledNotifications
 import io.castled.android.notifications.CastledPushNotificationListener
 import io.castled.android.notifications.inapp.CastledInappNotificationListener
+import io.castled.android.notifications.inbox.CastledInboxListener
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.push.models.CastledActionContext
 import io.castled.android.notifications.push.models.CastledPushMessage
@@ -63,6 +64,16 @@ class MyApplicationClass : MultiDexApplication() {
             val logger = CastledLogger.getInstance("CastledInappNotifications-DemoApp")
             override fun onCastledInappClicked(actionContext: CastledActionContext) {
                 logger.debug("Inapp Notificaiton clicked: ${actionContext}")
+            }
+
+        })
+
+        // Listening to inbox notification clicks
+        CastledNotifications.subscribeToInboxNotificationEvents(object :
+            CastledInboxListener {
+            val logger = CastledLogger.getInstance("CastledInboxNotifications-DemoApp")
+            override fun onCastledInboxClicked(actionContext: CastledActionContext) {
+                logger.debug("Inbox item clicked: ${actionContext}")
             }
 
         })

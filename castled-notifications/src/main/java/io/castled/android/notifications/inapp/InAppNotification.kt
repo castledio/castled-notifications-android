@@ -128,7 +128,7 @@ internal object InAppNotification : CastledSharedStoreListener {
 
     fun subscribeToInappNotificationEvents(listener: CastledInappNotificationListener) {
         if (!enabled) {
-            logger.debug("Ignoring inapp listerner, In-App disabled")
+            logger.debug("Ignoring inapp listener, In-App disabled")
             return
         }
         inAppNotificationListener = listener
