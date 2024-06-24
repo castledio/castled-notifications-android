@@ -1,10 +1,11 @@
 package io.castled.android.notifications.inapp
 
 import io.castled.android.notifications.commons.ClickActionParams
+import io.castled.android.notifications.inapp.models.InAppEventType
 import io.castled.android.notifications.store.models.Campaign
 import io.castled.android.notifications.workmanager.models.CastledInAppEvent
 import io.castled.android.notifications.workmanager.models.CastledInAppEventRequest
-import java.util.*
+import java.util.TimeZone
 
 internal object InAppEventUtils {
 
@@ -12,7 +13,7 @@ internal object InAppEventUtils {
         val event = CastledInAppEvent(
             teamId = campaign.teamId.toString(),
             sourceContext = campaign.sourceContext,
-            eventType = "VIEWED",
+            eventType = InAppEventType.VIEWED.toString(),
             ts = System.currentTimeMillis() / 1000,
             tz = TimeZone.getDefault().displayName
         )
@@ -23,7 +24,7 @@ internal object InAppEventUtils {
         val event = CastledInAppEvent(
             teamId = campaign.teamId.toString(),
             sourceContext = campaign.sourceContext,
-            eventType = "DISCARDED",
+            eventType = InAppEventType.DISCARDED.toString(),
             ts = System.currentTimeMillis() / 1000,
             tz = TimeZone.getDefault().displayName
         )
@@ -36,7 +37,7 @@ internal object InAppEventUtils {
         val event = CastledInAppEvent(
             teamId = campaign.teamId.toString(),
             sourceContext = campaign.sourceContext,
-            eventType = "CLICKED",
+            eventType = InAppEventType.CLICKED.toString(),
             btnLabel = actionParams.actionLabel,
             actionType = actionParams.action.toString(),
             actionUri = actionParams.uri,

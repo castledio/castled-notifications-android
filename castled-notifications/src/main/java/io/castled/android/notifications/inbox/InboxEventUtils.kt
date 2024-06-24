@@ -1,6 +1,7 @@
 package io.castled.android.notifications.inbox
 
 import io.castled.android.notifications.inbox.model.CastledInboxItem
+import io.castled.android.notifications.inbox.model.InboxEventType
 import io.castled.android.notifications.store.models.Inbox
 import io.castled.android.notifications.workmanager.models.CastledInboxEvent
 import io.castled.android.notifications.workmanager.models.CastledInboxEventRequest
@@ -32,7 +33,7 @@ internal object InboxEventUtils {
                 CastledInboxEvent(
                     teamId = inbox.teamId.toString(),
                     sourceContext = inbox.sourceContext,
-                    eventType = "READ",
+                    eventType = InboxEventType.READ.toString(),
                     btnLabel = "",
                     ts = System.currentTimeMillis() / 1000,
                     tz = TimeZone.getDefault().displayName

@@ -15,6 +15,7 @@ internal class UserTrackingRequestHandler(appContext: Context) : NetworkRequestH
         onSuccess: (entries: List<NetworkRetryLog>) -> Unit,
         onError: (entries: List<NetworkRetryLog>) -> Unit
     ) {
+        
         for (entry in requests) {
             try {
                 val response =

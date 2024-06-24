@@ -3,11 +3,13 @@ package io.castled.android.notifications.inbox
 import android.app.Application
 import android.content.Context
 import io.castled.android.notifications.inbox.model.CastledInboxItem
+import io.castled.android.notifications.inbox.model.InboxEventType
 import io.castled.android.notifications.inbox.model.InboxResponseConverter.toInboxItem
 import io.castled.android.notifications.inbox.viewmodel.InboxRepository
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.observer.CastledLifeCycleObserver
+import io.castled.android.notifications.push.models.CastledActionContext
 import io.castled.android.notifications.store.CastledSharedStore
 import io.castled.android.notifications.store.CastledSharedStoreListener
 import io.castled.android.notifications.store.models.Inbox
@@ -28,6 +30,7 @@ internal object AppInbox : CastledSharedStoreListener {
     private lateinit var externalScope: CoroutineScope
     private var fetchJob: Job? = null
     private var enabled = false
+    private var inboxEventsListener: CastledInboxListener? = null
 
     fun init(application: Application, externalScope: CoroutineScope) {
         AppInbox.externalScope = externalScope
@@ -105,7 +108,12 @@ internal object AppInbox : CastledSharedStoreListener {
 
     }
 
-    fun reportEventWith(inbox: CastledInboxItem, btnLabel: String, eventType: String) {
+    fun reportEventWith(
+        inbox: CastledInboxItem,
+        btnLabel: String,
+        eventType: String,
+        actionContext: CastledActionContext?
+    ) {
         if (!enabled || CastledSharedStore.getUserId() == null) {
             logger.debug("Ignoring inbox event, Castled inbox disabled/ UserId not configured")
             return
@@ -115,7 +123,11 @@ internal object AppInbox : CastledSharedStoreListener {
                 inbox, btnLabel, eventType
             )
         )
-
+        inboxEventsListener?.let { listener ->
+            actionContext?.let {
+                listener.onCastledInboxClicked(it)
+            }
+        }
     }
 
     fun deleteInboxItem(
@@ -128,7 +140,7 @@ internal object AppInbox : CastledSharedStoreListener {
             inboxObject.isDeleted = true
             inboxRepository.inboxDao.updateInboxItem(inboxObject)
         }
-        reportEventWith(inboxItem, "", "DELETED")
+        reportEventWith(inboxItem, "", InboxEventType.DELETED.toString(), null)
 
     }
 
@@ -163,4 +175,11 @@ internal object AppInbox : CastledSharedStoreListener {
         startInboxJob()
     }
 
+    fun subscribeToInboxEvents(listener: CastledInboxListener) {
+        if (!enabled) {
+            logger.debug("Ignoring inbox listener, Inbox disabled")
+            return
+        }
+        inboxEventsListener = listener
+    }
 }

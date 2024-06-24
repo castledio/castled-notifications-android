@@ -4,6 +4,7 @@ import android.content.Context
 import io.castled.android.notifications.CastledNotifications
 import io.castled.android.notifications.commons.CastledClickActionUtils
 import io.castled.android.notifications.commons.ClickActionParams
+import io.castled.android.notifications.inapp.views.InAppViewUtils
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.push.models.CastledClickAction
@@ -14,7 +15,10 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
     InAppViewLifecycleListener {
 
     override fun onDisplayed(inAppMessage: Campaign) {
-        InAppNotification.reportInAppEvent(InAppEventUtils.getViewedEvent(inAppMessage))
+        InAppNotification.reportInAppEvent(
+            InAppEventUtils.getViewedEvent(inAppMessage),
+            null
+        )
         InAppNotification.updateInAppDisplayStats(inAppMessage)
         logger.debug("In-App with notification id:${inAppMessage.notificationId} displayed!")
     }
@@ -37,7 +41,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                         InAppEventUtils.getClickedEvent(
                             inAppMessage,
                             actionParams
-                        )
+                        ), actionParams
                     )
                     inAppViewBaseDecorator.close(actionParams.action)
                 }
@@ -54,7 +58,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                         InAppEventUtils.getClickedEvent(
                             inAppMessage,
                             actionParams
-                        )
+                        ), actionParams
                     )
                     inAppViewBaseDecorator.close(actionParams.action)
                 }
@@ -63,7 +67,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                     InAppNotification.reportInAppEvent(
                         InAppEventUtils.getDismissedEvent(
                             inAppMessage
-                        )
+                        ), actionParams
                     )
                     inAppViewBaseDecorator.close(actionParams.action)
                     logger.debug("In-App with notification id:${inAppMessage.notificationId} dismissed!")
@@ -81,7 +85,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                         InAppEventUtils.getClickedEvent(
                             inAppMessage,
                             actionParams
-                        )
+                        ), actionParams
                     )
                     inAppViewBaseDecorator.close(actionParams.action)
 
@@ -119,7 +123,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                         InAppEventUtils.getClickedEvent(
                             inAppMessage,
                             actionParams
-                        )
+                        ), actionParams
                     )
                 }
 
@@ -127,7 +131,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                     InAppNotification.reportInAppEvent(
                         InAppEventUtils.getDismissedEvent(
                             inAppMessage
-                        )
+                        ), actionParams
                     )
                     logger.debug("In-App with notification id:${inAppMessage.notificationId} dismissed!")
                 }
@@ -144,7 +148,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                         InAppEventUtils.getClickedEvent(
                             inAppMessage,
                             actionParams
-                        )
+                        ), actionParams
                     )
                 }
 
@@ -153,7 +157,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                         InAppEventUtils.getClickedEvent(
                             inAppMessage,
                             actionParams
-                        )
+                        ), actionParams
                     )
                     InAppNotification.getCurrentActivity()?.let {
                         CastledNotifications.requestPushPermission(it)
@@ -165,7 +169,7 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
                         InAppEventUtils.getClickedEvent(
                             inAppMessage,
                             actionParams
-                        )
+                        ), actionParams
                     )
 
                     // TODO:  Not implemented!
@@ -191,7 +195,10 @@ internal class InAppLifeCycleListenerImpl(private val inAppController: InAppCont
         inAppMessage: Campaign
     ) {
         inAppViewBaseDecorator.close(CastledClickAction.DISMISS_NOTIFICATION)
-        InAppNotification.reportInAppEvent(InAppEventUtils.getDismissedEvent(inAppMessage))
+        InAppNotification.reportInAppEvent(
+            InAppEventUtils.getDismissedEvent(inAppMessage),
+            InAppViewUtils.getInAppDismissedActionParams()
+        )
         logger.debug("In-App with notification id:${inAppMessage.notificationId} dismissed!")
     }
 

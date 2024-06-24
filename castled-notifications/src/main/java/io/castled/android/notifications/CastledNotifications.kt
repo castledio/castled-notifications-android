@@ -12,12 +12,15 @@ import android.os.Process
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.firebase.messaging.RemoteMessage
+import io.castled.android.notifications.inapp.CastledInappNotificationListener
 import io.castled.android.notifications.inapp.InAppNotification
 import io.castled.android.notifications.inapp.models.consts.AppEvents
 import io.castled.android.notifications.inbox.AppInbox
+import io.castled.android.notifications.inbox.CastledInboxListener
 import io.castled.android.notifications.inbox.model.CastledInboxDisplayConfig
 import io.castled.android.notifications.inbox.model.CastledInboxItem
 import io.castled.android.notifications.inbox.model.InboxConstants
+import io.castled.android.notifications.inbox.model.InboxEventType
 import io.castled.android.notifications.inbox.views.CastledInboxActivity
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
@@ -284,6 +287,16 @@ object CastledNotifications {
     }
 
     @JvmStatic
+    fun subscribeToInappEvents(inappListener: CastledInappNotificationListener) {
+        InAppNotification.subscribeToInappEvents(inappListener)
+    }
+
+    @JvmStatic
+    fun subscribeToInboxEvents(inboxListener: CastledInboxListener) {
+        AppInbox.subscribeToInboxEvents(inboxListener)
+    }
+
+    @JvmStatic
     fun showAppInbox(context: Context, displayConfig: CastledInboxDisplayConfig? = null) =
         castledScope.launch(Dispatchers.Default) {
             if (isInited() && getCastledConfigs().enableAppInbox) {
@@ -319,7 +332,7 @@ object CastledNotifications {
         castledScope.launch(Dispatchers.Default) {
             if (isInited() && getCastledConfigs().enableAppInbox) {
                 AppInbox.reportEventWith(
-                    inboxItem, buttonTitle, "CLICKED"
+                    inboxItem, buttonTitle, InboxEventType.CLICKED.toString(), null
                 )
             } else {
                 logger.debug("Ignoring inbox event, Castled inbox disabled/ UserId not configured")
