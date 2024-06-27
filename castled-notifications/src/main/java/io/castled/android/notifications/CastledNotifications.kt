@@ -209,7 +209,7 @@ object CastledNotifications {
     }
 
     @JvmStatic
-    fun logAppPageViewedEvent(context: Context, screenName: String) {
+    fun logPageViewedEvent(context: Context, screenName: String) {
         if (!isInited()) {
             return
         }

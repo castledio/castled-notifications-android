@@ -50,11 +50,11 @@ class MyApplicationClass : MultiDexApplication() {
                 pushMessage: CastledPushMessage,
                 actionContext: CastledActionContext
             ) {
-                logger.debug("User clicked push message with id: ${pushMessage.notificationId}")
+                logger.debug("User clicked push message with id: ${pushMessage.notificationId} $actionContext")
             }
 
             override fun onCastledPushDismissed(pushMessage: CastledPushMessage) {
-                logger.debug("Dismissed push message with id: ${pushMessage.notificationId}")
+                logger.debug("Dismissed push message with id: ${pushMessage.notificationId} ")
             }
         })
 
