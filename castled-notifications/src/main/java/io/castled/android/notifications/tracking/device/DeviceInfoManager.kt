@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import io.castled.android.notifications.BuildConfig
-import io.castled.android.notifications.CastledNotifications
 import io.castled.android.notifications.commons.CastledUUIDUtils
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
@@ -23,12 +22,15 @@ internal object DeviceInfoManager : CastledSharedStoreListener {
     private lateinit var externalScope: CoroutineScope
     private lateinit var deviceInfoDetails: CastledDeviceDetails
     private lateinit var applicationContext: Application
-    fun init(application: Application, externalScope: CoroutineScope) {
+
+    fun init(application: Application, externalScope: CoroutineScope, enablePush: Boolean) {
         DeviceInfoManager.externalScope = externalScope
         applicationContext = application
         deviceInfoRepository = DeviceInfoRepository(application)
         deviceInfoDetails = CastledDeviceDetails(application)
+        listenForPushPermissionChanges(enablePush)
         CastledSharedStore.registerListener(this)
+
     }
 
     internal fun updateDeviceInfo() {
@@ -70,7 +72,6 @@ internal object DeviceInfoManager : CastledSharedStoreListener {
         CastledSharedStore.getUserId()?.let {
             updateDeviceInfo()
         }
-        listenForPushPermissionChanges()
     }
 
     override fun onStoreUserIdSet(context: Context) {
@@ -81,8 +82,8 @@ internal object DeviceInfoManager : CastledSharedStoreListener {
         return deviceInfoDetails.checkNotificationPermissions(applicationContext)
     }
 
-    private fun listenForPushPermissionChanges() {
-        if (CastledNotifications.getCastledConfigs().enablePush &&
+    private fun listenForPushPermissionChanges(pushEnabled: Boolean) {
+        if (pushEnabled &&
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
         ) {
             // For Android 13 and above

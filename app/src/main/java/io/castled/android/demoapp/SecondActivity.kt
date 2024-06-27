@@ -44,22 +44,22 @@ class SecondActivity : AppCompatActivity() {
         binding.btnLogCustomEvent.setOnClickListener {
             CastledNotifications.logCustomAppEvent(
                 this,
-                "Android${getCurrentTimeFormatted("ddMMHHmmss")}",
+                "added_to_cart_android",
                 null
             )
 
-            val userAttributes = CastledUserAttributes();
+            val userAttributes = CastledUserAttributes()
 // Predefined attributes
-            userAttributes.setFirstName("John");
-            userAttributes.setLastName("Doe");
-            userAttributes.setCity("Sanfrancisco");
-            userAttributes.setCountry("US");
-            userAttributes.setEmail("jdoe@email.com");
-            userAttributes.setGender("M");
-            userAttributes.setPhone("+13156227533");
+            userAttributes.setFirstName("John")
+            userAttributes.setLastName("Doe")
+            userAttributes.setCity("Sanfrancisco")
+            userAttributes.setCountry("US")
+            userAttributes.setEmail("jdoe@email.com")
+            userAttributes.setGender("M")
+            userAttributes.setPhone("+13156227533")
 // Custom Attributes
-            userAttributes.setCustomAttribute("prime_member", true);
-            userAttributes.setCustomAttribute("occupation", "artist");
+            userAttributes.setCustomAttribute("prime_member", true)
+            userAttributes.setCustomAttribute("occupation", "artist")
 
             CastledNotifications.setUserAttributes(this, userAttributes)
         }

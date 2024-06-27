@@ -84,7 +84,7 @@ object CastledNotifications {
         if (configs.enableAppInbox) {
             AppInbox.init(application, castledScope)
         }
-        DeviceInfoManager.init(application, castledScope)
+        DeviceInfoManager.init(application, castledScope, configs.enablePush)
         CastledSharedStore.init(
             application,
             configs,
@@ -209,7 +209,7 @@ object CastledNotifications {
     }
 
     @JvmStatic
-    fun logAppPageViewedEvent(context: Context, screenName: String) {
+    fun logPageViewedEvent(context: Context, screenName: String) {
         if (!isInited()) {
             return
         }
