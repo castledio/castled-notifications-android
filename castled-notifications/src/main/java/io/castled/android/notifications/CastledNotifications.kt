@@ -84,7 +84,7 @@ object CastledNotifications {
         if (configs.enableAppInbox) {
             AppInbox.init(application, castledScope)
         }
-        DeviceInfoManager.init(application, castledScope)
+        DeviceInfoManager.init(application, castledScope, configs.enablePush)
         CastledSharedStore.init(
             application,
             configs,
