@@ -1,6 +1,5 @@
 package io.castled.android.notifications.commons
 
-//import java.util.Base64
 import android.os.Build
 import android.util.Base64
 import java.nio.ByteBuffer
