@@ -22,6 +22,7 @@ internal object DeviceInfoManager : CastledSharedStoreListener {
     private lateinit var externalScope: CoroutineScope
     private lateinit var deviceInfoDetails: CastledDeviceDetails
     private lateinit var applicationContext: Application
+    private var isStoreInitialized: Boolean = false
 
     fun init(application: Application, externalScope: CoroutineScope, enablePush: Boolean) {
         DeviceInfoManager.externalScope = externalScope
@@ -34,6 +35,9 @@ internal object DeviceInfoManager : CastledSharedStoreListener {
     }
 
     internal fun updateDeviceInfo() {
+        if (!isStoreInitialized) {
+            return
+        }
         externalScope.launch(Dispatchers.Default) {
             try {
                 val isPushGranted = isPushPermissionGranted()
@@ -69,6 +73,7 @@ internal object DeviceInfoManager : CastledSharedStoreListener {
     }
 
     override fun onStoreInitialized(context: Context) {
+        isStoreInitialized = true
         CastledSharedStore.getUserId()?.let {
             updateDeviceInfo()
         }

@@ -1,9 +1,9 @@
 package io.castled.android.notifications.commons
 
+import android.os.Build
+import android.util.Base64
 import java.nio.ByteBuffer
-import java.util.Base64
 import java.util.UUID
-
 
 internal object CastledUUIDUtils {
 
@@ -13,8 +13,16 @@ internal object CastledUUIDUtils {
         byteBuffer.putLong(uuid.mostSignificantBits)
         byteBuffer.putLong(uuid.leastSignificantBits)
 
-        // Encode byte array to Base64 string
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(byteBuffer.array())
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Use java.util.Base64 for Android O and above
+            java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(byteBuffer.array())
+        } else {
+            // Use android.util.Base64 for Android versions below O
+            Base64.encodeToString(
+                byteBuffer.array(),
+                Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP
+            )
+        }
     }
 
     fun getIdBase64() = convertUUIDToBase64(UUID.randomUUID())
