@@ -153,6 +153,9 @@ internal object PushNotification : CastledSharedStoreListener {
 
     fun handlePushNotification(context: Context, pushMessage: CastledPushMessage?) {
         pushMessage ?: return
+        if (pushMessage.isCastledSilentPush) {
+            return
+        }
         val pushAlreadyDisplayed = runBlocking {
             withContext(Dispatchers.IO) {
                 return@withContext CastledSharedStore.checkAndSetRecentDisplayedPushId(
@@ -167,6 +170,7 @@ internal object PushNotification : CastledSharedStoreListener {
         }
         pushMessageCache?.set(pushMessage.notificationId, pushMessage)
         PushNotificationManager.displayNotification(context, pushMessage)
+
     }
 
     fun isCastledPushMessage(remoteMessage: RemoteMessage): Boolean =
