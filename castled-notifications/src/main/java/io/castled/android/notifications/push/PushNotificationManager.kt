@@ -29,12 +29,13 @@ internal object PushNotificationManager {
 
     @SuppressLint("MissingPermission")
     fun displayNotification(context: Context, pushMessage: CastledPushMessage) {
-        logger.debug("Building castled notification...")
-        val notification =
-            CastledNotificationBuilder(context).buildNotification(pushMessage)
-        NotificationManagerCompat.from(context)
-            .notify(pushMessage.notificationId, notification)
-
+        if (!pushMessage.isCastledSilentPush) {
+            logger.debug("Building castled notification...")
+            val notification =
+                CastledNotificationBuilder(context).buildNotification(pushMessage)
+            NotificationManagerCompat.from(context)
+                .notify(pushMessage.notificationId, notification)
+        }
         PushNotification.reportPushEvent(
             NotificationActionContext(
                 notificationId = pushMessage.notificationId,

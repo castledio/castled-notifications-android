@@ -25,12 +25,15 @@ fun RemoteMessage.toCastledPushMessage(): CastledPushMessage? {
             channelDescription = data["channelDescription"],
             smallIconResourceId = data["smallIconResourceId"],
             largeIconUri = data["largeIconUri"],
-            pushMessageFrames =  json.decodeFromString(data["msgFrames"]!!),
+            pushMessageFrames = json.decodeFromString(data["msgFrames"]!!),
             actionButtons = data["actionButtons"]?.let { Json.decodeFromString(it) },
-            inboxCopyEnabled = (data["iCp"] as String?)?.toBoolean()
+            inboxCopyEnabled = data["iCp"]?.toBoolean(),
+            isCastledSilentPush = data["csp"]?.toBoolean() ?: false
+
         )
     } catch (e: Exception) {
-        CastledLogger.getInstance(LogTags.PUSH).debug("Parsing fcm push payload failed! error:${e.message}")
+        CastledLogger.getInstance(LogTags.PUSH)
+            .debug("Parsing fcm push payload failed! error:${e.message}")
         return null
     }
 }
