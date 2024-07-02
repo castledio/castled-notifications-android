@@ -27,9 +27,7 @@ fun RemoteMessage.toCastledPushMessage(): CastledPushMessage? {
             largeIconUri = data["largeIconUri"],
             pushMessageFrames = json.decodeFromString(data["msgFrames"]!!),
             actionButtons = data["actionButtons"]?.let { Json.decodeFromString(it) },
-            inboxCopyEnabled = data["iCp"]?.toBoolean(),
-            isCastledSilentPush = data["csp"]?.toBoolean() ?: false
-
+            inboxCopyEnabled = data["iCp"]?.toBoolean()
         )
     } catch (e: Exception) {
         CastledLogger.getInstance(LogTags.PUSH)

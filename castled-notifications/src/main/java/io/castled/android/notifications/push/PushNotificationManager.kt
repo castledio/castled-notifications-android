@@ -27,6 +27,10 @@ internal object PushNotificationManager {
         return false
     }
 
+    fun isCastledSilentNotification(remoteMessage: RemoteMessage): Boolean =
+        remoteMessage.data[CastledNotificationFieldConsts.CASTLED_SILENT_NOTI_KEY]?.toBoolean()
+            ?: false
+    
     @SuppressLint("MissingPermission")
     fun displayNotification(context: Context, pushMessage: CastledPushMessage) {
         logger.debug("Building castled notification...")
