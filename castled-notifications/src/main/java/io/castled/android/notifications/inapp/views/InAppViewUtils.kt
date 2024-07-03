@@ -140,4 +140,14 @@ object InAppViewUtils {
 
     fun getImageViewParams(modalParams: JsonObject) =
         modalParams["imageUrl"]?.let { ImageViewParams(it.jsonPrimitive.content) }
+
+    fun shouldShowCloseButton(modal: JsonObject): Boolean {
+        return try {
+            (modal["showCloseButton"] as? JsonPrimitive?)?.content?.toBoolean() ?: true
+        } catch (e: Exception) {
+            true
+        }
+    }
+
+
 }

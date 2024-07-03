@@ -1,4 +1,5 @@
 package io.castled.android.notifications.inapp.views
+
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
@@ -11,6 +12,8 @@ import io.castled.android.notifications.R
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.store.models.Campaign
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
 
 class InAppWebViewLayout(context: Context, attrs: AttributeSet) :
     InAppBaseViewLayout(context, attrs) {
@@ -29,7 +32,18 @@ class InAppWebViewLayout(context: Context, attrs: AttributeSet) :
 
 
     override fun updateViewParams(inAppMessage: Campaign) {
+        (inAppMessage.message["modal"]?.jsonObject
+            ?: inAppMessage.message["fs"]?.jsonObject)?.let {
+            updateCloseButtonVisibility(it)
+        }
 
+    }
+
+    private fun updateCloseButtonVisibility(modalParams: JsonObject) {
+        closeButton?.let { button ->
+            button.visibility =
+                if (InAppViewUtils.shouldShowCloseButton(modalParams)) View.VISIBLE else View.GONE
+        }
     }
 
     companion object {
