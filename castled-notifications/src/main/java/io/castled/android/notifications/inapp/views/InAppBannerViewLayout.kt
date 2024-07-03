@@ -36,13 +36,20 @@ class InAppBannerViewLayout(context: Context, attrs: AttributeSet) :
         get() = findViewById(R.id.castled_inapp_banner_close_btn)
 
     override fun updateViewParams(inAppMessage: Campaign) {
-        // TODO: testing with modal payload
         val modalParams = inAppMessage.message["banner"]?.jsonObject ?: run {
             logger.debug("banner object not present in in-app message!")
             return
         }
         updateImageView(modalParams)
         updateMessageView(modalParams)
+        updateCloseButtonVisibility(modalParams)
+    }
+
+    private fun updateCloseButtonVisibility(modalParams: JsonObject) {
+        closeButton?.let { button ->
+            button.visibility =
+                if (InAppViewUtils.shouldShowCloseButton(modalParams)) View.VISIBLE else View.GONE
+        }
     }
 
     private fun updateImageView(modalParams: JsonObject) {

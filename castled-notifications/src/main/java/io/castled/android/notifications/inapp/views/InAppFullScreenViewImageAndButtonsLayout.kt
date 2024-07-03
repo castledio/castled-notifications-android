@@ -44,6 +44,14 @@ class InAppFullScreenViewImageAndButtonsLayout(context: Context, attrs: Attribut
         updateImageView(modalParams)
         updatePrimaryBtnView(modalParams)
         updateSecondaryBtnView(modalParams)
+        updateCloseButtonVisibility(modalParams)
+    }
+
+    private fun updateCloseButtonVisibility(modalParams: JsonObject) {
+        closeButton?.let { button ->
+            button.visibility =
+                if (InAppViewUtils.shouldShowCloseButton(modalParams)) View.VISIBLE else View.GONE
+        }
     }
 
     private fun updateImageView(modalParams: JsonObject) {

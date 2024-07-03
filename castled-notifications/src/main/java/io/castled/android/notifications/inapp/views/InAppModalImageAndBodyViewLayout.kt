@@ -50,7 +50,15 @@ class InAppModalImageAndBodyViewLayout(context: Context, attrs: AttributeSet) :
         updateMessageView(modalParams)
         updatePrimaryBtnView(modalParams)
         updateSecondaryBtnView(modalParams)
+        updateCloseButtonVisibility(modalParams)
         updateContentViewSizes()
+    }
+
+    private fun updateCloseButtonVisibility(modalParams: JsonObject) {
+        closeButton?.let { button ->
+            button.visibility =
+                if (InAppViewUtils.shouldShowCloseButton(modalParams)) View.VISIBLE else View.GONE
+        }
     }
 
     private fun updateContentViewSizes() {
