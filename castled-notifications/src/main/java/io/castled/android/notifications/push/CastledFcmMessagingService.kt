@@ -17,9 +17,16 @@ class CastledFcmMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         logger.debug("From: " + remoteMessage.from)
         if (CastledNotifications.isCastledPushMessage(remoteMessage)) {
-            // Notification initiated from Castled server. Handle message payload
-            CastledNotifications.handlePushNotification(this, remoteMessage.toCastledPushMessage())
-            logger.debug("Push message processing completed")
+            if (!PushNotification.isCastledSilentPushMessage(remoteMessage)) {
+                // Notification initiated from Castled server. Handle message payload
+                CastledNotifications.handlePushNotification(
+                    this,
+                    remoteMessage.toCastledPushMessage()
+                )
+                logger.debug("Push message processing completed")
+            } else {
+                logger.debug("Silent push received from Castled")
+            }
         } else {
             logger.debug("Push message not from Castled")
         }

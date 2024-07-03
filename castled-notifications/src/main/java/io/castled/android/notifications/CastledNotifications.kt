@@ -273,6 +273,10 @@ object CastledNotifications {
             logger.error("Push message not from Castled!")
             return
         }
+        if (PushNotification.isCastledSilentPushMessage(remoteMessage)) {
+            logger.debug("Silent push message from Castled!")
+            return
+        }
         handlePushNotification(context, remoteMessage.toCastledPushMessage())
     }
 

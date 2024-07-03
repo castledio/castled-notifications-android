@@ -19,5 +19,7 @@ data class CastledPushMessage(
     val pushMessageFrames: List<CastledPushMessageFrame>,
     val actionButtons: List<CastledActionButton>? = null,
     val ttl: Long? = null,
-    val inboxCopyEnabled: Boolean? = false
+    val inboxCopyEnabled: Boolean? = false,
+    val isCastledSilentPush: Boolean = false
+
 )

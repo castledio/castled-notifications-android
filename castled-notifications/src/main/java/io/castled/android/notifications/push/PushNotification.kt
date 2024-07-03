@@ -167,10 +167,14 @@ internal object PushNotification : CastledSharedStoreListener {
         }
         pushMessageCache?.set(pushMessage.notificationId, pushMessage)
         PushNotificationManager.displayNotification(context, pushMessage)
+
     }
 
     fun isCastledPushMessage(remoteMessage: RemoteMessage): Boolean =
         PushNotificationManager.isCastledNotification(remoteMessage)
+
+    fun isCastledSilentPushMessage(remoteMessage: RemoteMessage): Boolean =
+        PushNotificationManager.isCastledSilentNotification(remoteMessage)
 
     suspend fun getPushMessages(): List<CastledPushMessage> {
         return pushRepository.getPushMessages()
