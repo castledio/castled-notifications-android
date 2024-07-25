@@ -7,6 +7,7 @@ import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.observer.CastledAppLifeCycleListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class InAppAppLifeCycleListener(private val castledScope: CoroutineScope) :
@@ -34,6 +35,9 @@ class InAppAppLifeCycleListener(private val castledScope: CoroutineScope) :
     override fun onAppMovedToForeground(activity: Activity) {
         castledScope.launch(Dispatchers.Default) {
             InAppNotification.refreshCampaigns()
+            delay(300)
+            //  adding a delay to ensure that the in-app display state value is set
+            //  if the user sets discard/suspended in-app state at app launch
             InAppNotification.logAppEvent(activity, AppEvents.APP_OPENED, null)
         }
         logger.debug("App in foreground")

@@ -42,6 +42,7 @@ class SecondActivity : AppCompatActivity() {
         }
 
         binding.btnLogCustomEvent.setOnClickListener {
+            CastledNotifications.resumeInAppNotifications()
             CastledNotifications.logCustomAppEvent(
                 this,
                 "added_to_cart_android",
@@ -62,6 +63,7 @@ class SecondActivity : AppCompatActivity() {
             userAttributes.setCustomAttribute("occupation", "artist")
 
             CastledNotifications.setUserAttributes(this, userAttributes)
+
         }
 
         binding.btnLogCustomEventWithParam.setOnClickListener {
@@ -75,6 +77,7 @@ class SecondActivity : AppCompatActivity() {
                 "Android${getCurrentTimeFormatted("ddMMHHmmss")}",
                 eventParams
             )
+            CastledNotifications.discardInAppNotifications()
 
             /*  val userDetails = mutableMapOf<String, Any>()
               userDetails["fName"] = "Antony"
@@ -95,7 +98,4 @@ class SecondActivity : AppCompatActivity() {
         return dateFormat.format(Date())
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
 }

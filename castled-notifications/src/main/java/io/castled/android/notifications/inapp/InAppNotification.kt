@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.Context
 import io.castled.android.notifications.commons.ClickActionParams
 import io.castled.android.notifications.commons.extenstions.toCastledActionContext
+import io.castled.android.notifications.inapp.models.InAppDisplayState
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.observer.CastledLifeCycleObserver
@@ -26,6 +27,7 @@ internal object InAppNotification : CastledSharedStoreListener {
     private val logger: CastledLogger = CastledLogger.getInstance(LogTags.IN_APP)
     private lateinit var externalScope: CoroutineScope
     private lateinit var inAppController: InAppController
+    internal var inAppDisplayState = InAppDisplayState.ACTIVE
 
     private var enabled = false
     private var fetchJob: Job? = null
@@ -68,8 +70,8 @@ internal object InAppNotification : CastledSharedStoreListener {
         eventName: String,
         eventParams: Map<String, Any?>?
     ) = externalScope.launch(Default) {
-        if (!enabled) {
-            logger.debug("Ignoring app event, In-App disabled")
+        if (!enabled || inAppDisplayState == InAppDisplayState.DISCARDED) {
+            logger.debug("Ignoring app event, In-App disabled/ display state is 'DISCARDED'")
             return@launch
         }
         inAppController.findAndLaunchInApp(context, eventName, eventParams)
@@ -132,5 +134,43 @@ internal object InAppNotification : CastledSharedStoreListener {
             return
         }
         inAppNotificationListener = listener
+    }
+
+    internal fun suspendInAppNotifications() {
+        if (!enabled) {
+            logger.debug("Ignoring inapp display state, In-App disabled")
+            return
+        }
+        inAppDisplayState = InAppDisplayState.SUSPENDED
+        logger.debug(
+            "In-app state changed to ‘suspend’; no more in-app notifications will be " +
+                    "displayed until ‘resumeInAppNotifications’ is called."
+        )
+    }
+
+    internal fun discardInAppNotifications() {
+        if (!enabled) {
+            logger.debug("Ignoring inapp display state, In-App disabled")
+            return
+        }
+        inAppDisplayState = InAppDisplayState.DISCARDED
+        logger.debug(
+            "In-app state changed to ‘discarded’; no more in-app notifications will be " +
+                    "evaluated/displayed until ‘resumeInAppNotifications’ is called."
+        )
+    }
+
+    internal fun resumeInAppNotifications() {
+        if (!enabled) {
+            logger.debug("Ignoring inapp display state, In-App disabled")
+            return
+        }
+        inAppDisplayState = InAppDisplayState.ACTIVE
+        CastledSharedStore.getUserId()?.let {
+            checkPendingNotificationsIfAny()
+        }
+        logger.debug(
+            "In-app state changed to ‘active’."
+        )
     }
 }

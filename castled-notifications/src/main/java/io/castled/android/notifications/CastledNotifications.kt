@@ -244,6 +244,31 @@ object CastledNotifications {
             EventsTracker.logCustomEvent(eventName, eventParams)
         }
     }
+    
+    @JvmStatic
+    fun suspendInAppNotifications() {
+        if (!isInited()) {
+            return
+        }
+        InAppNotification.suspendInAppNotifications()
+    }
+
+    @JvmStatic
+    fun discardInAppNotifications() {
+        if (!isInited()) {
+            return
+        }
+        InAppNotification.discardInAppNotifications()
+    }
+
+    @JvmStatic
+    fun resumeInAppNotifications() {
+        if (!isInited()) {
+            return
+        }
+        InAppNotification.resumeInAppNotifications()
+    }
+
 
     @JvmStatic
     fun setUserAttributes(context: Context, attributes: CastledUserAttributes) {

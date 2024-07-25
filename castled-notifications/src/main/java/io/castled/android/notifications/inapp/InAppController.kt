@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import io.castled.android.notifications.R
 import io.castled.android.notifications.inapp.CampaignResponseConverter.toCampaign
+import io.castled.android.notifications.inapp.models.InAppDisplayState
 import io.castled.android.notifications.inapp.service.InAppRepository
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
@@ -110,7 +111,7 @@ internal class InAppController(context: Context) {
                 enqueuePendingItems(triggeredInApps.filter { inApp -> it.notificationId != inApp.notificationId })
             } else {
                 enqueuePendingItems(triggeredInApps)
-                logger.debug("Skipping in-app display. Another currently being shown")
+                logger.debug("Skipping in-app display. Another currently being shown/ in-app display state is not active")
             }
         } ?: run {
             enqueuePendingItems(triggeredInApps)
@@ -168,7 +169,9 @@ internal class InAppController(context: Context) {
     }
 
     private fun checkAndUpdateCurrentInApp(inApp: Campaign): Boolean {
-        if (currentInAppBeingDisplayed != null) {
+        if (currentInAppBeingDisplayed != null ||
+            InAppNotification.inAppDisplayState != InAppDisplayState.ACTIVE
+        ) {
             return false
         }
         synchronized(currentInAppLock) {
