@@ -143,7 +143,7 @@ internal object InAppNotification : CastledSharedStoreListener {
         }
         inAppDisplayState = InAppDisplayState.PAUSED
         logger.debug(
-            "In-app state changed to ‘paused’; no more in-app notifications will be " +
+            "In-app state changed to ‘paused’, no more in-app notifications will be " +
                     "displayed until ‘resumeInApp’ is called."
         )
     }
@@ -155,7 +155,7 @@ internal object InAppNotification : CastledSharedStoreListener {
         }
         inAppDisplayState = InAppDisplayState.STOPPED
         logger.debug(
-            "In-app state changed to ‘stopped’; no more in-app notifications will be " +
+            "In-app state changed to ‘stopped’, no more in-app notifications will be " +
                     "evaluated/displayed until ‘resumeInApp’ is called."
         )
     }
