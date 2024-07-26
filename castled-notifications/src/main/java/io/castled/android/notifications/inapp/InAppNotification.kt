@@ -70,8 +70,8 @@ internal object InAppNotification : CastledSharedStoreListener {
         eventName: String,
         eventParams: Map<String, Any?>?
     ) = externalScope.launch(Default) {
-        if (!enabled || inAppDisplayState == InAppDisplayState.DISCARDED) {
-            logger.debug("Ignoring app event, In-App disabled/ display state is 'DISCARDED'")
+        if (!enabled || inAppDisplayState == InAppDisplayState.STOPPED) {
+            logger.debug("Ignoring app event, In-App disabled/ display state is 'stopped'")
             return@launch
         }
         inAppController.findAndLaunchInApp(context, eventName, eventParams)
@@ -136,31 +136,31 @@ internal object InAppNotification : CastledSharedStoreListener {
         inAppNotificationListener = listener
     }
 
-    internal fun suspendInAppNotifications() {
+    internal fun pauseInApp() {
         if (!enabled) {
             logger.debug("Ignoring inapp display state, In-App disabled")
             return
         }
-        inAppDisplayState = InAppDisplayState.SUSPENDED
+        inAppDisplayState = InAppDisplayState.PAUSED
         logger.debug(
-            "In-app state changed to ‘suspend’; no more in-app notifications will be " +
-                    "displayed until ‘resumeInAppNotifications’ is called."
+            "In-app state changed to ‘paused’; no more in-app notifications will be " +
+                    "displayed until ‘resumeInApp’ is called."
         )
     }
 
-    internal fun discardInAppNotifications() {
+    internal fun stopInApp() {
         if (!enabled) {
             logger.debug("Ignoring inapp display state, In-App disabled")
             return
         }
-        inAppDisplayState = InAppDisplayState.DISCARDED
+        inAppDisplayState = InAppDisplayState.STOPPED
         logger.debug(
-            "In-app state changed to ‘discarded’; no more in-app notifications will be " +
-                    "evaluated/displayed until ‘resumeInAppNotifications’ is called."
+            "In-app state changed to ‘stopped’; no more in-app notifications will be " +
+                    "evaluated/displayed until ‘resumeInApp’ is called."
         )
     }
 
-    internal fun resumeInAppNotifications() {
+    internal fun resumeInApp() {
         if (!enabled) {
             logger.debug("Ignoring inapp display state, In-App disabled")
             return

@@ -42,7 +42,7 @@ class SecondActivity : AppCompatActivity() {
         }
 
         binding.btnLogCustomEvent.setOnClickListener {
-            CastledNotifications.resumeInAppNotifications()
+            CastledNotifications.resumeInApp()
             CastledNotifications.logCustomAppEvent(
                 this,
                 "added_to_cart_android",
@@ -77,7 +77,7 @@ class SecondActivity : AppCompatActivity() {
                 "Android${getCurrentTimeFormatted("ddMMHHmmss")}",
                 eventParams
             )
-            CastledNotifications.discardInAppNotifications()
+            CastledNotifications.stopInApp()
 
             /*  val userDetails = mutableMapOf<String, Any>()
               userDetails["fName"] = "Antony"
