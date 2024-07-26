@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -18,14 +17,14 @@
         android:textColor="#000000"
         android:textSize="18dp"
         android:textStyle="bold" />
+
     <Spinner
         android:id="@+id/spinner_db_event"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
         android:layout_gravity="center"
-        android:gravity="center"
-        />
+        android:layout_margin="8dp"
+        android:gravity="center" />
 
     <EditText
         android:id="@+id/edit_text"
@@ -55,5 +54,38 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="Log Custom Event(With Event Param)" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_margin="10dp"
+        android:orientation="horizontal"
+        android:paddingHorizontal="10dp">
+
+        <Button
+            android:id="@+id/btn_pause_inapp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="Pause In-app" />
+
+        <Button
+            android:id="@+id/btn_resume_inapp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="Resume In-app" />
+
+        <Button
+            android:id="@+id/btn_stop_inapp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="Stop In-app" />
+    </LinearLayout>
+
 
 </LinearLayout>

@@ -36,8 +36,8 @@ class MyApplicationClass : MultiDexApplication() {
 
         // User-id needs to set after login flow of your app is complete
         CastledNotifications.setUserId(this, "antony@castled.io")
-        CastledNotifications.suspendInAppNotifications()
         // Listening to push notification events
+        // CastledNotifications.stopInApp()
         CastledNotifications.subscribeToPushNotificationEvents(object :
             CastledPushNotificationListener {
             val logger = CastledLogger.getInstance("CastledNotifications-DemoApp")
