@@ -79,7 +79,7 @@ object CastledNotifications {
             Sessions.init(application, castledScope)
         }
         if (configs.enableTracking) {
-            EventsTracker.init(application)
+            EventsTracker.init(application, castledScope)
         }
         if (configs.enableAppInbox) {
             AppInbox.init(application, castledScope)
@@ -240,9 +240,10 @@ object CastledNotifications {
         if (getCastledConfigs().enableInApp) {
             InAppNotification.logAppEvent(context, eventName, eventParams)
         }
-        castledScope.launch(Dispatchers.Default) {
+        if (getCastledConfigs().enableTracking) {
             EventsTracker.logCustomEvent(eventName, eventParams)
         }
+
     }
 
     @JvmStatic
@@ -275,7 +276,7 @@ object CastledNotifications {
         if (!isInited()) {
             return
         }
-        castledScope.launch(Dispatchers.Default) {
+        if (getCastledConfigs().enableTracking) {
             EventsTracker.logUserTrackingEvent(attributes)
         }
     }
