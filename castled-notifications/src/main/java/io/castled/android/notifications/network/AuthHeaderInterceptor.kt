@@ -1,5 +1,6 @@
 package io.castled.android.notifications.network
 
+import io.castled.android.notifications.network.Constants.NetworkConstants
 import io.castled.android.notifications.store.CastledSharedStore
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -12,6 +13,7 @@ class AuthHeaderInterceptor : Interceptor {
         val newRequest = originalRequest.newBuilder()
             .header(APP_ID, CastledSharedStore.getAppId())
             .header(AUTH_KEY, CastledSharedStore.getSecureUserId() ?: "")
+            .header(PLATFORM, NetworkConstants.CASTLED_ANDROID_PLATFORM)
             .build()
         return chain.proceed(newRequest)
     }
@@ -20,5 +22,7 @@ class AuthHeaderInterceptor : Interceptor {
 
         const val AUTH_KEY = "Auth-Key"
         const val APP_ID = "App-Id"
+        const val PLATFORM = "Platform"
+
     }
 }

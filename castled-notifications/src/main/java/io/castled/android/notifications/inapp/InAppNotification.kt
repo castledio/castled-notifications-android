@@ -71,7 +71,10 @@ internal object InAppNotification : CastledSharedStoreListener {
         eventParams: Map<String, Any?>?
     ) = externalScope.launch(Default) {
         if (!enabled || inAppDisplayState == InAppDisplayState.STOPPED) {
-            logger.debug("Ignoring app event, In-App disabled/ display state is 'stopped'")
+            logger.debug("Ignoring in-app event, In-App disabled/ display state is 'stopped'")
+            return@launch
+        } else if (CastledSharedStore.getUserId().isNullOrBlank()) {
+            logger.debug("Ignoring in-app event, UserId not set yet!")
             return@launch
         }
         inAppController.findAndLaunchInApp(context, eventName, eventParams)
