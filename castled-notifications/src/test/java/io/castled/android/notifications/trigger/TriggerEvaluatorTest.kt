@@ -1,14 +1,26 @@
 package io.castled.android.notifications.trigger
 
+import io.castled.android.BaseTest.BaseTest
+import io.castled.android.notifications.CastledNotifications
+import io.castled.android.notifications.trigger.EventFilterEvaluator.evaluate
 import io.castled.android.notifications.trigger.models.EventFilter
 import io.castled.android.notifications.trigger.models.GroupFilter
-import io.castled.android.notifications.trigger.EventFilterEvaluator.evaluate
 import junit.framework.TestCase
+import junit.framework.TestCase.assertEquals
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 
-class TriggerEvaluatorTest {
+class TriggerEvaluatorTest : BaseTest() {
+    @After
+    fun tearDown() {
+    }
+
+    @Before
+    fun setUp() {
+    }
 
     @Test
     fun testTriggerEvaluation() {
@@ -35,5 +47,22 @@ class TriggerEvaluatorTest {
         val eventFilter: EventFilter = Json.decodeFromString(triggerExpr)
         TestCase.assertTrue(evaluate(eventFilter as GroupFilter, trueParams))
         TestCase.assertFalse(evaluate(eventFilter, falseParams))
+    }
+
+    fun getSum(): Int {
+        return 42
+    }
+
+    @Test
+    fun testSum() {
+        val expected = 42
+        assertEquals(expected, getSum())
+    }
+
+    @Test
+    fun testSumFalse() {
+        val expected = 44
+        //  assertEquals(expected, getSum())
+        CastledNotifications.logout()
     }
 }

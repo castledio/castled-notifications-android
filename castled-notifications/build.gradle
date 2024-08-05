@@ -41,11 +41,18 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
+    testOptions {
+        animationsDisabled true
+        unitTests {
+            includeAndroidResources = true
+            returnDefaultValues = true
+        }
+    }
     namespace 'io.castled.android.notifications'
 }
 
@@ -67,6 +74,8 @@ dependencies {
     implementation Libs.converterGson
     implementation Libs.retrofit
     implementation Libs.material
+
+
     // Firebase Dependencies
     compileOnly Libs.firebaseMessaging
     // Glide
@@ -96,10 +105,12 @@ dependencies {
     implementation Libs.mvvmActivity
     implementation Libs.swiperefreshlayout
 
-
     // Test Dependencies
-    testImplementation Libs.jUnit
-    androidTestImplementation Libs.extJUnit
+    testImplementation Libs.tesCore
+    testImplementation Libs.jUnit5
+    testRuntimeOnly(Libs.jUnit5Runtime)
+    testImplementation Libs.testRobolectric
+    testImplementation Libs.testRoom
 
 }
 

@@ -144,6 +144,7 @@ internal class InboxRepository(context: Context) {
             inboxItems.forEach {
                 it.isRead = true
                 inboxDao.updateInboxItem(it)
+
             }
         } catch (e: Exception) {
             // Handle any exceptions that may occur during database operations
