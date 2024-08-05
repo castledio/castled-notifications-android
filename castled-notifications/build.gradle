@@ -107,8 +107,7 @@ dependencies {
 
     // Test Dependencies
     testImplementation Libs.tesCore
-    testImplementation Libs.jUnit5
-    testRuntimeOnly(Libs.jUnit5Runtime)
+    testImplementation Libs.jUnit
     testImplementation Libs.testRobolectric
     testImplementation Libs.testRoom
 

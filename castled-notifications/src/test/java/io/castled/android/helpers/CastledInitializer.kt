@@ -5,18 +5,14 @@ import io.castled.android.notifications.CastledConfigs
 import io.castled.android.notifications.CastledNotifications
 
 object CastledInitializer {
+    var isInitialized = false
     fun initializeCastled(
-        application: Application,
-        enableAppInbox: Boolean = false,
-        enableInApp: Boolean = false,
-        enableTracking: Boolean = false,
-        enableSessionTracking: Boolean = false,
-        enablePush: Boolean = false,
-        enablePushBoost: Boolean = false,
-        skipUrlHandling: Boolean = false,
-        location: CastledConfigs.CastledLocation = CastledConfigs.CastledLocation.US,
-        sessionDuration: Long = 900L
+        application: Application
     ) {
+        if (isInitialized) {
+            return
+        }
+        isInitialized = true
         CastledNotifications.initialize(
             application,
             CastledConfigs.Builder()

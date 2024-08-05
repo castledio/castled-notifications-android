@@ -1,10 +1,10 @@
-package io.castled.android.inapp
+package io.castled.android.inapp.constants
 
 internal object InAppConstants {
     const val PAGE_VIEWED_ID = 1256
     const val APP_OPENED_ID = 1254
     const val CUSTOM_INAPP_ID = 1257
-    
+
     const val MOCK_INAPP_OBJECT = """[
     {
         "teamId": 0,

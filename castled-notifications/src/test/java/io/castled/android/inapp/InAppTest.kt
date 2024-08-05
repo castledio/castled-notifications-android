@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import io.castled.android.helpers.CastledInitializer
 import io.castled.android.helpers.CastledTestApplication
+import io.castled.android.inapp.constants.InAppConstants
 import io.castled.android.notifications.CastledNotifications
 import io.castled.android.notifications.inapp.CampaignResponseConverter.toCampaign
 import io.castled.android.notifications.inapp.InAppNotification
@@ -32,11 +33,13 @@ import org.robolectric.annotation.Config
 class InAppTest {
     private lateinit var db: CastledDb
     private var campaignDao: CampaignDao? = null
-    var application: Application? = null
+    private var application: Application? = null
+
 
     @Before
     fun setUp() {
         application = CastledTestApplication.application
+        CastledInitializer.initializeCastled(application!!)
         db = Room.inMemoryDatabaseBuilder(
             application!!.applicationContext,
             CastledDb::class.java
@@ -49,12 +52,6 @@ class InAppTest {
         application = null
         campaignDao = null
         db.close()
-    }
-
-    @Test
-    fun testAAInitialization() = runBlocking {
-        CastledInitializer.initializeCastled(application!!, enableInApp = true)
-
     }
 
     @Test

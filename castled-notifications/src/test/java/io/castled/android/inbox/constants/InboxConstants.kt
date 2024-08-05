@@ -1,4 +1,4 @@
-package io.castled.android.inbox
+package io.castled.android.inbox.constants
 
 internal object InboxConstants {
 

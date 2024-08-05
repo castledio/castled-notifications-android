@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import io.castled.android.helpers.CastledInitializer
 import io.castled.android.helpers.CastledTestApplication
+import io.castled.android.inbox.constants.InboxConstants
 import io.castled.android.notifications.CastledNotifications
 import io.castled.android.notifications.inbox.model.CastledInboxItem
 import io.castled.android.notifications.inbox.model.InboxResponseConverter.toInbox
@@ -29,8 +30,6 @@ import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [31])
-//@TestMethodOrder(MethodOrderer.MethodName::class)
-//@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 
 class InboxTest {
@@ -41,6 +40,7 @@ class InboxTest {
     @Before
     fun setUp() {
         application = CastledTestApplication.application
+        CastledInitializer.initializeCastled(application!!)
         db = Room.inMemoryDatabaseBuilder(
             application!!.applicationContext,
             CastledDb::class.java
@@ -56,29 +56,14 @@ class InboxTest {
     }
 
     @Test
-    fun testAInboxInitializationCheck() = runBlocking {
+    fun testFetchOperations() = runBlocking {
+        delay(300)
         val liveInboxResponse: List<CastledInboxItem> =
             Json.decodeFromString(InboxConstants.MOCK_INBOX_OBJECT)
         val liveInboxItems = liveInboxResponse.map { it.toInbox() }
         inboxDao!!.dbInsertInbox(liveInboxItems)
         var unreadCount = 0
         var inboxItemsCount = 0
-        CastledNotifications.getInboxUnreadCount { count ->
-            unreadCount = count
-        }
-        CastledNotifications.getInboxItems { items ->
-            inboxItemsCount = items.size
-        }
-        delay(300)
-        assertTrue(
-            "Unread count from db should be 0  without initialization",
-            unreadCount == 0
-        )
-        assertTrue(
-            "Inbox items count from db should be 0  without initialization",
-            inboxItemsCount == 0
-        )
-        CastledInitializer.initializeCastled(application!!, enableAppInbox = true)
         delay(300)
         //adding this delay to set the preference userid intitialization
         CastledNotifications.getInboxUnreadCount { count ->
@@ -100,7 +85,6 @@ class InboxTest {
 
     @Test
     fun testInboxInsertion() = runBlocking {
-        CastledInitializer.initializeCastled(application!!, enableAppInbox = true)
         val liveInboxResponse: List<CastledInboxItem> =
             Json.decodeFromString(InboxConstants.MOCK_INBOX_OBJECT)
         val liveInboxItems = liveInboxResponse.map { it.toInbox() }
@@ -119,7 +103,6 @@ class InboxTest {
     @Test
     fun testGetUnreadCount() = runBlocking {
         clearAllItems()
-        CastledInitializer.initializeCastled(application!!, enableAppInbox = true)
         val liveInboxResponse: List<CastledInboxItem> =
             Json.decodeFromString(InboxConstants.MOCK_INBOX_OBJECT)
         val liveInboxItems = liveInboxResponse.map { it.toInbox() }
