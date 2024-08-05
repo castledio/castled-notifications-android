@@ -46,10 +46,6 @@ object Versions {
 
     //Unit test
     const val jUnit = "4.13.2"
-    const val jUnit5 = "5.9.3"
-    const val jUnit5Runtime = "5.9.3"
-    const val mockitoCore = "5.7.0"
-    const val mockitoKotlin = "5.2.1"
     const val testCore = "1.6.1"
     const val robolectric = "4.7.3"
     const val extJUnit = "1.1.4"
@@ -117,11 +113,7 @@ object Libs {
     const val fragment = "androidx.fragment:fragment-ktx::${Versions.fragment}"
 
     // Test Dependencies
-    const val jUnit5 = "org.junit.jupiter:junit-jupiter-api:${Versions.jUnit5}"
-    const val jUnit5Runtime = "org.junit.jupiter:junit-jupiter-engine:${Versions.jUnit5Runtime}"
     const val jUnit = "junit:junit:${Versions.jUnit}"
-    const val testMockitoCore = "org.mockito:mockito-core:${Versions.mockitoCore}"
-    const val testMockitoKotlin = "org.mockito.kotlin:mockito-kotlin:${Versions.mockitoKotlin}"
     const val tesCore = "androidx.test:core-ktx:${Versions.testCore}"
     const val testRobolectric = "org.robolectric:robolectric:${Versions.robolectric}"
     const val extJUnit = "androidx.test.ext:junit:${Versions.extJUnit}"

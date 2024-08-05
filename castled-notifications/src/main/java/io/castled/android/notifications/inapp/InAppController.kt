@@ -125,7 +125,6 @@ internal class InAppController(context: Context) {
             pendingInApps.addAll(items.filter { newItem ->
                 pendingInApps.none { existingItem -> existingItem.notificationId == newItem.notificationId }
             })
-            val inapss = pendingInApps
         }
     }
 
