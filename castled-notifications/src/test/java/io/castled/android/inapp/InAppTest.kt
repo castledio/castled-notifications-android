@@ -55,7 +55,7 @@ class InAppTest {
     }
 
     @Test
-    fun testAppOpened() = runBlocking {
+    fun testAppOpenedInapp() = runBlocking {
         val campaignResponse: List<CampaignResponse> =
             Json.decodeFromString(InAppConstants.MOCK_INAPP_OBJECT)
         val liveCampaigns = campaignResponse.map { it.toCampaign() }
@@ -69,7 +69,7 @@ class InAppTest {
     }
 
     @Test
-    fun testPageViewed() = runBlocking {
+    fun testPageViewedInapp() = runBlocking {
         val campaignResponse: List<CampaignResponse> =
             Json.decodeFromString(InAppConstants.MOCK_INAPP_OBJECT)
         val liveCampaigns = campaignResponse.map { it.toCampaign() }

@@ -1,9 +1,9 @@
 package io.castled.android
 
 import io.castled.android.Initialization.CastledInitializationTest
+import io.castled.android.helpers.SessionTest
 import io.castled.android.inapp.InAppTest
 import io.castled.android.inbox.InboxTest
-import io.castled.android.notifications.trigger.TriggerEvaluatorTest
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 
@@ -12,6 +12,6 @@ import org.junit.runners.Suite
     CastledInitializationTest::class,
     InAppTest::class,
     InboxTest::class,
-    TriggerEvaluatorTest::class,
+    SessionTest::class,
 )
 class CastledTestSuite

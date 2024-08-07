@@ -3,6 +3,7 @@ package io.castled.android.helpers
 import android.app.Application
 import io.castled.android.notifications.CastledConfigs
 import io.castled.android.notifications.CastledNotifications
+import io.castled.android.notifications.environment.CastledEnvironmentConfig
 
 object CastledInitializer {
     var isInitialized = false
@@ -13,20 +14,21 @@ object CastledInitializer {
             return
         }
         isInitialized = true
+        CastledEnvironmentConfig.isTestEnvironment = true
         CastledNotifications.initialize(
             application,
             CastledConfigs.Builder()
-                .appId("718c38e2e359d94367a2e0d35e1fd4df")
-                .location(CastledConfigs.CastledLocation.US)
+                .appId("test_app_id")
+                .location(CastledConfigs.CastledLocation.TEST)
                 .enableAppInbox(true)
                 .enableInApp(true)
+                .enableSessionTracking(true)
                 .enablePush(false)
                 .enablePushBoost(false)
-                .enableSessionTracking(false)
                 .skipUrlHandling(false)
                 .enableTracking(false)
                 .inAppFetchIntervalSec(60)
-                .sessionTimeOutSec(900L)
+                .sessionTimeOutSec(2)
                 .build()
         )
 

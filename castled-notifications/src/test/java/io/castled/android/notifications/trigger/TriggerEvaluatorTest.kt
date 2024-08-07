@@ -20,7 +20,7 @@ class TriggerEvaluatorTest {
     }
 
     @Test
-    fun testTriggerEvaluation() {
+    fun testInappTriggerEvaluation() {
         val trueParams: MutableMap<String, Any> = HashMap()
         trueParams["name"] = "ScreenA"
         val falseParams: MutableMap<String, Any> = HashMap()

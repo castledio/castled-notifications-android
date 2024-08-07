@@ -56,7 +56,7 @@ class InboxTest {
     }
 
     @Test
-    fun testFetchOperations() = runBlocking {
+    fun testInboxFetchOperations() = runBlocking {
         delay(300)
         val liveInboxResponse: List<CastledInboxItem> =
             Json.decodeFromString(InboxConstants.MOCK_INBOX_OBJECT)
@@ -101,7 +101,7 @@ class InboxTest {
     }
 
     @Test
-    fun testGetUnreadCount() = runBlocking {
+    fun testGetInboxUnreadCount() = runBlocking {
         clearAllItems()
         val liveInboxResponse: List<CastledInboxItem> =
             Json.decodeFromString(InboxConstants.MOCK_INBOX_OBJECT)
