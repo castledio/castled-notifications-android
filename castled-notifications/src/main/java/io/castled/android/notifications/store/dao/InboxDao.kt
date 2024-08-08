@@ -34,7 +34,7 @@ internal interface InboxDao {
     @Query("SELECT * FROM inbox WHERE message_id IN (:messageIds)")
     suspend fun getInboxObjectsByMessageIds(messageIds: List<Long>): List<Inbox>
 
-    @Query("SELECT COUNT(*) FROM inbox WHERE is_read = 0")
+    @Query("SELECT COUNT(*) FROM inbox WHERE is_read = 0 AND is_deleted = 0")
     suspend fun getInboxUnreadCount(): Int
 
     @Query("SELECT DISTINCT tag FROM Inbox WHERE is_deleted = 0 AND tag IS NOT NULL AND tag <> '' ORDER BY tag ASC")
