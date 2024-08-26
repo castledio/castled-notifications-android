@@ -44,7 +44,7 @@ class SecondActivity : AppCompatActivity() {
         binding.btnLogCustomEvent.setOnClickListener {
             CastledNotifications.logCustomAppEvent(
                 this,
-                "added_to_cart_android",
+                "added_to_cart",
                 null
             )
 

@@ -176,4 +176,6 @@ internal object InAppNotification : CastledSharedStoreListener {
             "In-app state changed to ‘active’."
         )
     }
+
+    internal fun getInAppController(): InAppController = inAppController
 }

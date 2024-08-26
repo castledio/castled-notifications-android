@@ -94,6 +94,7 @@ internal class InAppController(context: Context) {
 
     private suspend fun validateAndDisplayInApp(triggeredInApps: List<Campaign>) {
         if (currentActivityReference == null || currentActivityReference!!.get() == null) {
+            enqueuePendingItems(triggeredInApps)
             logger.error("currentActivityReference is null!")
             return
         }
@@ -141,7 +142,7 @@ internal class InAppController(context: Context) {
         }
     }
 
-    private fun getPendingListItems(): List<Campaign> {
+    internal fun getPendingListItems(): List<Campaign> {
         return ArrayList(pendingInApps)
     }
 

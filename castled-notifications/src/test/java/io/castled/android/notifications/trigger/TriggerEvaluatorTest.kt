@@ -1,17 +1,26 @@
 package io.castled.android.notifications.trigger
 
+import io.castled.android.notifications.trigger.EventFilterEvaluator.evaluate
 import io.castled.android.notifications.trigger.models.EventFilter
 import io.castled.android.notifications.trigger.models.GroupFilter
-import io.castled.android.notifications.trigger.EventFilterEvaluator.evaluate
 import junit.framework.TestCase
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 
 class TriggerEvaluatorTest {
+    @After
+    fun tearDown() {
+    }
+
+    @Before
+    fun setUp() {
+    }
 
     @Test
-    fun testTriggerEvaluation() {
+    fun testInappTriggerEvaluation() {
         val trueParams: MutableMap<String, Any> = HashMap()
         trueParams["name"] = "ScreenA"
         val falseParams: MutableMap<String, Any> = HashMap()
@@ -36,4 +45,5 @@ class TriggerEvaluatorTest {
         TestCase.assertTrue(evaluate(eventFilter as GroupFilter, trueParams))
         TestCase.assertFalse(evaluate(eventFilter, falseParams))
     }
+
 }

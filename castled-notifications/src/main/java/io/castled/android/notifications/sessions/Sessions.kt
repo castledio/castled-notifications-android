@@ -36,7 +36,7 @@ internal object Sessions : CastledSharedStoreListener {
     var sessionId: String? = null
     private var sessionStartTime: Long = 0L
     private var sessionEndTime: Long = 0L
-    private var sessionDuration: Long = 0L
+    internal var sessionDuration: Long = 0L
     private var isFirstSession: Boolean = true
     private var currentStartTime: Long = 0L
     private var isSessionStarted: Boolean = false
@@ -50,7 +50,7 @@ internal object Sessions : CastledSharedStoreListener {
         CastledSharedStore.registerListener(this)
     }
 
-    private suspend fun startCastledSession() {
+    internal suspend fun startCastledSession() {
         CastledDelayUtils.waitForCondition(500, 120 * 1000) {
             // Wait until device id is set (immediately after store init)
             // Once wait timeouts, proceed anyway

@@ -22,10 +22,6 @@ object Versions {
     // Glide
     const val glide = "4.14.2"
 
-    // Test
-    const val jUnit = "4.13.2"
-    const val extJUnit = "1.1.4"
-
     // Default Android Dependencies
     const val appCompat = "1.5.1"
     const val lifecycleProcess = "2.5.1"
@@ -47,6 +43,13 @@ object Versions {
     const val mvvmActivity = "1.6.1"
     const val swiperefreshlayout = "1.1.0"
     const val fragment = "1.3.5"
+
+    //Unit test
+    const val jUnit = "4.13.2"
+    const val testCore = "1.6.1"
+    const val robolectric = "4.7.3"
+    const val extJUnit = "1.1.4"
+    const val testRoom = "2.6.1"
 
 }
 
@@ -82,10 +85,6 @@ object Libs {
     const val glide = "com.github.bumptech.glide:glide:${Versions.glide}"
     const val glideCompiler = "com.github.bumptech.glide:compiler:${Versions.glide}"
 
-    // Test Dependencies
-    const val jUnit = "junit:junit:${Versions.jUnit}"
-    const val extJUnit = "androidx.test.ext:junit:${Versions.extJUnit}"
-
     // Default Android Dependencies
     const val appCompat = "androidx.appcompat:appcompat:${Versions.appCompat}"
     const val lifecycleProcess = "androidx.lifecycle:lifecycle-process:${Versions.lifecycleProcess}"
@@ -112,4 +111,13 @@ object Libs {
     const val swiperefreshlayout =
         "androidx.swiperefreshlayout:swiperefreshlayout:${Versions.swiperefreshlayout}"
     const val fragment = "androidx.fragment:fragment-ktx::${Versions.fragment}"
+
+    // Test Dependencies
+    const val jUnit = "junit:junit:${Versions.jUnit}"
+    const val tesCore = "androidx.test:core-ktx:${Versions.testCore}"
+    const val testRobolectric = "org.robolectric:robolectric:${Versions.robolectric}"
+    const val extJUnit = "androidx.test.ext:junit:${Versions.extJUnit}"
+    const val testRoom = "androidx.room:room-testing:${Versions.testRoom}"
+
+
 }
