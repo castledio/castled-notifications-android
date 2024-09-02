@@ -57,6 +57,8 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.5.3'
     implementation Libs.lifecycleProcess
     implementation Libs.coreKtx
+    implementation project(path: ':castled-geofence')
+    implementation project(path: ':castled-geofence')
 
     // Unit testing
     testImplementation Libs.jUnit

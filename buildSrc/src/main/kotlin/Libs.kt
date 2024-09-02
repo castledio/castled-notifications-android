@@ -48,6 +48,10 @@ object Versions {
     const val swiperefreshlayout = "1.1.0"
     const val fragment = "1.3.5"
 
+    //Geofencing
+    const val play_services_location = "21.3.0"
+
+
 }
 
 object Libs {
@@ -112,4 +116,9 @@ object Libs {
     const val swiperefreshlayout =
         "androidx.swiperefreshlayout:swiperefreshlayout:${Versions.swiperefreshlayout}"
     const val fragment = "androidx.fragment:fragment-ktx::${Versions.fragment}"
+
+    //Geofencing
+    const val play_services_location =
+        "com.google.android.gms:play-services-location:${Versions.play_services_location}"
+
 }

@@ -3,6 +3,8 @@ package io.castled.android.demoapp
 import android.content.Context
 import androidx.multidex.MultiDex
 import androidx.multidex.MultiDexApplication
+import io.castled.android.geofencer.CastledGeofencer
+import io.castled.android.geofencer.models.GeofenceConfig
 import io.castled.android.notifications.CastledConfigs
 import io.castled.android.notifications.CastledNotifications
 import io.castled.android.notifications.CastledPushNotificationListener
@@ -34,6 +36,18 @@ class MyApplicationClass : MultiDexApplication() {
                 .build()
         )
 
+        val geofencing = CastledGeofencer.getInstance(this)
+        // Create a config object or load it from resources
+        val config = GeofenceConfig(
+            locationAccuracy = 0,
+            updateInterval = 10000L,
+            displacement = 10F
+        )
+        // Initialize Geofencing with the config
+        geofencing.initialize(config)
+
+        // Start monitoring geofences
+        geofencing.startMonitoring()
         // User-id needs to set after login flow of your app is complete
         CastledNotifications.setUserId(this, "antony@castled.io")
         // Listening to push notification events

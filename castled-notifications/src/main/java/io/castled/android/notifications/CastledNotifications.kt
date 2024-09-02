@@ -412,6 +412,6 @@ object CastledNotifications {
 
     fun getCastledConfigs() = CastledSharedStore.configs
 
-    private fun isInited(): Boolean = this::appId.isInitialized
+    fun isInited(): Boolean = this::appId.isInitialized
 
 }

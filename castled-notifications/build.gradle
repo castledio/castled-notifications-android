@@ -48,7 +48,19 @@ android {
 
     namespace 'io.castled.android.notifications'
 }
+kotlin {
+//    sourceSets {
+//        main {
+//            kotlin.srcDir("src/main/kotlin")
+//            kotlin.srcDirs("src/main/resources")
+//        }
+//    }
+//
+//    explicitApi = ExplicitApiMode.Strict
 
+    // Specify the friend module here
+    // friendModules += ":castled-geofence"
+}
 ext {
 
     PUBLISH_GROUP_ID = Configurations.artifactGroup

@@ -1,0 +1,51 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'io.castled.android.geofencer'
+    compileSdk Configurations.compileSdk
+
+    defaultConfig {
+        minSdk Configurations.minSdk
+        targetSdk Configurations.targetSdk
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+ext {
+
+    PUBLISH_GROUP_ID = Configurations.artifactGroup
+    PUBLISH_ARTIFACT_ID = 'castled-geofence'
+    DESCRIPTION = 'Castled SDK for Geofencing'
+    PUBLISH_VERSION = Configurations.sdkVersion
+}
+dependencies {
+    compileOnly project(':castled-notifications')
+    compileOnly fileTree(dir: 'libs', include: ['*.aar'])
+ 
+    implementation Libs.coreKtx
+    implementation Libs.kotlinxSerializationJson
+    implementation Libs.appCompat
+    implementation Libs.play_services_location
+
+    testImplementation Libs.jUnit
+    androidTestImplementation Libs.extJUnit
+
+}
