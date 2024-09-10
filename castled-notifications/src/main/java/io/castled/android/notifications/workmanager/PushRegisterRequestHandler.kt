@@ -18,7 +18,9 @@ internal class PushRegisterRequestHandler(appContext: Context) : NetworkRequestH
         for (entry in requests) {
             try {
                 val response = pushRepository.registerNoRetry(
-                    (entry.request as CastledPushRegisterRequest).userId, entry.request.tokens
+                    (entry.request as CastledPushRegisterRequest).userId,
+                    entry.request.tokens,
+                    entry.request.deviceId
                 )
                 if (!response.isSuccessfulOrIgnoredError()) {
                     onError(listOf(entry))
