@@ -2,7 +2,6 @@ package io.castled.android.notifications.sessions
 
 import android.app.Application
 import android.content.Context
-import io.castled.android.notifications.commons.CastledDelayUtils
 import io.castled.android.notifications.commons.CastledUUIDUtils
 import io.castled.android.notifications.commons.DateTimeUtils
 import io.castled.android.notifications.logger.CastledLogger
@@ -51,11 +50,6 @@ internal object Sessions : CastledSharedStoreListener {
     }
 
     private suspend fun startCastledSession() {
-        CastledDelayUtils.waitForCondition(500, 120 * 1000) {
-            // Wait until device id is set (immediately after store init)
-            // Once wait timeouts, proceed anyway
-            !deviceInfo.getDeviceId().isNullOrEmpty()
-        }
         sessionMutex.withLock {
             withContext(Dispatchers.Default) {
                 currentStartTime = System.currentTimeMillis() / 1000
