@@ -10,4 +10,4 @@ class GeofenceBootReceiver : BroadcastReceiver() {
             geofenceManager.startMonitoring()
         }
     }
-}q
+}

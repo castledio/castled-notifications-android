@@ -44,10 +44,10 @@ class MyApplicationClass : MultiDexApplication() {
             displacement = 10F
         )
         // Initialize Geofencing with the config
-        geofencing.initialize(config)
+        //     geofencing.initialize(config)
 
         // Start monitoring geofences
-        geofencing.startMonitoring()
+        //    geofencing.startMonitoring()
         // User-id needs to set after login flow of your app is complete
         CastledNotifications.setUserId(this, "antony@castled.io")
         // Listening to push notification events
