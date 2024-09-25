@@ -11,13 +11,11 @@ import io.castled.android.notifications.commons.CastledUUIDUtils
 import io.castled.android.notifications.store.CastledSharedStore
 import java.util.Locale
 import java.util.TimeZone
-import java.util.concurrent.locks.ReentrantLock
 
 internal class CastledDeviceDetails(context: Context) {
 
     private val packageManager by lazy { context.packageManager }
     private val packageName by lazy { context.packageName }
-    private val lock by lazy { ReentrantLock() }
 
     internal fun getAppVersion(): String {
         return try {
@@ -91,19 +89,14 @@ internal class CastledDeviceDetails(context: Context) {
         }
     }
 
+    @Synchronized
     fun getDeviceId(): String {
-        lock.lock()
-        try {
-
-            CastledSharedStore.getDeviceId()?.let {
-                return it
-            }
-            val deviceId = CastledUUIDUtils.getIdBase64()
-            CastledSharedStore.setDeviceId(deviceId)
-            return deviceId
-        } finally {
-            lock.unlock()
+        CastledSharedStore.getDeviceId()?.let {
+            return it
         }
+        val deviceId = CastledUUIDUtils.getIdBase64()
+        CastledSharedStore.setDeviceId(deviceId)
+        return deviceId
     }
 
     internal fun getTimeZone(): String {
