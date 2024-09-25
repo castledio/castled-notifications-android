@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.core.content.pm.PackageInfoCompat
+import io.castled.android.notifications.commons.CastledUUIDUtils
 import io.castled.android.notifications.store.CastledSharedStore
 import java.util.Locale
 import java.util.TimeZone
@@ -88,7 +89,15 @@ internal class CastledDeviceDetails(context: Context) {
         }
     }
 
-    internal fun getDeviceId(): String? = CastledSharedStore.getDeviceId()
+    @Synchronized
+    fun getDeviceId(): String {
+        CastledSharedStore.getDeviceId()?.let {
+            return it
+        }
+        val deviceId = CastledUUIDUtils.getIdBase64()
+        CastledSharedStore.setDeviceId(deviceId)
+        return deviceId
+    }
 
     internal fun getTimeZone(): String {
         return try {

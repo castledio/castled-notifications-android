@@ -9,7 +9,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 @Suppress("unused")
-class FcmTokenProvider(context: Context) : CastledPushTokenProvider(context) {
+class FcmTokenProvider : CastledPushTokenProvider() {
 
     private val logger = CastledLogger.getInstance(LogTags.PUSH_TOKEN_PROVIDER)
 

@@ -64,12 +64,10 @@ internal object CastledSharedStore {
                 val sharedPref = getSharedPreference(context)
                 // Restore from shared store
                 deviceId = sharedPref.getString(PrefStoreKeys.DEVICE_ID, null)
-                isPushGranted = sharedPref.getBoolean(PrefStoreKeys.IS_PUSH_GRANTED,false)
+                isPushGranted = sharedPref.getBoolean(PrefStoreKeys.IS_PUSH_GRANTED, false)
                 deviceInfo = fetchDeviceInfo()
                 tokens[PushTokenType.FCM] =
                     sharedPref.getString(PrefStoreKeys.FCM_TOKEN, null)
-                tokens[PushTokenType.MI_PUSH] =
-                    sharedPref.getString(PrefStoreKeys.MI_TOKEN, null)
                 val numbersStr =
                     sharedPref.getString(PrefStoreKeys.RECENT_DISPLAYED_PUSH_IDS, "")
                 if (!numbersStr.isNullOrBlank()) {
@@ -104,7 +102,8 @@ internal object CastledSharedStore {
     suspend fun setUserId(context: Context, userId: String?, userToken: String?) {
         storeMutex.withLock {
             if (userId == CastledSharedStore.userId &&
-                userToken == CastledSharedStore.userToken) {
+                userToken == CastledSharedStore.userToken
+            ) {
                 logger.debug("Ignoring userId set. Already set")
                 return
             }
@@ -131,9 +130,6 @@ internal object CastledSharedStore {
             when (tokenType) {
                 PushTokenType.FCM -> sharedPreferences.edit()
                     .putString(PrefStoreKeys.FCM_TOKEN, fcmToken).apply()
-
-                PushTokenType.MI_PUSH -> sharedPreferences.edit()
-                    .putString(PrefStoreKeys.MI_TOKEN, fcmToken).apply()
             }
         }
     }
@@ -208,6 +204,7 @@ internal object CastledSharedStore {
         isPushGranted = isGranted
         sharedPreferences.edit().putBoolean(PrefStoreKeys.IS_PUSH_GRANTED, isPushGranted).apply()
     }
+
     fun <T : Any> getValue(key: String, defaultValue: T): T {
         return when (defaultValue) {
             is String -> sharedPreferences.getString(key, defaultValue) as T

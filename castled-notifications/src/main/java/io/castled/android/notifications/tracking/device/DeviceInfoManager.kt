@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import io.castled.android.notifications.BuildConfig
-import io.castled.android.notifications.commons.CastledUUIDUtils
 import io.castled.android.notifications.logger.CastledLogger
 import io.castled.android.notifications.logger.LogTags
 import io.castled.android.notifications.observer.CastledLifeCycleObserver
@@ -41,9 +40,6 @@ internal object DeviceInfoManager : CastledSharedStoreListener {
         externalScope.launch(Dispatchers.Default) {
             try {
                 val isPushGranted = isPushPermissionGranted()
-                deviceInfoDetails.getDeviceId() ?: run {
-                    CastledSharedStore.setDeviceId(CastledUUIDUtils.getIdBase64())
-                }
                 val deviceInfoMap = mapOf(
                     "sdkVersion" to BuildConfig.SDK_VERSION,
                     "appVersion" to deviceInfoDetails.getAppVersion(),
@@ -53,7 +49,7 @@ internal object DeviceInfoManager : CastledSharedStoreListener {
                     "make" to deviceInfoDetails.getMake(),
                     "osVersion" to deviceInfoDetails.getOSVersion(),
                     "locale" to deviceInfoDetails.getLocale(),
-                    "deviceId" to deviceInfoDetails.getDeviceId()!!,
+                    "deviceId" to deviceInfoDetails.getDeviceId(),
                     "timeZone" to deviceInfoDetails.getTimeZone(),
                     "platform" to "MOBILE_ANDROID",
                 )

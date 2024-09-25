@@ -56,7 +56,7 @@ internal class InboxLifeCycleListenerImpl(private val context: Context) {
             }
 
             CastledClickAction.DISMISS_NOTIFICATION -> {
-                logger.debug("Inbox with notification id:${inboxItem.messageId} dismissed!")
+                // Do nothing
             }
 
             CastledClickAction.NAVIGATE_TO_SCREEN -> {

@@ -9,6 +9,7 @@ import io.castled.android.notifications.push.models.CastledPushMessage
 import io.castled.android.notifications.push.models.NotificationActionContext
 import io.castled.android.notifications.push.models.PushTokenInfo
 import io.castled.android.notifications.store.CastledSharedStore
+import io.castled.android.notifications.tracking.device.CastledDeviceDetails
 import io.castled.android.notifications.workmanager.CastledNetworkWorkManager
 import io.castled.android.notifications.workmanager.models.CastledLogoutRequest
 import io.castled.android.notifications.workmanager.models.CastledPushEventRequest
@@ -20,10 +21,10 @@ internal class PushRepository(context: Context) {
     private val networkWorkManager by lazy { CastledNetworkWorkManager.getInstance(context) }
     private val pushApi by lazy { create(PushApi::class.java) }
     private val logger = CastledLogger.getInstance(LogTags.PUSH_REPOSITORY)
-
+    private val deviceInfo by lazy { CastledDeviceDetails(context) }
     suspend fun register(userId: String, tokens: List<PushTokenInfo>) {
         networkWorkManager.apiCallWithRetry(
-            request = CastledPushRegisterRequest(userId, tokens),
+            request = CastledPushRegisterRequest(userId, tokens, deviceInfo.getDeviceId() ?: ""),
             apiCall = {
                 return@apiCallWithRetry pushApi.register(
                     CastledSharedStore.getAppId(),
@@ -49,10 +50,12 @@ internal class PushRepository(context: Context) {
         networkWorkManager.enqueueRequest(event.toCastledPushEventRequest())
     }
 
-    suspend fun registerNoRetry(userId: String, tokens: List<PushTokenInfo>): Response<Void?> {
+    suspend fun registerNoRetry(
+        userId: String, tokens: List<PushTokenInfo>, deviceId: String
+    ): Response<Void?> {
         return pushApi.register(
             CastledSharedStore.getAppId(),
-            CastledPushRegisterRequest(userId, tokens)
+            CastledPushRegisterRequest(userId, tokens, deviceId)
         )
     }
 
