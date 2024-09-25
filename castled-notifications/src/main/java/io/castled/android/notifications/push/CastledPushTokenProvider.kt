@@ -2,7 +2,7 @@ package io.castled.android.notifications.push
 
 import android.content.Context
 
-abstract class CastledPushTokenProvider(val context: Context) {
+abstract class CastledPushTokenProvider {
 
     abstract fun register(context: Context)
 

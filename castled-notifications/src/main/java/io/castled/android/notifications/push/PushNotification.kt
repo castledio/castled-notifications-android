@@ -21,14 +21,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import kotlin.reflect.full.primaryConstructor
 
 internal object PushNotification : CastledSharedStoreListener {
 
     private val logger = CastledLogger.getInstance(LogTags.PUSH)
-    private val tokenProviders = mutableMapOf<PushTokenType, CastledPushTokenProvider>()
     private lateinit var externalScope: CoroutineScope
     private lateinit var pushRepository: PushRepository
+    private lateinit var fcmTokenProvider: FcmTokenProvider
     private var enabled = false
 
     private const val MAX_PUSH_MESSAGE_CACHE_SIZE = 32
@@ -39,6 +38,7 @@ internal object PushNotification : CastledSharedStoreListener {
 
         this.externalScope = externalScope
         this.pushRepository = PushRepository(context)
+        this.fcmTokenProvider = FcmTokenProvider()
         CastledSharedStore.registerListener(this)
         enabled = true
         logger.debug("Push module initialized")
@@ -103,33 +103,12 @@ internal object PushNotification : CastledSharedStoreListener {
     }
 
     private fun initTokenProviders(context: Context) {
-        PushTokenType.values().forEach {
-            try {
-                val javaClass = Class.forName(it.providerClassName)
-                val constructor = javaClass.kotlin.primaryConstructor!!
-                this.tokenProviders[it] = constructor.call(context) as CastledPushTokenProvider
-                this.tokenProviders[it]?.register(context)
-            } catch (e: ClassNotFoundException) {
-                logger.debug("Class ${it.providerClassName} not found!")
-            } catch (e: Exception) {
-                logger.debug("$e")
-            }
-        }
+        fcmTokenProvider.register(context)
     }
 
     private fun refreshPushTokens(context: Context) = externalScope.launch(Dispatchers.Default) {
-        PushTokenType.values().forEach {
-            try {
-                val token = tokenProviders[it]?.getToken(context)
-                this@PushNotification.onTokenFetch(token, it)
-            } catch (e: NoClassDefFoundError) {
-                logger.debug("Class definition for ${it.providerClassName} not found!")
-            } catch (e: ClassNotFoundException) {
-                logger.debug("Class ${it.providerClassName} not found!")
-            } catch (e: Exception) {
-                logger.debug("$e")
-            }
-        }
+        val token = fcmTokenProvider.getToken(context)
+        onTokenFetch(token, PushTokenType.FCM)
     }
 
     private fun startPeriodicTokenRefreshTask(context: Context) =
