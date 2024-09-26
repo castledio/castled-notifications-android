@@ -19,7 +19,8 @@ class CastledPushBoostSyncWorker(
         return try {
             if (CastledSharedStore.getUserId().isNullOrBlank()) {
                 logger.debug("UserId not set. Skipping push messages sync")
-                Result.success()
+                return Result.success()
+
             }
             val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
             val startDndHour = 22 // 10 PM
