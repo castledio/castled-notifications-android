@@ -410,6 +410,11 @@ object CastledNotifications {
         CastledLifeCycleObserver.start(application)
     }
 
+    @JvmStatic
+    fun performNonNativeAppForegroundActions(activity: Activity) {
+        CastledLifeCycleObserver.onNonNativeAppForegrounded(activity)
+    }
+
     fun getCastledConfigs() = CastledSharedStore.configs
 
     private fun isInited(): Boolean = this::appId.isInitialized
